@@ -47,6 +47,32 @@ final class EBillingArtifactNaming
     }
 
     /**
+     * Absolute temp path for extracted hybrid XML passed to KOSIT.
+     * Uses the same human basename as stored artifacts (not {@see tempnam()}).
+     * Caller must write the file; this only reserves a free path.
+     */
+    public static function uniqueTempXmlPath(string $originalFilename, ?string $directory = null): string
+    {
+        $directory = rtrim($directory ?? sys_get_temp_dir(), '/\\');
+
+        try {
+            $base = self::basenameFor($originalFilename);
+        } catch (RuntimeException) {
+            $base = 'invoice';
+        }
+
+        $path = $directory.DIRECTORY_SEPARATOR.$base.'.xml';
+        $counter = 2;
+
+        while (is_file($path)) {
+            $path = $directory.DIRECTORY_SEPARATOR.$base.'_'.$counter.'.xml';
+            $counter++;
+        }
+
+        return $path;
+    }
+
+    /**
      * Returns a basename that does not collide with any existing .xml or .pdf
      * in {$disk}/{$directory}. Synchronized across both extensions: if either
      * .xml or .pdf exists for a candidate, the candidate is skipped and the

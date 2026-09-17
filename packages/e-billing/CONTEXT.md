@@ -63,7 +63,6 @@ Generate the customer-chosen artifact first (XRechnung XML / ZUGFeRD PDF / Factu
 
 **In:** `moox/verapdf` package; generator-strategy seam + three CII formats; recipient format preference port → frozen `ebilling_documents.format` + `profile` (default ZUGFeRD / `EN16931`); `GenerateArtifactJob → ValidateArtifactJob` (KOSIT always, +veraPDF for hybrids, `MergeZugferdPdfJob` removed as a stage); format-agnostic status enum + storage columns on fresh schema; events renamed to match.
 
-**Out (deferred):** customer-portal UI that writes the format preference; actual delivery/sending of the validated artifact; UBL generator + Peppol; manual "reprocess in a new format" action; PAdES signing + revision-safe archiving; source-PDF PDF/A normalization.
 **Out (deferred):** customer-portal UI that writes the format preference; host-owned channel implementations beyond this package's port (Peppol, portal readiness, …); UBL generator; manual "reprocess in a new format" action; PAdES signing + revision-safe archiving; source-PDF PDF/A normalization.
 
 ## Encryption & immutability

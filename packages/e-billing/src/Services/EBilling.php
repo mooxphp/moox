@@ -69,7 +69,8 @@ class EBilling
         $generated = $this->generateInvoiceAndXmlFromPdf($pdfPath);
         $invoice = $generated['invoice'];
         $xml = $generated['xml'];
-        $zugferdPdfContent = $this->zugferdConverter->mergePdfWithXml($pdfPath, $xml);
+        $documentTypeCode = $invoice->documentTypeCode !== '' ? $invoice->documentTypeCode : null;
+        $zugferdPdfContent = $this->zugferdConverter->mergePdfWithXml($pdfPath, $xml, $documentTypeCode);
 
         return [
             'invoice' => $invoice,

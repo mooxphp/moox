@@ -10,7 +10,7 @@ Moox Zugferd converts invoice data implementing `ZugferdInvoice` into valid ZUGF
 
 - `ZugferdConverter::convert()` — XML string from any `ZugferdInvoice` implementor
 - `convertToFile()` — writes `{output_path}/{invoiceNumber}.xml`
-- `mergePdfWithXml()` — PDF/A-3 binary with embedded XML; optional `qpdf` decrypt (output is unencrypted)
+- `mergePdfWithXml()` — PDF/A-3 binary with embedded XML; optional `qpdf` decrypt (output is unencrypted); PDF Title via `config('zugferd.pdf_title_template')` / `pdf_title_templates` (default `Seller : Invoice {id}`)
 - `extractXmlFromPdf()` — read embedded XML from a hybrid PDF for validation
 - Contract interfaces for invoices, lines, addresses, bank accounts, and allowance/charges
 - Concrete `AllowanceCharge` DTO for tests and simple consumers
@@ -93,7 +93,7 @@ $path = app(ZugferdConverter::class)->convertToFile($invoice, 'EN16931');
 ### Merge into a ZUGFeRD PDF
 
 ```php
-$pdfBinary = app(ZugferdConverter::class)->mergePdfWithXml('/path/to/invoice.pdf', $xml);
+$pdfBinary = app(ZugferdConverter::class)->mergePdfWithXml('/path/to/invoice.pdf', $xml, '380');
 ```
 
 `GenerateArtifactJob` uses this during hybrid artifact generation (before KOSIT validation).
@@ -144,7 +144,8 @@ Class: `Moox\Zugferd\ZugferdConverter` (singleton in `ZugferdServiceProvider`).
 |--------|---------|-------------|
 | `convert(ZugferdInvoice $invoice, string $profileKey): string` | XML string | Builds horstoeko document; required `$profileKey` selects how line `deliveryDate` is emitted (line period vs line actual delivery); `getContentSafely()` mitigates stream-resource warnings |
 | `convertToFile(ZugferdInvoice $invoice, string $profileKey, ?string $outputPath = null): string` | File path | Writes `{outputPath}/{invoiceNumber}.xml` |
-| `mergePdfWithXml(string $pdfPath, string $xml): string` | PDF binary | Optional qpdf decrypt → merge (unencrypted output) |
+| `mergePdfWithXml(string $pdfPath, string $xml, ?string $documentTypeCode = null): string` | PDF binary | Optional qpdf decrypt → merge (unencrypted output); Title from `resolvePdfTitleTemplate($documentTypeCode)` |
+| `resolvePdfTitleTemplate(?string $documentTypeCode = null): string` | Title sprintf template | `pdf_title_templates[$code]` or `pdf_title_template` / `PDF_TITLE_TEMPLATE` |
 | `extractXmlFromPdf(string $absolutePdfPath): string` | XML string | Embedded XML from hybrid PDF |
 
 ### Profile map
@@ -179,16 +180,17 @@ Callers must pass an explicit profile key (`MINIMUM`, `BASIC`, `EN16931`, `EXTEN
 | `\RuntimeException` | Failed to read merged temp PDF |
 
 ## Configuration
-
 File: `config/zugferd.php`
 
-| Key | Env | Default | Used by |
-|-----|-----|---------|---------|
+| Key | Env | Default | Notes |
+|---|---|---|---|
 | `output_path` | — | `storage/app/private/zugferd` | `convertToFile()` only |
+| `pdf_title_template` | — | `%3$s : %2$s %1$s` | Default PDF Title sprintf template (horstoeko: `%1$s` invoice id, `%2$s` doc type name, `%3$s` seller, `%4$s` date) |
+| `pdf_title_templates` | — | `[]` | Optional map of UN/CEFACT document type code → Title template; selected when `mergePdfWithXml(..., $documentTypeCode)` is passed |
+
+`ZugferdConverter::resolvePdfTitleTemplate(?string $documentTypeCode)` picks the map entry or falls back to `pdf_title_template` / `PDF_TITLE_TEMPLATE`.
 
 **Cross-package config:** `mail-inbox.zugferd.pdf_password` — read in `mergePdfWithXml()` only.
-
-No migrations, routes, or Filament UI.
 
 ## Running tests
 
@@ -198,7 +200,7 @@ From the monorepo root:
 php vendor/bin/pest packages/zugferd/tests
 ```
 
-Feature tests cover allowance/charges, address lines, payment means codes, and `IncompleteInvoiceException` for missing supplier address. Delivery-date and ShipTo XML coverage lives in `moox/e-billing` adapter tests. `mergePdfWithXml()` and `convertToFile()` are not covered in this package (e-billing tests exercise the adapter path).
+Unit tests cover `resolvePdfTitleTemplate()` (default vs per-code map vs fallback). Delivery-date and ShipTo XML coverage lives in `moox/e-billing` adapter tests. Full `mergePdfWithXml()` / `convertToFile()` PDF round-trips are not covered in this package.
 
 ## See also
 

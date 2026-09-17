@@ -4,6 +4,9 @@
 
 ### Changed
 - Invoice **Zustellversuche** / delivery attempts relation defaults to newest first (`default_order` on `created_at` desc).
+
+- `HybridArtifactGeneratorStrategyInterface::mergeXmlIntoPdf()` accepts optional `$documentTypeCode` and passes it to `ZugferdConverter::mergePdfWithXml()` so PDF Title templates can be selected from `config('zugferd.pdf_title_templates')`. `GenerateArtifactJob` and `EBilling::processFile()` supply the resolved document type code.
+
 ### Fixed
 
 - Invoice detail: show `agent` (BT-41 / Vertreter) under Seller / Supplier (`section_seller_supplier`) instead of Delivery (`section_delivery`).

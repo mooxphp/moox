@@ -4,6 +4,7 @@
 
 ### Changed
 
+- `mergePdfWithXml()` PDF Title metadata is configurable: `config('zugferd.pdf_title_template')` (default `%3$s : %2$s %1$s`, historical horstoeko spacing) and optional per-code map `config('zugferd.pdf_title_templates')`. Optional third argument `$documentTypeCode` selects the map entry; unknown/empty codes fall back to the default template. `ZugferdConverter::resolvePdfTitleTemplate()` exposes the resolution. `PDF_TITLE_TEMPLATE` remains the package fallback constant.
 - `ZugferdConverter::convert()` / `convertToFile()` require an explicit profile key; unknown keys throw. Removed `config('zugferd.profile')` / `ZUGFERD_PROFILE` (pipeline defaults belong in the host / e-billing).
 
 ### Added
