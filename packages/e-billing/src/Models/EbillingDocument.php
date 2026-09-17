@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\MySqlConnection;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Moox\Company\Models\Company;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
+use Moox\Core\Support\RelatedModelUrlResolver;
 use Moox\Core\Traits\MorphPivot\HasMorphPivotRelations;
 use Moox\Customer\Models\Customer;
 use Moox\EBilling\Enums\AttributionSource;
@@ -30,6 +32,7 @@ use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\InvoiceModels;
 use Moox\KositValidator\Models\KositValidation;
 use Moox\MailInbox\Models\InboxAttachment;
+use Moox\MailInbox\Models\InboxMessage;
 use Moox\VeraPdf\Models\VeraPdfValidation;
 use RuntimeException;
 
@@ -163,6 +166,55 @@ class EbillingDocument extends BaseItemModel
         $source = $this->source;
 
         return $source instanceof InboxAttachment ? $source : null;
+    }
+
+    /**
+     * Validated To address from the sourcing inbox message, when present.
+     */
+    public function inboxToEmail(): ?string
+    {
+        $message = $this->inboxMessage();
+
+        if ($message === null) {
+            return null;
+        }
+
+        $email = trim((string) ($message->to_email ?? ''));
+
+        if ($email === '' || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return null;
+        }
+
+        return $email;
+    }
+
+    /**
+     * Display name for the sourcing inbox To address, when present.
+     */
+    public function inboxToName(): ?string
+    {
+        $message = $this->inboxMessage();
+
+        if ($message === null) {
+            return null;
+        }
+
+        $name = trim((string) ($message->to_name ?? ''));
+
+        return $name !== '' ? $name : null;
+    }
+
+    private function inboxMessage(): ?InboxMessage
+    {
+        $attachment = $this->inboxAttachment();
+
+        if ($attachment === null) {
+            return null;
+        }
+
+        $attachment->loadMissing('message');
+
+        return $attachment->message;
     }
 
     public function sourceFullPath(): string
@@ -407,6 +459,14 @@ class EbillingDocument extends BaseItemModel
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class, 'customer_id');
+    }
+
+    /**
+     * @return HasMany<EbillingDeliveryAttempt, $this>
+     */
+    public function deliveryAttempts(): HasMany
+    {
+        return $this->hasMany(EbillingDeliveryAttempt::class, 'ebilling_document_id');
     }
 
     /**

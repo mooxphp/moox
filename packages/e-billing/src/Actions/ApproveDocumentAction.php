@@ -16,6 +16,7 @@ final class ApproveDocumentAction
     public function __construct(
         private readonly DocumentApprovalGuard $approvalGuard,
         private readonly RecordApprovalTransitionAction $recordTransition,
+        private readonly QueueDocumentDeliveryAction $queueDelivery,
     ) {
     }
 
@@ -37,6 +38,8 @@ final class ApproveDocumentAction
             reason: $reason,
             forwardedReleaseReasons: $forwardedReleaseReasons,
         );
+
+        $this->queueDelivery->execute($document->fresh() ?? $document);
 
         return true;
     }

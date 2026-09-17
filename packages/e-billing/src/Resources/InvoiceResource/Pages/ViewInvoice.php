@@ -9,17 +9,20 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Attributes\Computed;
 use Moox\Customer\Models\Customer;
 use Moox\EBilling\Actions\ApproveDocumentAction;
 use Moox\EBilling\Actions\ConfirmInvoiceAction;
+use Moox\EBilling\Actions\QueueDocumentDeliveryAction;
 use Moox\EBilling\Actions\RejectDocumentAction;
 use Moox\EBilling\Actions\RematchAttributionAction;
 use Moox\EBilling\Actions\RestoreRejectedDocumentAction;
 use Moox\EBilling\Actions\SetInvoiceAttributionAction;
 use Moox\EBilling\Approval\DocumentApprovalGuard;
+use Moox\EBilling\Approval\DocumentDispatchGuard;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\InvoiceResource;
@@ -39,6 +42,7 @@ class ViewInvoice extends ViewRecord
      *
      * The Activity relation manager is embedded directly in the Blade view, because
      * this custom layout does not use Filament's default content schema tabs.
+     * Delivery attempts, KoSIT/veraPDF validations, optional mail-outbox logs, and
      */
     public function mount(int|string $record): void
     {
@@ -310,6 +314,31 @@ class ViewInvoice extends ViewRecord
                         'e-billing::fields.notification_rematch_failed_body',
                     );
                 }),
+            Action::make('redispatch_delivery')
+                ->label(__('e-billing::fields.action_redispatch_delivery'))
+                ->icon(Heroicon::OutlinedPaperAirplane)
+                ->color('gray')
+                ->requiresConfirmation()
+                ->modalHeading(__('e-billing::fields.action_redispatch_delivery_modal_heading'))
+                ->modalDescription(__('e-billing::fields.action_redispatch_delivery_modal_description'))
+                ->visible(fn (): bool => (bool) config('e-billing.delivery.enabled', false)
+                    && $document instanceof EbillingDocument
+                    && app(DocumentDispatchGuard::class)->isDispatchable($document))
+                ->action(function () use ($record, $document): void {
+                    if (! $document instanceof EbillingDocument) {
+                        return;
+                    }
+
+                    app(QueueDocumentDeliveryAction::class)->execute($document->fresh() ?? $document);
+
+                    Notification::make()
+                        ->title(__('e-billing::fields.notification_redispatch_success_title'))
+                        ->body(__('e-billing::fields.notification_redispatch_success_body'))
+                        ->success()
+                        ->send();
+
+                    $record->load('ebillingDocument');
+                }),
         ];
     }
 
@@ -348,6 +377,7 @@ class ViewInvoice extends ViewRecord
     {
         return self::getResource()::getEloquentQuery()
             ->with(['lines', 'lines.allowanceCharges', 'allowanceCharges', 'ebillingDocument'])
+            ->with(['lines', 'lines.allowanceCharges', 'allowanceCharges', 'ebillingDocument.deliveryAttempts'])
             ->whereKey($key)
             ->firstOrFail();
     }

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+### Changed
+- Invoice **Zustellversuche** / delivery attempts relation defaults to newest first (`default_order` on `created_at` desc).
 ### Fixed
 
 - Invoice detail: show `agent` (BT-41 / Vertreter) under Seller / Supplier (`section_seller_supplier`) instead of Delivery (`section_delivery`).

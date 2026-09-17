@@ -1,6 +1,7 @@
 <?php
 
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Models\EbillingDeliveryAttempt;
 use Moox\EBilling\Resources\CreditNoteResource;
 use Moox\EBilling\Resources\InvoiceResource;
 use Moox\EBilling\Support\EbillingActivityAttributeLabels;
@@ -569,6 +570,8 @@ return [
             'customer_address' => 'must',    // BG-8
             'country' => 'could',    // BT-55
             'customer_vat_id' => 'should',  // BT-48
+            // Inbox To (mail-sourced only; not EN 16931). Empty blocks delivery via inbox_to.
+            'buyer_email' => 'must',
 
             // Buyer reference
             'customer_reference' => 'could', // BT-10
@@ -674,6 +677,32 @@ return [
     'approval' => [
         'required' => (bool) env('EBILLING_APPROVAL_REQUIRED', true),
         'auto_approve_enabled' => (bool) env('EBILLING_APPROVAL_AUTO_APPROVE', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Delivery dispatch
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, approving a document queues DispatchDocumentJob, which calls
+    | each DeliveryChannelInterface listed in channels. The package ships no
+    | transport; optional MailDeliveryChannel is an orchestrator that needs host
+    | bindings for InvoiceMailSenderInterface and DeliveryRecipientResolverInterface.
+    | Default false so the approval gate can be verified before anything is sent.
+    |
+    */
+
+    'delivery' => [
+        'enabled' => (bool) env('EBILLING_DELIVERY_ENABLED', false),
+        'mailer' => env('EBILLING_DELIVERY_MAILER'),
+        'recipients' => [
+            // inbox_to | master | none
+            'mail_source' => env('EBILLING_DELIVERY_RECIPIENTS_MAIL_SOURCE', 'inbox_to'),
+            'manual_upload' => env('EBILLING_DELIVERY_RECIPIENTS_MANUAL_UPLOAD', 'none'),
+        ],
+        'channels' => [
+            // e.g. Moox\EBilling\Delivery\MailDeliveryChannel::class,
+        ],
     ],
 
     /*

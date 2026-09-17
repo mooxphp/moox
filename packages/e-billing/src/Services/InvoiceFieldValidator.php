@@ -94,6 +94,7 @@ class InvoiceFieldValidator
                 $matchedCustomer,
                 $derivedCompanyId,
                 $isManualAttribution,
+                $document,
             );
         }
 
@@ -275,6 +276,7 @@ class InvoiceFieldValidator
         ?Customer $matchedCustomer = null,
         ?string $derivedCompanyId = null,
         bool $isManualAttribution = false,
+        ?EbillingDocument $document = null,
     ): array {
         return match ($field) {
             'invoice_number' => $this->validateInvoiceNumberField($invoice, $priority),
@@ -309,6 +311,7 @@ class InvoiceFieldValidator
                 $matchedCompany,
                 $matchedCustomer,
             ),
+            'buyer_email' => $this->validateBuyerEmailField($document, $priority),
             'delivery_address' => $this->validateDeliveryAddressField(
                 $priority,
                 $invoice->delivery,
@@ -521,6 +524,26 @@ class InvoiceFieldValidator
     /**
      * @return array{status: string, source?: string, matched_id?: string}
      */
+
+    /**
+     * Inbox To address for mail-sourced documents (delivery recipient).
+     * Manual uploads / non-mail sources are not_applicable.
+     *
+     * @return array{status: string, source?: string, matched_id?: string}
+     */
+    private function validateBuyerEmailField(?EbillingDocument $document, string $priority): array
+    {
+        if ($document === null || $document->inboxAttachment() === null) {
+            return ['status' => 'not_applicable'];
+        }
+
+        if ($document->inboxToEmail() === null) {
+            return $this->entryForEmptyField('buyer_email', $priority, false);
+        }
+
+        return ['status' => 'parsed'];
+    }
+
     private function validateCustomerAddressField(
         Invoice $invoice,
         string $priority,

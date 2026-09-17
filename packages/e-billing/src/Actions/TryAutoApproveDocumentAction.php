@@ -18,6 +18,7 @@ final class TryAutoApproveDocumentAction
         private readonly AutoApproveEvaluator $evaluator,
         private readonly RecordApprovalTransitionAction $recordTransition,
         private readonly AnnounceDocumentNeedsReviewAction $announceNeedsReview,
+        private readonly QueueDocumentDeliveryAction $queueDelivery,
     ) {
     }
 
@@ -49,6 +50,8 @@ final class TryAutoApproveDocumentAction
             reason: null,
             forwardedReleaseReasons: $forwardedReleaseReasons,
         );
+
+        $this->queueDelivery->execute($document->fresh() ?? $document);
 
         return true;
     }
