@@ -26,4 +26,10 @@ return [
     'add_validatable' => 'Add assignment',
     'filename_empty' => '—',
     'could_not_parse_report_xml' => 'Could not parse report XML',
+    'warnings' => 'Warnings',
+    'infos' => 'Infos',
+    'severity_warning' => 'Warning',
+    'severity_info' => 'Info',
+    'validated_from' => 'From',
+    'validated_until' => 'Until',
 ];

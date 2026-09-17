@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\VeraPdf\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
@@ -16,6 +17,8 @@ use Moox\Core\Entities\Items\Item\BaseItemModel;
  * @property bool $passed
  * @property array<int|string, mixed>|null $errors
  * @property Carbon|null $validated_at
+ * @property-read string $filename
+ * @property-read string $result
  */
 class VeraPdfValidation extends BaseItemModel
 {
@@ -47,7 +50,8 @@ class VeraPdfValidation extends BaseItemModel
 
     public static function getResourceName(): string
     {
-        return 'verapdf-validation';
+        // Must match config/verapdf.php (HasResourceRelations → RelationService key).
+        return 'verapdf';
     }
 
     /**
@@ -55,7 +59,8 @@ class VeraPdfValidation extends BaseItemModel
      */
     public function veraPdfValidatables(): HasMany
     {
-        return $this->hasMany(VeraPdfValidatable::class);
+        // Column is verapdf_validation_id (package naming); Eloquent would guess vera_pdf_validation_id.
+        return $this->hasMany(VeraPdfValidatable::class, 'verapdf_validation_id');
     }
 
     /**
@@ -81,6 +86,20 @@ class VeraPdfValidation extends BaseItemModel
         return $this->input_path !== null
             ? basename($this->input_path)
             : __('verapdf::fields.filename_empty');
+    }
+
+    protected function filename(): Attribute
+    {
+        return Attribute::get(fn (): string => $this->filenameLabel());
+    }
+
+    protected function result(): Attribute
+    {
+        return Attribute::get(
+            fn (): string => $this->passed
+                ? __('verapdf::fields.result_passed')
+                : __('verapdf::fields.result_failed'),
+        );
     }
 
     public function reportHtmlPath(): ?string

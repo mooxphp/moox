@@ -4,6 +4,11 @@
 
 veraPDF CLI wrapper for PDF/A-3 validation. The package headless-installs the official greenfield veraPDF distribution, runs the launcher against a PDF, persists audit rows on `verapdf_validations`, and optionally links validations to domain owners via `verapdf_validatables`.
 
+
+## Filament
+
+Register `VeraPdfPlugin` on the admin panel for the read-only validations list/view (reports + downloads). Invoice detail deep-links via `RelatedModelUrlResolver` when the plugin is present.
+
 ## Features
 
 - veraPDF greenfield install (`verapdf:install`, `--force`) via IzPack headless auto-install (CLI pack only; no GUI)
