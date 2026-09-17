@@ -27,6 +27,48 @@ function sampleMjml(): string
 MJML;
 }
 
+function commentedMjml(): string
+{
+    return <<<'MJML'
+<mjml>
+  <mj-body>
+    <!-- marker-comment -->
+    <mj-section>
+      <mj-column>
+        <mj-text>Hello World</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
+MJML;
+}
+
+function includeMjml(): string
+{
+    return <<<'MJML'
+<mjml>
+  <mj-body>
+    <mj-include path="partial.mjml" />
+  </mj-body>
+</mjml>
+MJML;
+}
+
+function mjmlIncludeDirectory(): string
+{
+    $directory = sys_get_temp_dir().DIRECTORY_SEPARATOR.'mjml-include-'.uniqid('', true);
+    mkdir($directory);
+    file_put_contents($directory.DIRECTORY_SEPARATOR.'partial.mjml', <<<'MJML'
+<mj-section>
+  <mj-column>
+    <mj-text>INCLUDED-PARTIAL</mj-text>
+  </mj-column>
+</mj-section>
+MJML);
+
+    return $directory;
+}
+
 function invalidMjml(): string
 {
     return '<mjml><mj-unknown /></mjml>';
@@ -186,13 +228,26 @@ it('beautifies html', function (bool $usePhpRenderer): void {
     'node' => [false],
 ]);
 
-it('hides comments', function (bool $usePhpRenderer): void {
+it('keeps html comments by default and via keepComments', function (bool $usePhpRenderer): void {
     skipUnlessMjmlEngineAvailable($usePhpRenderer);
     config()->set('mjml.use_php_renderer', $usePhpRenderer);
 
-    $html = Mjml::new()->hideComments()->toHtml(sampleMjml());
+    expect(Mjml::new()->toHtml(commentedMjml()))->toContain('marker-comment');
+    expect(Mjml::new()->keepComments()->toHtml(commentedMjml()))->toContain('marker-comment');
+})->with([
+    'php' => [true],
+    'node' => [false],
+]);
 
-    expect($html)->toContain('Hello World');
+it('strips html comments with hideComments', function (bool $usePhpRenderer): void {
+    skipUnlessMjmlEngineAvailable($usePhpRenderer);
+    config()->set('mjml.use_php_renderer', $usePhpRenderer);
+
+    $html = Mjml::new()->hideComments()->toHtml(commentedMjml());
+
+    expect($html)
+        ->toContain('Hello World')
+        ->not->toContain('marker-comment');
 })->with([
     'php' => [true],
     'node' => [false],
@@ -211,14 +266,83 @@ it('forwards toHtml options', function (bool $usePhpRenderer): void {
     'node' => [false],
 ]);
 
+it('skips validation errors when validationLevel is skip', function (bool $usePhpRenderer): void {
+    skipUnlessMjmlEngineAvailable($usePhpRenderer);
+    config()->set('mjml.use_php_renderer', $usePhpRenderer);
+
+    $result = Mjml::new()->validationLevel(ValidationLevel::Skip)->convert(softInvalidMjml());
+
+    expect($result->html())->toContain('Hello World')
+        ->and($result->hasErrors())->toBeFalse();
+})->with([
+    'php' => [true],
+    'node' => [false],
+]);
+
 it('collects validation errors in soft mode', function (bool $usePhpRenderer): void {
     skipUnlessMjmlEngineAvailable($usePhpRenderer);
     config()->set('mjml.use_php_renderer', $usePhpRenderer);
 
     $result = Mjml::new()->validationLevel(ValidationLevel::Soft)->convert(softInvalidMjml());
 
-    expect($result->hasErrors())->toBeTrue()
+    expect($result->html())->toContain('Hello World')
+        ->and($result->hasErrors())->toBeTrue()
         ->and($result->errors())->not->toBeEmpty();
+})->with([
+    'php' => [true],
+    'node' => [false],
+]);
+
+it('raises in strict validation mode', function (bool $usePhpRenderer): void {
+    skipUnlessMjmlEngineAvailable($usePhpRenderer);
+    config()->set('mjml.use_php_renderer', $usePhpRenderer);
+
+    expect(fn (): string => Mjml::new()->validationLevel(ValidationLevel::Strict)->toHtml(softInvalidMjml()))
+        ->toThrow(CouldNotRenderMjml::class);
+})->with([
+    'php' => [true],
+    'node' => [false],
+]);
+
+it('resolves mj-include when filePath is set and includes are enabled', function (bool $usePhpRenderer): void {
+    skipUnlessMjmlEngineAvailable($usePhpRenderer);
+    config()->set('mjml.use_php_renderer', $usePhpRenderer);
+
+    $directory = mjmlIncludeDirectory();
+
+    try {
+        $html = Mjml::new()
+            ->filePath($directory)
+            ->ignoreIncludes(false)
+            ->toHtml(includeMjml());
+    } finally {
+        @unlink($directory.DIRECTORY_SEPARATOR.'partial.mjml');
+        @rmdir($directory);
+    }
+
+    expect($html)->toContain('INCLUDED-PARTIAL');
+})->with([
+    'php' => [true],
+    'node' => [false],
+]);
+
+it('skips mj-include when ignoreIncludes is true', function (bool $usePhpRenderer): void {
+    skipUnlessMjmlEngineAvailable($usePhpRenderer);
+    config()->set('mjml.use_php_renderer', $usePhpRenderer);
+
+    $directory = mjmlIncludeDirectory();
+
+    try {
+        $html = Mjml::new()
+            ->filePath($directory)
+            ->ignoreIncludes(true)
+            ->toHtml(includeMjml());
+    } finally {
+        @unlink($directory.DIRECTORY_SEPARATOR.'partial.mjml');
+        @rmdir($directory);
+    }
+
+    expect($html)->not->toContain('INCLUDED-PARTIAL');
 })->with([
     'php' => [true],
     'node' => [false],

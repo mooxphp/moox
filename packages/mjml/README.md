@@ -53,30 +53,6 @@ Options that were not set keep each engine's own defaults, so `toHtml($mjml)` wi
 
 There is no silent fallback between the two modes.
 
-## Check both engines
-
-PHP is the default. Node needs `node` on `PATH` (or `MJML_NODE_PATH`) and `cd vendor/spatie/mjml-php && npm install`.
-
-```bash
-php artisan tinker
-```
-
-```php
-$mjml = '<mjml><mj-body><mj-section><mj-column><mj-text>Hello</mj-text></mj-column></mj-section></mj-body></mjml>';
-
-config(['mjml.use_php_renderer' => true]);
-Moox\Mjml\Mjml::new()->toHtml($mjml);            // shyim, no Node
-Moox\Mjml\Mjml::new()->convert($mjml)->array();  // []
-
-config(['mjml.use_php_renderer' => false]);
-Moox\Mjml\Mjml::new()->toHtml($mjml);            // Spatie, starts node mjml.mjs
-Moox\Mjml\Mjml::new()->convert($mjml)->array();  // JSON AST, not empty
-```
-
-`sidecar()` with the PHP renderer throws `CouldNotRenderMjml`. A Node convert with no `node` binary or no Spatie `mjml` install also throws; it does not fall back to PHP.
-
-To run Node for the whole app, set `MJML_USE_PHP_RENDERER=false` and clear config (`php artisan config:clear`). Pest covers the same API once per engine (`tests/Unit/MjmlRendererTest.php`); Node cases skip only when `node` or the Spatie `mjml` install is missing.
-
 ## When Node starts
 
 Fluent setters never start Node. Node starts only when `mjml.use_php_renderer` is `false` and one of these convert methods runs: `toHtml()`, `convert()`, `canConvert()`, `canConvertWithoutErrors()`. That path executes local `node mjml.mjs`.
@@ -107,3 +83,5 @@ Values: **yes** (same behaviour), **mapped** (forwarded onto shyim options), **e
 | `workingDirectory` | exception | yes (directory that contains `mjml.mjs`) |
 | `MjmlResult::array()` | limited (always `[]`) | yes (Spatie JSON AST) |
 | `MjmlResult::raw()` / `errors()` | mapped (HTML plus shyim errors) | yes (full Spatie result) |
+
+The full method and option list for shyim vs Spatie vs this proxy is in [docs/engine-api.md](docs/engine-api.md).

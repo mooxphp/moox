@@ -73,3 +73,24 @@ if (! function_exists('skipUnlessMjmlEngineAvailable')) {
         skipUnlessNodeMjmlAvailable();
     }
 }
+
+if (! function_exists('mjmlFixtureDirectory')) {
+    function mjmlFixtureDirectory(): string
+    {
+        return __DIR__.DIRECTORY_SEPARATOR.'Fixtures';
+    }
+}
+
+if (! function_exists('mjmlFixture')) {
+    function mjmlFixture(string $name): string
+    {
+        $path = mjmlFixtureDirectory().DIRECTORY_SEPARATOR.$name;
+        $contents = file_get_contents($path);
+
+        if (! is_string($contents) || $contents === '') {
+            throw new RuntimeException("Missing MJML fixture [{$name}].");
+        }
+
+        return $contents;
+    }
+}
