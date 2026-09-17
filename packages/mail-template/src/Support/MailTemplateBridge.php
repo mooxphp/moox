@@ -6,8 +6,8 @@ namespace Moox\MailTemplate\Support;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Moox\Localization\Models\Localization;
 use Moox\MailTemplate\Models\MailLayout;
@@ -143,8 +143,7 @@ final class MailTemplateBridge
                 ->label(__('mail-template::translations.slug'))
                 ->required()
                 ->maxLength(255)
-                ->unique(table: 'mail_templates', column: 'slug', ignoreRecord: false)
-                ->rule(Rule::unique('mail_templates', 'slug')),
+                ->unique(table: 'mail_templates', column: 'slug', ignoreRecord: false),
             TextInput::make('title')
                 ->label(__('mail-template::translations.subject'))
                 ->required()
@@ -191,6 +190,11 @@ final class MailTemplateBridge
         }
 
         $template->translateOrNew(self::defaultLocale())->fill($fill)->save();
+
+        Notification::make()
+            ->success()
+            ->title(__('mail-template::translations.bridge_created'))
+            ->send();
 
         return (string) $template->getAttribute('slug');
     }

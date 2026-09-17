@@ -45,4 +45,5 @@ return [
     'layout_in_use_cannot_delete' => 'This layout is used by templates and cannot be deleted.',
     'layout_trashed_suffix' => '(deleted)',
     'bridge_create_invalid' => 'A valid slug, subject, and layout are required.',
+    'bridge_created' => 'Template created',
 ];
