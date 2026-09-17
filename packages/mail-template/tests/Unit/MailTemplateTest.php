@@ -499,7 +499,9 @@ it('casts translation status and resolves draft title and status columns for mis
 
     $livewire = new class($missingLocale)
     {
-        public function __construct(public string $lang) {}
+        public function __construct(public string $lang)
+        {
+        }
     };
 
     $templateStatus = MailTemplateResource::getTranslationPresenceColumn()->getGetStateUsingCallback();
@@ -539,12 +541,16 @@ it('hides draft actions when the current locale has no translation', function ()
 
     $missing = new class($missingLocale)
     {
-        public function __construct(public string $lang) {}
+        public function __construct(public string $lang)
+        {
+        }
     };
 
     $present = new class($defaultLocale)
     {
-        public function __construct(public string $lang) {}
+        public function __construct(public string $lang)
+        {
+        }
     };
 
     expect(MailTemplateResource::hasCurrentTranslation($template, $missing))->toBeFalse()
