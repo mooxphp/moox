@@ -20,9 +20,9 @@ final class ZugferdGeneratorStrategy implements HybridArtifactGeneratorStrategyI
         return $this->converter->convert($invoice, $profile);
     }
 
-    public function mergeXmlIntoPdf(string $xml, string $sourcePdfPath): string
+    public function mergeXmlIntoPdf(string $xml, string $sourcePdfPath, ?string $documentTypeCode = null): string
     {
-        return $this->converter->mergePdfWithXml($sourcePdfPath, $xml);
+        return $this->converter->mergePdfWithXml($sourcePdfPath, $xml, $documentTypeCode);
     }
 
     public function extractXmlForValidation(string $pdfPath): string
