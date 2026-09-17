@@ -5,6 +5,8 @@
 ### Changed
 - Invoice **Zustellversuche** / delivery attempts relation defaults to newest first (`default_order` on `created_at` desc).
 
+- Invoice detail tabs for delivery attempts, KoSIT, and veraPDF use config-driven `ConfigRelationManager` via `e-billing.invoice_relations` (merged into `invoice.relations` at boot). Custom RelationManager classes removed; optional mail-outbox tab remains declared. Soft-deps skip missing kosit/verapdf model classes on merge.
+
 - `HybridArtifactGeneratorStrategyInterface::mergeXmlIntoPdf()` accepts optional `$documentTypeCode` and passes it to `ZugferdConverter::mergePdfWithXml()` so PDF Title templates can be selected from `config('zugferd.pdf_title_templates')`. `GenerateArtifactJob` and `EBilling::processFile()` supply the resolved document type code.
 
 ### Fixed
