@@ -21,6 +21,7 @@ final class InvoiceFieldLabels
             'customer_address' => __('e-billing::fields.customer_address'),
             'country' => __('e-billing::fields.country'),
             'customer_vat_id' => __('e-billing::fields.customer_vat_id'),
+            'buyer_email' => __('e-billing::fields.buyer_email'),
             'customer_reference' => __('e-billing::fields.customer_reference'),
             'order_number' => __('e-billing::fields.order_number'),
             'order_date' => __('e-billing::fields.order_date'),
@@ -217,6 +218,7 @@ final class InvoiceFieldLabels
                 'freight_flat_rate' => __('e-billing::fields.hint_missing_freight_flat_rate'),
                 'quantity' => __('e-billing::fields.hint_missing_quantity'),
                 'description' => __('e-billing::fields.hint_missing_description'),
+                'buyer_email' => __('e-billing::fields.hint_missing_buyer_email'),
                 default => __('e-billing::fields.hint_missing_default'),
             };
         }
@@ -242,6 +244,11 @@ final class InvoiceFieldLabels
             };
         }
 
+        // Display-only inbox To — no master-data corroboration yet (deferred).
+        if ($field === 'buyer_email') {
+            return __('e-billing::fields.hint_info_buyer_email');
+        }
+
         return null;
     }
 
@@ -255,3 +262,4 @@ final class InvoiceFieldLabels
         return is_string($matchedId) && $matchedId !== '';
     }
 }
+

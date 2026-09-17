@@ -205,7 +205,7 @@ class GenerateArtifactJob implements ShouldQueue
 
                 $preparedPdfPath = $sourcePdfPreparer->prepare($document);
                 $normalizedPdfPath = $pdfaNormalizer->normalize($preparedPdfPath);
-                $pdfBinary = $strategy->mergeXmlIntoPdf($xml, $normalizedPdfPath);
+                $pdfBinary = $strategy->mergeXmlIntoPdf($xml, $normalizedPdfPath, $documentType);
                 $basename = pathinfo($relativeXmlPath, PATHINFO_FILENAME);
                 $dir = pathinfo($relativeXmlPath, PATHINFO_DIRNAME);
                 $existingPdfPath = $document->pdf_storage_path;

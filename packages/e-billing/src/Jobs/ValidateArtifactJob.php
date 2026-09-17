@@ -247,11 +247,10 @@ class ValidateArtifactJob implements ShouldQueue
 
             $absolutePdfPath = Storage::disk($diskName)->path($pdfRelative);
             $xmlString = $strategy->extractXmlForValidation($absolutePdfPath);
-            $tempXmlPath = tempnam(sys_get_temp_dir(), 'ebilling-kosit-');
-            if ($tempXmlPath === false) {
-                throw new \RuntimeException('Failed to allocate temp file for KOSIT validation.');
+            $tempXmlPath = EBillingArtifactNaming::uniqueTempXmlPath($document->sourceOriginalFilename());
+            if (file_put_contents($tempXmlPath, $xmlString) === false) {
+                throw new \RuntimeException('Failed to write temp XML for KOSIT validation.');
             }
-            file_put_contents($tempXmlPath, $xmlString);
 
             return new ValidationInputs(
                 absoluteXmlPath: $tempXmlPath,

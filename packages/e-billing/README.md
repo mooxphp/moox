@@ -98,6 +98,7 @@ Published as `config/e-billing.php`.
 | `escalation` | Overdue-approval scan: `day_counting`, `working_weekdays`, `exclude_dates`, ordered `levels` (`key` / `after` / `unit`); empty `levels` disables the feature |
 | `identical_duplicate` | Notification recipients when an identical source PDF is discarded (`notify_emails`, `panel_id`) |
 | `duplicate_number.scope` | Document-number collision scope: `global` (default) or `issuer` (also seller VAT id / BT-31) |
+| `delivery` | Dispatch: `enabled`, `mailer` (optional mailer name), `recipients` (`mail_source` / `manual_upload` strategies), `channels` (FQCN list) |
 | `morph_relations` | Morph pivot config for KoSIT and veraPDF validations (`kosit_validatables`, `verapdf_validatables`) |
 
 ### Environment variables
@@ -119,6 +120,10 @@ EBILLING_PREFERRED_PIECE_UNIT_CODE=H87
 | `EBILLING_REVIEW_NOTIFICATION_BATCH_WINDOW` | `notification.batch_window_minutes` | `60` | No |
 | `EBILLING_ESCALATION_DAY_COUNTING` | `escalation.day_counting` | `working` | No |
 | `EBILLING_DUPLICATE_NUMBER_SCOPE` | `duplicate_number.scope` | `global` | No |
+| `EBILLING_DELIVERY_ENABLED` | `delivery.enabled` | `false` | No |
+| `EBILLING_DELIVERY_MAILER` | `delivery.mailer` | `null` | No |
+| `EBILLING_DELIVERY_RECIPIENTS_MAIL_SOURCE` | `delivery.recipients.mail_source` | `inbox_to` | No |
+| `EBILLING_DELIVERY_RECIPIENTS_MANUAL_UPLOAD` | `delivery.recipients.manual_upload` | `none` | No |
 
 ### Supplier block
 
@@ -248,6 +253,44 @@ Transitions write latest-only `approval_reason`, `approval_actor_id` (string; `'
 | `approval.auto_approve_enabled` | `true` | When `false`, clean documents stay pending until a reviewer approves |
 
 `DispatchDocumentAction` refuses unapproved documents at the dispatch seam (not only in the Filament UI). A blocked must-field cannot reach `approved` by any route.
+
+### Delivery dispatch
+
+Final pipeline stage after approval: get an approved document to its recipients and record each attempt.
+
+**Port:** `DeliveryChannelInterface` — `key()` plus `deliver(document): list<DeliveryOutcome>` (recipient, success, failure reason, correlation id). Hosts list implementing FQCNs in `e-billing.delivery.channels`. This package ships **no transport** (no SMTP/Peppol/portal). Tests use a recording fake.
+
+**Optional orchestrator:** `MailDeliveryChannel` (key `mail`) resolves recipients via `DeliveryRecipientResolverInterface`, sends via host-bound `InvoiceMailSenderInterface`, and maps each result to a `DeliveryOutcome`. Register it only through `delivery.channels`. It does **not** depend on mail-outbox; the host binds any sender. When the resolver returns an empty list, the channel returns one failed `DeliveryOutcome` with `failureReason` `no_recipient` (`MailDeliveryChannel::FAILURE_NO_RECIPIENT`) and does **not** call the sender (no silent no-op).
+
+**Default recipient resolver:** when the host does not bind `DeliveryRecipientResolverInterface`, the package binds `ConfigurableDeliveryRecipientResolver`. Strategy is chosen per source:
+
+| Source | Config key | Default |
+| --- | --- | --- |
+| Mail-sourced (`InboxAttachment`) | `delivery.recipients.mail_source` | `inbox_to` |
+| Manual upload (`UploadedPdfSource`) | `delivery.recipients.manual_upload` | `none` |
+| Other / unknown source | — | treated as `none` |
+
+| Strategy value | Recipients |
+| --- | --- |
+| `inbox_to` | Validated `InboxMessage.to_email` (optional `to_name`); empty or invalid → no recipients |
+| `master` | Validated attributed `company.email` (optional company name); empty or invalid → no recipients |
+| `none` | Empty list |
+
+Hosts may still bind their own `DeliveryRecipientResolverInterface` to replace this policy.
+
+**Invoice view:** the buyer section shows display-only `buyer_email` = inbox To email (validated `InboxMessage.to_email`). It is not corroborated against master data; the UI shows a soft informational hint (`hint_info_buyer_email`). Labels: en `Recipient email` / de `Empfänger-E-Mail`.
+
+**Records:** table `ebilling_delivery_attempts` — one row per channel × recipient × attempt (append-only; re-dispatch adds rows). No document-level “delivered” flag. Invoice detail shows the attempt history; when `moox/audit` is present, each attempt also writes an Activity entry (`delivery_attempted`); configured `audit.log_events` attributes become Spatie `attribute_changes` for the Änderungen UI (same path as model audits).
+
+**Job:** approving (manual or auto) calls `QueueDocumentDeliveryAction`, which queues `DispatchDocumentJob` when `delivery.enabled` is true. The job uses `JobProgress` and implements `failed()`. Filament **Re-dispatch** re-queues the same job. No work in a listener.
+
+| Config key | Default | Effect |
+| --- | --- | --- |
+| `delivery.enabled` | `false` | When `false`, approve does not queue dispatch and `DispatchDocumentAction` writes no records (gate still asserted) |
+| `delivery.mailer` | `null` | Optional Laravel mailer name (`EBILLING_DELIVERY_MAILER`) for host senders |
+| `delivery.recipients.mail_source` | `inbox_to` | Recipient strategy for mail-sourced documents (`inbox_to` \| `master` \| `none`) |
+| `delivery.recipients.manual_upload` | `none` | Recipient strategy for manual uploads (`inbox_to` \| `master` \| `none`) |
+| `delivery.channels` | `[]` | FQCNs implementing `DeliveryChannelInterface` |
 
 ### Review notification announce
 

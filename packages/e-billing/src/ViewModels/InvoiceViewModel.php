@@ -46,7 +46,6 @@ final class InvoiceViewModel
                 'subtitle' => 'BG-4',
                 'fields' => $this->buildFields([
                     'supplier_name', 'supplier_vat_id', 'supplier_tax_number',
-                    'supplier_address', 'supplier_bank_accounts',
                     'supplier_address', 'supplier_bank_accounts', 'agent',
                 ]),
             ],
@@ -55,14 +54,13 @@ final class InvoiceViewModel
                 'subtitle' => 'BG-7',
                 'fields' => $this->buildFields([
                     'customer_number', 'customer_name',
-                    'customer_vat_id', 'customer_address',
+                    'customer_vat_id', 'customer_address', 'buyer_email',
                 ]),
             ],
             'delivery' => [
                 'title' => __('e-billing::fields.section_delivery'),
                 'subtitle' => 'BG-13',
                 'fields' => $this->buildFields([
-                    'delivery_address', 'delivery_date', 'agent',
                     'delivery_address', 'delivery_date',
                 ]),
             ],
@@ -317,6 +315,7 @@ final class InvoiceViewModel
         }
 
         return match ($field) {
+            'buyer_email' => $this->document?->inboxToEmail(),
             'customer_name' => $this->invoice->buyer?->name,
             'customer_vat_id' => $this->invoice->buyer?->vat_id,
             'customer_address' => PartyAddressFormatter::format($this->invoice->buyer),
@@ -406,6 +405,11 @@ final class InvoiceViewModel
 
         if ($hasValue) {
             return ['status' => 'parsed'];
+        }
+
+        // Display-only inbox To: empty means missing, not "not applicable".
+        if ($field === 'buyer_email') {
+            return ['status' => 'missing'];
         }
 
         $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
