@@ -10,6 +10,7 @@ use Moox\VeraPdf\Commands\DoctorCommand;
 use Moox\VeraPdf\Commands\InstallVeraPdfCommand;
 use Moox\VeraPdf\Commands\ValidateCommand;
 use Moox\VeraPdf\Models\VeraPdfValidation;
+use Moox\VeraPdf\Resources\VeraPdfValidationResource;
 use Moox\VeraPdf\Services\VeraPdfService;
 use Spatie\LaravelPackageTools\Package;
 
@@ -22,6 +23,7 @@ class VeraPdfServiceProvider extends MooxServiceProvider
         MorphPivotRelationRegistry::registerRelatedModel(VeraPdfValidation::class, [
             'display_columns' => ['input_path', 'passed', 'validated_at'],
             'translation_prefix' => 'verapdf::fields',
+            'related_resource' => VeraPdfValidationResource::class,
             'record_select_label' => 'filenameLabel',
             'record_select_search_columns' => ['input_path'],
         ]);
@@ -33,6 +35,8 @@ class VeraPdfServiceProvider extends MooxServiceProvider
             ->name('verapdf')
             ->hasConfigFile()
             ->hasTranslations()
+            ->hasViews()
+            ->hasRoutes('web')
             ->hasCommands([InstallVeraPdfCommand::class, ValidateCommand::class, DoctorCommand::class])
             ->hasMigrations([
                 'create_verapdf_validations_table',

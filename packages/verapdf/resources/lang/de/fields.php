@@ -26,4 +26,10 @@ return [
     'add_validatable' => 'Zuordnung hinzufügen',
     'filename_empty' => '—',
     'could_not_parse_report_xml' => 'Prüfbericht-XML konnte nicht gelesen werden',
+    'warnings' => 'Warnungen',
+    'infos' => 'Infos',
+    'severity_warning' => 'Warnung',
+    'severity_info' => 'Info',
+    'validated_from' => 'Von',
+    'validated_until' => 'Bis',
 ];

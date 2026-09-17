@@ -13,6 +13,15 @@ use Moox\VeraPdf\Models\VeraPdfValidatable;
 
 return [
 
+    'navigation_group' => 'trans//verapdf::verapdf.navigation_group',
+
+    'resources' => [
+        'verapdf-validation' => [
+            'single' => 'trans//verapdf::verapdf.verapdf-validation',
+            'plural' => 'trans//verapdf::verapdf.verapdf-validations',
+        ],
+    ],
+
     /*
     | Base Path
     |
