@@ -4,6 +4,18 @@ All notable changes to `moox/mail-outbox` will be documented in this file.
 
 ## Unreleased
 
+### Removed
+
+- `RelatedRecordUrlResolver` — use `Moox\Core\Support\RelatedModelUrlResolver` instead.
+
+
+- Related-record tab columns use invoice attributes (`invoice_number`, `invoice_date`, `customer_number`, `gross_total`) instead of empty generic placeholders.
+- Sendeprotokoll: related record is a Moox Relations **tab** (`presentation: tab`) like Customer/Company; View opens the related Filament resource (e.g. invoice with Activity / deliveries).
+- Sendeprotokoll detail: related record section from Moox `getMorphToInfolistSections()`; uses `Moox\Core\Support\RelatedModelUrlResolver` for Filament links.
+- `MailSendLog::related` is config-driven Moox Relations `morph_to` (`mail-outbox.relations.related`) via `HasRelations` (same polymorphic columns; Filament detail links use `RelatedModelUrlResolver`).
+
+- Test mode: when `redirect_to` equals an intended recipient, treat that address as delivered (avoids `suppressed` + Direct/Direkt when sandbox is your own inbox).
+
 ### Added
 
 - `mail-outbox:test-send` Artisan command (`Commands\SendTestMailCommand`) — sends a probe mail through `SendMailJob` and prints the resulting `mail_send_logs` row; `--to=` (required), `--mailer=` (defaults to `mail.default`), `--test` (route through safe test mode), `--redirect=` (override sandbox address); transport-agnostic
