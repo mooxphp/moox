@@ -9,6 +9,7 @@ use Moox\MailTemplate\Models\MailLayout;
 use Moox\MailTemplate\Models\MailTemplate;
 use Moox\MailTemplate\Resources\MailTemplateResource;
 use Moox\MailTemplate\Support\MailMedia;
+use Moox\MailTemplate\Support\MailTemplateBridge;
 use Moox\MailTemplate\Support\MailTemplateRenderer;
 use Moox\MailTemplate\Support\MjmlDocumentComposer;
 use Moox\Media\Forms\Components\MediaPicker;
@@ -439,6 +440,7 @@ it('labels layout options from the content locale before the default locale', fu
     $defaultLocale = (string) Localization::defaultLocalization()?->locale_variant;
     $englishOptions = MailTemplateResource::layoutOptions(null, 'en');
     $germanOptions = MailTemplateResource::layoutOptions(null, 'de');
+    $bridgeEnglish = MailTemplateBridge::layoutOptions('en');
     $englishKeys = array_keys($englishOptions);
 
     expect($englishOptions[(int) $withEnglish->getKey()])->toBe('Zebra EN')
@@ -447,5 +449,33 @@ it('labels layout options from the content locale before the default locale', fu
         ->and(array_search((int) $withEnglish->getKey(), $englishKeys, true))
         ->toBeLessThan(array_search((int) $fallbackOnly->getKey(), $englishKeys, true))
         ->and($germanOptions[(int) $fallbackOnly->getKey()])->toBe('Alpha DE')
-        ->and($germanOptions[(int) $withEnglish->getKey()])->toBe('Demo layout');
+        ->and($germanOptions[(int) $withEnglish->getKey()])->toBe('Demo layout')
+        ->and($bridgeEnglish[(int) $withEnglish->getKey()])->toBe('Zebra EN')
+        ->and($bridgeEnglish[(int) $fallbackOnly->getKey()])->toBe('Alpha DE ('.$defaultLocale.')');
+});
+
+it('creates templates on the default localization not the app locale', function (): void {
+    ensureDefaultLocalization();
+    Localization::clearDisplayLanguageCache();
+
+    app()->setLocale('en');
+
+    $layout = MailLayout::factory()->translation(['title' => 'Layout'], 'de')->create();
+
+    $slug = MailTemplateBridge::createTemplate([
+        'slug' => 'default-locale-template',
+        'title' => 'Default locale title',
+        'mail_layout_id' => $layout->getKey(),
+    ], '<mj-text>Body</mj-text>');
+
+    $template = MailTemplate::query()->where('slug', $slug)->first();
+    $defaultLocale = MailTemplateBridge::defaultLocale();
+
+    expect($slug)->toBe('default-locale-template')
+        ->and($defaultLocale)->not->toBe('en')
+        ->and($template)->not->toBeNull()
+        ->and($template->hasTranslation($defaultLocale))->toBeTrue()
+        ->and($template->translate($defaultLocale)?->title)->toBe('Default locale title')
+        ->and($template->translate($defaultLocale)?->mail_content)->toBe('<mj-text>Body</mj-text>')
+        ->and($template->hasTranslation('en'))->toBeFalse();
 });
