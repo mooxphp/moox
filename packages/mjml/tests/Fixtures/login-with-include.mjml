@@ -1,0 +1,15 @@
+<mjml>
+  <mj-head>
+    <mj-title>Sign in with include</mj-title>
+  </mj-head>
+  <mj-body background-color="#ECF2F6">
+    <!-- marker-comment -->
+    <mj-section background-color="#FFFFFF" padding="24px">
+      <mj-column>
+        <mj-text font-size="20px">Hello {displayName}</mj-text>
+        <mj-button href="https://example.test/login?expires=1&amp;signature=abc123">Sign in</mj-button>
+      </mj-column>
+    </mj-section>
+    <mj-include path="partial-footer.mjml" />
+  </mj-body>
+</mjml>

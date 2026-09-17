@@ -1,0 +1,10 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text invalid-attr="x">Invoice {invoiceNumber} with an illegal attribute</mj-text>
+        <mj-button href="https://example.test/invoices/1">Open invoice</mj-button>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

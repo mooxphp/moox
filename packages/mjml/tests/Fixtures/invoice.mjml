@@ -1,0 +1,44 @@
+<mjml>
+  <mj-head>
+    <mj-title>Invoice {invoiceNumber}</mj-title>
+    <mj-preview>Invoice {invoiceNumber} is attached</mj-preview>
+    <mj-font name="Inter" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap" />
+  </mj-head>
+  <mj-body background-color="#F3F4F6" width="600px">
+    <mj-wrapper background-color="#FFFFFF" padding="24px">
+      <mj-section>
+        <mj-column>
+          <mj-image src="https://example.test/logo.png" alt="Brand" width="140px" />
+          <mj-text font-size="20px" font-weight="600">Invoice {invoiceNumber}</mj-text>
+          <mj-text>Please find attached invoice {invoiceNumber} as a validated XML file.</mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section>
+        <mj-column>
+          <mj-table>
+            <tr>
+              <th align="left">Item</th>
+              <th align="right">Amount</th>
+            </tr>
+            <tr>
+              <td>Widget A</td>
+              <td align="right">12.00</td>
+            </tr>
+            <tr>
+              <td>Widget B</td>
+              <td align="right">8.50</td>
+            </tr>
+          </mj-table>
+          <mj-divider border-color="#E5E7EB" />
+          <mj-text>Total 20.50</mj-text>
+          <mj-button href="https://example.test/invoices/{invoiceNumber}">Open invoice</mj-button>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="12px" color="#6B7280">Example Street 1 · invoice@{domain}</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

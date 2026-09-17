@@ -1,0 +1,37 @@
+<mjml>
+  <mj-head>
+    <mj-title>Sign in</mj-title>
+    <mj-preview>Your login link expires in {expiresMinutes} minutes</mj-preview>
+    <mj-font name="Inter" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap" />
+    <mj-attributes>
+      <mj-all font-family="Inter, Helvetica, Arial, sans-serif" />
+      <mj-text color="#111827" font-size="16px" line-height="24px" />
+      <mj-button background-color="#005CA3" color="#FFFFFF" border-radius="4px" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#ECF2F6" width="600px">
+    <!-- marker-comment -->
+    <mj-section padding="24px 0 8px">
+      <mj-column>
+        <mj-image src="https://example.test/logo.png" alt="Brand" width="154px" href="https://example.test" />
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#FFFFFF" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="600">{headline}</mj-text>
+        <mj-text>Hello {displayName}, use the button to sign in. The link expires in {expiresMinutes} minutes.</mj-text>
+        <mj-button href="https://example.test/login?expires=1&amp;signature=abc123">Sign in</mj-button>
+        <mj-text font-size="13px" color="#6B7280">If the button does not work, copy {magicLink}</mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding="16px 24px">
+      <mj-column>
+        <mj-navbar>
+          <mj-navbar-link href="https://example.test/privacy">Privacy</mj-navbar-link>
+          <mj-navbar-link href="https://example.test/imprint">Imprint</mj-navbar-link>
+        </mj-navbar>
+        <mj-text font-size="12px" color="#6B7280">Example Street 1, 12345 Example City</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
