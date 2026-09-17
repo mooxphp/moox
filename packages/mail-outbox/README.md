@@ -25,7 +25,7 @@ Learn more about [Moox](https://moox.org).
 - Size guard — fail with `MessageTooLargeException` before the transport runs
 - Retry classification — transient (rate limit, timeout, connection) vs permanent (rejected/malformed recipient)
 - Correlation — self-assigned header plus optional provider message-id read-back (per mailer)
-- Optional polymorphic related business object on the log row
+- Optional polymorphic related business object on the log row (`mail-outbox.relations.related`, kind `morph_to`)
 - Foreign mail recording — Laravel `MessageSent` listener dispatches `RecordSentMailJob` for mail sent outside `SendMailJob` (deduplicated against outbox rows)
 - Filament send-log UI — list, detail, raw-message inspection, and resend (via `MailOutboxPlugin`)
 - Safe test mode — redirect non-allowlisted recipients via Laravel's `alwaysTo`, record both recipient sets, prefix redirected subjects, log as `suppressed` when not delivered to intended recipients
@@ -127,7 +127,7 @@ When `test_mode.enabled` is true, **all outbound Laravel mail** is intercepted o
 
 `SendMailJob` adds a second layer for mixed allowlist runs: it can perform two sends (real leg for allowlisted addresses, redirect leg for the rest) under one outbox log row. Non-outbox mail with mixed recipients is redirected entirely to the sandbox in a single send.
 
-The log row always records **intended** recipients (from before redirection, including addresses declared on `envelope()` as well as Mailable `to`/`cc`/`bcc` properties) and **actual** recipients (who received mail on the wire). The Filament "Redirected" / "Umgeleitet" badge only appears when both sets are known and differ — an empty intended set is not treated as a redirect. When any intended recipient was redirected, status is **`suppressed`**, not `sent`. Foreign-mail rows recorded via `RecordSentMailJob` follow the same rule.
+The log row always records **intended** recipients (from before redirection, including addresses declared on `envelope()` as well as Mailable `to`/`cc`/`bcc` properties) and **actual** recipients (who received mail on the wire). The Filament "Redirected" / "Umgeleitet" badge only appears when both sets are known and differ — an empty intended set is not treated as a redirect. When any intended recipient was redirected, status is **`suppressed`**, not `sent`. If `redirect_to` is the same address as an intended recipient, that address is treated as delivered (not redirected) — otherwise the log would show `suppressed` with a Direct/Direkt badge. Foreign-mail rows recorded via `RecordSentMailJob` follow the same rule.
 
 **Not-delivered guarantee:** use `MailSendLog::deliveredToIntendedRecipients()` (or `MailSendStatus::deliveredToIntendedRecipients()`) before marking a business object as delivered. A suppressed row means the provider may have accepted a sandbox copy, but the intended recipient did not receive the mail.
 
@@ -168,7 +168,7 @@ Also stored when available: `raw_message` (rendered MIME for inspection) and enc
 `php artisan moox:install` registers `MailOutboxPlugin`, which exposes `MailSendLogResource` in the panel.
 
 - **List** — status, mailer, recipient, subject, sent-at; filters on status, mailer, and date; config-driven tabs. A **Delivery** column/badge shows Redirected, Direct, or — when intended recipients are unknown (empty intended is never treated as redirected).
-- **Detail** — intended and actual recipients, error, message id, related-record link when Filament can resolve one.
+- **Detail** — intended and actual recipients, error, message id, related-record Moox Relations **tab** (`morph_to`) with View into the related Filament resource.
 - **Raw message** — confirmation-gated modal for `sent` rows with stored MIME (may include personal data and attachment bytes).
 - **Resend** — dispatches `SendMailJob` and creates a new row. Not offered for `suppressed` or `recorded` rows.
 

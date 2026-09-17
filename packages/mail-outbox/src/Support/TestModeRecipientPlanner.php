@@ -19,15 +19,24 @@ final class TestModeRecipientPlanner
         $delivered = [];
         $redirected = [];
         $patterns = $config->testModeAllowlistPatterns();
+        $redirectTo = strtolower(trim($config->testModeRedirectTo()));
 
         foreach ($intended as $email) {
-            if ($this->matcher->matches($email, $patterns)) {
-                $delivered[] = strtolower($email);
+            $normalized = strtolower($email);
+
+            // Sandbox address matching an intended recipient is not a redirect:
+            // that person still receives the mail (badge would otherwise say
+            // "Direkt" while status is wrongly "suppressed").
+            if (
+                $this->matcher->matches($normalized, $patterns)
+                || ($redirectTo !== '' && $normalized === $redirectTo)
+            ) {
+                $delivered[] = $normalized;
 
                 continue;
             }
 
-            $redirected[] = strtolower($email);
+            $redirected[] = $normalized;
         }
 
         return new TestModeRecipientPlan(

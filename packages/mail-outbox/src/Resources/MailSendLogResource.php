@@ -17,16 +17,18 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
+use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\MailOutbox\Enums\MailSendSource;
 use Moox\MailOutbox\Enums\MailSendStatus;
 use Moox\MailOutbox\Models\MailSendLog;
 use Moox\MailOutbox\Resources\MailSendLogResource\Pages\ListMailSendLogs;
 use Moox\MailOutbox\Resources\MailSendLogResource\Pages\ViewMailSendLog;
 use Moox\MailOutbox\Support\MailSendStatusPresenter;
-use Moox\MailOutbox\Support\RelatedRecordUrlResolver;
 
 final class MailSendLogResource extends BaseItemResource
 {
+    use HasResourceRelations;
+
     protected static ?string $model = MailSendLog::class;
 
     protected static ?string $slug = 'mail-send-logs';
@@ -144,21 +146,6 @@ final class MailSendLogResource extends BaseItemResource
                                 ->copyable(),
                         ]),
                     ]),
-                Section::make(__('mail-outbox::fields.related_record'))
-                    ->schema([
-                        TextEntry::make('related')
-                            ->label(__('mail-outbox::fields.related_record'))
-                            ->formatStateUsing(fn (MailSendLog $record): string => $record->related
-                                ? (string) ($record->related->getAttribute('name')
-                                    ?? $record->related->getAttribute('title')
-                                    ?? class_basename($record->related_type).' #'.$record->related_id)
-                                : '—')
-                            ->url(fn (MailSendLog $record): ?string => RelatedRecordUrlResolver::forModel($record->related))
-                            ->openUrlInNewTab()
-                            ->color('primary')
-                            ->placeholder('—'),
-                    ])
-                    ->visible(fn (MailSendLog $record): bool => $record->related_id !== null),
                 Section::make(__('mail-outbox::fields.error'))
                     ->schema([
                         TextEntry::make('error')
