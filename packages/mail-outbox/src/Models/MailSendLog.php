@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Moox\Core\Traits\Relations\HasRelations;
 use Moox\MailOutbox\Enums\MailSendSource;
 use Moox\MailOutbox\Enums\MailSendStatus;
 
@@ -23,8 +22,6 @@ use Moox\MailOutbox\Enums\MailSendStatus;
  */
 class MailSendLog extends Model
 {
-    use HasRelations;
-
     protected $table = 'mail_send_logs';
 
     /**
@@ -57,20 +54,15 @@ class MailSendLog extends Model
             'actual_recipients' => 'array',
             'attempt_count' => 'integer',
             'intended_recipients' => 'array',
+            'related_id' => 'string',
             'source' => MailSendSource::class,
             'status' => MailSendStatus::class,
         ];
     }
 
-    public static function getResourceName(): string
-    {
-        return 'mail-outbox';
-    }
-
     public function related(): MorphTo
     {
-        /** @var MorphTo */
-        return $this->relation('related');
+        return $this->morphTo();
     }
 
     public function isRedirected(): bool
@@ -85,38 +77,6 @@ class MailSendLog extends Model
         }
 
         return $intended !== $actual;
-    }
-
-    /**
-     * Filament badge label for intended vs actual delivery routing.
-     */
-    public function deliveryBadgeLabel(): string
-    {
-        if ($this->isRedirected()) {
-            return __('mail-outbox::fields.redirected');
-        }
-
-        if ($this->normalizedRecipientSet($this->intended_recipients) === []) {
-            return '—';
-        }
-
-        return __('mail-outbox::fields.direct');
-    }
-
-    /**
-     * Filament badge color for {@see deliveryBadgeLabel()}.
-     */
-    public function deliveryBadgeColor(): string
-    {
-        if ($this->isRedirected()) {
-            return 'warning';
-        }
-
-        if ($this->normalizedRecipientSet($this->intended_recipients) === []) {
-            return 'gray';
-        }
-
-        return 'success';
     }
 
     public function primaryRecipientLabel(): string

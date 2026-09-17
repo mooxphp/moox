@@ -212,31 +212,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Relations
-    |--------------------------------------------------------------------------
-    |
-    | Polymorphic business object on the send-log row (MorphTo). Presentation
-    | stays inline — no ConfigRelationManager tab (single parent, not a list).
-    |
-    */
-    'relations' => [
-        'related' => [
-            'kind' => 'morph_to',
-            'presentation' => 'tab',
-            'label' => 'trans//mail-outbox::fields.related_record',
-            'relationship' => 'related',
-            'morph_name' => 'related',
-            'display_columns' => ['invoice_number', 'invoice_date', 'customer_number', 'gross_total'],
-            'translation_prefix' => 'mail-outbox::fields',
-            'actions' => [
-                'header' => [],
-                'record' => ['view'],
-            ],
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Navigation
     |--------------------------------------------------------------------------
     */
