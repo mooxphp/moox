@@ -143,6 +143,8 @@ class MailTemplateResource extends BaseDraftResource
                     ->label(__('mail-template::translations.slug'))
                     ->searchable()
                     ->sortable(),
+                static::getTitleColumn()
+                    ->label(__('mail-template::translations.subject')),
                 TextColumn::make('mailLayout.slug')
                     ->label(__('mail-template::translations.layout'))
                     ->formatStateUsing(function (MailTemplate $record, mixed $livewire): string {
@@ -155,9 +157,8 @@ class MailTemplateResource extends BaseDraftResource
                         return MailTemplateBridge::layoutLabel($layout, static::resolveCurrentLang($livewire));
                     })
                     ->searchable(),
-                TextColumn::make('title')
-                    ->label(__('mail-template::translations.subject')),
                 TranslationColumn::make('translations.locale'),
+                static::getTranslationPresenceColumn(),
             ])
             ->recordActions([
                 Action::make('preview')
@@ -170,7 +171,8 @@ class MailTemplateResource extends BaseDraftResource
                             'mailTemplate' => $record,
                         ]);
                     })
-                    ->openUrlInNewTab(),
+                    ->openUrlInNewTab()
+                    ->hidden(static::hideWithoutCurrentTranslation()),
                 Action::make('send')
                     ->label(__('mail-template::translations.send'))
                     ->icon('heroicon-o-paper-airplane')
@@ -185,6 +187,7 @@ class MailTemplateResource extends BaseDraftResource
                     ->tooltip(fn (): ?string => MailSendConfig::recipients() === []
                         ? __('mail-template::translations.send_no_recipients')
                         : null)
+                    ->hidden(static::hideWithoutCurrentTranslation())
                     ->fillForm(function (MailTemplate $record): array {
                         $locale = static::resolveSendLocale($record);
 
@@ -248,7 +251,12 @@ class MailTemplateResource extends BaseDraftResource
             ])
             ->toolbarActions([
                 ...static::getBulkActions(),
-            ]);
+            ])
+            ->filters([
+                static::getLocaleFilter(),
+            ])
+            ->deferFilters(false)
+            ->persistFiltersInSession();
     }
 
     #[Override]

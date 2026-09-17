@@ -514,6 +514,45 @@ class BaseDraftResource extends BaseResource
             });
     }
 
+    /**
+     * Presence-only badge for Draft packages without publish workflow
+     * (e.g. mail-template): "Not translated" / "Deleted", no draft/published.
+     */
+    public static function getTranslationPresenceColumn(): TextColumn
+    {
+        return TextColumn::make('translation_status')
+            ->label('Status')
+            ->toggleable()
+            ->badge()
+            ->placeholder('')
+            ->formatStateUsing(function ($state) {
+                if ($state instanceof \BackedEnum) {
+                    return ucfirst($state->value);
+                }
+
+                return ucfirst((string) $state);
+            })
+            ->color(function ($state): string {
+                $value = $state instanceof \BackedEnum ? $state->value : (string) $state;
+
+                return static::getStatusColor(strtolower($value));
+            })
+            ->getStateUsing(function ($record, $livewire) {
+                $currentLang = static::resolveCurrentLang($livewire);
+                $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
+
+                if (! $translation) {
+                    return TranslationStatus::NOT_TRANSLATED;
+                }
+
+                if ($translation->trashed()) {
+                    return TranslationStatus::DELETED;
+                }
+
+                return null;
+            });
+    }
+
     protected static function resolveCurrentLang($livewire = null): string
     {
         // 1) Livewire property on page/resource (e.g., forms)
@@ -536,5 +575,30 @@ class BaseDraftResource extends BaseResource
         $defaultLocalization = Localization::where('is_default', true)->first();
 
         return $defaultLocalization->locale_variant ?? app()->getLocale();
+    }
+
+    /**
+     * Whether the record has a (non-trashed) translation for the current admin locale.
+     * Non-translatable models are treated as present so custom actions stay visible.
+     */
+    public static function hasCurrentTranslation(mixed $record, mixed $livewire = null): bool
+    {
+        if (! is_object($record) || ! method_exists($record, 'translations')) {
+            return true;
+        }
+
+        return $record->translations()
+            ->where('locale', static::resolveCurrentLang($livewire))
+            ->exists();
+    }
+
+    /**
+     * Filament `->hidden(...)` callback: hide when the current locale has no translation.
+     *
+     * @return \Closure(mixed, mixed): bool
+     */
+    public static function hideWithoutCurrentTranslation(): \Closure
+    {
+        return fn (mixed $record, mixed $livewire): bool => ! static::hasCurrentTranslation($record, $livewire);
     }
 }

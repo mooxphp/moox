@@ -59,7 +59,7 @@ abstract class BaseEditDraft extends EditRecord
                 }
             }
 
-            if ($translation && $translation->trashed()) {
+            if ($translation && $translation->trashed() && $this->getResource()::enableView()) {
                 $this->redirect($this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $this->lang]));
             }
         }
@@ -75,9 +75,11 @@ abstract class BaseEditDraft extends EditRecord
         }
 
         $translatable = $record->translatedAttributes;
+        $translation = $record->getTranslation($this->lang, false);
+
         foreach ($translatable as $attr) {
-            $translation = $record->getTranslation($this->lang, false);
-            $values[$attr] = $translation ? $translation->$attr : $record->$attr;
+            // Missing locale = new translation: leave empty. Do not pull fallback locale via $record->$attr.
+            $values[$attr] = $translation?->$attr;
         }
 
         // Handle taxonomies

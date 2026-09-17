@@ -306,6 +306,10 @@ abstract class BaseResource extends Resource
                 return static::getUrl('view', $viewParams);
             })
             ->hidden(function ($record, $livewire) {
+                if (method_exists(static::class, 'hasCurrentTranslation')) {
+                    return ! static::hasCurrentTranslation($record, $livewire);
+                }
+
                 if (method_exists($record, 'translations')) {
                     $currentLang = $livewire->lang ?? request()->query('lang') ?? app()->getLocale();
                     $translation = $record->translations()->where('locale', $currentLang)->first();

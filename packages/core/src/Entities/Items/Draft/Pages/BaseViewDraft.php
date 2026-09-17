@@ -101,9 +101,10 @@ abstract class BaseViewDraft extends ViewRecord
 
         if (method_exists($record, 'getTranslation') && property_exists($record, 'translatedAttributes')) {
             $translatable = $record->translatedAttributes;
+            $translation = $record->getTranslation($this->lang, false);
+
             foreach ($translatable as $attr) {
-                $translation = $record->getTranslation($this->lang, false);
-                $values[$attr] = $translation ? $translation->$attr : $record->$attr;
+                $values[$attr] = $translation?->$attr;
             }
         }
 

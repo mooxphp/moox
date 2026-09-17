@@ -132,16 +132,22 @@ class MailLayoutResource extends BaseDraftResource
                     ->label(__('mail-template::translations.slug'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('title')
+                static::getTitleColumn()
                     ->label(__('mail-template::translations.layout_title')),
                 TranslationColumn::make('translations.locale'),
+                static::getTranslationPresenceColumn(),
             ])
             ->recordActions([
                 ...static::getTableActions(),
             ])
             ->toolbarActions([
                 ...static::getBulkActions(),
-            ]);
+            ])
+            ->filters([
+                static::getLocaleFilter(),
+            ])
+            ->deferFilters(false)
+            ->persistFiltersInSession();
     }
 
     public static function logoFormField(): FileUpload
