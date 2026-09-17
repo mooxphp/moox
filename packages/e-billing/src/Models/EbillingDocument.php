@@ -19,7 +19,8 @@ use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Moox\Company\Models\Company;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
-use Moox\Core\Support\RelatedModelUrlResolver;
+use Filament\Facades\Filament;
+use Throwable;
 use Moox\Core\Traits\MorphPivot\HasMorphPivotRelations;
 use Moox\Customer\Models\Customer;
 use Moox\EBilling\Enums\AttributionSource;
@@ -476,7 +477,30 @@ class EbillingDocument extends BaseItemModel
             return null;
         }
 
-        return RelatedModelUrlResolver::forModel($invoice);
+        try {
+            $panel = Filament::getCurrentPanel() ?? Filament::getDefaultPanel();
+            $resourceClass = $panel->getModelResource($invoice);
+        } catch (Throwable) {
+            return null;
+        }
+
+        if (! is_string($resourceClass) || ! class_exists($resourceClass)) {
+            return null;
+        }
+
+        foreach (['view', 'edit'] as $page) {
+            if (! $resourceClass::hasPage($page)) {
+                continue;
+            }
+
+            try {
+                return $resourceClass::getUrl($page, ['record' => $invoice], shouldGuessMissingParameters: false);
+            } catch (Throwable) {
+                continue;
+            }
+        }
+
+        return null;
     }
 
     /**

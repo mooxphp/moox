@@ -9,8 +9,10 @@ use Moox\EBilling\Support\InvoiceActivitySubjectLabel;
 use Moox\Invoice\Models\Invoice;
 use Moox\KositValidator\Models\KositValidatable;
 use Moox\KositValidator\Models\KositValidation;
+use Moox\KositValidator\Resources\KositValidationResource;
 use Moox\VeraPdf\Models\VeraPdfValidatable;
 use Moox\VeraPdf\Models\VeraPdfValidation;
+use Moox\VeraPdf\Resources\VeraPdfValidationResource;
 
 /*
 |--------------------------------------------------------------------------

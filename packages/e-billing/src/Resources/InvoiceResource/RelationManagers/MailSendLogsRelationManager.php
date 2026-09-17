@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Moox\Core\Support\RelatedModelUrlResolver;
+use Moox\MailOutbox\Support\RelatedRecordUrlResolver;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\Invoice\Models\Invoice;
 use Moox\MailOutbox\Enums\MailSendStatus;
@@ -112,8 +112,8 @@ class MailSendLogsRelationManager extends RelationManager
             ->defaultSort('created_at', 'desc')
             ->recordActions([
                 ViewAction::make()
-                    ->url(fn (MailSendLog $record): ?string => RelatedModelUrlResolver::forModel($record))
-                    ->visible(fn (MailSendLog $record): bool => RelatedModelUrlResolver::forModel($record) !== null)
+                    ->url(fn (MailSendLog $record): ?string => RelatedRecordUrlResolver::forModel($record))
+                    ->visible(fn (MailSendLog $record): bool => RelatedRecordUrlResolver::forModel($record) !== null)
                     ->openUrlInNewTab(),
             ])
             ->paginated([10, 25, 50])
