@@ -157,9 +157,11 @@
 
                     @if ($isMissingTranslation)
                         <div class="mt-2">
-                            @include('media::components.missing-translation-notice', [
-                                'locale' => $this->translationNoticeLocale(),
-                            ])
+                            <x-filament::callout
+                                color="warning"
+                                icon="heroicon-o-exclamation-triangle"
+                                :description="__('media::fields.no_translation_yet', ['locale' => $this->translationNoticeLocale()])"
+                            />
                         </div>
                     @endif
 

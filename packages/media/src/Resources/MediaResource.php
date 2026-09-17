@@ -11,6 +11,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Callout;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\View;
@@ -364,10 +365,11 @@ class MediaResource extends BaseResource
                 ])
                 ->columnSpanFull(),
 
-            View::make('media::components.missing-translation-notice')
-                ->viewData(fn ($record, $livewire): array => [
+            Callout::make()
+                ->warning()
+                ->description(fn ($livewire): string => __('media::fields.no_translation_yet', [
                     'locale' => static::displayLocaleLabel($livewire),
-                ])
+                ]))
                 ->columnSpanFull()
                 ->visible(fn ($record, $livewire): bool => static::isMissingTranslationForCurrentLocale($record, $livewire)),
 
