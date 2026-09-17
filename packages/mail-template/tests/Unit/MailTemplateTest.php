@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Moox\Core\Enums\TranslationStatus;
 use Moox\Localization\Models\Localization;
 use Moox\MailTemplate\Models\MailLayout;
 use Moox\MailTemplate\Models\MailTemplate;
+use Moox\MailTemplate\Resources\MailLayoutResource;
 use Moox\MailTemplate\Resources\MailTemplateResource;
 use Moox\MailTemplate\Support\MailMedia;
 use Moox\MailTemplate\Support\MailTemplateBridge;
@@ -478,4 +480,75 @@ it('creates templates on the default localization not the app locale', function 
         ->and($template->translate($defaultLocale)?->title)->toBe('Default locale title')
         ->and($template->translate($defaultLocale)?->mail_content)->toBe('<mj-text>Body</mj-text>')
         ->and($template->hasTranslation('en'))->toBeFalse();
+});
+
+it('casts translation status and resolves draft title and status columns for missing locales', function (): void {
+    ensureDefaultLocalization();
+    Localization::clearDisplayLanguageCache();
+
+    $defaultLocale = (string) Localization::defaultLocalization()?->locale_variant;
+    $missingLocale = str_contains($defaultLocale, '_') ? 'en_US' : 'en';
+
+    $template = MailTemplate::factory()
+        ->translation(['title' => 'Hallo DE'], $defaultLocale)
+        ->create();
+
+    $layout = MailLayout::factory()
+        ->translation(['title' => 'Layout DE'], $defaultLocale)
+        ->create();
+
+    $livewire = new class($missingLocale)
+    {
+        public function __construct(public string $lang) {}
+    };
+
+    $templateStatus = MailTemplateResource::getTranslationPresenceColumn()->getGetStateUsingCallback();
+    $templateTitle = MailTemplateResource::getTitleColumn()->getGetStateUsingCallback();
+    $layoutStatus = MailLayoutResource::getTranslationPresenceColumn()->getGetStateUsingCallback();
+    $layoutTitle = MailLayoutResource::getTitleColumn()->getGetStateUsingCallback();
+
+    expect($template->translate($defaultLocale)?->translation_status)->toBe(TranslationStatus::DRAFT)
+        ->and($layout->translate($defaultLocale)?->translation_status)->toBe(TranslationStatus::DRAFT)
+        ->and($templateStatus)->toBeCallable()
+        ->and($templateTitle)->toBeCallable()
+        ->and($layoutStatus)->toBeCallable()
+        ->and($layoutTitle)->toBeCallable()
+        ->and($templateStatus($template, $livewire))->toBe(TranslationStatus::NOT_TRANSLATED)
+        ->and($templateTitle($template, $livewire))->toBe('Hallo DE ('.$defaultLocale.')')
+        ->and($layoutStatus($layout, $livewire))->toBe(TranslationStatus::NOT_TRANSLATED)
+        ->and($layoutTitle($layout, $livewire))->toBe('Layout DE ('.$defaultLocale.')');
+
+    $livewire->lang = $defaultLocale;
+
+    expect($templateStatus($template, $livewire))->toBeNull()
+        ->and($templateTitle($template, $livewire))->toBe('Hallo DE')
+        ->and($layoutStatus($layout, $livewire))->toBeNull()
+        ->and($layoutTitle($layout, $livewire))->toBe('Layout DE');
+});
+
+it('hides draft actions when the current locale has no translation', function (): void {
+    ensureDefaultLocalization();
+    Localization::clearDisplayLanguageCache();
+
+    $defaultLocale = (string) Localization::defaultLocalization()?->locale_variant;
+    $missingLocale = str_contains($defaultLocale, '_') ? 'en_US' : 'en';
+
+    $template = MailTemplate::factory()
+        ->translation(['title' => 'Hallo DE'], $defaultLocale)
+        ->create();
+
+    $missing = new class($missingLocale)
+    {
+        public function __construct(public string $lang) {}
+    };
+
+    $present = new class($defaultLocale)
+    {
+        public function __construct(public string $lang) {}
+    };
+
+    expect(MailTemplateResource::hasCurrentTranslation($template, $missing))->toBeFalse()
+        ->and(MailTemplateResource::hideWithoutCurrentTranslation()($template, $missing))->toBeTrue()
+        ->and(MailTemplateResource::hasCurrentTranslation($template, $present))->toBeTrue()
+        ->and(MailTemplateResource::hideWithoutCurrentTranslation()($template, $present))->toBeFalse();
 });
