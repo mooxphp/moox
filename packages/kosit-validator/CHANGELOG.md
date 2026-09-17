@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Models: `filename`, `result`, and `errors_count` accessors for config-driven relation tables.
+- Assignments tab: label “Bezeichnung” / “Label”; View action instead of linking the invoice number.
+- Assignments tab uses Moox Relations (`pivot_has_many` / `HasResourceRelations`); `getResourceName()` is `kosit-validator`. Removed hand-rolled `KositValidatablesRelationManager`.
 ### Changed
 
 - Reduce cyclomatic complexity of `KositInstaller::install` by extracting

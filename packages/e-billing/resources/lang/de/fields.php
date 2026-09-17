@@ -296,6 +296,12 @@ return [
     // Field hints — informational (no validation status)
     'hint_info_buyer_email' => 'Aus Posteingang (An) — nicht mit Stammdaten abgeglichen.',
 
+    'section_kosit_validations' => 'KoSIT-Validierungen',
+    'kosit_validations_empty' => 'Noch keine KoSIT-Validierungen.',
+    'section_verapdf_validations' => 'veraPDF-Validierungen',
+    'verapdf_validations_empty' => 'Noch keine veraPDF-Validierungen.',
+    'section_mail_send_logs' => 'Sendeprotokoll',
+    'mail_send_logs_empty' => 'Noch keine Sendeprotokolle.',
     'section_delivery_attempts' => 'Zustellversuche',
     'delivery_attempts_empty' => 'Noch keine Zustellversuche.',
     'channel' => 'Kanal',

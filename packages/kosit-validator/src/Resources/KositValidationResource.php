@@ -22,14 +22,16 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
+use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\KositValidator\Models\KositValidation;
 use Moox\KositValidator\Resources\KositValidationResource\Pages\ListKositValidations;
 use Moox\KositValidator\Resources\KositValidationResource\Pages\ViewKositValidation;
-use Moox\KositValidator\Resources\KositValidationResource\RelationManagers\KositValidatablesRelationManager;
 use Moox\KositValidator\Support\KositValidationMessages;
 
 final class KositValidationResource extends BaseItemResource
 {
+    use HasResourceRelations;
+
     protected static ?string $slug = 'kosit-validations';
 
     protected static ?string $model = KositValidation::class;
@@ -221,12 +223,7 @@ final class KositValidationResource extends BaseItemResource
             ->toolbarActions([]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            KositValidatablesRelationManager::class,
-        ];
-    }
+    // Relations: config-driven via HasResourceRelations (kosit-validator.relations.kosit_validatables).
 
     public static function getPages(): array
     {

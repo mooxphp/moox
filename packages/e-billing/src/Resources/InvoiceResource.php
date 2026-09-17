@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\InteractsWithAuditResourceRelations;
+use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
 use Moox\Customer\Models\Customer;
 use Moox\EBilling\Actions\CreateManualUploadDocumentAction;
@@ -38,14 +39,21 @@ use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ListInvoices;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ViewInvoice;
+use Moox\EBilling\Resources\InvoiceResource\RelationManagers\MailSendLogsRelationManager;
 use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\InvoiceModels;
+use Moox\MailOutbox\Models\MailSendLog;
 use Throwable;
 
 class InvoiceResource extends BaseItemResource
 {
-    use InteractsWithAuditResourceRelations;
+    use HasResourceRelations;
+    use InteractsWithAuditResourceRelations {
+        HasResourceRelations::getRelations insteadof InteractsWithAuditResourceRelations;
+        HasResourceRelations::getRelations as protected getConfiguredResourceRelations;
+        InteractsWithAuditResourceRelations::getRelations as protected getAuditAwareRelations;
+    }
     use SingleSoftDeleteInResource;
 
     protected static ?string $slug = 'invoices';
@@ -545,6 +553,34 @@ class InvoiceResource extends BaseItemResource
             'index' => ListInvoices::route('/'),
             'view' => ViewInvoice::route('/{record}'),
         ];
+    }
+
+    /**
+     * Optional mail-outbox RM (OR invoice∥document morphs) via
+     * {@see getDeclaredRelations()}. Delivery / KoSIT / veraPDF tabs come from
+     * config('e-billing.invoice_relations') merged into invoice.relations
+     * ({@see HasResourceRelations}). Audit Activities merge separately.
+     *
+     * @return array<int, mixed>
+     */
+    protected static function getDeclaredRelations(): array
+    {
+        if (! class_exists(MailSendLog::class)) {
+            return [];
+        }
+
+        return [MailSendLogsRelationManager::class];
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    public static function getRelations(): array
+    {
+        return array_values(array_unique([
+            ...static::getConfiguredResourceRelations(),
+            ...static::getAuditAwareRelations(),
+        ], SORT_REGULAR));
     }
 
     public static function resourceConfigKey(): string
