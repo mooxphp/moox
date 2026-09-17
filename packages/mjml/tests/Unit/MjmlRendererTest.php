@@ -9,6 +9,7 @@ use Moox\Mjml\MjmlResult;
 use Moox\Mjml\Renderers\NodeRenderer;
 use Moox\Mjml\Renderers\PhpRenderer;
 use Spatie\Mjml\Mjml as SpatieMjml;
+use Spatie\MjmlSidecar\MjmlFunction;
 use Symfony\Component\Process\ExecutableFinder;
 
 function sampleMjml(): string
@@ -338,7 +339,7 @@ it('raises when sidecar is used on the node renderer without the sidecar package
 
     expect(fn (): string => Mjml::new()->sidecar()->toHtml(sampleMjml()))
         ->toThrow(CouldNotRenderMjml::class);
-})->skip(class_exists(\Spatie\MjmlSidecar\MjmlFunction::class), 'spatie/mjml-sidecar is installed');
+})->skip(class_exists(MjmlFunction::class), 'spatie/mjml-sidecar is installed');
 
 it('does not import vendor mjml types on the public api', function (): void {
     foreach (publicMjmlSources() as $path) {
