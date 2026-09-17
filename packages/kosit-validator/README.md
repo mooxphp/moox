@@ -24,7 +24,7 @@ KoSIT Validator CLI wrapper for ZUGFeRD / XRechnung XML validation against EN 16
 - `moox/kosit-validator` owns KoSIT installation, XML validation, report output paths, and validation audit persistence.
 - `moox/e-billing` is the typical orchestrator: `ValidateArtifactJob` calls `KositService`, records results via `RecordKositValidation`, and links them to the `EbillingDocument` through `kositValidations()->attach()` on the `kosit_validatables` morph pivot — not via a `kosit_validation_id` column on attachments or documents.
 - `moox/zugferd` produces XML that this package validates; validation does not live in `moox/zugferd`.
-- Owner packages (`EbillingDocument`, etc.) are external; register allowed types under `kosit-validator.relations.kosit_validatables.owner_types` to enable Filament pivot management.
+- Owner packages (`EbillingDocument`, etc.) are external; register allowed types under `kosit-validator.relations.kosit_validatables.owner_types` (e-billing does this at boot). The Filament assignments tab is Moox `HasResourceRelations` / `ConfigRelationManager` (`kind: pivot_has_many`, `perspective: related`).
 
 ## Requirements
 
@@ -192,7 +192,7 @@ Extends `Moox\Core\Entities\Items\Item\BaseItemModel`.
 
 | Method | Description |
 |--------|-------------|
-| `getResourceName()` | Returns `kosit-validation` |
+| `getResourceName()` | Returns `kosit-validator` (config root for Moox Relations) |
 | `kositValidatables()` | `HasMany` pivot rows |
 | `scopePassed()` / `scopeFailed()` | Filter by `passed` |
 | `filenameLabel()` | `basename(input_path)` or translated empty label |

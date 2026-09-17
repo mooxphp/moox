@@ -40,15 +40,23 @@ class ViewInvoice extends ViewRecord
      * Custom Blade view only — skip {@see ViewRecord::fillForm()} which would push
      * EN16931 Party value objects into Livewire's public {@see ViewRecord::$data}.
      *
-     * The Activity relation manager is embedded directly in the Blade view, because
-     * this custom layout does not use Filament's default content schema tabs.
      * Delivery attempts, KoSIT/veraPDF validations, optional mail-outbox logs, and
+     * Activity use Filament's native relation-manager slot via {@see content()}
+     * (rendered as {{ $this->content }} in the custom Blade view).
      */
     public function mount(int|string $record): void
     {
         $this->record = $this->resolveRecord($record);
 
         $this->authorizeAccess();
+    }
+
+    public function content(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                $this->getRelationManagersContentComponent(),
+            ]);
     }
 
     /**
@@ -376,7 +384,6 @@ class ViewInvoice extends ViewRecord
     protected function resolveRecord(int|string $key): Model
     {
         return self::getResource()::getEloquentQuery()
-            ->with(['lines', 'lines.allowanceCharges', 'allowanceCharges', 'ebillingDocument'])
             ->with(['lines', 'lines.allowanceCharges', 'allowanceCharges', 'ebillingDocument.deliveryAttempts'])
             ->whereKey($key)
             ->firstOrFail();

@@ -752,6 +752,91 @@ return [
         ],
     ],
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Invoice resource relations (merged into invoice.relations at boot)
+    |--------------------------------------------------------------------------
+    |
+    | Read-only ConfigRelationManager tabs on InvoiceResource (delivery, KoSIT,
+    | veraPDF). Soft-deps: entries whose model class is missing are skipped when
+    | merged. Mail send logs stay in getDeclaredRelations() (OR invoice∥document).
+    | Audit Activities come from moox/audit. Invoice detail is the e-billing hub.
+    |
+    */
+
+    'invoice_relations' => [
+        'delivery_attempts' => [
+            'kind' => 'has_many',
+            'presentation' => 'tab',
+            'label' => 'trans//e-billing::fields.section_delivery_attempts',
+            'relationship' => 'deliveryAttempts',
+            'model' => EbillingDeliveryAttempt::class,
+            'translation_prefix' => 'e-billing::fields',
+            'display_columns' => [
+                'channel',
+                'recipient',
+                'success_label',
+                'failure_reason_label',
+                'created_at',
+                'correlation_id',
+            ],
+            'badge_columns' => ['success_label'],
+            'sortable_columns' => ['created_at'],
+            'default_order' => [
+                ['column' => 'created_at', 'direction' => 'desc'],
+            ],
+            'actions' => [
+                'header' => [],
+                'record' => [],
+                'toolbar' => [],
+            ],
+        ],
+        'kosit_validations' => [
+            'kind' => 'has_many',
+            'presentation' => 'tab',
+            'label' => 'trans//e-billing::fields.section_kosit_validations',
+            'relationship' => 'kositValidations',
+            'model' => KositValidation::class,
+            'related_resource' => KositValidationResource::class,
+            'translation_prefix' => 'kosit-validator::fields',
+            'display_columns' => [
+                'result',
+                'filename',
+                'errors_count',
+                'validated_at',
+            ],
+            'badge_columns' => ['result'],
+            'sortable_columns' => ['validated_at'],
+            'actions' => [
+                'header' => [],
+                'record' => ['view'],
+                'toolbar' => [],
+            ],
+        ],
+        'verapdf_validations' => [
+            'kind' => 'has_many',
+            'presentation' => 'tab',
+            'label' => 'trans//e-billing::fields.section_verapdf_validations',
+            'relationship' => 'veraPdfValidations',
+            'model' => VeraPdfValidation::class,
+            'related_resource' => VeraPdfValidationResource::class,
+            'translation_prefix' => 'verapdf::fields',
+            'display_columns' => [
+                'result',
+                'filename',
+                'validated_at',
+            ],
+            'badge_columns' => ['result'],
+            'sortable_columns' => ['validated_at'],
+            'actions' => [
+                'header' => [],
+                'record' => ['view'],
+                'toolbar' => [],
+            ],
+        ],
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Morph pivots (owner side → kosit_validatables)

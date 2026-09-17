@@ -446,6 +446,40 @@ class EbillingDocument extends BaseItemModel
     }
 
     /**
+     * Human label for morph pivot UIs (KoSIT / veraPDF assignments).
+     */
+    public function displayLabel(): string
+    {
+        $invoice = $this->invoice;
+
+        if ($invoice !== null && filled($invoice->invoice_number)) {
+            return (string) $invoice->invoice_number;
+        }
+
+        $original = $this->sourceOriginalFilename();
+
+        if (is_string($original) && $original !== '') {
+            return $original;
+        }
+
+        return (string) $this->getKey();
+    }
+
+    /**
+     * Filament view URL for the related invoice (Activity / Zustellversuche), when present.
+     */
+    public function filamentViewUrl(): ?string
+    {
+        $invoice = $this->invoice;
+
+        if ($invoice === null) {
+            return null;
+        }
+
+        return RelatedModelUrlResolver::forModel($invoice);
+    }
+
+    /**
      * @return BelongsTo<Company, $this>
      */
     public function company(): BelongsTo

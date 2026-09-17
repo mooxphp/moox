@@ -296,6 +296,10 @@ return [
     // Field hints — informational (no validation status)
     'hint_info_buyer_email' => 'From inbox To — not checked against master data.',
 
+    'section_kosit_validations' => 'KoSIT validations',
+    'kosit_validations_empty' => 'No KoSIT validations yet.',
+    'section_verapdf_validations' => 'veraPDF validations',
+    'verapdf_validations_empty' => 'No veraPDF validations yet.',
     'section_mail_send_logs' => 'Mail send log',
     'mail_send_logs_empty' => 'No mail send logs yet.',
     'section_delivery_attempts' => 'Delivery attempts',

@@ -254,14 +254,22 @@ return [
     */
     'relations' => [
         'kosit_validatables' => [
+            'kind' => 'pivot_has_many',
+            'perspective' => 'related',
+            'presentation' => 'tab',
             'label' => 'trans//kosit-validator::fields.validatables',
+            'translation_prefix' => 'kosit-validator::fields',
             'relationship' => 'kositValidatables',
             'pivot_model' => KositValidatable::class,
             'pivot_table' => 'kosit_validatables',
             'morph_name' => 'validatable',
             'pivot_columns' => [],
+            'actions' => [
+                'header' => [],
+                'record' => ['view'],
+            ],
             'owner_types' => [
-                // \Moox\EBilling\Models\EbillingDocument::class => 'Invoice document',
+                // Owner packages (e.g. e-billing) register types at boot.
             ],
         ],
     ],

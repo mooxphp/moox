@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\EBilling;
 
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Event;
 use InvalidArgumentException;
 use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
+use Moox\Core\Services\RelationService;
 use Moox\EBilling\Actions\AnnounceDocumentNeedsReviewAction;
 use Moox\EBilling\Actions\ApproveDocumentAction;
 use Moox\EBilling\Actions\ConfirmInvoiceAction;
@@ -19,6 +22,7 @@ use Moox\EBilling\Actions\InvalidateDocumentApprovalAction;
 use Moox\EBilling\Actions\QueueDocumentDeliveryAction;
 use Moox\EBilling\Actions\RecordDeliveryAttemptsAction;
 use Moox\EBilling\Actions\RecordApprovalTransitionAction;
+use Moox\EBilling\Actions\RecordDeliveryAttemptsAction;
 use Moox\EBilling\Actions\RejectDocumentAction;
 use Moox\EBilling\Actions\ReleaseSeverityFieldAction;
 use Moox\EBilling\Actions\RematchAttributionAction;
@@ -41,23 +45,29 @@ use Moox\EBilling\Contracts\RecipientFormatPreferenceResolverInterface;
 use Moox\EBilling\Contracts\ReviewNotificationRecorderInterface;
 use Moox\EBilling\Contracts\ReviewNotificationStrategyInterface;
 use Moox\EBilling\Contracts\SourcePdfPreparerInterface;
+use Moox\EBilling\Delivery\ConfigurableDeliveryRecipientResolver;
 use Moox\EBilling\Formats\ArtifactKind;
 use Moox\EBilling\Formats\FormatDefinition;
 use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Formats\Strategies\ZugferdGeneratorStrategy;
 use Moox\EBilling\Listeners\ProcessInboxAttachmentListener;
+use Moox\EBilling\Models\EbillingDeliveryAttempt;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 use Moox\EBilling\Support\AllowedProfiles;
 use Moox\EBilling\Support\CustomerFormatPreferenceResolver;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
+use Moox\EBilling\Support\InvoiceRelationsConfig;
 use Moox\EBilling\Support\LetterheadSourcePdfPreparer;
 use Moox\EBilling\Support\NullReviewNotificationRecorder;
 use Moox\EBilling\Support\PassthroughPdfaNormalizer;
 use Moox\EBilling\Support\UnitCodeResolver;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\InvoiceModels;
+use Moox\KositValidator\Models\KositValidation;
 use Moox\MailInbox\Events\InboxAttachmentProcessed;
+use Moox\MailOutbox\Models\MailSendLog;
+use Moox\VeraPdf\Models\VeraPdfValidation;
 use Spatie\LaravelPackageTools\Package;
 
 class EBillingServiceProvider extends MooxServiceProvider
@@ -198,7 +208,15 @@ class EBillingServiceProvider extends MooxServiceProvider
     {
         parent::boot();
 
+        InvoiceRelationsConfig::mergeIntoInvoiceRelations();
         $this->registerInvoiceEbillingDocumentRelation();
+        $this->registerInvoiceDeliveryAttemptsRelation();
+        $this->registerInvoiceKositValidationsRelation();
+        $this->registerInvoiceVeraPdfValidationsRelation();
+        $this->registerInvoiceMailSendLogsRelation();
+        $this->registerKositValidatableOwnerTypes();
+        $this->registerVeraPdfValidatableOwnerTypes();
+        $this->forgetRelationServiceInstance();
 
         $this->registerEbillingDocumentConfigAlias();
 
@@ -315,6 +333,60 @@ class EBillingServiceProvider extends MooxServiceProvider
         });
     }
 
+    private function registerInvoiceDeliveryAttemptsRelation(): void
+    {
+        Invoice::resolveRelationUsing('deliveryAttempts', function (Invoice $invoice): HasManyThrough {
+            return $invoice->hasManyThrough(
+                EbillingDeliveryAttempt::class,
+                EbillingDocument::class,
+                'invoice_id',
+                'ebilling_document_id',
+                $invoice->getKeyName(),
+                'id',
+            );
+        });
+    }
+
+    /**
+     * Expose document-owned KoSIT validations on the invoice (read-only Filament tabs).
+     */
+    private function registerInvoiceKositValidationsRelation(): void
+    {
+        if (! class_exists(KositValidation::class)) {
+            return;
+        }
+
+        Invoice::resolveRelationUsing('kositValidations', function (Invoice $invoice): MorphToMany {
+            $document = EbillingDocument::query()->where('invoice_id', $invoice->getKey())->first();
+
+            if (! $document instanceof EbillingDocument) {
+                return (new EbillingDocument)->kositValidations()->whereRaw('0 = 1');
+            }
+
+            return $document->kositValidations();
+        });
+    }
+
+    /**
+     * Expose document-owned veraPDF validations on the invoice (read-only Filament tabs).
+     */
+    private function registerInvoiceVeraPdfValidationsRelation(): void
+    {
+        if (! class_exists(VeraPdfValidation::class)) {
+            return;
+        }
+
+        Invoice::resolveRelationUsing('veraPdfValidations', function (Invoice $invoice): MorphToMany {
+            $document = EbillingDocument::query()->where('invoice_id', $invoice->getKey())->first();
+
+            if (! $document instanceof EbillingDocument) {
+                return (new EbillingDocument)->veraPdfValidations()->whereRaw('0 = 1');
+            }
+
+            return $document->veraPdfValidations();
+        });
+    }
+
     /**
      * {@see EbillingDocument::getResourceName()} reads config under `ebilling-document`.
      */
@@ -340,5 +412,69 @@ class EBillingServiceProvider extends MooxServiceProvider
                 'root' => $root,
             ],
         ]);
+    }
+
+    private function registerInvoiceMailSendLogsRelation(): void
+    {
+        if (! class_exists(MailSendLog::class)) {
+            return;
+        }
+
+        Invoice::resolveRelationUsing('mailSendLogs', function (Invoice $invoice) {
+            return $invoice->morphMany(MailSendLog::class, 'related');
+        });
+    }
+
+    /**
+     * Register EbillingDocument as an allowed KoSIT morph owner (assignments tab).
+     */
+    private function registerKositValidatableOwnerTypes(): void
+    {
+        if (! config()->has('kosit-validator.relations.kosit_validatables')) {
+            return;
+        }
+
+        $existing = config('kosit-validator.relations.kosit_validatables.owner_types', []);
+
+        config([
+            'kosit-validator.relations.kosit_validatables.owner_types' => array_replace(
+                is_array($existing) ? $existing : [],
+                [
+                    EbillingDocument::class => [
+                        'label' => __('e-billing::ebilling.ebilling_document'),
+                    ],
+                ],
+            ),
+        ]);
+    }
+
+    /**
+     * Register EbillingDocument as an allowed veraPDF morph owner (assignments tab).
+     */
+    private function registerVeraPdfValidatableOwnerTypes(): void
+    {
+        if (! config()->has('verapdf.relations.verapdf_validatables')) {
+            return;
+        }
+
+        $existing = config('verapdf.relations.verapdf_validatables.owner_types', []);
+
+        config([
+            'verapdf.relations.verapdf_validatables.owner_types' => array_replace(
+                is_array($existing) ? $existing : [],
+                [
+                    EbillingDocument::class => [
+                        'label' => __('e-billing::ebilling.ebilling_document'),
+                    ],
+                ],
+            ),
+        ]);
+    }
+
+    private function forgetRelationServiceInstance(): void
+    {
+        if ($this->app->bound(RelationService::class)) {
+            $this->app->forgetInstance(RelationService::class);
+        }
     }
 }
