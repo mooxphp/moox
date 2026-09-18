@@ -6,6 +6,7 @@ namespace Moox\MailTemplate\Resources;
 
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
@@ -25,6 +26,7 @@ use Moox\MailTemplate\Models\MailLayout;
 use Moox\MailTemplate\Resources\MailLayoutResource\Pages\CreateMailLayout;
 use Moox\MailTemplate\Resources\MailLayoutResource\Pages\EditMailLayout;
 use Moox\MailTemplate\Resources\MailLayoutResource\Pages\ListMailLayouts;
+use Moox\MailTemplate\Resources\MailLayoutResource\Pages\ViewMailLayout;
 use Override;
 
 class MailLayoutResource extends BaseDraftResource
@@ -37,12 +39,6 @@ class MailLayoutResource extends BaseDraftResource
     protected static function getEntityType(): string
     {
         return 'mail-template';
-    }
-
-    #[Override]
-    public static function enableView(): bool
-    {
-        return false;
     }
 
     #[Override]
@@ -159,6 +155,19 @@ class MailLayoutResource extends BaseDraftResource
     }
 
     #[Override]
+    public static function getViewTableAction(): ViewAction
+    {
+        return parent::getViewTableAction()
+            ->hidden(function ($record, $livewire): bool {
+                if (isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted'], true)) {
+                    return false;
+                }
+
+                return ! static::hasCurrentTranslation($record, $livewire);
+            });
+    }
+
+    #[Override]
     public static function getDeleteAction(): Action
     {
         return parent::getDeleteAction()
@@ -199,6 +208,7 @@ class MailLayoutResource extends BaseDraftResource
             'index' => ListMailLayouts::route('/'),
             'create' => CreateMailLayout::route('/create'),
             'edit' => EditMailLayout::route('/{record}/edit'),
+            'view' => ViewMailLayout::route('/{record}'),
         ];
     }
 
