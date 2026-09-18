@@ -79,6 +79,38 @@ class MailSendLog extends Model
         return $intended !== $actual;
     }
 
+    /**
+     * Filament badge label for intended vs actual delivery routing.
+     */
+    public function deliveryBadgeLabel(): string
+    {
+        if ($this->isRedirected()) {
+            return __('mail-outbox::fields.redirected');
+        }
+
+        if ($this->normalizedRecipientSet($this->intended_recipients) === []) {
+            return '—';
+        }
+
+        return __('mail-outbox::fields.direct');
+    }
+
+    /**
+     * Filament badge color for {@see deliveryBadgeLabel()}.
+     */
+    public function deliveryBadgeColor(): string
+    {
+        if ($this->isRedirected()) {
+            return 'warning';
+        }
+
+        if ($this->normalizedRecipientSet($this->intended_recipients) === []) {
+            return 'gray';
+        }
+
+        return 'success';
+    }
+
     public function primaryRecipientLabel(): string
     {
         $recipients = $this->actual_recipients ?? $this->intended_recipients ?? [];
