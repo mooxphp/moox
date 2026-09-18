@@ -6,7 +6,6 @@ namespace Moox\MailTemplate\Resources;
 
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
-use Filament\Actions\ViewAction;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
@@ -152,19 +151,6 @@ class MailLayoutResource extends BaseDraftResource
             'mail-template::translations.layout_logo_help',
             'mail-layouts',
         );
-    }
-
-    #[Override]
-    public static function getViewTableAction(): ViewAction
-    {
-        return parent::getViewTableAction()
-            ->hidden(function ($record, $livewire): bool {
-                if (isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted'], true)) {
-                    return false;
-                }
-
-                return ! static::hasCurrentTranslation($record, $livewire);
-            });
     }
 
     #[Override]

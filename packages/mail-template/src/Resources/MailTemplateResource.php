@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\MailTemplate\Resources;
 
 use Filament\Actions\Action;
-use Filament\Actions\ViewAction;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -302,19 +301,6 @@ class MailTemplateResource extends BaseDraftResource
             'mail-template::translations.logo_help',
             'mail-templates',
         );
-    }
-
-    #[Override]
-    public static function getViewTableAction(): ViewAction
-    {
-        return parent::getViewTableAction()
-            ->hidden(function ($record, $livewire): bool {
-                if (isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted'], true)) {
-                    return false;
-                }
-
-                return ! static::hasCurrentTranslation($record, $livewire);
-            });
     }
 
     /**
