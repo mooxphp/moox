@@ -25,6 +25,7 @@ use Moox\MailTemplate\Models\MailLayout;
 use Moox\MailTemplate\Resources\MailLayoutResource\Pages\CreateMailLayout;
 use Moox\MailTemplate\Resources\MailLayoutResource\Pages\EditMailLayout;
 use Moox\MailTemplate\Resources\MailLayoutResource\Pages\ListMailLayouts;
+use Moox\MailTemplate\Resources\MailLayoutResource\Pages\ViewMailLayout;
 use Override;
 
 class MailLayoutResource extends BaseDraftResource
@@ -37,12 +38,6 @@ class MailLayoutResource extends BaseDraftResource
     protected static function getEntityType(): string
     {
         return 'mail-template';
-    }
-
-    #[Override]
-    public static function enableView(): bool
-    {
-        return false;
     }
 
     #[Override]
@@ -199,6 +194,7 @@ class MailLayoutResource extends BaseDraftResource
             'index' => ListMailLayouts::route('/'),
             'create' => CreateMailLayout::route('/create'),
             'edit' => EditMailLayout::route('/{record}/edit'),
+            'view' => ViewMailLayout::route('/{record}'),
         ];
     }
 

@@ -29,6 +29,7 @@ use Moox\MailTemplate\Models\MailTemplateTranslation;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\CreateMailTemplate;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\EditMailTemplate;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\ListMailTemplates;
+use Moox\MailTemplate\Resources\MailTemplateResource\Pages\ViewMailTemplate;
 use Moox\MailTemplate\Support\MailSendConfig;
 use Moox\MailTemplate\Support\MailTemplateBridge;
 use Override;
@@ -43,12 +44,6 @@ class MailTemplateResource extends BaseDraftResource
     protected static function getEntityType(): string
     {
         return 'mail-template';
-    }
-
-    #[Override]
-    public static function enableView(): bool
-    {
-        return false;
     }
 
     #[Override]
@@ -266,6 +261,7 @@ class MailTemplateResource extends BaseDraftResource
             'index' => ListMailTemplates::route('/'),
             'create' => CreateMailTemplate::route('/create'),
             'edit' => EditMailTemplate::route('/{record}/edit'),
+            'view' => ViewMailTemplate::route('/{record}'),
         ];
     }
 
