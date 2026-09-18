@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Scopes;
 
+use Illuminate\Support\Facades\Gate;
 use Moox\Core\Installer\Contracts\AssetInstallerInterface;
+use Moox\Core\Models\Scope;
 use Moox\Core\MooxServiceProvider;
 use Moox\Scopes\Installers\ScopesInstaller;
+use Moox\Scopes\Policies\ScopePolicy;
 use Spatie\LaravelPackageTools\Package;
 
 class ScopesServiceProvider extends MooxServiceProvider
@@ -17,6 +20,11 @@ class ScopesServiceProvider extends MooxServiceProvider
             ->name('scopes')
             ->hasConfigFile()
             ->hasTranslations();
+    }
+
+    public function bootingPackage(): void
+    {
+        Gate::policy(Scope::class, ScopePolicy::class);
     }
 
     /**

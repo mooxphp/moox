@@ -5,6 +5,7 @@ namespace Moox\Core\Support\Resources;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
+use Moox\Core\Models\Concerns\HasScopedModel;
 use Moox\Core\Support\Scopes\ScopeQuery;
 use Moox\Core\Support\Scopes\ScopeValue;
 
@@ -83,9 +84,12 @@ class ScopedResourceContext
         $scope = static::getParsedScope($resource);
 
         if ($scope === null) {
-            // Global view (no scoped resource context): do not restrict by scope.
-            // This means global resources show both unassigned and scoped records.
-            return $query;
+            if (! static::supportsScopeColumn($query->getModel()::class)) {
+                return $query;
+            }
+
+            // Global parent resource: only unassigned records (NULL / ''), never scoped ones.
+            return ScopeQuery::applyUnassigned($query);
         }
 
         if (! static::supportsScopeColumn($query->getModel()::class)) {
@@ -113,10 +117,15 @@ class ScopedResourceContext
     }
 
     /**
+     * Only models that opt into multi-tenancy scoping via HasScopedModel.
+     * The scopes catalog table also has a `scope` column (identity key) — that
+     * must not be treated as an assignment column.
+     *
      * @param  class-string<Model>  $model
      */
     protected static function supportsScopeColumn(string $model): bool
     {
-        return static::$scopeSupportCache[$model] ??= Schema::hasColumn((new $model)->getTable(), 'scope');
+        return static::$scopeSupportCache[$model] ??= in_array(HasScopedModel::class, class_uses_recursive($model), true)
+            && Schema::hasColumn((new $model)->getTable(), 'scope');
     }
 }

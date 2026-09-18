@@ -75,7 +75,8 @@ class ScopeAssignmentValidator
     protected function isTargetScopeActive(string $targetScope): bool
     {
         if (! Schema::hasTable('scopes')) {
-            return true;
+            // Fail closed: without a scopes catalog, concrete scopes cannot be trusted.
+            return false;
         }
 
         $active = Scope::query()

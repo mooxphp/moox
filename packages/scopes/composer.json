@@ -1,11 +1,12 @@
 {
     "name": "moox/scopes",
-    "description": "This is my package scopes",
+    "description": "Filament admin UI for managing Moox scopes (visibility boundaries).",
     "keywords": [
+        "Moox",
         "Laravel",
         "Filament",
-        "Filament plugin",
-        "Laravel package"
+        "scopes",
+        "multi-tenancy"
     ],
     "homepage": "https://moox.org/",
     "license": "MIT",

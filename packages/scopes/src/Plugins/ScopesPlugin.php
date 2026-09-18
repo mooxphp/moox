@@ -7,7 +7,6 @@ namespace Moox\Scopes\Plugins;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Core\Support\Resources\ResourceNavigationRegistrar;
 use Moox\Scopes\Entities\Scopes\ScopeResource;
 
 class ScopesPlugin implements Plugin
@@ -21,7 +20,7 @@ class ScopesPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        ResourceNavigationRegistrar::register($panel, [
+        $panel->resources([
             ScopeResource::class,
         ]);
     }
