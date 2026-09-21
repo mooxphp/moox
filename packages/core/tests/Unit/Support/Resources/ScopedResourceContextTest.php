@@ -28,7 +28,7 @@ it('does not treat the scopes catalog identity column as an assignment filter', 
         ->and($after)->not->toContain('is null');
 });
 
-it('still restricts HasScopedModel global lists to unassigned rows', function (): void {
+it('does not restrict global HasScopedModel lists by scope', function (): void {
     Schema::create('scoped_context_items', function (Blueprint $table): void {
         $table->id();
         $table->string('scope')->nullable();
@@ -63,7 +63,7 @@ it('still restricts HasScopedModel global lists to unassigned rows', function ()
         ->pluck('id')
         ->all();
 
-    expect($ids)->toBe([1]);
+    expect($ids)->toBe([1, 2]);
 
     Schema::dropIfExists('scoped_context_items');
 });
