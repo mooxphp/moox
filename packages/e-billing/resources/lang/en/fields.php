@@ -25,6 +25,8 @@ return [
     'supplier_phone' => 'Supplier phone',
     'supplier_email' => 'Supplier email',
     'bank_accounts' => 'Bank accounts',
+    'payment_means' => 'Payment means code',
+    'vat_category' => 'VAT category code',
     'agent' => 'Agent',
     'payment_terms' => 'Payment terms',
     'delivery_terms' => 'Delivery terms',

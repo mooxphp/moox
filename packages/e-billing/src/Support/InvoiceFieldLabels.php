@@ -34,6 +34,8 @@ final class InvoiceFieldLabels
             'supplier_phone' => __('e-billing::fields.supplier_phone'),
             'supplier_email' => __('e-billing::fields.supplier_email'),
             'supplier_bank_accounts' => __('e-billing::fields.bank_accounts'),
+            'payment_means' => __('e-billing::fields.payment_means'),
+            'vat_category' => __('e-billing::fields.vat_category'),
             'agent' => __('e-billing::fields.agent'),
             'payment_terms' => __('e-billing::fields.payment_terms'),
             'delivery_terms' => __('e-billing::fields.delivery_terms'),
@@ -140,6 +142,7 @@ final class InvoiceFieldLabels
                 'surcharge_amount', 'material_test_certificate_price' => 'BG-28 / BT-141',
                 'surcharge_description' => 'BG-28 / BT-144',
                 'delivery_address' => 'BG-15',
+                'vat_category' => 'BT-151',
                 default => null,
             };
 
@@ -162,6 +165,10 @@ final class InvoiceFieldLabels
             'shipping_method' => 'BT-22',
             'notes' => 'BT-22',
             'agent' => 'BT-41',
+            'supplier_email' => 'BT-34',
+            'supplier_phone' => 'BT-42',
+            'payment_means' => 'BT-81',
+            'vat_category' => 'BT-118',
             'supplier_name' => 'BT-27',
             'supplier_vat_id' => 'BT-31',
             'supplier_tax_number' => 'BT-32',
@@ -262,4 +269,3 @@ final class InvoiceFieldLabels
         return is_string($matchedId) && $matchedId !== '';
     }
 }
-

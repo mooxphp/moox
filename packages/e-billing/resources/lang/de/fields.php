@@ -25,6 +25,8 @@ return [
     'supplier_phone' => 'Telefon Lieferant',
     'supplier_email' => 'E-Mail Lieferant',
     'bank_accounts' => 'Bankverbindungen',
+    'payment_means' => 'Zahlungsart-Code',
+    'vat_category' => 'Umsatzsteuer-Kategorie',
     'agent' => 'Vertreter',
     'payment_terms' => 'Zahlungsbedingungen',
     'delivery_terms' => 'Lieferbedingungen',

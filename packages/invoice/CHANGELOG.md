@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added
+- Nullable `vat_category` on invoices (`InvoiceDraft` / `InvoiceBuilder` / model / create-table stub) for the EN 16931 VAT category stamp (BT-118).
+
 ### Changed
 
 - Invoice and line `delivery` is now a consignee **party** (name + address) via `DeliveryPartyCast`, matching `buyer` / `seller`. Stored JSON is `{name, address}`; VAT identifier, tax number, and contact are never persisted on delivery. A data migration wraps existing address-shaped JSON and strips leftover VAT / tax / contact from already party-shaped rows ([#8](https://github.com/mooxphp/invoice/issues/8)).

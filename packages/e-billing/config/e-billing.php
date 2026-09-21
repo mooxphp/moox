@@ -213,6 +213,22 @@ return [
 
     'allowed_document_type_codes' => ['380', '381'],
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default payment means + VAT category (UNTDID)
+    |--------------------------------------------------------------------------
+    |
+    | Stamped onto every mapped invoice when the DTO does not override.
+    | ConfiguredEn16931CodeResolver fail-fast validates against moox/data
+    | static_payment_means (4461) and static_vat_categories (5305).
+    |
+    */
+
+    'payment_means_code' => env('EBILLING_PAYMENT_MEANS_CODE', '58'),
+    'vat_category_code' => env('EBILLING_VAT_CATEGORY_CODE', 'S'),
+
+
     /*
     |--------------------------------------------------------------------------
     | Preferred piece unit code (UN/ECE Rec 20)
@@ -590,6 +606,10 @@ return [
             'supplier_tax_number' => 'should', // BT-32
             'supplier_address' => 'must',    // BG-5
             'supplier_bank_accounts' => 'should', // BG-16 / BG-17 (BT-84 IBAN)
+            'supplier_email' => 'should', // BT-34 / BT-43
+            'supplier_phone' => 'should', // BT-42
+            'payment_means' => 'must', // BT-81
+            'vat_category' => 'must', // BT-118
 
             // Agent & terms
             'agent' => 'could',  // BT-41
@@ -620,6 +640,7 @@ return [
             'unit' => 'must',    // BT-130
             'unit_price' => 'must',    // BT-146
             'line_total' => 'must',    // BT-131
+            'vat_category' => 'must', // BT-151 (inherits header stamp)
 
             'article_number' => 'should',  // BT-155
             'material' => 'should',  // BG-32 / BT-160–161 (host-specific)
@@ -655,6 +676,8 @@ return [
             'payment_terms',
             'supplier_tax_number',
             'supplier_bank_accounts',
+            'supplier_email',
+            'supplier_phone',
             'delivery_date',
         ],
 

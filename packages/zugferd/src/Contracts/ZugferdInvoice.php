@@ -52,6 +52,8 @@ interface ZugferdInvoice
 
     public ?string $paymentMeansCode { get; }
 
+    public string $vatCategoryCode { get; }
+
     public float $vatRate { get; }
 
     public float $netTotal { get; }
