@@ -5,6 +5,11 @@ namespace Moox\Core\Services;
 class ScopeRegistry
 {
     /**
+     * @var array{origins: array<string, class-string|null>, sources: array<string, class-string|null>}|null
+     */
+    protected ?array $cachedRegistry = null;
+
+    /**
      * Build the scope registry by merging all package contributions
      * (declared in each package config under `scopes.registry`, legacy: `scope_registry`) and then
      * applying any application overrides from `core.scopes`.
@@ -12,6 +17,19 @@ class ScopeRegistry
      * @return array{origins: array<string, class-string|null>, sources: array<string, class-string|null>}
      */
     protected function registry(): array
+    {
+        return $this->cachedRegistry ??= $this->buildRegistry();
+    }
+
+    public function flush(): void
+    {
+        $this->cachedRegistry = null;
+    }
+
+    /**
+     * @return array{origins: array<string, class-string|null>, sources: array<string, class-string|null>}
+     */
+    protected function buildRegistry(): array
     {
         /** @var array{origins?: array<string, class-string|null>, sources?: array<string, class-string|null>} $merged */
         $merged = [

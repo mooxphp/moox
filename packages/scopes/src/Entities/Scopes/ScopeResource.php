@@ -15,6 +15,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Models\Concerns\HasScopedModel;
 use Moox\Core\Models\Scope;
@@ -23,6 +25,7 @@ use Moox\Core\Support\Scopes\ScopeValue;
 use Moox\Scopes\Entities\Scopes\Pages\CreateScope;
 use Moox\Scopes\Entities\Scopes\Pages\EditScope;
 use Moox\Scopes\Entities\Scopes\Pages\ListScopes;
+use Override;
 
 class ScopeResource extends BaseItemResource
 {
@@ -30,9 +33,26 @@ class ScopeResource extends BaseItemResource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-adjustments-horizontal';
 
-    protected static ?string $navigationLabel = 'Scopes';
+    public static function getModelLabel(): string
+    {
+        return (string) config('scopes.resources.scope.single', 'Scope');
+    }
 
-    protected static string|\UnitEnum|null $navigationGroup = 'DEV';
+    public static function getPluralModelLabel(): string
+    {
+        return (string) config('scopes.resources.scope.plural', 'Scopes');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return static::getPluralModelLabel();
+    }
+
+    #[Override]
+    protected static function resolveDefaultNavigationGroup(): ?string
+    {
+        return config('scopes.navigation_group');
+    }
 
     public static function enableView(): bool
     {
@@ -402,8 +422,8 @@ class ScopeResource extends BaseItemResource
                     if ($parsed) {
                         $contexts[] = $parsed->context();
                     }
-                } catch (\Throwable) {
-                    // ignore invalid derived scope
+                } catch (InvalidArgumentException) {
+                    continue;
                 }
             }
         }
@@ -480,6 +500,103 @@ class ScopeResource extends BaseItemResource
                 TernaryFilter::make('is_active')
                     ->label('Active'),
             ]);
+    }
+
+    /**
+     * Server-side whitelist for create payloads (UI options alone are not enough).
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public static function assertCreatePayloadIsAllowed(array $data): void
+    {
+        $origin = trim((string) ($data['origin'] ?? ''));
+        $source = trim((string) ($data['source'] ?? ''));
+        $context = trim((string) ($data['context'] ?? ''));
+        $boundary = trim((string) ($data['boundary'] ?? ''));
+        $scope = trim((string) ($data['scope'] ?? ''));
+
+        $errors = [];
+
+        if ($origin === '' || $source === '' || $context === '' || $boundary === '') {
+            $errors['scope'] = 'Origin, source, context and boundary are required.';
+        }
+
+        $registry = app(ScopeRegistry::class);
+
+        if ($origin !== '' && ! array_key_exists($origin, $registry->getOrigins())) {
+            $errors['origin'] = 'The selected origin is not registered.';
+        }
+
+        if ($origin !== '' && ! static::isOriginCreatable($origin, $registry)) {
+            $errors['origin'] = 'The selected origin is not available for scope creation.';
+        }
+
+        $allowedSources = $origin !== '' ? static::allowedSourcesForOrigin($origin) : [];
+        if ($source !== '' && ($allowedSources === [] || ! in_array($source, $allowedSources, true))) {
+            $errors['source'] = 'The selected source is not allowed for this origin.';
+        }
+
+        if ($source !== '' && ! array_key_exists($source, $registry->getSources()) && $source !== $origin) {
+            $errors['source'] = 'The selected source is not registered.';
+        }
+
+        $contextOptions = $source !== '' ? static::contextOptionsForSource($source) : [];
+        if ($context !== '' && ($contextOptions === [] || ! array_key_exists($context, $contextOptions))) {
+            $errors['context'] = 'The selected context is not allowed for this source.';
+        }
+
+        if ($boundary !== '' && ! in_array($boundary, ScopeValue::allowedBoundaries(), true)) {
+            $errors['boundary'] = 'The selected boundary is not allowed.';
+        }
+
+        $expectedScope = ($origin !== '' && $source !== '' && $context !== '' && $boundary !== '')
+            ? "{$origin}:{$source}:{$context}:{$boundary}"
+            : '';
+
+        if ($expectedScope !== '' && $scope !== $expectedScope) {
+            $errors['scope'] = 'The scope key does not match origin/source/context/boundary.';
+        }
+
+        if ($expectedScope !== '') {
+            try {
+                ScopeValue::parse($expectedScope);
+            } catch (InvalidArgumentException) {
+                $errors['scope'] = 'The scope key is invalid.';
+            }
+        }
+
+        if ($errors !== []) {
+            throw ValidationException::withMessages($errors);
+        }
+    }
+
+    /**
+     * Origin is creatable when its model is registered with HasScopedModel.
+     * When a Filament panel is available, the origin resource must also be registered.
+     */
+    protected static function isOriginCreatable(string $origin, ScopeRegistry $registry): bool
+    {
+        $modelClass = $registry->resolveOriginModel($origin);
+
+        if (! $modelClass || ! class_exists($modelClass)) {
+            return false;
+        }
+
+        if (! in_array(HasScopedModel::class, class_uses_recursive($modelClass), true)) {
+            return false;
+        }
+
+        try {
+            $panel = filament()->getCurrentPanel();
+        } catch (\Throwable) {
+            return true;
+        }
+
+        if ($panel === null) {
+            return true;
+        }
+
+        return static::isOriginResourceRegistered($origin, $registry);
     }
 
     public static function getPages(): array

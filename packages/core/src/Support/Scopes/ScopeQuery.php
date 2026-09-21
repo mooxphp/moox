@@ -10,6 +10,20 @@ class ScopeQuery
 {
     protected static ?bool $hasScopesTable = null;
 
+    /**
+     * Restrict to global / unassigned rows only (`scope` NULL or empty string).
+     */
+    public static function applyUnassigned(Builder $query, ?string $column = null): Builder
+    {
+        $qualifiedColumn = static::qualifyColumn($query, $column);
+
+        return $query->where(function (Builder $builder) use ($qualifiedColumn): void {
+            $builder
+                ->whereNull($qualifiedColumn)
+                ->orWhere($qualifiedColumn, '');
+        });
+    }
+
     public static function applyExact(Builder $query, string|ScopeValue $scope, ?string $column = null): Builder
     {
         $parsedScope = ScopeValue::parse($scope);

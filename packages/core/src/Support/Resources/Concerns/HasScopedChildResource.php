@@ -111,7 +111,43 @@ trait HasScopedChildResource
             ->label('Scope')
             ->options(fn (?Model $record) => static::getAssignableScopeOptionsForRecord($record))
             ->default(fn (?Model $record) => static::getDefaultAssignableScopeForRecord($record))
-            ->dehydrateStateUsing(fn ($state) => $state === static::ASSIGN_GLOBAL_SCOPE ? null : $state);
+            ->dehydrateStateUsing(fn ($state) => $state === static::ASSIGN_GLOBAL_SCOPE ? null : $state)
+            ->rules([
+                fn (Select $component): \Closure => function (string $attribute, mixed $value, \Closure $fail) use ($component): void {
+                    if ($value === null || $value === '' || $value === static::ASSIGN_GLOBAL_SCOPE) {
+                        return;
+                    }
+
+                    if (! is_string($value)) {
+                        $fail('The selected scope is invalid.');
+
+                        return;
+                    }
+
+                    $record = $component->getRecord();
+
+                    if (! $record instanceof Model) {
+                        $modelClass = static::getModel();
+                        $record = new $modelClass;
+                    }
+
+                    if (! static::recordSupportsScopeColumn($record)) {
+                        $fail('This record is not scopable.');
+
+                        return;
+                    }
+
+                    $validation = app(ScopeAssignmentValidator::class)->validate(
+                        $record,
+                        $value,
+                        Auth::user(),
+                    );
+
+                    if (! ($validation['allowed'] ?? false)) {
+                        $fail((string) ($validation['reason'] ?? 'The selected scope is not allowed.'));
+                    }
+                },
+            ]);
     }
 
     public static function getScopeTableColumn(string $name = 'scope'): TextColumn
@@ -273,11 +309,23 @@ trait HasScopedChildResource
             ]])
             ->toArray();
 
-        foreach ($rows as $scope => $row) {
-            $parsed = ScopeValue::parse($scope);
-            if ($parsed === null) {
-                $options[$scope] = $scope;
+        $validator = app(ScopeAssignmentValidator::class);
+        $actor = Auth::user();
+        $probe = static::getModel()::make();
 
+        foreach ($rows as $scope => $row) {
+            try {
+                $parsed = ScopeValue::parse($scope);
+            } catch (\InvalidArgumentException) {
+                continue;
+            }
+
+            if ($parsed === null) {
+                continue;
+            }
+
+            $validation = $validator->validate($probe, $scope, $actor);
+            if (! ($validation['allowed'] ?? false)) {
                 continue;
             }
 

@@ -174,7 +174,7 @@ Resources that extend `Moox\Core\Entities\BaseResource` automatically get:
 Effect:
 
 - **scoped list view** → filtered by `exact` or `context`
-- **global list view** → only `scope IS NULL OR scope=''`
+- **global list view** → no scope filter (unassigned and scoped records)
 - **scoped child navigation** → automatically resolved from DB (no boilerplate methods needed per resource)
 
 If a resource needs a custom navigation group, override `resolveDefaultNavigationGroup()`:
