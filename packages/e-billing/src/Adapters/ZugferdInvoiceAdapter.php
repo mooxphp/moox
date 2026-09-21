@@ -149,7 +149,20 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
     }
 
     public ?string $paymentMeansCode {
-        get => $this->model->payment_means?->payment_means_code;
+        get {
+            $means = $this->model->payment_means;
+            if ($means === null) {
+                return null;
+            }
+
+            $code = trim((string) ($means->payment_means_code ?? ''));
+
+            return $code !== '' ? $code : null;
+        }
+    }
+
+    public string $vatCategoryCode {
+        get => trim((string) ($this->model->vat_category ?? ''));
     }
 
     public float $vatRate {

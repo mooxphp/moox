@@ -456,3 +456,13 @@ Thanks to so many [people for their contributions](https://github.com/mooxphp/mo
 ## License
 
 The MIT License (MIT). Please see [our license and copyright information](https://github.com/mooxphp/moox/blob/main/LICENSE.md) for more information.
+
+## Payment means and VAT category defaults
+
+| Config key | Default | Codelist |
+|---|---|---|
+| `e-billing.payment_means_code` | `58` (SEPA) | UNTDID 4461 via `moox/data` |
+| `e-billing.vat_category_code` | `S` (standard) | UNTDID 5305 via `moox/data` |
+
+`ConfiguredEn16931CodeResolver` validates these at stamp/resolve time (fail fast if the code is blank, unknown, or the static table is empty — run `php artisan moox:data:import-codelists`). The values are stamped onto each mapped invoice (`payment_means.payment_means_code`, `vat_category`); lines inherit the header VAT category for MoSCoW BT-151.
+

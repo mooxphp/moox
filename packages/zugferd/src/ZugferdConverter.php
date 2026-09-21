@@ -215,6 +215,10 @@ class ZugferdConverter
         $this->setSeller($document, $invoice);
         $this->setBuyer($document, $invoice);
         $this->setDelivery($document, $invoice);
+        if (trim($invoice->vatCategoryCode) === '') {
+            throw new IncompleteInvoiceException('Missing required field: vatCategoryCode (BT-118).');
+        }
+
         $this->setPaymentInfo($document, $invoice);
         $this->addLineItems($document, $invoice, $profileKey);
         $this->addAllowanceCharges($document, $invoice);
@@ -354,6 +358,11 @@ class ZugferdConverter
             throw new IncompleteInvoiceException('Missing required field: bankAccounts (at least one payment means bank account).');
         }
 
+        $paymentMeansCode = trim((string) $invoice->paymentMeansCode);
+        if ($paymentMeansCode === '') {
+            throw new IncompleteInvoiceException('Missing required field: paymentMeansCode (BT-81).');
+        }
+
         foreach ($invoice->bankAccounts as $account) {
             $iban = trim($account->iban);
             if ($iban === '') {
@@ -361,7 +370,7 @@ class ZugferdConverter
             }
 
             $doc->addDocumentPaymentMean(
-                $invoice->paymentMeansCode ?? '58',
+                $paymentMeansCode,
                 null,
                 null,
                 null,
@@ -409,7 +418,7 @@ class ZugferdConverter
             // Line total WITHOUT surcharges (surcharges go to document level)
             $doc->setDocumentPositionLineSummation($line->lineTotal);
 
-            $doc->addDocumentPositionTax('S', 'VAT', $invoice->vatRate);
+            $doc->addDocumentPositionTax($invoice->vatCategoryCode, 'VAT', $invoice->vatRate);
 
             $this->setLineDeliveryDate($doc, $line->deliveryDate, $emitLineActualDelivery);
         }
@@ -446,7 +455,7 @@ class ZugferdConverter
             $doc->addDocumentAllowanceCharge(
                 $item->amount,
                 $item->isCharge,
-                'S',
+                $invoice->vatCategoryCode,
                 'VAT',
                 $invoice->vatRate,
                 null,
@@ -510,7 +519,7 @@ class ZugferdConverter
             $invoice->vatAmount,           // taxTotalAmount (BT-110)
         );
 
-        $doc->addDocumentTax('S', 'VAT', $invoice->netTotal, $invoice->vatAmount, $invoice->vatRate);
+        $doc->addDocumentTax($invoice->vatCategoryCode, 'VAT', $invoice->netTotal, $invoice->vatAmount, $invoice->vatRate);
     }
 
     // ─── Helper functions ─────────────────────────────────────────

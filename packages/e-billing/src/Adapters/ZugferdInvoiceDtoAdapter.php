@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\EBilling\Adapters;
 
 use Moox\EBilling\Data\Invoice;
+use Moox\EBilling\Support\ConfiguredEn16931CodeResolver;
 use Moox\EBilling\Support\InvoiceDocumentNotes;
 use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
@@ -63,6 +64,8 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
 
     public ?string $paymentMeansCode;
 
+    public string $vatCategoryCode;
+
     public float $vatRate;
 
     public float $netTotal;
@@ -109,7 +112,9 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
         $shipToName = $deliveryAddress?->company;
         $this->shipToName = $shipToName !== null && trim($shipToName) !== '' ? trim($shipToName) : null;
         $this->shipToAddress = $deliveryAddress;
-        $this->paymentMeansCode = $invoice->paymentMeansCode;
+        $this->paymentMeansCode = $invoice->paymentMeansCode
+            ?? app(ConfiguredEn16931CodeResolver::class)->paymentMeansCodeFromConfig();
+        $this->vatCategoryCode = app(ConfiguredEn16931CodeResolver::class)->vatCategoryCodeFromConfig();
         $this->vatRate = $invoice->vatRate;
         $this->netTotal = $invoice->netTotal;
         $this->vatAmount = $invoice->vatAmount;

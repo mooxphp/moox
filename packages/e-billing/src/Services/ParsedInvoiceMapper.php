@@ -11,6 +11,7 @@ use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceCreated;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\ConfiguredEn16931CodeResolver;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceLine;
@@ -30,12 +31,18 @@ class ParsedInvoiceMapper
     public function __construct(
         private readonly InvoiceBuilder $invoiceBuilder = new InvoiceBuilder,
         private readonly ?DocumentTypeCodeResolver $documentTypeCodeResolver = null,
+        private readonly ?ConfiguredEn16931CodeResolver $configuredEn16931CodeResolver = null,
     ) {
     }
 
     private function documentTypeCodeResolver(): DocumentTypeCodeResolver
     {
         return $this->documentTypeCodeResolver ??= app(DocumentTypeCodeResolver::class);
+    }
+
+    private function configuredEn16931CodeResolver(): ConfiguredEn16931CodeResolver
+    {
+        return $this->configuredEn16931CodeResolver ?? app(ConfiguredEn16931CodeResolver::class);
     }
 
     // Extend Invoice in your host app if needed
@@ -125,6 +132,7 @@ class ParsedInvoiceMapper
             buyer: $this->mapBuyer($dto),
             delivery: $dto->deliveryAddress?->toEn16931DeliveryParty(),
             payment_means: $this->mapPaymentMeans($dto),
+            vat_category: $this->configuredEn16931CodeResolver()->vatCategoryCodeFromConfig(),
             lines: array_map(
                 fn (InvoiceLineDto $lineDto): InvoiceLineDraft => $this->buildLineDraftFromDto($lineDto),
                 $dto->lines,
@@ -224,12 +232,8 @@ class ParsedInvoiceMapper
         );
     }
 
-    private function mapPaymentMeans(InvoiceDto $dto): ?PaymentMeans
+    private function mapPaymentMeans(InvoiceDto $dto): PaymentMeans
     {
-        if ($dto->bankAccounts() === []) {
-            return null;
-        }
-
         $bankAccounts = [];
 
         foreach ($dto->bankAccounts() as $account) {
@@ -242,7 +246,7 @@ class ParsedInvoiceMapper
         }
 
         return new PaymentMeans(
-            payment_means_code: '58',
+            payment_means_code: $this->configuredEn16931CodeResolver()->resolvePaymentMeansCode($dto->paymentMeansCode),
             bank_accounts: $bankAccounts,
         );
     }
