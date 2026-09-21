@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Models;
 
+use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -19,8 +20,6 @@ use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Moox\Company\Models\Company;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
-use Filament\Facades\Filament;
-use Throwable;
 use Moox\Core\Traits\MorphPivot\HasMorphPivotRelations;
 use Moox\Customer\Models\Customer;
 use Moox\EBilling\Enums\AttributionSource;
@@ -36,6 +35,7 @@ use Moox\MailInbox\Models\InboxAttachment;
 use Moox\MailInbox\Models\InboxMessage;
 use Moox\VeraPdf\Models\VeraPdfValidation;
 use RuntimeException;
+use Throwable;
 
 /**
  * Temporary duplication: review/score methods below mirror legacy {@see Invoice}
@@ -947,7 +947,27 @@ class EbillingDocument extends BaseItemModel
         return $query->where('approval_status', DocumentApprovalStatus::Pending->value);
     }
 
+    /**
+     * Configured must fields whose stored status is missing (invoice + lines).
+     * Confirm hard-block only — see ADR docs/adr/0005-confirm-gate-must-missing-only.md.
+     *
+     * @return list<string>
+     */
+    public static function missingMustFields(?array $fieldValidations): array
+    {
+        return self::mustFieldsWithStatuses($fieldValidations, ['missing']);
+    }
+
     public static function hasBlockingMustFieldFindings(?array $fieldValidations): bool
+    {
+        return self::mustFieldsWithStatuses($fieldValidations, ['missing', 'needs_review']) !== [];
+    }
+
+    /**
+     * @param  list<string>  $statuses
+     * @return list<string>
+     */
+    private static function mustFieldsWithStatuses(?array $fieldValidations, array $statuses): array
     {
         $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
         $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
@@ -960,6 +980,7 @@ class EbillingDocument extends BaseItemModel
         }
 
         $validations = is_array($fieldValidations) ? $fieldValidations : [];
+        $matched = [];
 
         foreach ($invoiceFields as $field => $priority) {
             if (! is_string($field) || $priority !== 'must') {
@@ -967,8 +988,8 @@ class EbillingDocument extends BaseItemModel
             }
 
             $status = self::readFieldStatusFromValidations($validations, $field);
-            if (in_array($status, ['missing', 'needs_review'], true)) {
-                return true;
+            if (in_array($status, $statuses, true)) {
+                $matched[] = $field;
             }
         }
 
@@ -979,13 +1000,13 @@ class EbillingDocument extends BaseItemModel
                 }
 
                 $status = self::readFieldStatusFromValidations($lineFieldValidations, $field);
-                if (in_array($status, ['missing', 'needs_review'], true)) {
-                    return true;
+                if (in_array($status, $statuses, true)) {
+                    $matched[] = $field;
                 }
             }
         }
 
-        return false;
+        return array_values(array_unique($matched));
     }
 
     public function hasSeverityRelease(string $field, ?string $lineId = null): bool

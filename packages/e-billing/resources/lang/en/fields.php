@@ -231,6 +231,7 @@ return [
     'notification_confirmed_body_with_versions' => 'Version :version is now current. :count previous current version(s) remain stored as older versions.',
     'notification_confirm_failed_title' => 'Confirmation not possible',
     'notification_confirm_failed_body' => 'The invoice is not in status "Automatically pre-reviewed".',
+    'notification_confirm_failed_missing_must_body' => 'Confirmation is not possible because required fields are missing: :fields.',
     'notification_attribution_updated_title' => 'Attribution updated',
     'notification_attribution_updated_body' => 'The document attribution was saved as a manual match.',
     'notification_rematch_success_title' => 'Matching re-run',

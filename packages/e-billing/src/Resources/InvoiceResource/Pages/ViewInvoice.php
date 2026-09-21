@@ -26,6 +26,7 @@ use Moox\EBilling\Approval\DocumentDispatchGuard;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\InvoiceResource;
+use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\EBilling\ViewModels\InvoiceViewModel;
 use Moox\Invoice\Models\Invoice;
 use Throwable;
@@ -146,9 +147,19 @@ class ViewInvoice extends ViewRecord
                         $record->refresh();
                         $record->load('ebillingDocument');
                     } else {
+                        $missingMust = $result['missing_must_fields'];
+                        $body = $missingMust !== []
+                            ? __('e-billing::fields.notification_confirm_failed_missing_must_body', [
+                                'fields' => implode(', ', array_map(
+                                    static fn (string $field): string => InvoiceFieldLabels::label($field),
+                                    $missingMust,
+                                )),
+                            ])
+                            : __('e-billing::fields.notification_confirm_failed_body');
+
                         Notification::make()
                             ->title(__('e-billing::fields.notification_confirm_failed_title'))
-                            ->body(__('e-billing::fields.notification_confirm_failed_body'))
+                            ->body($body)
                             ->warning()
                             ->send();
                     }

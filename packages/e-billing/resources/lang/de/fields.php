@@ -231,6 +231,7 @@ return [
     'notification_confirmed_body_with_versions' => 'Fassung :version ist jetzt die aktuelle. :count vorherige aktuelle Fassung(en) bleiben als ältere Versionen erhalten.',
     'notification_confirm_failed_title' => 'Bestätigung nicht möglich',
     'notification_confirm_failed_body' => 'Die Rechnung befindet sich nicht im Status „Automatisch vorgeprüft“.',
+    'notification_confirm_failed_missing_must_body' => 'Bestätigung nicht möglich — Pflichtfelder fehlen: :fields.',
     'notification_attribution_updated_title' => 'Zuordnung aktualisiert',
     'notification_attribution_updated_body' => 'Die Dokument-Zuordnung wurde als manuell gespeichert.',
     'notification_rematch_success_title' => 'Zuordnung erneut ausgeführt',
