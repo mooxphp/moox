@@ -122,7 +122,8 @@ class MailTestingPage extends Page
                                 ->orderBy('slug')
                                 ->pluck('slug', 'id')
                                 ->all())
-                            ->searchable(),
+                            ->searchable()
+                            ->columnSpanFull(),
                         TextInput::make('count')
                             ->label(__('mail-testing::translations.count'))
                             ->numeric()
@@ -165,6 +166,7 @@ class MailTestingPage extends Page
                 Section::make(__('mail-testing::translations.fieldset_variables'))
                     ->description(__('mail-testing::translations.fieldset_variables_help'))
                     ->icon('heroicon-o-queue-list')
+                    ->collapsed()
                     ->columns(['default' => 1, 'md' => 2])
                     ->schema([
                         ToggleButtons::make('recipient_mode')
