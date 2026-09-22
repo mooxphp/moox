@@ -81,7 +81,8 @@ final class BillDataAllowanceChargeMapper
             $items[] = new AllowanceCharge(
                 isCharge: true,
                 amount: $materialTestCertificatePrice,
-                reasonText: $materialTestCertificate ?? 'Materialprüfzeugnis',
+                reasonCode: 'CAE',
+                reasonText: $materialTestCertificate ?? 'Material test certificate',
             );
         }
 

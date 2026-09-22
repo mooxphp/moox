@@ -1,6 +1,13 @@
 # Changelog
 
 ## Unreleased
+### Added
+- ADR 0020 emission wiring: `ZugferdInvoice` / line adapters expose `shipTo*`, trade refs, `itemAttributes` / `itemClassifications`; `LineItemAttributeMapper` maps material, weights (kg text), unpriced certificate → BG-32 and customs tariff → BT-158 `HS`.
+- `InvoiceDocumentNotes` includes `order_date` as BT-22 free text (no OrderReference IssueDate / UBL-CR-018).
+- Certificate line charges persist / default UNCL 7161 `CAE` (`BillDataAllowanceChargeMapper`, `InvoiceFactory`, model adapter fallback).
+- `DeliveryDateTransmission` reads DTO `deliveryDate`; `ZugferdInvoiceDtoAdapter` promotes a single shared line date to document BT-72 like the model adapter.
+- Feature coverage: `ZugferdOmitDuplicateConsigneeXmlTest` (omit, VAT K buyer fallback, promote, BT-127, BG-32/BT-158, CAE, BT-132, order_date notes).
+
 
 ### Added
 - **Foreign disposition** (`e-billing.foreign.disposition` / `EBILLING_FOREIGN_DISPOSITION`): `ignore` (default) or `forward` (Source-PDF relay to inbox To). See ADR 0006.

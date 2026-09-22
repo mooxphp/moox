@@ -128,6 +128,26 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
         }
     }
 
+    public ?string $purchaseOrderReference {
+        get {
+            $value = trim((string) ($this->model->order_number ?? ''));
+
+            return $value !== '' ? $value : null;
+        }
+    }
+
+    public ?string $despatchAdviceReference {
+        get => null;
+    }
+
+    public ?string $purchaseOrderDate {
+        get {
+            $value = trim((string) ($this->model->order_date ?? ''));
+
+            return $value !== '' ? $value : null;
+        }
+    }
+
     public ?string $shipToName {
         get {
             $name = $this->model->delivery?->name;

@@ -88,6 +88,11 @@ final class LineAllowanceChargeResolver
         InvoiceAllowanceCharge $charge,
         ?InvoiceLine $line = null,
     ): bool {
+        $reasonCode = self::normalizeString($charge->reason_code);
+        if (strcasecmp($reasonCode, 'CAE') === 0) {
+            return true;
+        }
+
         $label = self::normalizeString($charge->reason_text);
         $lineModel = $line ?? ($charge->chargeable instanceof InvoiceLine ? $charge->chargeable : null);
         $certificate = self::normalizeString($lineModel !== null
@@ -98,7 +103,10 @@ final class LineAllowanceChargeResolver
             return true;
         }
 
-        return strcasecmp($label, 'Materialprüfzeugnis') === 0;
+        // Legacy German authoring defaults + current English default
+        return strcasecmp($label, 'Materialprüfzeugnis') === 0
+            || strcasecmp($label, 'Werkszeugnis') === 0
+            || strcasecmp($label, 'Material test certificate') === 0;
     }
 
     private static function normalizeString(?string $value): string

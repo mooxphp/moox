@@ -13,8 +13,10 @@ use InvalidArgumentException;
 use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdInvoice;
+use Moox\Zugferd\Contracts\ZugferdInvoiceLine;
 use Moox\Zugferd\Exceptions\IncompleteInvoiceException;
 use Moox\Zugferd\Support\FlexibleDateParser;
+use Moox\Zugferd\Support\ShipToPartyEquality;
 use Symfony\Component\Process\Process;
 
 class ZugferdConverter
@@ -214,6 +216,7 @@ class ZugferdConverter
         $this->setDocumentNotes($document, $invoice);
         $this->setSeller($document, $invoice);
         $this->setBuyer($document, $invoice);
+        $this->setTradeReferences($document, $invoice);
         $this->setDelivery($document, $invoice);
         if (trim($invoice->vatCategoryCode) === '') {
             throw new IncompleteInvoiceException('Missing required field: vatCategoryCode (BT-118).');
@@ -326,30 +329,295 @@ class ZugferdConverter
             $doc->setDocumentSupplyChainEvent($deliveryDate);
         }
 
-        $name = $invoice->shipToName;
-        $trimmedName = $name !== null ? trim($name) : '';
-        $address = $invoice->shipToAddress;
+        [$shipToName, $shipToAddress] = $this->resolveEffectiveShipTo($invoice);
+
+        $omitDuplicate = ShipToPartyEquality::equals(
+            $shipToName,
+            $shipToAddress,
+            $invoice->customerName,
+            $invoice->customerAddress,
+        );
+
+        $forceDeliverToForIntraCommunity = strtoupper(trim($invoice->vatCategoryCode)) === 'K';
+
+        if ($omitDuplicate && ! $forceDeliverToForIntraCommunity) {
+            return;
+        }
+
+        $trimmedName = $shipToName !== null ? trim($shipToName) : '';
+        $address = $shipToAddress;
         $country = $address !== null ? trim((string) ($address->country ?? '')) : '';
         $hasName = $trimmedName !== '';
         $hasCountry = $address !== null && $country !== '';
 
-        if ($hasName || $hasCountry) {
-            $doc->setDocumentShipTo($hasName ? $trimmedName : null);
+        // BR-IC-12: VAT K still needs a full BG-15; buyer postal is acceptable when nothing else exists.
+        if (! $hasName && ! $hasCountry && $forceDeliverToForIntraCommunity) {
+            $shipToName = $invoice->customerName;
+            $shipToAddress = $invoice->customerAddress;
+            $trimmedName = $shipToName !== null ? trim($shipToName) : '';
+            $address = $shipToAddress;
+            $country = $address !== null ? trim((string) ($address->country ?? '')) : '';
+            $hasName = $trimmedName !== '';
+            $hasCountry = $address !== null && $country !== '';
+        }
 
-            if ($hasCountry) {
-                [$lineOne, $lineTwo, $lineThree] = $this->buildAddressLines($address);
-                $doc->setDocumentShipToAddress(
-                    $lineOne,
-                    $lineTwo,
-                    $lineThree,
-                    $address->zip ?? '',
-                    $address->city ?? '',
-                    $address->country ?? '',
-                );
-            }
+        if (! $hasName && ! $hasCountry) {
+            return;
+        }
+
+        $doc->setDocumentShipTo($hasName ? $trimmedName : null);
+
+        if ($hasCountry) {
+            [$lineOne, $lineTwo, $lineThree] = $this->buildAddressLines($address);
+            $doc->setDocumentShipToAddress(
+                $lineOne,
+                $lineTwo,
+                $lineThree,
+                $address->zip ?? '',
+                $address->city ?? '',
+                $address->country ?? '',
+            );
         }
     }
 
+    /**
+     * @return array{0: ?string, 1: ?\Moox\Zugferd\Contracts\ZugferdAddress}
+     */
+    private function resolveEffectiveShipTo(ZugferdInvoice $invoice): array
+    {
+        $headerName = $invoice->shipToName;
+        $headerAddress = $invoice->shipToAddress;
+        $trimmedHeaderName = $headerName !== null ? trim($headerName) : '';
+        $headerCountry = $headerAddress !== null ? trim((string) ($headerAddress->country ?? '')) : '';
+
+        if ($trimmedHeaderName !== '' || $headerCountry !== '') {
+            return [$trimmedHeaderName !== '' ? $trimmedHeaderName : null, $headerAddress];
+        }
+
+        return $this->promotedShipToFromLines($invoice);
+    }
+
+    /**
+     * When header consignee is empty and every line shares one ship-to party that is not the buyer,
+     * promote that party to document BG-13 (ADR 0020).
+     *
+     * @return array{0: ?string, 1: ?\Moox\Zugferd\Contracts\ZugferdAddress}
+     */
+    private function promotedShipToFromLines(ZugferdInvoice $invoice): array
+    {
+        $candidateName = null;
+        $candidateAddress = null;
+        $seen = false;
+
+        foreach ($invoice->lines as $line) {
+            $name = $line->shipToName;
+            $address = $line->shipToAddress;
+            $trimmed = is_string($name) ? trim($name) : '';
+            $country = $address !== null ? trim((string) ($address->country ?? '')) : '';
+            if ($trimmed === '' && $country === '') {
+                return [null, null];
+            }
+
+            $effectiveName = $trimmed !== '' ? $trimmed : null;
+
+            if (! $seen) {
+                $candidateName = $effectiveName;
+                $candidateAddress = $address;
+                $seen = true;
+
+                continue;
+            }
+
+            if (! ShipToPartyEquality::equals($candidateName, $candidateAddress, $effectiveName, $address)) {
+                return [null, null];
+            }
+        }
+
+        if (! $seen) {
+            return [null, null];
+        }
+
+        if (ShipToPartyEquality::equals(
+            $candidateName,
+            $candidateAddress,
+            $invoice->customerName,
+            $invoice->customerAddress,
+        )) {
+            return [null, null];
+        }
+
+        return [$candidateName, $candidateAddress];
+    }
+
+    private function setTradeReferences(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
+    {
+        $orderRef = $invoice->purchaseOrderReference !== null ? trim($invoice->purchaseOrderReference) : '';
+        if ($orderRef !== '') {
+            // IssueDate forbidden in core EN 16931 (UBL-CR-018).
+            $doc->setDocumentBuyerOrderReferencedDocument($orderRef, null);
+        }
+
+        $despatch = $invoice->despatchAdviceReference !== null ? trim($invoice->despatchAdviceReference) : '';
+        if ($despatch === '') {
+            $despatch = $this->commonLineDeliveryNoteNumber($invoice) ?? '';
+        }
+        if ($despatch !== '') {
+            $doc->setDocumentDespatchAdviceReferencedDocument($despatch, null);
+        }
+    }
+
+    private function commonLineDeliveryNoteNumber(ZugferdInvoice $invoice): ?string
+    {
+        $candidate = null;
+        foreach ($invoice->lines as $line) {
+            $value = $line->deliveryNoteNumber !== null ? trim($line->deliveryNoteNumber) : '';
+            if ($value === '') {
+                continue;
+            }
+            if ($candidate === null) {
+                $candidate = $value;
+
+                continue;
+            }
+            if ($candidate !== $value) {
+                return null;
+            }
+        }
+
+        return $candidate;
+    }
+
+    private function emitLinePurchaseOrderLineReference(
+        ZugferdDocumentBuilder $doc,
+        ZugferdInvoice $invoice,
+        ZugferdInvoiceLine $line,
+    ): void {
+        $lineId = $line->purchaseOrderLineReference !== null ? trim($line->purchaseOrderLineReference) : '';
+        if ($lineId === '') {
+            return;
+        }
+
+        $issuerAssignedId = $invoice->purchaseOrderReference !== null
+            ? trim($invoice->purchaseOrderReference)
+            : '';
+
+        $doc->setDocumentPositionBuyerOrderReferencedDocument($issuerAssignedId, $lineId);
+    }
+
+    private function emitLineProductFacts(ZugferdDocumentBuilder $doc, ZugferdInvoiceLine $line): void
+    {
+        foreach ($line->itemAttributes as $attribute) {
+            $name = trim($attribute->name);
+            $value = trim($attribute->value);
+            if ($name === '' || $value === '') {
+                continue;
+            }
+            $doc->addDocumentPositionProductCharacteristic($name, $value);
+        }
+
+        foreach ($line->itemClassifications as $classification) {
+            $code = trim($classification->code);
+            $scheme = trim($classification->schemeId);
+            if ($code === '' || $scheme === '') {
+                continue;
+            }
+            $doc->addDocumentPositionProductClassification(
+                $code,
+                null,
+                $scheme,
+                $classification->schemeVersionId,
+            );
+        }
+    }
+
+    private function emitLineShipToAndReferenceNotes(
+        ZugferdDocumentBuilder $doc,
+        ZugferdInvoice $invoice,
+        ZugferdInvoiceLine $line,
+    ): void {
+        $parts = [];
+
+        [$effectiveName, $effectiveAddress] = $this->resolveEffectiveShipTo($invoice);
+        $baselineName = $effectiveName;
+        $baselineAddress = $effectiveAddress;
+        if ($baselineName === null && $baselineAddress === null) {
+            $baselineName = $invoice->customerName;
+            $baselineAddress = $invoice->customerAddress;
+        }
+
+        $lineName = $line->shipToName;
+        $lineAddress = $line->shipToAddress;
+        $lineTrimmed = is_string($lineName) ? trim($lineName) : '';
+        $lineCountry = $lineAddress !== null ? trim((string) ($lineAddress->country ?? '')) : '';
+        $hasLineShipTo = $lineTrimmed !== '' || $lineCountry !== '';
+
+        if ($hasLineShipTo && ! ShipToPartyEquality::equals(
+            $lineTrimmed !== '' ? $lineTrimmed : null,
+            $lineAddress,
+            $baselineName,
+            $baselineAddress,
+        )) {
+            $parts[] = $this->formatConsigneeNote($lineTrimmed !== '' ? $lineTrimmed : null, $lineAddress);
+        }
+
+        $headerOrder = $invoice->purchaseOrderReference !== null ? trim($invoice->purchaseOrderReference) : '';
+        $lineOrderDoc = $line->orderDocumentReference !== null ? trim($line->orderDocumentReference) : '';
+        if ($lineOrderDoc !== '' && $lineOrderDoc !== $headerOrder) {
+            $parts[] = 'Purchase order: '.$lineOrderDoc;
+        }
+
+        $lineOrderDate = $line->purchaseOrderDate !== null ? trim($line->purchaseOrderDate) : '';
+        if ($lineOrderDate !== '') {
+            $parts[] = 'Order date: '.$lineOrderDate;
+        }
+
+        $commonDn = $this->commonLineDeliveryNoteNumber($invoice);
+        $lineDn = $line->deliveryNoteNumber !== null ? trim($line->deliveryNoteNumber) : '';
+        if ($lineDn !== '' && ($commonDn === null || $lineDn !== $commonDn)) {
+            $parts[] = 'Despatch advice: '.$lineDn;
+        }
+
+        $note = trim(implode('; ', array_filter($parts)));
+        if ($note !== '') {
+            $doc->setDocumentPositionNote($note);
+        }
+    }
+
+    private function formatConsigneeNote(?string $name, ?ZugferdAddress $address): string
+    {
+        $chunks = [];
+        if ($name !== null && trim($name) !== '') {
+            $chunks[] = trim($name);
+        }
+        if ($address !== null) {
+            [$l1, $l2, $l3] = $this->buildAddressLines($address);
+            foreach ([$l1, $l2, $l3, $address->zip ?? '', $address->city ?? '', $address->country ?? ''] as $part) {
+                $part = trim((string) $part);
+                if ($part !== '') {
+                    $chunks[] = $part;
+                }
+            }
+        }
+
+        return 'Consignee: '.implode(', ', $chunks);
+    }
+
+    private function emitLineAllowanceCharges(ZugferdDocumentBuilder $doc, ZugferdInvoiceLine $line): void
+    {
+        foreach ($line->allowanceCharges as $item) {
+            if ($item->amount <= 0) {
+                continue;
+            }
+            $doc->addDocumentPositionAllowanceCharge(
+                $item->amount,
+                $item->isCharge,
+                $item->percentage,
+                $item->basisAmount,
+                $item->reasonCode,
+                $item->reasonText,
+            );
+        }
+    }
     // ─── Payment (BG-16) ────────────────────────────────────────
 
     private function setPaymentInfo(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
@@ -421,6 +689,10 @@ class ZugferdConverter
             $doc->addDocumentPositionTax($invoice->vatCategoryCode, 'VAT', $invoice->vatRate);
 
             $this->setLineDeliveryDate($doc, $line->deliveryDate, $emitLineActualDelivery);
+            $this->emitLinePurchaseOrderLineReference($doc, $invoice, $line);
+            $this->emitLineProductFacts($doc, $line);
+            $this->emitLineShipToAndReferenceNotes($doc, $invoice, $line);
+            $this->emitLineAllowanceCharges($doc, $line);
         }
     }
 
@@ -474,15 +746,7 @@ class ZugferdConverter
      */
     private function collectAllowanceCharges(ZugferdInvoice $invoice): array
     {
-        $items = $invoice->allowanceCharges;
-
-        foreach ($invoice->lines as $line) {
-            foreach ($line->allowanceCharges as $lineItem) {
-                $items[] = $lineItem;
-            }
-        }
-
-        return $items;
+        return $invoice->allowanceCharges;
     }
 
     // ─── Totals (BG-22) ─────────────────────────────────────────
@@ -506,6 +770,20 @@ class ZugferdConverter
                 $chargeTotal += $item->amount;
             } else {
                 $allowanceTotal += $item->amount;
+            }
+        }
+
+        foreach ($invoice->lines as $line) {
+            foreach ($line->allowanceCharges as $item) {
+                if ($item->amount <= 0) {
+                    continue;
+                }
+
+                if ($item->isCharge) {
+                    $chargeTotal += $item->amount;
+                } else {
+                    $allowanceTotal += $item->amount;
+                }
             }
         }
 

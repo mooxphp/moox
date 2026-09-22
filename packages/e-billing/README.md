@@ -19,7 +19,9 @@ Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through a
 - Manual customer attribution and explicit rematch (interim Filament actions via `SetInvoiceAttributionAction` / rematch; to be replaced by the mixed review workspace + leave-edit pipeline — ADR `docs/adr/0004-mixed-review-workspace-and-leave-edit-pipeline.md`, [#47](https://github.com/mooxphp/e-billing/issues/47), [#48](https://github.com/mooxphp/e-billing/issues/48))
 - Host-bound invoice parser via `InvoiceParserInterface` (no parser ships with this package)
 - Delivery-date carriage into generated artifacts: one unique date → document actual delivery (BT-72); several differing dates → per-line dates only (no document BT-72, no invoicing-period merge); intra-community invoices with multiple dates surface `delivery_date` as `needs_review` (BR-IC-11) instead of aggregating
-- Consignee party on invoice and line `delivery` (name + address): persisted even without a country; detail views show the name first (`PartyAddressFormatter`); field label Consignee (hint BG-13); generated artifacts emit ShipTo (BG-13) from `shipToName` / `shipToAddress` without tax registration or contact — address group (BG-15) only when a country is present
+- Consignee party on invoice and line `delivery` (name + address): persisted even without a country; detail views show the name first (`PartyAddressFormatter`); field label Consignee (hint BG-13); adapters expose `shipTo*` / trade refs / `itemAttributes` / `itemClassifications`; `moox/zugferd` omits BG-15 when ship-to equals buyer (keep BT-72; VAT **K** still emits), may promote a shared line ship-to, else BT-127 — no tax registration or contact; BG-15 only when a country is present and the party is emitted
+- `LineItemAttributeMapper`: material, net/gross weight as kg text, unpriced certificate → BG-32; customs tariff → BT-158 `HS`; certificate charges default UNCL 7161 `CAE`
+- `InvoiceDocumentNotes` includes `order_date` as BT-22 free text (no OrderReference IssueDate / UBL-CR-018)
 
 <!--/features-->
 
@@ -429,8 +431,9 @@ This package owns:
 ## Delivery dates in the artifact
 
 Persisted `delivery_date` on the invoice and on line items (from the parser through `GenerateArtifactJob`) is mapped by `ZugferdInvoiceAdapter` via `DeliveryDateTransmission` before `moox/zugferd` builds the XML.
+`DeliveryDateTransmission` also reads DTO `deliveryDate`; `ZugferdInvoiceDtoAdapter` promotes a single shared line date to document BT-72 the same way as the model adapter.
 
-The invoice `delivery` party (name + address) is mapped onto `shipToName` / `shipToAddress`. `moox/zugferd` emits ShipTo (BG-13) when a name or an address with a country is present. A consignee without a country is still stored and shown; the converter then emits the name only (no postal address group). Ship-to tax registration and contact are never written.
+The invoice `delivery` party (name + address) is mapped onto `shipToName` / `shipToAddress`. `moox/zugferd` emits ShipTo (BG-13) when a name or an address with a country is present **and** the party is not equal to the buyer (name + postal fingerprint; city excluded). Equal-to-buyer consignees are omitted from BG-15 while BT-72 may still emit; VAT category **K** still forces a full BG-15. A consignee without a country is still stored and shown; when emitted, the converter sends the name only (no postal address group). Ship-to tax registration and contact are never written. See root ADR 0020 and feature test `ZugferdOmitDuplicateConsigneeXmlTest`.
 
 | Situation | What reaches the artifact |
 |-----------|---------------------------|
