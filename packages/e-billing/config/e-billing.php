@@ -704,6 +704,30 @@ return [
         'auto_approve_enabled' => (bool) env('EBILLING_APPROVAL_AUTO_APPROVE', true),
     ],
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Invoice ViewInvoice UI (ADR 0007)
+    |--------------------------------------------------------------------------
+    |
+    | Denylist + collapsible field-group defaults. Presentation only — does not
+    | change MoSCoW validation under field_validation.
+    |
+    */
+
+    'invoice_ui' => [
+        'invoice_fields_hidden' => [],
+        'invoice_line_fields_hidden' => [],
+        'field_groups' => [
+            'document' => ['default_open' => true],
+            'supplier' => ['default_open' => true],
+            'buyer' => ['default_open' => true],
+            'delivery' => ['default_open' => true],
+            'totals' => ['default_open' => true],
+            'notes' => ['default_open' => true],
+        ],
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Foreign invoice disposition

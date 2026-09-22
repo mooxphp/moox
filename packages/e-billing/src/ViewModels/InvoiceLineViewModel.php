@@ -7,6 +7,7 @@ namespace Moox\EBilling\ViewModels;
 use Carbon\Carbon;
 use Moox\EBilling\Support\InvoiceDisplayNumberFormatter;
 use Moox\EBilling\Support\InvoiceFieldLabels;
+use Moox\EBilling\Support\InvoiceUiPresentation;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
 use Moox\EBilling\Support\PartyAddressFormatter;
 use Moox\Invoice\Models\InvoiceLine;
@@ -54,11 +55,29 @@ final class InvoiceLineViewModel
      */
     public function relevantFields(): array
     {
-        return array_values(array_filter(
+        $fields = array_values(array_filter(
             $this->fields(),
             fn (FieldViewData $f): bool => $f->value !== null && $f->value !== ''
                 || in_array($f->status(), ['missing', 'needs_review'], true)
         ));
+
+        return InvoiceUiPresentation::withoutHidden(
+            $fields,
+            InvoiceUiPresentation::hiddenLineFields(),
+        );
+    }
+
+    /**
+     * @param  list<FieldViewData>|null  $visible  Pass relevantFields() to avoid a second filter pass
+     * @return array{open: bool, issue_count: int, issue_label: ?string}
+     */
+    public function collapsibleState(?array $visible = null): array
+    {
+        return InvoiceUiPresentation::collapsibleState(
+            $visible ?? $this->relevantFields(),
+            defaultOpen: false,
+            map: 'line',
+        );
     }
 
     private function buildField(string $name): FieldViewData

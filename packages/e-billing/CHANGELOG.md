@@ -10,6 +10,8 @@
 - MoSCoW / review fields: `supplier_email` (BT-34/43), `supplier_phone` (BT-42), `payment_means` (BT-81), header `vat_category` (BT-118), line `vat_category` (BT-151, inherits header stamp).
 - `ParsedInvoiceMapper` / `InvoiceFactory` stamp payment means code and VAT category onto invoices; ZUGFeRD adapters/converter emit the stamped codes (no hardcoded `58` / `S`).
 
+- ViewInvoice **`invoice_ui`**: field denylists (`invoice_fields_hidden` / `invoice_line_fields_hidden`) and per-group `field_groups.*.default_open`, with force-open + text markers for visible blocking must-findings (ADR 0007).
+
 
 ### Changed
 - Filament rematch action copy clarifies full field re-evaluation (DE **Felder neu bewerten**, EN **Re-evaluate fields**), not customer attribution only. Manual customer attribution wording unchanged in behaviour.

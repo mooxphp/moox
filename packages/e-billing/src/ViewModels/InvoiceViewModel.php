@@ -10,6 +10,7 @@ use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\InvoiceFieldLabels;
+use Moox\EBilling\Support\InvoiceUiPresentation;
 use Moox\EBilling\Support\PartyAddressFormatter;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\En16931\BankAccount;
@@ -27,11 +28,11 @@ final class InvoiceViewModel
     }
 
     /**
-     * @return array<string, array{title: string, subtitle: string, fields: list<FieldViewData>}>
+     * @return array<string, array{title: string, subtitle: string, fields: list<FieldViewData>, open: bool, issue_count: int, issue_label: ?string}>
      */
     public function groupedFields(): array
     {
-        return [
+        $groups = [
             'document' => [
                 'title' => __('e-billing::fields.section_document_data'),
                 'subtitle' => '',
@@ -74,6 +75,28 @@ final class InvoiceViewModel
                 ]),
             ],
         ];
+
+        $out = [];
+        foreach ($groups as $key => $group) {
+            if ($group['fields'] === []) {
+                continue;
+            }
+
+            $state = InvoiceUiPresentation::collapsibleState(
+                $group['fields'],
+                InvoiceUiPresentation::groupDefaultOpen($key),
+                'invoice',
+            );
+
+            $out[$key] = [
+                ...$group,
+                'open' => $state['open'],
+                'issue_count' => $state['issue_count'],
+                'issue_label' => $state['issue_label'],
+            ];
+        }
+
+        return $out;
     }
 
     /**
@@ -112,6 +135,34 @@ final class InvoiceViewModel
         ));
 
         return array_merge($fields, $this->buildParserNoteFields());
+    }
+
+    /**
+     * Notes block for ViewInvoice (sibling after delivery), or null when empty.
+     *
+     * @return array{title: string, subtitle: string, fields: list<FieldViewData>, open: bool, issue_count: int, issue_label: ?string}|null
+     */
+    public function notesGroup(): ?array
+    {
+        $fields = $this->noteFields();
+        if ($fields === []) {
+            return null;
+        }
+
+        $state = InvoiceUiPresentation::collapsibleState(
+            $fields,
+            InvoiceUiPresentation::groupDefaultOpen('notes'),
+            'invoice',
+        );
+
+        return [
+            'title' => __('e-billing::fields.section_notes'),
+            'subtitle' => 'BG-1 / BT-22',
+            'fields' => $fields,
+            'open' => $state['open'],
+            'issue_count' => $state['issue_count'],
+            'issue_label' => $state['issue_label'],
+        ];
     }
 
     /**
@@ -370,7 +421,7 @@ final class InvoiceViewModel
     {
         $validations = is_array($this->document?->field_validations) ? $this->document->field_validations : [];
 
-        return array_map(function (string $name) use ($validations): FieldViewData {
+        $fields = array_map(function (string $name) use ($validations): FieldViewData {
             $entry = $validations[$name] ?? null;
             $validation = is_array($entry) ? $entry : null;
             $rawValue = $this->resolveFieldValue($name);
@@ -388,6 +439,11 @@ final class InvoiceViewModel
                 hint: InvoiceFieldLabels::hint($name, $status, $validation),
             );
         }, $fieldNames);
+
+        return InvoiceUiPresentation::withoutHidden(
+            $fields,
+            InvoiceUiPresentation::hiddenInvoiceFields(),
+        );
     }
 
     /**
