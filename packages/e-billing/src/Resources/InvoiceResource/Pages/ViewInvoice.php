@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace Moox\EBilling\Resources\InvoiceResource\Pages;
 
 use Filament\Actions\Action;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
 use Livewire\Attributes\Computed;
 use Moox\Customer\Models\Customer;
 use Moox\EBilling\Actions\ApproveDocumentAction;
@@ -23,6 +27,8 @@ use Moox\EBilling\Actions\RestoreRejectedDocumentAction;
 use Moox\EBilling\Actions\SetInvoiceAttributionAction;
 use Moox\EBilling\Approval\DocumentApprovalGuard;
 use Moox\EBilling\Approval\DocumentDispatchGuard;
+use Moox\EBilling\Data\SelectiveRedispatchPlan;
+use Moox\EBilling\Delivery\SelectiveRedispatchPlanner;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\InvoiceResource;
@@ -337,18 +343,57 @@ class ViewInvoice extends ViewRecord
                 ->label(__('e-billing::fields.action_redispatch_delivery'))
                 ->icon(Heroicon::OutlinedPaperAirplane)
                 ->color('gray')
-                ->requiresConfirmation()
                 ->modalHeading(__('e-billing::fields.action_redispatch_delivery_modal_heading'))
                 ->modalDescription(__('e-billing::fields.action_redispatch_delivery_modal_description'))
                 ->visible(fn (): bool => (bool) config('e-billing.delivery.enabled', false)
                     && $document instanceof EbillingDocument
                     && app(DocumentDispatchGuard::class)->isDispatchable($document))
-                ->action(function () use ($record, $document): void {
+                ->fillForm(function () use ($document): array {
+                    if (! $document instanceof EbillingDocument) {
+                        return ['channels' => []];
+                    }
+
+                    return ['channels' => $this->selectiveRedispatchPlan($document)->defaultSelectedKeys];
+                })
+                ->schema(function () use ($document): array {
+                    if (! $document instanceof EbillingDocument) {
+                        return [];
+                    }
+
+                    $plan = $this->selectiveRedispatchPlan($document);
+
+                    return [
+                        CheckboxList::make('channels')
+                            ->label(__('e-billing::fields.redispatch_channels'))
+                            ->options($plan->labels)
+                            ->descriptions($plan->hints)
+                            ->required()
+                            ->minItems(1)
+                            ->live(),
+                        Placeholder::make('redispatch_success_warning')
+                            ->hiddenLabel()
+                            ->content(fn (Get $get): HtmlString => new HtmlString(
+                                '<div class="text-sm text-warning-600 dark:text-warning-400">'
+                                .implode('<br>', array_map(
+                                    static fn (string $line): string => e($line),
+                                    $this->redispatchWarningLines($plan, $this->selectedRedispatchChannels($get('channels'))),
+                                ))
+                                .'</div>'
+                            ))
+                            ->visible(fn (Get $get): bool => $plan->warningKeys(
+                                $this->selectedRedispatchChannels($get('channels')),
+                            ) !== []),
+                    ];
+                })
+                ->action(function (array $data) use ($record, $document): void {
                     if (! $document instanceof EbillingDocument) {
                         return;
                     }
 
-                    app(QueueDocumentDeliveryAction::class)->execute($document->fresh() ?? $document);
+                    app(QueueDocumentDeliveryAction::class)->execute(
+                        $document->fresh() ?? $document,
+                        $this->selectedRedispatchChannels($data['channels'] ?? []),
+                    );
 
                     Notification::make()
                         ->title(__('e-billing::fields.notification_redispatch_success_title'))
@@ -359,6 +404,47 @@ class ViewInvoice extends ViewRecord
                     $record->load('ebillingDocument');
                 }),
         ];
+    }
+
+    private function selectiveRedispatchPlan(EbillingDocument $document): SelectiveRedispatchPlan
+    {
+        $fresh = $document->fresh() ?? $document;
+        $fresh->loadMissing('deliveryAttempts');
+
+        $planner = app(SelectiveRedispatchPlanner::class);
+
+        return $planner->plan(
+            $planner->configuredChannelKeys(),
+            $fresh->deliveryAttempts,
+        );
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function selectedRedispatchChannels(mixed $value): array
+    {
+        return array_values(array_filter(
+            (array) $value,
+            static fn (mixed $key): bool => is_string($key) && $key !== '',
+        ));
+    }
+
+    /**
+     * @param  list<string>  $selected
+     * @return list<string>
+     */
+    private function redispatchWarningLines(SelectiveRedispatchPlan $plan, array $selected): array
+    {
+        $lines = [];
+
+        foreach ($plan->warningKeys($selected) as $key) {
+            $lines[] = __('e-billing::fields.redispatch_success_warning_line', [
+                'channel' => $plan->labels[$key] ?? $key,
+            ]);
+        }
+
+        return $lines;
     }
 
     private function runHeaderAction(

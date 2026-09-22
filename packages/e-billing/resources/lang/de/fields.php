@@ -338,7 +338,12 @@ return [
     'activity_escalation_level' => 'Eskalationsstufe',
     'action_redispatch_delivery' => 'Erneut zustellen',
     'action_redispatch_delivery_modal_heading' => 'Dokument erneut zustellen',
-    'action_redispatch_delivery_modal_description' => 'Stellt einen weiteren Zustellversuch für jeden konfigurierten Kanal in die Warteschlange. Vorherige Versuche bleiben erhalten.',
+    'action_redispatch_delivery_modal_description' => 'Wählen Sie, welche konfigurierten Kanäle erneut eingereiht werden sollen. Vorherige Versuche bleiben erhalten. Empfänger bleiben unverändert.',
     'notification_redispatch_success_title' => 'Zustellung eingereiht',
     'notification_redispatch_success_body' => 'Das Dokument wurde zur Zustellung eingereiht.',
+    'redispatch_channels' => 'Kanäle',
+    'redispatch_hint_never' => 'Noch kein Versuch',
+    'delivery_channel_mail' => 'E-Mail',
+    'delivery_channel_portal' => 'Portal',
+    'redispatch_success_warning_line' => 'Kanal :channel war bereits erfolgreich — erneute Auswahl stellt erneut zu.',
 ];

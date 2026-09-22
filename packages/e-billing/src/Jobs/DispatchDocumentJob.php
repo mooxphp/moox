@@ -32,8 +32,12 @@ final class DispatchDocumentJob implements ShouldQueue
      */
     public array $backoff = [60, 300];
 
+    /**
+     * @param  list<string>|null  $channelKeys  null = every configured channel
+     */
     public function __construct(
         public string $documentId,
+        public ?array $channelKeys = null,
     ) {
     }
 
@@ -53,7 +57,7 @@ final class DispatchDocumentJob implements ShouldQueue
         }
 
         $this->setProgress(20);
-        $action->execute($document);
+        $action->execute($document, $this->channelKeys);
         $this->setProgress(100);
     }
 
@@ -61,6 +65,7 @@ final class DispatchDocumentJob implements ShouldQueue
     {
         Log::error('[EBilling] DispatchDocumentJob failed', [
             'document_id' => $this->documentId,
+            'channel_keys' => $this->channelKeys,
             'exception' => $exception,
         ]);
     }
