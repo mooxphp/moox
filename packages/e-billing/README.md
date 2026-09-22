@@ -33,7 +33,7 @@ The pipeline then runs in order:
 | --- | --- | --- |
 | 1 | `ProcessInboxAttachmentListener` | Creates or finds an `EbillingDocument` for the attachment and dispatches `StoreBillDataJob`. |
 | 2 | `StoreBillDataJob` | Reads parsed `bill_data` on the document (populated upstream by the host parser) and dispatches `FilterForeignInvoiceJob`. |
-| 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign invoices; foreign invoices are settled as `Ignored` on the inbox driver and marked `IgnoredForeign`; domestic invoices advance to artifact generation. |
+| 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign invoices. Foreign disposition (`e-billing.foreign.disposition`): `ignore` (default) settles as `Ignored` / `IgnoredForeign`; `forward` runs Source-PDF relay to inbox To then settles the same way (ADR 0006). Domestic invoices advance to artifact generation. |
 | 4 | `GenerateArtifactJob` | Maps `bill_data` to a persisted `Invoice`, generates the format-specific artifact (XML only or hybrid PDF with embedded XML), runs field validation, and dispatches `ValidateArtifactJob`. |
 | 5 | `ValidateArtifactJob` | Runs KoSIT validation on the XML that will be delivered (loose XML or XML extracted from the hybrid PDF). For hybrid formats, also runs veraPDF PDF/A-3 validation. A hybrid passes only when both succeed; if veraPDF is missing the document is retained and flagged, never `Validated`. On pass, stores a SHA-256 hash of the deliverable. |
 
@@ -122,6 +122,7 @@ EBILLING_PREFERRED_PIECE_UNIT_CODE=H87
 | `EBILLING_DUPLICATE_NUMBER_SCOPE` | `duplicate_number.scope` | `global` | No |
 | `EBILLING_DELIVERY_ENABLED` | `delivery.enabled` | `false` | No |
 | `EBILLING_DELIVERY_MAILER` | `delivery.mailer` | `null` | No |
+| `EBILLING_FOREIGN_DISPOSITION` | `foreign.disposition` | `ignore` | No |
 | `EBILLING_DELIVERY_RECIPIENTS_MAIL_SOURCE` | `delivery.recipients.mail_source` | `inbox_to` | No |
 | `EBILLING_DELIVERY_RECIPIENTS_MANUAL_UPLOAD` | `delivery.recipients.manual_upload` | `none` | No |
 
