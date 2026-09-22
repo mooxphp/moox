@@ -170,7 +170,7 @@ it('shows php and node previews side by side', function (): void {
         ->assertSee('21 Zeichen')
         ->assertSee('22 Bytes')
         ->assertSee('22 Zeichen')
-        ->assertSeeHtml('color: rgb(180 83 9);')
+        ->assertSeeHtml('fi-color-warning')
         ->assertSee(MailTestingMessageResource::previewUrl($php), false)
         ->assertSee(MailTestingMessageResource::previewUrl($node), false);
 });

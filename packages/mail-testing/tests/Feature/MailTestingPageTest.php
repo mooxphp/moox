@@ -37,12 +37,13 @@ beforeEach(function (): void {
 });
 
 it('shows grouped test settings instead of a mixed three-column form', function (): void {
-    Livewire::test(MailTestingPage::class)
+    $page = Livewire::test(MailTestingPage::class)
         ->assertSuccessful()
         ->assertSee(__('mail-testing::translations.fieldset_test'))
         ->assertSee(__('mail-testing::translations.fieldset_variables'))
         ->assertSee(__('mail-testing::translations.save_variables'))
         ->assertSee(__('mail-testing::translations.fieldset_mjml'))
+        ->assertSee(__('mail-testing::translations.fieldset_variables_help'))
         ->assertSee(__('mail-testing::translations.source_layout'))
         ->assertSee('php artisan queue:work --queue=mail-testing --tries=1 --timeout=0')
         ->assertSee('php artisan mail-testing:render')
@@ -51,6 +52,8 @@ it('shows grouped test settings instead of a mixed three-column form', function 
         ->assertSeeHtml('id="form"')
         ->assertSeeHtml('wire:submit="start"')
         ->assertSeeHtml('form="form"');
+
+    expect(substr_count($page->html(), 'isCollapsed: true'))->toBe(2);
 });
 
 it('saves custom mjml from the template modal', function (): void {
@@ -393,12 +396,12 @@ it('shows php vs node html samples with original line breaks', function (): void
         ->assertSee('NODE-SAMPLE')
         ->assertSeeHtml("&lt;html&gt;\n  &lt;body&gt;PHP-SAMPLE&lt;/body&gt;")
         ->assertDontSee('&lt;html&gt; &lt;body&gt;PHP-SAMPLE&lt;/body&gt; &lt;/html&gt;', false)
-        ->assertSeeHtml('white-space: pre-wrap')
-        ->assertSeeHtml('max-height: 24rem')
-        ->assertSeeHtml('overflow: auto')
+        ->assertSeeHtml('whitespace-pre-wrap')
+        ->assertSeeHtml('max-h-96')
+        ->assertSeeHtml('overflow-auto')
         ->assertSee(HtmlLength::formatBytes(strlen($phpHtml)))
         ->assertSee(HtmlLength::formatCharacters(mb_strlen($phpHtml, 'UTF-8')))
         ->assertSee(HtmlLength::formatBytes(strlen($nodeHtml)))
         ->assertSee(HtmlLength::formatCharacters(mb_strlen($nodeHtml, 'UTF-8')))
-        ->assertSeeHtml('color: rgb(180 83 9);');
+        ->assertSeeHtml('fi-color-warning');
 });

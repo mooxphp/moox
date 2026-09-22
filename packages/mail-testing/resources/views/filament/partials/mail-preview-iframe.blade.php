@@ -2,12 +2,14 @@
     @if (filled($previewUrl))
         <iframe
             src="{{ $previewUrl }}"
-            class="h-[80vh] min-h-[600px] w-full rounded-lg border border-gray-200 bg-white dark:border-gray-700"
+            class="h-[70vh] min-h-96 w-full rounded-lg border border-gray-200 bg-white dark:border-white/10 dark:bg-gray-900"
             title="{{ $title }}"
         ></iframe>
     @else
-        <div class="p-4 text-sm italic text-gray-500 dark:text-gray-400">
-            {{ __('mail-testing::translations.preview_missing') }}
-        </div>
+        <x-filament::callout
+            color="gray"
+            icon="heroicon-o-document"
+            :description="__('mail-testing::translations.preview_missing')"
+        />
     @endif
 </div>
