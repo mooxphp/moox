@@ -161,6 +161,8 @@ Class: `Moox\Zugferd\ZugferdConverter` (singleton in `ZugferdServiceProvider`).
 
 Callers must pass an explicit profile key (`MINIMUM`, `BASIC`, `EN16931`, `EXTENDED`, `XRECHNUNG`); unknown keys throw. Pipeline defaults live in `e-billing.default.profile` when using `moox/e-billing`.
 
+BT-23 (business process): left to horstoeko profile defaults — Peppol URI on `XRECHNUNG` (`PROFILE_XRECHNUNG_3`); omitted for `EN16931` hybrids. The converter does not force Peppol BT-23 on every profile.
+
 ### Unit codes (`mapUnitCode`)
 
 | Input | UN/ECE |

@@ -241,7 +241,7 @@ class ZugferdConverter
             $invoice->currency,
         );
 
-        $doc->setDocumentBusinessProcess('urn:fdc:peppol.eu:2017:poacc:billing:01:1.0');
+        // Do not set BT-23 here — horstoeko profile defaults (Peppol on XRechnung 3; null on EN16931).
         $buyerRef = $invoice->customerReference ?: $invoice->customerNumber ?: 'N/A';
         $doc->setDocumentBuyerReference($buyerRef);
     }
