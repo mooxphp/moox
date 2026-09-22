@@ -285,7 +285,7 @@ Hosts may still bind their own `DeliveryRecipientResolverInterface` to replace t
 
 **Records:** table `ebilling_delivery_attempts` — one row per channel × recipient × attempt (append-only; re-dispatch adds rows). No document-level “delivered” flag. Invoice detail shows the attempt history; when `moox/audit` is present, each attempt also writes an Activity entry (`delivery_attempted`); configured `audit.log_events` attributes become Spatie `attribute_changes` for the Änderungen UI (same path as model audits).
 
-**Job:** approving (manual or auto) calls `QueueDocumentDeliveryAction`, which queues `DispatchDocumentJob` when `delivery.enabled` is true. The job uses `JobProgress` and implements `failed()`. Filament **Re-dispatch** re-queues the same job. No work in a listener.
+**Job:** approving (manual or auto) calls `QueueDocumentDeliveryAction`, which queues `DispatchDocumentJob` when `delivery.enabled` is true (all configured channels). The job uses `JobProgress` and implements `failed()`. Filament **Re-dispatch** (*Erneut zustellen*) is **selective redispatch** (ADR 0008): the operator picks a non-empty subset of configured channels (defaults to failed / never-run; warns when re-selecting successes); optional `$channelKeys` on Queue → Job → `DispatchDocumentAction`. No work in a listener.
 
 | Config key | Default | Effect |
 | --- | --- | --- |

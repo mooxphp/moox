@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Added
+- **Selective redispatch** (ADR 0008): *Erneut zustellen* / Re-dispatch lets operators choose configured delivery channels (defaults to failed/never-run; warns when re-selecting successes). First post-approval dispatch still runs all channels. Optional channel-key filter on `QueueDocumentDeliveryAction` / `DispatchDocumentJob` / `DispatchDocumentAction`.
 - ADR 0020 emission wiring: `ZugferdInvoice` / line adapters expose `shipTo*`, trade refs, `itemAttributes` / `itemClassifications`; `LineItemAttributeMapper` maps material, weights (kg text), unpriced certificate → BG-32 and customs tariff → BT-158 `HS`.
 - `InvoiceDocumentNotes` includes `order_date` as BT-22 free text (no OrderReference IssueDate / UBL-CR-018).
 - Certificate line charges persist / default UNCL 7161 `CAE` (`BillDataAllowanceChargeMapper`, `InvoiceFactory`, model adapter fallback).

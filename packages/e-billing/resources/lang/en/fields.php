@@ -338,7 +338,12 @@ return [
     'activity_escalation_level' => 'Escalation level',
     'action_redispatch_delivery' => 'Re-dispatch',
     'action_redispatch_delivery_modal_heading' => 'Re-dispatch document',
-    'action_redispatch_delivery_modal_description' => 'Queues another delivery attempt for each configured channel. Previous attempts are kept.',
+    'action_redispatch_delivery_modal_description' => 'Choose which configured channels to queue again. Previous attempts are kept. Recipients are unchanged.',
     'notification_redispatch_success_title' => 'Delivery queued',
     'notification_redispatch_success_body' => 'The document was queued for delivery.',
+    'redispatch_channels' => 'Channels',
+    'redispatch_hint_never' => 'No previous attempt',
+    'delivery_channel_mail' => 'Mail',
+    'delivery_channel_portal' => 'Portal',
+    'redispatch_success_warning_line' => 'Channel :channel already succeeded — selecting it sends again.',
 ];
