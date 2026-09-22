@@ -145,6 +145,7 @@ return [
     'section_amounts' => 'Amounts',
     'section_line_items' => 'Line items',
     'section_notes' => 'Notes',
+    'group_must_issues' => ':count must issue|:count must issues',
 
     // Status banners
     'banner_incomplete' => '⚠ Incomplete — required fields missing',

@@ -467,3 +467,14 @@ The MIT License (MIT). Please see [our license and copyright information](https:
 
 `ConfiguredEn16931CodeResolver` validates these at stamp/resolve time (fail fast if the code is blank, unknown, or the static table is empty — run `php artisan moox:data:import-codelists`). The values are stamped onto each mapped invoice (`payment_means.payment_means_code`, `vat_category`); lines inherit the header VAT category for MoSCoW BT-151.
 
+## Invoice ViewInvoice UI
+
+Presentation-only config under `e-billing.invoice_ui` (does **not** change MoSCoW validation):
+
+| Key | Purpose |
+|---|---|
+| `invoice_fields_hidden` / `invoice_line_fields_hidden` | Field keys never shown on ViewInvoice (even when filled) |
+| `field_groups.*.default_open` | Whether `document` / `supplier` / `buyer` / `delivery` / `totals` / `notes` start expanded |
+
+Groups with **visible** blocking `must` findings force-open and show a text+colour issue count on the summary. Denylisted fields do not count toward that marker. Empty groups after the denylist are omitted. See ADR `docs/adr/0007-invoice-view-field-denylist-and-collapsible-groups.md`.
+

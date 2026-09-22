@@ -145,6 +145,7 @@ return [
     'section_amounts' => 'Beträge',
     'section_line_items' => 'Positionen',
     'section_notes' => 'Notizen',
+    'group_must_issues' => ':count Pflichtfehler|:count Pflichtfehler',
 
     // Status banners
     'banner_incomplete' => '⚠ Unvollständig — Pflichtfelder fehlen',
