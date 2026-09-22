@@ -37,7 +37,7 @@ The terminal verdict on an Inbox Message — `Processed`, `Failed` or `Ignored`.
 _Avoid_: Status, result, folder, disposition
 
 **Ignored**:
-The Outcome for a message that is recognised and deliberately not processed, as opposed to one that failed. Currently: invoices for customers we are not obliged to issue e-invoices for.
+The Outcome for a message that is recognised and deliberately excluded from normal successful processing, as opposed to one that failed. Currently: foreign invoices (no e-invoice obligation). Exclusion does not forbid a separate Source-PDF relay; that relay does not make the Outcome `Processed`.
 _Avoid_: Skipped, rejected, discarded, foreign
 
 **Cursor**:

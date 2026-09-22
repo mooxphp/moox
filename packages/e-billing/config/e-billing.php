@@ -706,6 +706,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Foreign invoice disposition
+    |--------------------------------------------------------------------------
+    |
+    | After FilterForeignInvoiceJob classifies a non-domestic invoice:
+    | ignore (default) — settle Ignored / IgnoredForeign only
+    | forward — Source-PDF relay to inbox To, then settle (ADR 0006)
+    |
+    */
+
+    'foreign' => [
+        'disposition' => env('EBILLING_FOREIGN_DISPOSITION', 'ignore'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Delivery dispatch
     |--------------------------------------------------------------------------
     |

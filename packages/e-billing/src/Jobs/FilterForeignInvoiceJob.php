@@ -11,7 +11,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Moox\EBilling\Actions\RelayForeignSourcePdfAction;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
+use Moox\EBilling\Enums\ForeignDisposition;
 use Moox\EBilling\Enums\InvoiceOriginRule;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\Jobs\Traits\JobProgress;
@@ -20,6 +22,7 @@ use Moox\MailInbox\Enums\SettlementOutcome;
 use Moox\MailInbox\InboxDriverManager;
 use Moox\MailInbox\Models\InboxAttachment;
 use Moox\MailInbox\Models\InboxMessage;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -173,9 +176,20 @@ final class FilterForeignInvoiceJob implements ShouldQueue
 
         $externalId = $message->external_id;
         if ($externalId === null || $externalId === '') {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'FilterForeignInvoiceJob: inbox message has no external_id; cannot settle as Ignored.',
             );
+        }
+
+        $disposition = ForeignDisposition::fromConfig();
+        if ($disposition === ForeignDisposition::Forward) {
+            $outcome = app(RelayForeignSourcePdfAction::class)->execute($document);
+            if (! RelayForeignSourcePdfAction::isTerminal($outcome)) {
+                throw new RuntimeException(
+                    'FilterForeignInvoiceJob: source-PDF relay not accepted: '
+                    .($outcome->failureReason ?? 'send_not_accepted'),
+                );
+            }
         }
 
         $drivers->mailbox((string) ($message->scope ?? 'default'))
@@ -199,7 +213,7 @@ final class FilterForeignInvoiceJob implements ShouldQueue
         });
 
         Log::info(
-            "Foreign invoice ignored: attachment=#{$attachment->id} country="
+            'Foreign invoice '.$disposition->value.': attachment=#'.$attachment->id.' country='
                 .($country ?? 'null')
                 .' matched_rule='.$matchedRule
         );
