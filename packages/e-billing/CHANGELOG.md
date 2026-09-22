@@ -9,7 +9,11 @@
 - Config defaults `payment_means_code` (UNTDID 4461, default `58`) and `vat_category_code` (UNTDID 5305, default `S`), validated fail-fast via `ConfiguredEn16931CodeResolver` against `moox/data` static codelists.
 - MoSCoW / review fields: `supplier_email` (BT-34/43), `supplier_phone` (BT-42), `payment_means` (BT-81), header `vat_category` (BT-118), line `vat_category` (BT-151, inherits header stamp).
 - `ParsedInvoiceMapper` / `InvoiceFactory` stamp payment means code and VAT category onto invoices; ZUGFeRD adapters/converter emit the stamped codes (no hardcoded `58` / `S`).
+
+
 ### Changed
+- Filament rematch action copy clarifies full field re-evaluation (DE **Felder neu bewerten**, EN **Re-evaluate fields**), not customer attribution only. Manual customer attribution wording unchanged in behaviour.
+
 - Source-PDF relay treats outbox safe-test-mode `suppressed` as terminal (settle `IgnoredForeign`, no retry) so test mode cannot block the foreign path or re-mail the sandbox.
 - `FilterForeignInvoiceJob` respects foreign disposition: on `forward`, relays via the host sender then settles `Ignored` / `IgnoredForeign`; transport soft-fails leave the job retryable without settling.
 

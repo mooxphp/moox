@@ -9,7 +9,7 @@ use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 
 /**
- * Explicit re-match: reset to pre-confirmation state and re-run validation.
+ * Explicit field re-evaluation: reset to pre-confirmation state and re-run validation.
  * Manual attributions are left untouched by {@see InvoiceFieldValidator}.
  */
 final class RematchAttributionAction

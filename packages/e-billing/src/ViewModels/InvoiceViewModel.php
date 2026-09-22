@@ -46,7 +46,7 @@ final class InvoiceViewModel
                 'subtitle' => 'BG-4',
                 'fields' => $this->buildFields([
                     'supplier_name', 'supplier_vat_id', 'supplier_tax_number',
-                    'supplier_address', 'supplier_bank_accounts', 'agent',
+                    'supplier_address', 'supplier_bank_accounts', 'supplier_email', 'supplier_phone', 'payment_means', 'agent',
                 ]),
             ],
             'buyer' => [
@@ -68,7 +68,7 @@ final class InvoiceViewModel
                 'title' => __('e-billing::fields.section_amounts'),
                 'subtitle' => 'BG-21 / BG-22',
                 'fields' => $this->buildFields([
-                    'net_total', 'vat_rate', 'vat_amount', 'gross_total',
+                    'net_total', 'vat_category', 'vat_rate', 'vat_amount', 'gross_total',
                     'discount_percent', 'discount_amount',
                     'shipping_cost', 'freight_flat_rate', 'packaging_cost', 'minimum_quantity_surcharge',
                 ]),
@@ -325,7 +325,11 @@ final class InvoiceViewModel
             'supplier_tax_number' => $this->invoice->seller?->tax_number,
             'supplier_address' => PartyAddressFormatter::format($this->invoice->seller),
             'agent' => $this->invoice->seller?->contact?->name,
+            'supplier_email' => $this->invoice->seller?->contact?->email,
+            'supplier_phone' => $this->invoice->seller?->contact?->phone,
             'supplier_bank_accounts' => $this->invoice->payment_means?->bank_accounts ?? [],
+            'payment_means' => $this->invoice->payment_means?->payment_means_code,
+            'vat_category' => $this->invoice->vat_category,
             'delivery_address' => PartyAddressFormatter::format($this->invoice->delivery),
             default => $this->invoice->getAttribute($field),
         };
