@@ -46,6 +46,13 @@ interface ZugferdInvoice
 
     public ?string $deliveryDate { get; }
 
+    public ?string $purchaseOrderReference { get; }
+
+    public ?string $despatchAdviceReference { get; }
+
+    /** Unstructured only (BT-22); never OrderReference IssueDate. */
+    public ?string $purchaseOrderDate { get; }
+
     public ?string $shipToName { get; }
 
     public ?ZugferdAddress $shipToAddress { get; }

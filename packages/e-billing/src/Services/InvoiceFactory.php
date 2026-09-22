@@ -221,7 +221,8 @@ class InvoiceFactory
             $charges[] = new ChargeDraft(
                 is_charge: true,
                 amount: $dto->materialTestCertificatePrice,
-                reason_text: 'Werkszeugnis',
+                reason_code: 'CAE',
+                reason_text: $dto->materialTestCertificate ?? 'Material test certificate',
             );
         }
 

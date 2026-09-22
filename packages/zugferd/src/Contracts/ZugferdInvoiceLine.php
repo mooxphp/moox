@@ -26,6 +26,26 @@ interface ZugferdInvoiceLine
 
     public ?string $deliveryDate { get; }
 
+    public ?string $shipToName { get; }
+
+    public ?ZugferdAddress $shipToAddress { get; }
+
+    /** Purchase order line id inside the buyer PO (BT-132), not a PO document number. */
+    public ?string $purchaseOrderLineReference { get; }
+
+    /** Different PO document number on the line → BT-127 only (no core BT). */
+    public ?string $orderDocumentReference { get; }
+
+    public ?string $deliveryNoteNumber { get; }
+
+    public ?string $purchaseOrderDate { get; }
+
+    /** @var list<ZugferdItemAttribute> */
+    public array $itemAttributes { get; }
+
+    /** @var list<ZugferdItemClassification> */
+    public array $itemClassifications { get; }
+
     /** @var list<ZugferdAllowanceCharge> */
     public array $allowanceCharges { get; }
 }

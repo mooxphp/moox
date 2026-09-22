@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Moox\EBilling\Adapters;
 
 use Moox\EBilling\Data\Invoice;
+use Moox\EBilling\Data\InvoiceLine;
 use Moox\EBilling\Support\ConfiguredEn16931CodeResolver;
+use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\InvoiceDocumentNotes;
 use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
@@ -58,6 +60,12 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
 
     public ?string $deliveryDate;
 
+    public ?string $purchaseOrderReference;
+
+    public ?string $despatchAdviceReference;
+
+    public ?string $purchaseOrderDate;
+
     public ?string $shipToName;
 
     public ?ZugferdAddress $shipToAddress;
@@ -107,7 +115,15 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
         $this->supplierVatId = $invoice->supplierVatId;
         $this->supplierTaxNumber = $invoice->supplierTaxNumber;
         $this->paymentTerms = $invoice->paymentTerms;
-        $this->deliveryDate = $invoice->deliveryDate;
+        $this->deliveryDate = DeliveryDateTransmission::documentActualDeliveryDate(
+            $invoice->deliveryDate,
+            $invoice->lines,
+        );
+        $orderRef = $invoice->orderNumber !== null ? trim($invoice->orderNumber) : '';
+        $this->purchaseOrderReference = $orderRef !== '' ? $orderRef : null;
+        $this->despatchAdviceReference = null;
+        $orderDate = $invoice->orderDate !== null ? trim($invoice->orderDate) : '';
+        $this->purchaseOrderDate = $orderDate !== '' ? $orderDate : null;
         $deliveryAddress = $invoice->deliveryAddress;
         $shipToName = $deliveryAddress?->company;
         $this->shipToName = $shipToName !== null && trim($shipToName) !== '' ? trim($shipToName) : null;
@@ -120,7 +136,21 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
         $this->vatAmount = $invoice->vatAmount;
         $this->grossTotal = $invoice->grossTotal;
         $this->allowanceCharges = $invoice->allowanceCharges();
-        $this->lines = $invoice->lines;
+        $emitLineDeliveryDate = DeliveryDateTransmission::shouldEmitLineDeliveryDate(
+            $invoice->deliveryDate,
+            $invoice->lines,
+        );
+        $this->lines = $emitLineDeliveryDate
+            ? $invoice->lines
+            : array_map(
+                static function (InvoiceLine $line): InvoiceLine {
+                    $data = $line->toArray();
+                    $data['delivery_date'] = null;
+
+                    return InvoiceLine::fromArray($data);
+                },
+                $invoice->lines,
+            );
         $this->bankAccounts = $invoice->bankAccounts();
         $this->documentNotes = InvoiceDocumentNotes::fromDto($invoice);
     }

@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace Moox\EBilling\Data;
 
 use Moox\EBilling\Support\BillDataAllowanceChargeMapper;
+use Moox\EBilling\Support\LineItemAttributeMapper;
+use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdInvoiceLine;
+use Moox\Zugferd\Contracts\ZugferdItemAttribute;
+use Moox\Zugferd\Contracts\ZugferdItemClassification;
 
 class InvoiceLine implements ZugferdInvoiceLine
 {
@@ -33,12 +37,62 @@ class InvoiceLine implements ZugferdInvoiceLine
         public ?string $orderNumber = null,
         public ?string $orderDate = null,
         public ?Address $deliveryAddress = null,
+        public ?string $purchaseOrderLineReference = null,
     ) {
         if ($this->weightKgNet === null && $this->weightKgTotal !== null && $this->quantity > 0) {
             $this->weightKgNet = round($this->weightKgTotal / $this->quantity, 3);
         }
     }
 
+
+    public ?string $shipToName {
+        get {
+            $company = $this->deliveryAddress?->company;
+
+            if ($company === null) {
+                return null;
+            }
+
+            $trimmed = trim($company);
+
+            return $trimmed !== '' ? $trimmed : null;
+        }
+    }
+
+    public ?ZugferdAddress $shipToAddress {
+        get => $this->deliveryAddress;
+    }
+
+    public ?string $orderDocumentReference {
+        get {
+            $order = $this->orderNumber !== null ? trim($this->orderNumber) : '';
+
+            return $order !== '' ? $order : null;
+        }
+    }
+
+    public ?string $purchaseOrderDate {
+        get {
+            $date = $this->orderDate !== null ? trim($this->orderDate) : '';
+
+            return $date !== '' ? $date : null;
+        }
+    }
+
+    /** @var list<ZugferdItemAttribute> */
+    public array $itemAttributes {
+        get => LineItemAttributeMapper::attributes(
+            $this->material,
+            $this->weightKgNet,
+            $this->weightKgTotal,
+            $this->materialTestCertificate,
+        );
+    }
+
+    /** @var list<ZugferdItemClassification> */
+    public array $itemClassifications {
+        get => LineItemAttributeMapper::classifications($this->customsTariffNumber);
+    }
     /** @var list<ZugferdAllowanceCharge> */
     public array $allowanceCharges {
         get {
@@ -91,6 +145,9 @@ class InvoiceLine implements ZugferdInvoiceLine
             orderNumber: isset($data['order_number']) && is_string($data['order_number']) ? $data['order_number'] : null,
             orderDate: isset($data['order_date']) && is_string($data['order_date']) ? $data['order_date'] : null,
             deliveryAddress: $deliveryAddr,
+            purchaseOrderLineReference: isset($data['purchase_order_line_reference']) && is_string($data['purchase_order_line_reference'])
+                ? $data['purchase_order_line_reference']
+                : null,
         );
     }
 
@@ -119,6 +176,7 @@ class InvoiceLine implements ZugferdInvoiceLine
             'order_number' => $this->orderNumber,
             'order_date' => $this->orderDate,
             'delivery_address' => $this->deliveryAddress?->toArray(),
+            'purchase_order_line_reference' => $this->purchaseOrderLineReference,
         ];
     }
 }

@@ -16,7 +16,8 @@ Moox Zugferd converts invoice data implementing `ZugferdInvoice` into valid ZUGF
 - Concrete `AllowanceCharge` DTO for tests and simple consumers
 - Required profile key on convert: MINIMUM, BASIC, EN16931, EXTENDED, XRECHNUNG (unknown keys throw)
 - Optional `deliveryDate` on invoice (BT-72 via `setDocumentSupplyChainEvent`) and on lines (line billing period with start=end for non-EXTENDED profiles, line actual delivery for EXTENDED); profile key selects the line-date carrier; no header invoicing period (BG-14) is derived from delivery dates
-- Optional `shipToName` / `shipToAddress` on invoice (BG-13 via `setDocumentShipTo` / `setDocumentShipToAddress`); address is omitted when country is empty; ship-to tax registration and contact are never emitted
+- Optional `shipToName` / `shipToAddress` on invoice and lines (BG-13 via `setDocumentShipTo` / `setDocumentShipToAddress`); address is omitted when country is empty; ship-to tax registration and contact are never emitted
+- Omit duplicate ShipTo when name + postal fingerprint equals buyer (street, street2, postal code, country; city excluded; keep BT-72); VAT **K** still emits BG-15 (buyer postal OK). Promote shared distinct line ship-to when header empty; else BT-127 notes. Line `itemAttributes` / `itemClassifications` → BG-32 / BT-158; trade refs BT-13 / BT-16 (common line DN fallback) / BT-132 (`purchaseOrderLineReference`); line allowance/charges. `purchaseOrderDate` is never OrderReference IssueDate (UBL-CR-018)
 
 <!--/features-->
 
@@ -114,11 +115,11 @@ Header, parties, totals, `lines`, `bankAccounts`, and `allowanceCharges`.
 - Non-empty trimmed `supplierEmail`
 - Non-empty `bankAccounts` with non-empty IBAN on each account
 
-**Other notable fields:** `documentType` (credit note when value contains `gutschrift` → type code `381`, else `380`), `paymentMeansCode` (default `58`), `dueDate` / `paymentTerms`, `deliveryDate`, `shipToName` / `shipToAddress` (BG-13; address requires a country), `vatRate`, `netTotal`, `vatAmount`, `grossTotal`.
+**Other notable fields:** `documentType` (credit note when value contains `gutschrift` → type code `381`, else `380`), `paymentMeansCode` (default `58`), `dueDate` / `paymentTerms`, `deliveryDate` (BT-72), `documentNotes` (BT-22), `purchaseOrderReference` (BT-13), `despatchAdviceReference` (BT-16; converter may fill from a common line `deliveryNoteNumber`), `purchaseOrderDate` (unstructured notes only — never OrderReference IssueDate), `shipToName` / `shipToAddress` (BG-13; address requires a country; omitted when equal to buyer unless VAT **K**), `vatCategoryCode`, `vatRate`, `netTotal`, `vatAmount`, `grossTotal`.
 
 ### `ZugferdInvoiceLine`
 
-`position`, `description`, `descriptionDetail`, `articleNumber`, `unitPrice`, `quantity`, `unit`, `lineTotal`, `allowanceCharges`.
+`position`, `description`, `descriptionDetail`, `articleNumber`, `unitPrice`, `quantity`, `unit` / `unitCode`, `lineTotal`, `deliveryDate`, `shipToName` / `shipToAddress`, `purchaseOrderLineReference` (BT-132), `orderDocumentReference` (divergent PO document → BT-127), `deliveryNoteNumber`, `purchaseOrderDate` (line note only), `itemAttributes` (BG-32), `itemClassifications` (BT-158), `allowanceCharges`.
 
 ### `ZugferdAddress`
 
@@ -200,7 +201,7 @@ From the monorepo root:
 php vendor/bin/pest packages/zugferd/tests
 ```
 
-Unit tests cover `resolvePdfTitleTemplate()` (default vs per-code map vs fallback). Delivery-date and ShipTo XML coverage lives in `moox/e-billing` adapter tests. Full `mergePdfWithXml()` / `convertToFile()` PDF round-trips are not covered in this package.
+Unit tests cover `resolvePdfTitleTemplate()` (default vs per-code map vs fallback) and `ShipToPartyEquality`. Delivery-date, omit-duplicate ShipTo, promote/BT-127, BG-32/BT-158, and trade-ref XML coverage lives in `moox/e-billing` (`ZugferdOmitDuplicateConsigneeXmlTest` and related adapter tests). Full `mergePdfWithXml()` / `convertToFile()` PDF round-trips are not covered in this package.
 
 ## See also
 

@@ -77,9 +77,25 @@ final class DeliveryDateTransmission
     {
         $dates = [];
         foreach ($lines as $line) {
-            $dates[] = is_object($line) && isset($line->delivery_date)
-                ? self::scalarDate($line->delivery_date)
-                : null;
+            if (! is_object($line)) {
+                $dates[] = null;
+
+                continue;
+            }
+
+            if (isset($line->delivery_date)) {
+                $dates[] = self::scalarDate($line->delivery_date);
+
+                continue;
+            }
+
+            if (isset($line->deliveryDate)) {
+                $dates[] = self::scalarDate($line->deliveryDate);
+
+                continue;
+            }
+
+            $dates[] = null;
         }
 
         return $dates;
