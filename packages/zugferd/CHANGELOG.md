@@ -9,6 +9,7 @@
 - `purchaseOrderDate` is unstructured only (BT-22 / line BT-127 notes) — never OrderReference IssueDate (UBL-CR-018). Header order-date notes are assembled by adapters (e.g. e-billing `InvoiceDocumentNotes`), not by the converter as IssueDate.
 
 ### Changed
+- `ZugferdConverter` no longer forces Peppol BT-23 (`urn:fdc:peppol.eu:2017:poacc:billing:01:1.0`) on every profile. XRechnung 3 keeps BT-23 via horstoeko `PROFILE_XRECHNUNG_3`; EN16931 (and other profiles with null `businessprocess`) omit BT-23.
 - `ZugferdInvoice` requires `vatCategoryCode`; converter emits payment means (BT-81) and VAT category (BT-118/151) from the invoice — no hardcoded `58` / `S`.
 - `mergePdfWithXml()` PDF Title metadata is configurable: `config('zugferd.pdf_title_template')` (default `%3$s : %2$s %1$s`, historical horstoeko spacing) and optional per-code map `config('zugferd.pdf_title_templates')`. Optional third argument `$documentTypeCode` selects the map entry; unknown/empty codes fall back to the default template. `ZugferdConverter::resolvePdfTitleTemplate()` exposes the resolution. `PDF_TITLE_TEMPLATE` remains the package fallback constant.
 - `ZugferdConverter::convert()` / `convertToFile()` require an explicit profile key; unknown keys throw. Removed `config('zugferd.profile')` / `ZUGFERD_PROFILE` (pipeline defaults belong in the host / e-billing).
