@@ -758,6 +758,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Inbox intake scopes
+    |--------------------------------------------------------------------------
+    |
+    | When set to a non-empty list of mail-inbox Scope keys, ProcessInboxAttachmentListener
+    | only creates EbillingDocuments for those Scopes. Other PDF attachments are marked
+    | Skipped (still visible in the inbox UI). null or [] = all Scopes (backwards compatible).
+    |
+    */
+
+    'intake' => [
+        'scopes' => null,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Delivery dispatch
     |--------------------------------------------------------------------------
     |
@@ -767,11 +782,16 @@ return [
     | bindings for InvoiceMailSenderInterface and DeliveryRecipientResolverInterface.
     | Default false so the approval gate can be verified before anything is sent.
     |
+    | delivery.mailer is the Laravel mailer / Mailbox id the host uses for sends.
+    | Optional delivery.from_name is a display name only; From address belongs to
+    | the host (typically mail-inbox.mailboxes.{mailer}.address).
+    |
     */
 
     'delivery' => [
         'enabled' => (bool) env('EBILLING_DELIVERY_ENABLED', false),
         'mailer' => env('EBILLING_DELIVERY_MAILER'),
+        'from_name' => env('EBILLING_DELIVERY_FROM_NAME'),
         'recipients' => [
             // inbox_to | master | none
             'mail_source' => env('EBILLING_DELIVERY_RECIPIENTS_MAIL_SOURCE', 'inbox_to'),

@@ -4,6 +4,10 @@ All notable changes to `moox/mail-outbox` will be documented in this file.
 
 ## Unreleased
 
+### Changed
+
+- Send Log Filament column/filter for the Laravel mailer key: EN **Mailbox**, DE **Postfach** (stores the Mailbox id, not the transport).
+
 ### Added
 
 - `mail-outbox:test-send` Artisan command (`Commands\SendTestMailCommand`) — sends a probe mail through `SendMailJob` and prints the resulting `mail_send_logs` row; `--to=` (required), `--mailer=` (defaults to `mail.default`), `--test` (route through safe test mode), `--redirect=` (override sandbox address); transport-agnostic

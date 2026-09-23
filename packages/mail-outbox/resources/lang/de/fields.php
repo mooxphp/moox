@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
 
     'status' => 'Status',
-    'mailer' => 'Mailer',
+    'mailer' => 'Postfach',
     'source' => 'Quelle',
     'recipient' => 'Empfänger',
     'recipients' => 'Empfänger',
@@ -36,7 +36,7 @@ return [
     'tab_failed' => 'Fehlgeschlagen',
     'tab_suppressed' => 'Unterdrückt',
     'filter_status' => 'Status',
-    'filter_mailer' => 'Mailer',
+    'filter_mailer' => 'Postfach',
     'filter_from' => 'Gesendet ab',
     'filter_until' => 'Gesendet bis',
     'action_view' => 'Ansehen',

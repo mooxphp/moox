@@ -77,6 +77,11 @@ class MailInboxServiceProvider extends MooxServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->app->booted(function () {
+                $mailboxes = config('mail-inbox.mailboxes', []);
+                if (! is_array($mailboxes) || ! array_key_exists('default', $mailboxes)) {
+                    return;
+                }
+
                 $schedule = $this->app->make(Schedule::class);
                 $interval = max(1, min(59, (int) config('mail-inbox.poll_interval', 5)));
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
 
     'status' => 'Status',
-    'mailer' => 'Mailer',
+    'mailer' => 'Mailbox',
     'source' => 'Source',
     'recipient' => 'Recipient',
     'recipients' => 'Recipients',
@@ -36,7 +36,7 @@ return [
     'tab_failed' => 'Failed',
     'tab_suppressed' => 'Suppressed',
     'filter_status' => 'Status',
-    'filter_mailer' => 'Mailer',
+    'filter_mailer' => 'Mailbox',
     'filter_from' => 'Sent from',
     'filter_until' => 'Sent until',
     'action_view' => 'View',
