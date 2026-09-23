@@ -381,7 +381,7 @@ class ZugferdConverter
     }
 
     /**
-     * @return array{0: ?string, 1: ?\Moox\Zugferd\Contracts\ZugferdAddress}
+     * @return array{0: ?string, 1: ?ZugferdAddress}
      */
     private function resolveEffectiveShipTo(ZugferdInvoice $invoice): array
     {
@@ -401,7 +401,7 @@ class ZugferdConverter
      * When header consignee is empty and every line shares one ship-to party that is not the buyer,
      * promote that party to document BG-13 (ADR 0020).
      *
-     * @return array{0: ?string, 1: ?\Moox\Zugferd\Contracts\ZugferdAddress}
+     * @return array{0: ?string, 1: ?ZugferdAddress}
      */
     private function promotedShipToFromLines(ZugferdInvoice $invoice): array
     {

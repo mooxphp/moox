@@ -12,12 +12,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Moox\MailOutbox\Support\RelatedRecordUrlResolver;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\Invoice\Models\Invoice;
 use Moox\MailOutbox\Enums\MailSendStatus;
 use Moox\MailOutbox\Models\MailSendLog;
 use Moox\MailOutbox\Support\MailSendStatusPresenter;
+use Moox\MailOutbox\Support\RelatedRecordUrlResolver;
 use Override;
 
 /**

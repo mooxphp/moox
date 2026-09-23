@@ -171,4 +171,3 @@ test('suppressed send does not get overwritten by failed hook', function (): voi
 
     expect(MailSendLog::query()->find($logId)?->status)->toBe(MailSendStatus::Suppressed);
 });
-
