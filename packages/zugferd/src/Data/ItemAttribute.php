@@ -11,5 +11,6 @@ final class ItemAttribute implements ZugferdItemAttribute
     public function __construct(
         public string $name,
         public string $value,
-    ) {}
+    ) {
+    }
 }

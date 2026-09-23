@@ -12,5 +12,6 @@ final class ItemClassification implements ZugferdItemClassification
         public string $code,
         public string $schemeId,
         public ?string $schemeVersionId = null,
-    ) {}
+    ) {
+    }
 }

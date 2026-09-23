@@ -244,8 +244,8 @@ class InvoiceFieldValidator
             return true;
         }
 
-        foreach ($linesValidations as $lineId => $lineFieldsValidations) {
-            if (! is_array($lineFieldsValidations)) {
+        foreach ($linesValidations as $lineId => $lineValidations) {
+            if (! is_array($lineValidations)) {
                 continue;
             }
             foreach ($lineFields as $field => $priority) {
@@ -255,7 +255,7 @@ class InvoiceFieldValidator
                 if (! in_array($priority, ['must', 'should'], true)) {
                     continue;
                 }
-                $status = $this->readNestedFieldStatus($lineFieldsValidations, $field);
+                $status = $this->readNestedFieldStatus($lineValidations, $field);
                 if (! EbillingDocument::fieldValidationAllowsValidatedTransition($status, $priority, $severityReleases, $field, (string) $lineId)) {
                     return false;
                 }

@@ -108,18 +108,25 @@ final class InvoiceLineViewModel
     private function resolveDisplayValidation(string $field, mixed $rawValue, ?array $storedValidation): ?array
     {
         $hasValue = ! ($rawValue === null || $rawValue === '' || (is_array($rawValue) && $rawValue === []));
+        $keepStored = $storedValidation !== null
+            && ($hasValue || ! in_array($storedValidation['status'] ?? null, ['parsed', 'validated', 'db_validated'], true));
 
-        if ($storedValidation !== null) {
-            $storedStatus = $storedValidation['status'] ?? null;
-            if ($hasValue || ! in_array($storedStatus, ['parsed', 'validated', 'db_validated'], true)) {
-                return $storedValidation;
-            }
+        if ($keepStored) {
+            return $storedValidation;
         }
 
         if ($hasValue) {
             return ['status' => 'parsed'];
         }
 
+        return $this->emptyLineFieldValidation($field);
+    }
+
+    /**
+     * @return array{status: string}
+     */
+    private function emptyLineFieldValidation(string $field): array
+    {
         $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
         $priority = is_array($lineFields) && is_string($lineFields[$field] ?? null)
             ? $lineFields[$field]
