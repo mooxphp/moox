@@ -103,10 +103,7 @@ final class LineAllowanceChargeResolver
             return true;
         }
 
-        // Legacy German authoring defaults + current English default
-        return strcasecmp($label, 'Materialprüfzeugnis') === 0
-            || strcasecmp($label, 'Werkszeugnis') === 0
-            || strcasecmp($label, 'Material test certificate') === 0;
+        return DocumentEmissionLabels::matchesMaterialTestCertificateLabel($label);
     }
 
     private static function normalizeString(?string $value): string

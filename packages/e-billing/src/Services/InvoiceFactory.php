@@ -12,6 +12,7 @@ use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceCreated;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\ConfiguredEn16931CodeResolver;
+use Moox\EBilling\Support\DocumentEmissionLabels;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceLine;
@@ -222,7 +223,7 @@ class InvoiceFactory
                 is_charge: true,
                 amount: $dto->materialTestCertificatePrice,
                 reason_code: 'CAE',
-                reason_text: $dto->materialTestCertificate ?? 'Material test certificate',
+                reason_text: $dto->materialTestCertificate ?? DocumentEmissionLabels::materialTestCertificate(),
             );
         }
 

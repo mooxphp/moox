@@ -239,6 +239,19 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Document emission locale
+    |--------------------------------------------------------------------------
+    |
+    | Language for EN 16931 free-text emission labels (BG-32 BT-160 names and
+    | CAE reason_text fallbacks). Independent of Filament / App UI locale.
+    | Applies to newly built artifacts only (forward-only).
+    |
+    */
+
+    'document_locale' => env('EBILLING_DOCUMENT_LOCALE', 'en'),
+
     'preferred_piece_unit_code' => env('EBILLING_PREFERRED_PIECE_UNIT_CODE', 'H87'),
 
     'piece_unit_codes' => ['C62', 'H87'],

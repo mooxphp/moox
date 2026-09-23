@@ -28,20 +28,20 @@ final class LineItemAttributeMapper
 
         $material = self::trim($material);
         if ($material !== null) {
-            $attributes[] = new ItemAttribute('Material designation', $material);
+            $attributes[] = new ItemAttribute(DocumentEmissionLabels::materialDesignation(), $material);
         }
 
         if ($weightKgNet !== null) {
-            $attributes[] = new ItemAttribute('Net weight', self::formatKg($weightKgNet));
+            $attributes[] = new ItemAttribute(DocumentEmissionLabels::netWeight(), self::formatKg($weightKgNet));
         }
 
         if ($weightKgTotal !== null) {
-            $attributes[] = new ItemAttribute('Gross weight', self::formatKg($weightKgTotal));
+            $attributes[] = new ItemAttribute(DocumentEmissionLabels::grossWeight(), self::formatKg($weightKgTotal));
         }
 
         $certificate = self::trim($materialTestCertificate);
         if ($certificate !== null) {
-            $attributes[] = new ItemAttribute('Material test certificate', $certificate);
+            $attributes[] = new ItemAttribute(DocumentEmissionLabels::materialTestCertificate(), $certificate);
         }
 
         return $attributes;

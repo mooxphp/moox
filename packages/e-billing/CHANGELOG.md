@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+### Changed
+- BG-32 BT-160 attribute names and CAE `reason_text` fallbacks follow `e-billing.document_locale` / `EBILLING_DOCUMENT_LOCALE` (package default `en`; lang keys in `e-billing::emission`). Independent of Filament UI locale. Already-emitted artifacts are not regenerated. Hosts that need German (or other) labels set the env/config override.
+
 ### Added
 - **Selective redispatch** (ADR 0008): *Erneut zustellen* / Re-dispatch lets operators choose configured delivery channels (defaults to failed/never-run; warns when re-selecting successes). First post-approval dispatch still runs all channels. Optional channel-key filter on `QueueDocumentDeliveryAction` / `DispatchDocumentJob` / `DispatchDocumentAction`.
 - ADR 0020 emission wiring: `ZugferdInvoice` / line adapters expose `shipTo*`, trade refs, `itemAttributes` / `itemClassifications`; `LineItemAttributeMapper` maps material, weights (kg text), unpriced certificate → BG-32 and customs tariff → BT-158 `HS`.

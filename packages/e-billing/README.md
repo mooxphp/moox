@@ -20,7 +20,7 @@ Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through a
 - Host-bound invoice parser via `InvoiceParserInterface` (no parser ships with this package)
 - Delivery-date carriage into generated artifacts: one unique date → document actual delivery (BT-72); several differing dates → per-line dates only (no document BT-72, no invoicing-period merge); intra-community invoices with multiple dates surface `delivery_date` as `needs_review` (BR-IC-11) instead of aggregating
 - Consignee party on invoice and line `delivery` (name + address): persisted even without a country; detail views show the name first (`PartyAddressFormatter`); field label Consignee (hint BG-13); adapters expose `shipTo*` / trade refs / `itemAttributes` / `itemClassifications`; `moox/zugferd` omits BG-15 when ship-to equals buyer (keep BT-72; VAT **K** still emits), may promote a shared line ship-to, else BT-127 — no tax registration or contact; BG-15 only when a country is present and the party is emitted
-- `LineItemAttributeMapper`: material, net/gross weight as kg text, unpriced certificate → BG-32; customs tariff → BT-158 `HS`; certificate charges default UNCL 7161 `CAE`
+- `LineItemAttributeMapper`: material, net/gross weight as kg text, unpriced certificate → BG-32 (BT-160 names from `e-billing::emission` + `document_locale`, package default `en`); customs tariff → BT-158 `HS`; certificate charges default UNCL 7161 `CAE`
 - `InvoiceDocumentNotes` includes `order_date` as BT-22 free text (no OrderReference IssueDate / UBL-CR-018)
 
 <!--/features-->
@@ -110,11 +110,15 @@ Mailbox credentials, driver registration, and folder names belong to `moox/mail-
 ```env
 # Optional — preferred UN/ECE piece unit code for line unit normalization (default: H87)
 EBILLING_PREFERRED_PIECE_UNIT_CODE=H87
+
+# Optional — emission language for BG-32 BT-160 names / CAE reason_text fallbacks (package default: en)
+EBILLING_DOCUMENT_LOCALE=en
 ```
 
 | Variable | Config key | Default | Required |
 | --- | --- | --- | --- |
 | `EBILLING_PREFERRED_PIECE_UNIT_CODE` | `preferred_piece_unit_code` | `H87` | No |
+| `EBILLING_DOCUMENT_LOCALE` | `document_locale` | `en` | No |
 | `EBILLING_APPROVAL_REQUIRED` | `approval.required` | `true` | No |
 | `EBILLING_APPROVAL_AUTO_APPROVE` | `approval.auto_approve_enabled` | `true` | No |
 | `EBILLING_REVIEW_NOTIFICATION_STRATEGY` | `notification.strategy` | `immediate` | No |
