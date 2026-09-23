@@ -24,6 +24,24 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
 
     public readonly ?string $deliveryDate;
 
+    public readonly ?string $shipToName;
+
+    public readonly ?ZugferdAddress $shipToAddress;
+
+    public readonly ?string $orderDocumentReference;
+
+    public readonly ?string $deliveryNoteNumber;
+
+    public readonly ?string $purchaseOrderDate;
+
+    public readonly ?string $purchaseOrderLineReference;
+
+    /** @var list<ZugferdItemAttribute> */
+    public readonly array $itemAttributes;
+
+    /** @var list<ZugferdItemClassification> */
+    public readonly array $itemClassifications;
+
     public function __construct(
         private InvoiceLine $line,
         private ?UnitCodeResolver $unitCodeResolver = null,
@@ -42,6 +60,30 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
         }
 
         $this->deliveryDate = self::resolveDeliveryDate($this->line, $this->emitLineDeliveryDate);
+        $this->purchaseOrderLineReference = null;
+
+        $delivery = $this->line->delivery;
+        if ($delivery instanceof Party) {
+            $this->shipToName = self::trimOrNull($delivery->name);
+            $this->shipToAddress = new ZugferdAddressAdapter($delivery->address);
+        } else {
+            $this->shipToName = null;
+            $this->shipToAddress = null;
+        }
+
+        $this->orderDocumentReference = self::trimOrNull($this->line->order_number ?? null);
+        $this->deliveryNoteNumber = self::trimOrNull($this->line->delivery_note_number ?? null);
+        $this->purchaseOrderDate = self::trimOrNull($this->line->order_date ?? null);
+        $this->itemAttributes = LineItemAttributeMapper::attributes(
+            is_string($this->line->material) ? $this->line->material : null,
+            $this->line->weight_kg_net !== null ? (float) $this->line->weight_kg_net : null,
+            $this->line->weight_kg_total !== null ? (float) $this->line->weight_kg_total : null,
+            is_string($this->line->material_test_certificate) ? $this->line->material_test_certificate : null,
+        );
+        $customs = $this->line->customs_tariff_number;
+        $this->itemClassifications = LineItemAttributeMapper::classifications(
+            is_string($customs) ? $customs : null,
+        );
     }
 
     public int $position {
@@ -80,82 +122,6 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
         get => (float) $this->line->line_total;
     }
 
-
-    public ?string $shipToName {
-        get {
-            $delivery = $this->line->delivery;
-            if (! $delivery instanceof Party) {
-                return null;
-            }
-
-            $name = trim($delivery->name);
-
-            return $name !== '' ? $name : null;
-        }
-    }
-
-    public ?ZugferdAddress $shipToAddress {
-        get {
-            $delivery = $this->line->delivery;
-            if (! $delivery instanceof Party) {
-                return null;
-            }
-
-            return new ZugferdAddressAdapter($delivery->address);
-        }
-    }
-
-    public ?string $purchaseOrderLineReference {
-        get => null;
-    }
-
-    public ?string $orderDocumentReference {
-        get {
-            $order = trim((string) ($this->line->order_number ?? ''));
-
-            return $order !== '' ? $order : null;
-        }
-    }
-
-    public ?string $deliveryNoteNumber {
-        get {
-            $value = trim((string) ($this->line->delivery_note_number ?? ''));
-
-            return $value !== '' ? $value : null;
-        }
-    }
-
-    public ?string $purchaseOrderDate {
-        get {
-            $value = trim((string) ($this->line->order_date ?? ''));
-
-            return $value !== '' ? $value : null;
-        }
-    }
-
-    /** @var list<ZugferdItemAttribute> */
-    public array $itemAttributes {
-        get {
-            $material = $this->line->material;
-            $material = is_string($material) ? $material : null;
-            $net = $this->line->weight_kg_net !== null ? (float) $this->line->weight_kg_net : null;
-            $gross = $this->line->weight_kg_total !== null ? (float) $this->line->weight_kg_total : null;
-            $certificate = $this->line->material_test_certificate;
-            $certificate = is_string($certificate) ? $certificate : null;
-
-            return LineItemAttributeMapper::attributes($material, $net, $gross, $certificate);
-        }
-    }
-
-    /** @var list<ZugferdItemClassification> */
-    public array $itemClassifications {
-        get {
-            $customs = $this->line->customs_tariff_number;
-            $customs = is_string($customs) ? $customs : null;
-
-            return LineItemAttributeMapper::classifications($customs);
-        }
-    }
     /** @var list<ZugferdAllowanceCharge> */
     public array $allowanceCharges {
         get {
@@ -166,6 +132,13 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
                 ->values()
                 ->all();
         }
+    }
+
+    private static function trimOrNull(mixed $value): ?string
+    {
+        $trimmed = trim((string) ($value ?? ''));
+
+        return $trimmed !== '' ? $trimmed : null;
     }
 
     private static function resolveDeliveryDate(InvoiceLine $line, bool $emitLineDeliveryDate): ?string

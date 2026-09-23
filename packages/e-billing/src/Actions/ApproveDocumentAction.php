@@ -28,15 +28,15 @@ final class ApproveDocumentAction
 
         $this->approvalGuard->assertCanApprove($document);
 
-        /** @var list<ForwardedSeverityRelease> $forwardedReleaseReasons */
-        $forwardedReleaseReasons = SeverityReleaseSnapshotCollector::collect($document);
+        /** @var list<ForwardedSeverityRelease> $releaseReasons */
+        $releaseReasons = SeverityReleaseSnapshotCollector::collect($document);
 
         $this->recordTransition->executeForAuthenticatedActor(
             document: $document,
             to: DocumentApprovalStatus::Approved,
             kind: ApprovalTransitionKind::Approve,
             reason: $reason,
-            forwardedReleaseReasons: $forwardedReleaseReasons,
+            forwardedReleaseReasons: $releaseReasons,
         );
 
         $this->queueDelivery->execute($document->fresh() ?? $document);

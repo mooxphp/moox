@@ -14,6 +14,23 @@ use Moox\Zugferd\Contracts\ZugferdItemClassification;
 
 class InvoiceLine implements ZugferdInvoiceLine
 {
+    public ?string $shipToName;
+
+    public ?ZugferdAddress $shipToAddress;
+
+    public ?string $orderDocumentReference;
+
+    public ?string $purchaseOrderDate;
+
+    /** @var list<ZugferdItemAttribute> */
+    public array $itemAttributes;
+
+    /** @var list<ZugferdItemClassification> */
+    public array $itemClassifications;
+
+    /** @var list<ZugferdAllowanceCharge> */
+    public array $allowanceCharges;
+
     public function __construct(
         public int $position = 0,
         public string $unit = '',
@@ -42,67 +59,28 @@ class InvoiceLine implements ZugferdInvoiceLine
         if ($this->weightKgNet === null && $this->weightKgTotal !== null && $this->quantity > 0) {
             $this->weightKgNet = round($this->weightKgTotal / $this->quantity, 3);
         }
-    }
 
-
-    public ?string $shipToName {
-        get {
-            $company = $this->deliveryAddress?->company;
-
-            if ($company === null) {
-                return null;
-            }
-
-            $trimmed = trim($company);
-
-            return $trimmed !== '' ? $trimmed : null;
-        }
-    }
-
-    public ?ZugferdAddress $shipToAddress {
-        get => $this->deliveryAddress;
-    }
-
-    public ?string $orderDocumentReference {
-        get {
-            $order = $this->orderNumber !== null ? trim($this->orderNumber) : '';
-
-            return $order !== '' ? $order : null;
-        }
-    }
-
-    public ?string $purchaseOrderDate {
-        get {
-            $date = $this->orderDate !== null ? trim($this->orderDate) : '';
-
-            return $date !== '' ? $date : null;
-        }
-    }
-
-    /** @var list<ZugferdItemAttribute> */
-    public array $itemAttributes {
-        get => LineItemAttributeMapper::attributes(
+        $company = $this->deliveryAddress?->company;
+        $trimmed = $company !== null ? trim($company) : '';
+        $this->shipToName = $trimmed !== '' ? $trimmed : null;
+        $this->shipToAddress = $this->deliveryAddress;
+        $order = $this->orderNumber !== null ? trim($this->orderNumber) : '';
+        $this->orderDocumentReference = $order !== '' ? $order : null;
+        $date = $this->orderDate !== null ? trim($this->orderDate) : '';
+        $this->purchaseOrderDate = $date !== '' ? $date : null;
+        $this->itemAttributes = LineItemAttributeMapper::attributes(
             $this->material,
             $this->weightKgNet,
             $this->weightKgTotal,
             $this->materialTestCertificate,
         );
-    }
-
-    /** @var list<ZugferdItemClassification> */
-    public array $itemClassifications {
-        get => LineItemAttributeMapper::classifications($this->customsTariffNumber);
-    }
-    /** @var list<ZugferdAllowanceCharge> */
-    public array $allowanceCharges {
-        get {
-            return BillDataAllowanceChargeMapper::fromLineScalars(
-                $this->surchargeAmount,
-                $this->surchargeDescription,
-                $this->materialTestCertificatePrice,
-                $this->materialTestCertificate,
-            );
-        }
+        $this->itemClassifications = LineItemAttributeMapper::classifications($this->customsTariffNumber);
+        $this->allowanceCharges = BillDataAllowanceChargeMapper::fromLineScalars(
+            $this->surchargeAmount,
+            $this->surchargeDescription,
+            $this->materialTestCertificatePrice,
+            $this->materialTestCertificate,
+        );
     }
 
     public function totalWithSurcharge(): float
