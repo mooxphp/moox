@@ -61,11 +61,10 @@ class MailOutboxServiceProvider extends MooxServiceProvider
 
         $config = $this->app->make(MailOutboxConfig::class);
 
-        if (
-            $config->isTestModeEnabled()
+        $warnTestMode = $config->isTestModeEnabled()
             && $config->shouldWarnTestModeInProduction()
-            && $this->app->environment('production')
-        ) {
+            && $this->app->environment('production');
+        if ($warnTestMode) {
             Log::warning('Moox Mail Outbox test mode is enabled in production. Non-allowlisted recipients are redirected and logged as suppressed — not delivered.');
         }
     }

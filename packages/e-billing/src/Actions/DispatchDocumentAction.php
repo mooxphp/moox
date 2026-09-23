@@ -35,13 +35,25 @@ final class DispatchDocumentAction
             throw new InvalidArgumentException('At least one delivery channel key is required.');
         }
 
+        $selected = $this->resolveSelectedChannels($this->instantiateChannels(), $channelKeys);
+
+        foreach ($selected as $channel) {
+            $outcomes = $channel->deliver($document);
+            $this->recordAttempts->execute($document, $channel->key(), $outcomes);
+        }
+    }
+
+    /**
+     * @return list<DeliveryChannelInterface>
+     */
+    private function instantiateChannels(): array
+    {
         $channels = config('e-billing.delivery.channels', []);
 
         if (! is_array($channels)) {
             throw new InvalidArgumentException("config('e-billing.delivery.channels') must be an array of class names.");
         }
 
-        /** @var list<DeliveryChannelInterface> $instances */
         $instances = [];
 
         foreach ($channels as $channelClass) {
@@ -60,12 +72,7 @@ final class DispatchDocumentAction
             $instances[] = $channel;
         }
 
-        $selected = $this->resolveSelectedChannels($instances, $channelKeys);
-
-        foreach ($selected as $channel) {
-            $outcomes = $channel->deliver($document);
-            $this->recordAttempts->execute($document, $channel->key(), $outcomes);
-        }
+        return $instances;
     }
 
     /**

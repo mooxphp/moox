@@ -44,7 +44,8 @@ final class RelayForeignSourcePdfAction
     public function __construct(
         private readonly ForeignSourcePdfRelaySenderInterface $sender,
         private readonly RecordDeliveryAttemptsAction $recordAttempts,
-    ) {}
+    ) {
+    }
 
     public static function isTerminal(DeliveryOutcome $outcome): bool
     {
@@ -109,11 +110,10 @@ final class RelayForeignSourcePdfAction
 
         $pdfDisk = $document->sourceStorageDisk();
         $pdfPath = $document->sourceStoragePath();
-        if (
-            ! is_string($pdfDisk) || $pdfDisk === ''
+        $missingSourcePdf = ! is_string($pdfDisk) || $pdfDisk === ''
             || ! is_string($pdfPath) || $pdfPath === ''
-            || ! Storage::disk($pdfDisk)->exists($pdfPath)
-        ) {
+            || ! Storage::disk($pdfDisk)->exists($pdfPath);
+        if ($missingSourcePdf) {
             return $this->recordFailure($document, $rawTo, self::FAILURE_MISSING_SOURCE_PDF, $correlationId);
         }
 

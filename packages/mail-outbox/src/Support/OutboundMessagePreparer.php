@@ -24,11 +24,10 @@ final class OutboundMessagePreparer
 
             $headers->addTextHeader($header, $correlationId);
 
-            if (
-                $this->config->shouldEnsureMessageId($mailer)
+            $needsMessageId = $this->config->shouldEnsureMessageId($mailer)
                 && ! $headers->has('Message-ID')
-                && method_exists($message, 'generateMessageId')
-            ) {
+                && method_exists($message, 'generateMessageId');
+            if ($needsMessageId) {
                 $headers->addIdHeader('Message-ID', $message->generateMessageId());
             }
         });
