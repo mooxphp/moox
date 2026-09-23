@@ -15,6 +15,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Moox\EBilling\Actions\AnnounceDocumentNeedsReviewAction;
+use Moox\EBilling\Contracts\ReviewNotificationStrategyInterface;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\ApprovalEscalation;
@@ -26,7 +27,7 @@ use Throwable;
 /**
  * Finds pending documents past configured escalation thresholds and dispatches
  * one {@see NotifyDocumentsNeedReviewJob} per document for the next unmet level.
- * Does not use {@see \Moox\EBilling\Contracts\ReviewNotificationStrategyInterface}.
+ * Does not use {@see ReviewNotificationStrategyInterface}.
  */
 final class ScanOverdueApprovalEscalationJob implements ShouldBeUnique, ShouldQueue
 {

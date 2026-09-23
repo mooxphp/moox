@@ -1,7 +1,7 @@
 <?php
 
-use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Models\EbillingDeliveryAttempt;
+use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\CreditNoteResource;
 use Moox\EBilling\Resources\InvoiceResource;
 use Moox\EBilling\Support\EbillingActivityAttributeLabels;
@@ -213,7 +213,6 @@ return [
 
     'allowed_document_type_codes' => ['380', '381'],
 
-
     /*
     |--------------------------------------------------------------------------
     | Default payment means + VAT category (UNTDID)
@@ -227,7 +226,6 @@ return [
 
     'payment_means_code' => env('EBILLING_PAYMENT_MEANS_CODE', '58'),
     'vat_category_code' => env('EBILLING_VAT_CATEGORY_CODE', 'S'),
-
 
     /*
     |--------------------------------------------------------------------------
@@ -717,7 +715,6 @@ return [
         'auto_approve_enabled' => (bool) env('EBILLING_APPROVAL_AUTO_APPROVE', true),
     ],
 
-
     /*
     |--------------------------------------------------------------------------
     | Invoice ViewInvoice UI (ADR 0007)
@@ -848,7 +845,6 @@ return [
             // ['key' => 'escalate', 'after' => 1, 'unit' => 'days'],
         ],
     ],
-
 
     /*
     |--------------------------------------------------------------------------

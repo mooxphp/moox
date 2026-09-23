@@ -414,4 +414,3 @@ function sellerParty(string $name, ?string $vatId): array
         'contact' => null,
     ];
 }
-

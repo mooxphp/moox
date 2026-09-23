@@ -6,10 +6,11 @@ namespace Moox\EBilling\Contracts;
 
 use Moox\EBilling\Data\DeliveryRecipient;
 use Moox\EBilling\Data\InvoiceMailSendResult;
+use Moox\EBilling\Delivery\MailDeliveryChannel;
 use Moox\EBilling\Models\EbillingDocument;
 
 /**
- * Host-bound mail transport for {@see \Moox\EBilling\Delivery\MailDeliveryChannel}.
+ * Host-bound mail transport for {@see MailDeliveryChannel}.
  * Implementations may use mail-outbox, Laravel Mail, or another stack.
  */
 interface InvoiceMailSenderInterface

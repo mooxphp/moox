@@ -73,4 +73,3 @@ test('delivery badge shows redirected, direct, or unknown', function (): void {
         ->and($unknown->deliveryBadgeLabel())->toBe('—')
         ->and($unknown->deliveryBadgeColor())->toBe('gray');
 });
-
