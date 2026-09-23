@@ -82,7 +82,7 @@ final class BillDataAllowanceChargeMapper
                 isCharge: true,
                 amount: $materialTestCertificatePrice,
                 reasonCode: 'CAE',
-                reasonText: $materialTestCertificate ?? 'Material test certificate',
+                reasonText: $materialTestCertificate ?? DocumentEmissionLabels::materialTestCertificate(),
             );
         }
 
