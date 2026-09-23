@@ -31,7 +31,7 @@ class ParsedInvoiceMapper
     public function __construct(
         private readonly InvoiceBuilder $invoiceBuilder = new InvoiceBuilder,
         private readonly ?DocumentTypeCodeResolver $documentTypeCodeResolver = null,
-        private readonly ?ConfiguredEn16931CodeResolver $configuredEn16931CodeResolver = null,
+        private readonly ?ConfiguredEn16931CodeResolver $codeResolver = null,
     ) {
     }
 
@@ -40,9 +40,9 @@ class ParsedInvoiceMapper
         return $this->documentTypeCodeResolver ??= app(DocumentTypeCodeResolver::class);
     }
 
-    private function configuredEn16931CodeResolver(): ConfiguredEn16931CodeResolver
+    private function codeResolver(): ConfiguredEn16931CodeResolver
     {
-        return $this->configuredEn16931CodeResolver ?? app(ConfiguredEn16931CodeResolver::class);
+        return $this->codeResolver ?? app(ConfiguredEn16931CodeResolver::class);
     }
 
     // Extend Invoice in your host app if needed
@@ -132,7 +132,7 @@ class ParsedInvoiceMapper
             buyer: $this->mapBuyer($dto),
             delivery: $dto->deliveryAddress?->toEn16931DeliveryParty(),
             payment_means: $this->mapPaymentMeans($dto),
-            vat_category: $this->configuredEn16931CodeResolver()->vatCategoryCodeFromConfig(),
+            vat_category: $this->codeResolver()->vatCategoryCodeFromConfig(),
             lines: array_map(
                 fn (InvoiceLineDto $lineDto): InvoiceLineDraft => $this->buildLineDraftFromDto($lineDto),
                 $dto->lines,
@@ -246,7 +246,7 @@ class ParsedInvoiceMapper
         }
 
         return new PaymentMeans(
-            payment_means_code: $this->configuredEn16931CodeResolver()->resolvePaymentMeansCode($dto->paymentMeansCode),
+            payment_means_code: $this->codeResolver()->resolvePaymentMeansCode($dto->paymentMeansCode),
             bank_accounts: $bankAccounts,
         );
     }

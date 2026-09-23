@@ -100,4 +100,3 @@ final class FlushReviewNotificationBatchJob implements ShouldQueue
         ]);
     }
 }
-

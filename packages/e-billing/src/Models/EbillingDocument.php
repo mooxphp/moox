@@ -555,41 +555,68 @@ class EbillingDocument extends BaseItemModel
 
     public static function fieldValidationsNeedHumanReview(?array $fieldValidations, ?array $severityReleases): bool
     {
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
-
-        if (! is_array($invoiceFields)) {
-            $invoiceFields = [];
-        }
-        if (! is_array($lineFields)) {
-            $lineFields = [];
-        }
-
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps();
         $validations = is_array($fieldValidations) ? $fieldValidations : [];
 
-        foreach ($invoiceFields as $field => $priority) {
-            if (! is_string($field) || ! is_string($priority)) {
-                continue;
-            }
+        if (self::priorityMapBlocksReview($invoiceFields, $validations, $severityReleases)) {
+            return true;
+        }
 
-            $status = self::readFieldStatusFromValidations($validations, $field);
-
-            if (self::configuredFieldBlocksReview($status, $priority, $severityReleases, $field)) {
+        foreach (self::readLineFieldValidationsFromArray($validations) as $lineId => $lineFieldValidations) {
+            if (self::priorityMapBlocksReview($lineFields, $lineFieldValidations, $severityReleases, (string) $lineId)) {
                 return true;
             }
         }
 
-        foreach (self::readLineFieldValidationsFromArray($validations) as $lineId => $lineFieldValidations) {
-            foreach ($lineFields as $field => $priority) {
-                if (! is_string($field) || ! is_string($priority)) {
-                    continue;
-                }
+        return false;
+    }
 
-                $status = self::readFieldStatusFromValidations($lineFieldValidations, $field);
+    /**
+     * @return array{0: array<string, string>, 1: array<string, string>}
+     */
+    private static function configuredPriorityMaps(): array
+    {
+        return [
+            self::stringPriorityMap(config('e-billing.field_validation.invoice_fields', [])),
+            self::stringPriorityMap(config('e-billing.field_validation.invoice_line_fields', [])),
+        ];
+    }
 
-                if (self::configuredFieldBlocksReview($status, $priority, $severityReleases, $field, $lineId)) {
-                    return true;
-                }
+    /**
+     * @return array<string, string>
+     */
+    private static function stringPriorityMap(mixed $config): array
+    {
+        if (! is_array($config)) {
+            return [];
+        }
+
+        $map = [];
+
+        foreach ($config as $field => $priority) {
+            if (is_string($field) && is_string($priority)) {
+                $map[$field] = $priority;
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param  array<string, string>  $fields
+     * @param  array<string, mixed>  $validations
+     */
+    private static function priorityMapBlocksReview(
+        array $fields,
+        array $validations,
+        ?array $severityReleases,
+        ?string $lineId = null,
+    ): bool {
+        foreach ($fields as $field => $priority) {
+            $status = self::readFieldStatusFromValidations($validations, $field);
+
+            if (self::configuredFieldBlocksReview($status, $priority, $severityReleases, $field, $lineId)) {
+                return true;
             }
         }
 
@@ -969,21 +996,32 @@ class EbillingDocument extends BaseItemModel
      */
     private static function mustFieldsWithStatuses(?array $fieldValidations, array $statuses): array
     {
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
-
-        if (! is_array($invoiceFields)) {
-            $invoiceFields = [];
-        }
-        if (! is_array($lineFields)) {
-            $lineFields = [];
-        }
-
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps();
         $validations = is_array($fieldValidations) ? $fieldValidations : [];
+        $matched = self::collectMustFieldsMatching($invoiceFields, $validations, $statuses);
+
+        foreach (self::readLineFieldValidationsFromArray($validations) as $lineFieldValidations) {
+            $matched = array_merge(
+                $matched,
+                self::collectMustFieldsMatching($lineFields, $lineFieldValidations, $statuses),
+            );
+        }
+
+        return array_values(array_unique($matched));
+    }
+
+    /**
+     * @param  array<string, string>  $fields
+     * @param  array<string, mixed>  $validations
+     * @param  list<string>  $statuses
+     * @return list<string>
+     */
+    private static function collectMustFieldsMatching(array $fields, array $validations, array $statuses): array
+    {
         $matched = [];
 
-        foreach ($invoiceFields as $field => $priority) {
-            if (! is_string($field) || $priority !== 'must') {
+        foreach ($fields as $field => $priority) {
+            if ($priority !== 'must') {
                 continue;
             }
 
@@ -993,20 +1031,7 @@ class EbillingDocument extends BaseItemModel
             }
         }
 
-        foreach (self::readLineFieldValidationsFromArray($validations) as $lineFieldValidations) {
-            foreach ($lineFields as $field => $priority) {
-                if (! is_string($field) || $priority !== 'must') {
-                    continue;
-                }
-
-                $status = self::readFieldStatusFromValidations($lineFieldValidations, $field);
-                if (in_array($status, $statuses, true)) {
-                    $matched[] = $field;
-                }
-            }
-        }
-
-        return array_values(array_unique($matched));
+        return $matched;
     }
 
     public function hasSeverityRelease(string $field, ?string $lineId = null): bool
@@ -1126,61 +1151,81 @@ class EbillingDocument extends BaseItemModel
      */
     private static function applyScopeConfiguredFieldBlocksReview(Builder $query): void
     {
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
-
-        if (! is_array($invoiceFields)) {
-            $invoiceFields = [];
-        }
-        if (! is_array($lineFields)) {
-            $lineFields = [];
-        }
-
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps();
         $fvColumn = $query->qualifyColumn('field_validations');
         $srColumn = $query->qualifyColumn('severity_releases');
-
-        $connection = $query->getConnection();
-        $driver = match (true) {
-            $connection instanceof MySqlConnection => 'mysql',
-            $connection instanceof SQLiteConnection => 'sqlite',
-            default => 'sqlite',
-        };
+        $driver = self::jsonSqlDriver($query);
 
         $query->where(function (Builder $orQuery) use ($invoiceFields, $lineFields, $fvColumn, $srColumn, $driver): void {
-            $hasCondition = false;
-
-            foreach ($invoiceFields as $field => $priority) {
-                if (! is_string($field) || ! is_string($priority)) {
-                    continue;
-                }
-                if (! in_array($priority, ['must', 'should'], true)) {
-                    continue;
-                }
-
-                $hasCondition = true;
-                $orQuery->orWhere(function (Builder $fieldQuery) use ($field, $priority, $fvColumn, $srColumn, $driver): void {
-                    self::applyScopeInvoiceFieldBlocksReview($fieldQuery, $field, $priority, $fvColumn, $srColumn, $driver);
-                });
-            }
-
-            foreach ($lineFields as $field => $priority) {
-                if (! is_string($field) || ! is_string($priority)) {
-                    continue;
-                }
-                if (! in_array($priority, ['must', 'should'], true)) {
-                    continue;
-                }
-
-                $hasCondition = true;
-                $orQuery->orWhere(function (Builder $fieldQuery) use ($field, $priority, $fvColumn, $srColumn, $driver): void {
-                    self::applyScopeLineFieldBlocksReview($fieldQuery, $field, $priority, $fvColumn, $srColumn, $driver);
-                });
-            }
+            $hasCondition = self::appendBlockingFieldOrConditions(
+                $orQuery,
+                $invoiceFields,
+                forLines: false,
+                fvColumn: $fvColumn,
+                srColumn: $srColumn,
+                driver: $driver,
+            );
+            $hasCondition = self::appendBlockingFieldOrConditions(
+                $orQuery,
+                $lineFields,
+                forLines: true,
+                fvColumn: $fvColumn,
+                srColumn: $srColumn,
+                driver: $driver,
+            ) || $hasCondition;
 
             if (! $hasCondition) {
                 $orQuery->whereRaw('0 = 1');
             }
         });
+    }
+
+    /**
+     * @param  Builder<EbillingDocument>  $query
+     */
+    private static function jsonSqlDriver(Builder $query): string
+    {
+        $connection = $query->getConnection();
+
+        return match (true) {
+            $connection instanceof MySqlConnection => 'mysql',
+            $connection instanceof SQLiteConnection => 'sqlite',
+            default => 'sqlite',
+        };
+    }
+
+    /**
+     * @param  Builder<EbillingDocument>  $orQuery
+     * @param  array<string, string>  $fields
+     */
+    private static function appendBlockingFieldOrConditions(
+        Builder $orQuery,
+        array $fields,
+        bool $forLines,
+        string $fvColumn,
+        string $srColumn,
+        string $driver,
+    ): bool {
+        $hasCondition = false;
+
+        foreach ($fields as $field => $priority) {
+            if (! in_array($priority, ['must', 'should'], true)) {
+                continue;
+            }
+
+            $hasCondition = true;
+            $orQuery->orWhere(function (Builder $fieldQuery) use ($field, $priority, $fvColumn, $srColumn, $driver, $forLines): void {
+                if ($forLines) {
+                    self::applyScopeLineFieldBlocksReview($fieldQuery, $field, $priority, $fvColumn, $srColumn, $driver);
+
+                    return;
+                }
+
+                self::applyScopeInvoiceFieldBlocksReview($fieldQuery, $field, $priority, $fvColumn, $srColumn, $driver);
+            });
+        }
+
+        return $hasCondition;
     }
 
     /**

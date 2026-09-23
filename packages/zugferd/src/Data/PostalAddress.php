@@ -18,5 +18,6 @@ final class PostalAddress implements ZugferdAddress
         public ?string $zip = null,
         public ?string $city = null,
         public ?string $country = null,
-    ) {}
+    ) {
+    }
 }
