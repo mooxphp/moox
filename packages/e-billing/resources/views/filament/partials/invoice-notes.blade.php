@@ -3,7 +3,7 @@
 @endphp
 @if($notes !== null)
     <details
-        @if($notes['open']) open @endif
+        @if($notes['open']) open="open" @endif
         class="group mb-3 rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800/40">
         <summary
             class="cursor-pointer list-none px-4 py-3 [&::-webkit-details-marker]:hidden [&::marker]:hidden">

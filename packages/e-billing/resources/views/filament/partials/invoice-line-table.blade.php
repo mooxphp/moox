@@ -8,7 +8,7 @@
     @endphp
     @if($fields !== [])
     <details
-        @if($lineState['open']) open @endif
+        @if($lineState['open']) open="open" @endif
         class="group mb-3 rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-700/40">
         <summary
             class="cursor-pointer list-none px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 [&::-webkit-details-marker]:hidden [&::marker]:hidden">
