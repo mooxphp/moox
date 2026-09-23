@@ -104,10 +104,9 @@ final class InvoiceViewModel
      */
     public function lines(): array
     {
-        $lineValidationsRoot = is_array($this->document?->field_validations)
-            ? ($this->document->field_validations['lines'] ?? null)
-            : null;
-        $lineValidationsRoot = is_array($lineValidationsRoot) ? $lineValidationsRoot : [];
+        $lineValidationsRoot = EbillingDocument::readLineFieldValidationsFromArray(
+            is_array($this->document?->field_validations) ? $this->document->field_validations : null,
+        );
 
         return $this->invoice->lines
             ->map(function ($line) use ($lineValidationsRoot): InvoiceLineViewModel {
@@ -381,6 +380,7 @@ final class InvoiceViewModel
             'supplier_bank_accounts' => $this->invoice->payment_means?->bank_accounts ?? [],
             'payment_means' => $this->invoice->payment_means?->payment_means_code,
             'vat_category' => $this->invoice->vat_category,
+            // Keep empty when no distinct consignee (ADR 0020 / 0014).
             'delivery_address' => PartyAddressFormatter::format($this->invoice->delivery),
             default => $this->invoice->getAttribute($field),
         };
@@ -450,11 +450,19 @@ final class InvoiceViewModel
      * Avoid showing "parsed" for empty fields when stored validations pre-date the field
      * or were never recomputed after a schema change.
      *
+     * Exception: header delivery_address empty means no distinct consignee (ADR 0014/0020) —
+     * display as not_applicable ("empty and rightly so"), never must-missing or
+     * db_validated on a blank Warenempfänger.
+     *
      * @return array{status: string}|null
      */
     private function resolveDisplayValidation(string $field, mixed $rawValue, ?array $storedValidation): ?array
     {
         $hasValue = ! ($rawValue === null || $rawValue === '' || (is_array($rawValue) && $rawValue === []));
+
+        if ($field === 'delivery_address' && ! $hasValue) {
+            return ['status' => 'not_applicable'];
+        }
 
         if ($storedValidation !== null) {
             $storedStatus = $storedValidation['status'] ?? null;
