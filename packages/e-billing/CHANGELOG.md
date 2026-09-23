@@ -1,6 +1,10 @@
 # Changelog
 
 ## Unreleased
+### Added
+- `e-billing.intake.scopes`: optional allowlist of mail-inbox Scope keys for `ProcessInboxAttachmentListener` (null/`[]` = all; non-listed PDFs marked Skipped, no `EbillingDocument`).
+- Optional `e-billing.delivery.from_name` / `EBILLING_DELIVERY_FROM_NAME` (display name only; From address is host-owned).
+
 ### Changed
 - BG-32 BT-160 attribute names and CAE `reason_text` fallbacks follow `e-billing.document_locale` / `EBILLING_DOCUMENT_LOCALE` (package default `en`; lang keys in `e-billing::emission`). Independent of Filament UI locale. Already-emitted artifacts are not regenerated. Hosts that need German (or other) labels set the env/config override.
 

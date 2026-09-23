@@ -26,9 +26,31 @@ class ProcessInboxAttachmentListener
             return;
         }
 
+        if (! $this->scopeIsAllowedForIntake((string) $attachment->scope)) {
+            $attachment->markAsSkipped();
+
+            return;
+        }
+
         $document = $this->resolveOrCreateEbillingDocument($attachment);
 
         StoreBillDataJob::dispatch($document->getKey());
+    }
+
+    private function scopeIsAllowedForIntake(string $scope): bool
+    {
+        $scopes = config('e-billing.intake.scopes');
+
+        if (! is_array($scopes)) {
+            return true;
+        }
+
+        $allowed = array_values(array_filter(
+            $scopes,
+            static fn (mixed $value): bool => is_string($value) && $value !== '',
+        ));
+
+        return $allowed === [] || in_array($scope, $allowed, true);
     }
 
     private function resolveOrCreateEbillingDocument(InboxAttachment $attachment): EbillingDocument
