@@ -17,7 +17,9 @@ class NewDeviceNotification extends Notification implements ShouldQueue
     /**
      * @param  array<string, mixed>  $deviceDetails
      */
-    public function __construct(protected array $deviceDetails) {}
+    public function __construct(protected array $deviceDetails)
+    {
+    }
 
     /**
      * @param  mixed  $notifiable
@@ -63,7 +65,6 @@ class NewDeviceNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * @param  mixed  $notifiable
      * @return array<string, mixed>
      */
     protected function mailTemplateData(mixed $notifiable): array
