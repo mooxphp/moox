@@ -94,7 +94,10 @@ class NewDeviceNotification extends Notification implements ShouldQueue
                 $this->deviceDetails['city'] ?? null,
                 $this->deviceDetails['country'] ?? null,
             ])->filter()->implode(', '),
-            'magicLink' => $trustUrl ?? $reviewUrl,
+            // Notify-only: never fall back to reviewUrl (heco templates omit CTA).
+            'magicLink' => config('user-device.enforce_trust', true)
+                ? ($trustUrl ?? $reviewUrl)
+                : '',
             'reviewUrl' => $reviewUrl,
             'expiresMinutes' => $expiresMinutes,
         ];
