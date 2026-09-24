@@ -35,8 +35,10 @@ return [
     |--------------------------------------------------------------------------
     |
     | When true (default), untrusted devices are hard-blocked in Filament until
-    | confirmed via email trust link or admin Trust action.
-    | When false, devices are tracked only — no login gate.
+    | confirmed via email trust link or admin Trust action, and the new-device
+    | mail includes a trust CTA.
+    | When false, devices are tracked only — no login gate; new-device mail is
+    | still sent without a trust CTA (notify-only).
     |
     */
     'enforce_trust' => env('USER_DEVICE_ENFORCE_TRUST', true),
@@ -141,9 +143,21 @@ return [
     |--------------------------------------------------------------------------
     |
     | Either a full URL (https://...) or a public path (/logo/foo.svg).
+    | Used only for the Blade fallback when moox/mail-template is unavailable.
     |
     */
     'mail_logo_url' => '/logo/logo_heco_2021.svg',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mail template slug
+    |--------------------------------------------------------------------------
+    |
+    | When moox/mail-template is installed, NewDeviceNotification renders this
+    | MailTemplate slug (layout login-link) instead of the package Blade view.
+    |
+    */
+    'mail_template_slug' => env('USER_DEVICE_MAIL_TEMPLATE_SLUG', 'new-device'),
 
     /*
     |--------------------------------------------------------------------------

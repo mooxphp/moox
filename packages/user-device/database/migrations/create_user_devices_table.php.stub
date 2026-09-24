@@ -15,7 +15,10 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('scope')->nullable()->index();
 
-            $table->morphs('user');
+            // string morph: supports bigint user ids and UUID authenticatables (e.g. contacts)
+            $table->string('user_id');
+            $table->string('user_type');
+            $table->index(['user_id', 'user_type']);
 
             $table->text('user_agent')->nullable();
             $table->string('os')->nullable();

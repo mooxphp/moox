@@ -16,6 +16,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema as DbSchema;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
@@ -194,7 +195,10 @@ class UserDeviceResource extends BaseItemResource
                     ->sortable(),
                 TextColumn::make('user_id')
                     ->label(__('core::user.user_id'))
-                    ->getStateUsing(fn ($record) => optional($record->user)->name ?? 'unknown')
+                    ->getStateUsing(fn (UserDevice $record): string => static::resolveUserLabel($record->user))
+                    ->description(fn (UserDevice $record): ?string => filled($record->user_type)
+                        ? class_basename((string) $record->user_type)
+                        : null)
                     ->sortable(),
                 static::getScopeTableColumn(),
                 TextColumn::make('ip_address')
@@ -234,6 +238,8 @@ class UserDeviceResource extends BaseItemResource
                                 $sub
                                     ->orWhere('name', 'like', "%{$q}%")
                                     ->orWhere('email', 'like', "%{$q}%")
+                                    ->orWhere('username', 'like', "%{$q}%")
+                                    ->orWhere('display_name', 'like', "%{$q}%")
                                     ->orWhere('first_name', 'like', "%{$q}%")
                                     ->orWhere('last_name', 'like', "%{$q}%");
                             });
@@ -288,6 +294,42 @@ class UserDeviceResource extends BaseItemResource
                     ->successNotificationTitle(__('user-device::translations.device_delete_success_title'))
                     ->visible(fn (): bool => static::permissionSystemAvailable() && static::isShieldAdmin(filament()->auth()->user())),
             ]);
+    }
+
+    /**
+     * Resolve a human label for polymorphic authenticatables (User, Contact, …).
+     */
+    public static function resolveUserLabel(?Model $user): string
+    {
+        if (! $user instanceof Model) {
+            return 'unknown';
+        }
+
+        if (method_exists($user, 'getFilamentName')) {
+            $label = trim((string) $user->getFilamentName());
+
+            if ($label !== '') {
+                return $label;
+            }
+        }
+
+        if (method_exists($user, 'displayLabel')) {
+            $label = trim((string) $user->displayLabel());
+
+            if ($label !== '') {
+                return $label;
+            }
+        }
+
+        foreach (['name', 'display_name', 'email', 'username'] as $attribute) {
+            $value = $user->getAttribute($attribute);
+
+            if (filled($value)) {
+                return (string) $value;
+            }
+        }
+
+        return (string) $user->getKey();
     }
 
     #[Override]

@@ -49,7 +49,7 @@ Curious what the install command does? See manual installation below.
 ### Track-only mode (`enforce_trust=false`)
 
 - Devices are still created/updated on login and linked to the session.
-- No hard-block middleware and no new-device email.
+- No hard-block middleware; new-device email is still sent (notify-only, without trust CTA).
 - New devices are stored as trusted (`whitelisted=true`).
 
 ### What the package ships
@@ -83,7 +83,7 @@ Curious what the install command does? See manual installation below.
 ### Configuration (config/user-device.php)
 
 - `enabled` (bool): device tracking on login + session sync (default: false, env: `USER_DEVICE_ENABLED`)
-- `enforce_trust` (bool): hard-block + trust mail for new devices (default: true, env: `USER_DEVICE_ENFORCE_TRUST`)
+- `enforce_trust` (bool): hard-block + trust CTA in mail (default: true, env: `USER_DEVICE_ENFORCE_TRUST`). New-device mail is sent whenever tracking is enabled.
 - `trust_link_expires_minutes` (int): signed trust link expiry
 - `scope_to_authenticated_user` (bool): always scope resource to the current user
 - `allow_all_devices_without_shield` (bool): allow viewing all devices if Shield is not installed
