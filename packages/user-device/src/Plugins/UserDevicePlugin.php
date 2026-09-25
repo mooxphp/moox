@@ -20,13 +20,15 @@ class UserDevicePlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        // Origin only — scoped children appear under User (source), not here.
-        $panel->resources([
-            UserDeviceResource::class,
-        ]);
-
         if (! config('user-device.enabled', false)) {
             return;
+        }
+
+        // Resource is ops UI only (default: admin). Portal keeps middleware, no menu.
+        if ($this->shouldRegisterResource($panel)) {
+            $panel->resources([
+                UserDeviceResource::class,
+            ]);
         }
 
         $middleware = [
@@ -39,6 +41,17 @@ class UserDevicePlugin implements Plugin
 
         // Must be persistent so it also runs for Livewire requests (Filament actions/forms).
         $panel->authMiddleware($middleware, isPersistent: true);
+    }
+
+    protected function shouldRegisterResource(Panel $panel): bool
+    {
+        $panels = config('user-device.resource_panels', ['admin']);
+
+        if (! is_array($panels)) {
+            return false;
+        }
+
+        return in_array($panel->getId(), $panels, true);
     }
 
     public function boot(Panel $panel): void

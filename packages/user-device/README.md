@@ -82,17 +82,19 @@ Curious what the install command does? See manual installation below.
 
 ### Configuration (config/user-device.php)
 
-- `enabled` (bool): device tracking on login + session sync (default: false, env: `USER_DEVICE_ENABLED`)
+- `enabled` (bool): device tracking on login + session sync (default: false, env: `USER_DEVICE_ENABLED`). When false: no resource, no middleware.
 - `enforce_trust` (bool): hard-block + trust CTA in mail (default: true, env: `USER_DEVICE_ENFORCE_TRUST`). New-device mail is sent whenever tracking is enabled.
 - `trust_link_expires_minutes` (int): signed trust link expiry
 - `scope_to_authenticated_user` (bool): always scope resource to the current user
 - `allow_all_devices_without_shield` (bool): allow viewing all devices if Shield is not installed
+- `resource_panels` (array): panel IDs that get the devices resource when enabled (default: `['admin']`)
 - `mail_logo_url` (string): logo URL or public path for the email
 
 ### Notes
 
 - For track and/or trust, load `UserDevicePlugin::make()` on the Filament panel.
 - Example track-only: `USER_DEVICE_ENABLED=true` + `USER_DEVICE_ENFORCE_TRUST=false`.
+- Production off: `USER_DEVICE_ENABLED=false` — nothing active, no devices menu.
 
 <!--/whatdoes-->
 

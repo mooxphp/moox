@@ -24,7 +24,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Master switch for device tracking on login and session sync.
-    | The Filament devices resource stays available even when this is false.
+    | When false: no tracking, no trust middleware, no devices resource.
     |
     */
     'enabled' => env('USER_DEVICE_ENABLED', false),
@@ -136,6 +136,18 @@ return [
     |
     */
     'allow_all_devices_without_shield' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Panels that show the devices resource
+    |--------------------------------------------------------------------------
+    |
+    | Only when enabled: Filament resource (nav + /user-devices) registers on
+    | these panel IDs. Other panels with the plugin still get trust middleware.
+    | Default: admin only (portal users trust via mail).
+    |
+    */
+    'resource_panels' => ['admin'],
 
     /*
     |--------------------------------------------------------------------------
