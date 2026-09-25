@@ -48,6 +48,11 @@ class FrontendAuthMiddleware
             return $next($request);
         }
 
+        // Device trust magic-links: signed + panel login handled in TrustDeviceController.
+        if (is_string($routeName) && $routeName === 'user-device.devices.trust') {
+            return $next($request);
+        }
+
         $this->configureAuthFromConfig();
 
         // Use Filament's auth check so we align with its panel access rules.
