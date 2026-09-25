@@ -98,6 +98,12 @@ class UserDeviceResource extends BaseItemResource
             return false;
         }
 
+        // Self-service panels (e.g. portal) always see own devices only.
+        $panelId = filament()->getCurrentPanel()?->getId();
+        if (is_string($panelId) && $panelId !== 'admin') {
+            return true;
+        }
+
         if (! static::permissionSystemAvailable()) {
             return ! config('user-device.allow_all_devices_without_shield', false);
         }
@@ -253,14 +259,14 @@ class UserDeviceResource extends BaseItemResource
                     ->requiresConfirmation()
                     ->modalHeading(__('user-device::translations.device_delete_modal_heading'))
                     ->modalDescription(__('user-device::translations.device_delete_modal_description'))
-                    ->visible(fn (UserDevice $record): bool => static::permissionSystemAvailable() && static::isShieldAdmin(filament()->auth()->user()))
+                    ->visible(fn (UserDevice $record): bool => static::canManageDevicesAsAdmin())
                     ->successNotificationTitle(__('user-device::translations.device_delete_success_title')),
                 Action::make('trust')
                     ->label(__('user-device::translations.device_trust'))
                     ->requiresConfirmation()
                     ->modalHeading(__('user-device::translations.device_trust_modal_heading'))
                     ->modalDescription(__('user-device::translations.device_trust_modal_description'))
-                    ->visible(fn (UserDevice $record): bool => static::permissionSystemAvailable() && static::isShieldAdmin(filament()->auth()->user()) && ! $record->whitelisted)
+                    ->visible(fn (UserDevice $record): bool => ! $record->whitelisted && static::canManageDevicesAsAdmin())
                     ->action(function (UserDevice $record): void {
                         $record->update(['whitelisted' => true]);
 
@@ -274,7 +280,7 @@ class UserDeviceResource extends BaseItemResource
                     ->requiresConfirmation()
                     ->modalHeading(__('user-device::translations.device_untrust_modal_heading'))
                     ->modalDescription(__('user-device::translations.device_untrust_modal_description'))
-                    ->visible(fn (UserDevice $record): bool => static::permissionSystemAvailable() && static::isShieldAdmin(filament()->auth()->user()) && $record->whitelisted)
+                    ->visible(fn (UserDevice $record): bool => (bool) $record->whitelisted && static::canManageDevicesAsAdmin())
                     ->action(function (UserDevice $record): void {
                         $record->update(['whitelisted' => false]);
 
@@ -292,8 +298,31 @@ class UserDeviceResource extends BaseItemResource
                     ->modalHeading(__('user-device::translations.device_delete_modal_heading'))
                     ->modalDescription(__('user-device::translations.device_delete_modal_description'))
                     ->successNotificationTitle(__('user-device::translations.device_delete_success_title'))
-                    ->visible(fn (): bool => static::permissionSystemAvailable() && static::isShieldAdmin(filament()->auth()->user())),
+                    ->visible(fn (): bool => static::canManageDevicesAsAdmin()),
             ]);
+    }
+
+    /**
+     * Admin ops only (Shield super_admin, or admin panel without Shield when allow_all is on).
+     * Portal users trust via the signed mail link — no self-service Trust button.
+     */
+    public static function canManageDevicesAsAdmin(?object $user = null): bool
+    {
+        $user ??= filament()->auth()->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        if (static::permissionSystemAvailable() && static::isShieldAdmin($user)) {
+            return true;
+        }
+
+        $panelId = filament()->getCurrentPanel()?->getId();
+
+        return $panelId === 'admin'
+            && ! static::permissionSystemAvailable()
+            && (bool) config('user-device.allow_all_devices_without_shield', false);
     }
 
     /**

@@ -34,12 +34,12 @@ Curious what the install command does? See manual installation below.
    - If the record is **new**, the user receives an email with a **signed “Trust this device” link**.
 
 2. **Device is untrusted (`whitelisted = false`)**
-   - The user is **hard-blocked** in Filament: any attempt to navigate away will be redirected back to the devices page with a single notification.
-   - The user must click the **email trust link** to continue.
+   - Panel access is blocked: the user is logged out and returned to the **login screen** with a toast (check email / confirm device).
+   - The user must click the **email trust link** before they can sign in.
 
 3. **Trusting a device**
    - The signed link marks the device as `whitelisted = true`.
-   - After that, the user can use Filament normally.
+   - After that, the user can sign in and use Filament normally.
 
 4. **Admin actions**
    - If Filament Shield / Spatie Permission is available, **super_admin** can:

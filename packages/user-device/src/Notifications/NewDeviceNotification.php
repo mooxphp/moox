@@ -17,9 +17,7 @@ class NewDeviceNotification extends Notification implements ShouldQueue
     /**
      * @param  array<string, mixed>  $deviceDetails
      */
-    public function __construct(protected array $deviceDetails)
-    {
-    }
+    public function __construct(protected array $deviceDetails) {}
 
     /**
      * @param  mixed  $notifiable
@@ -35,9 +33,8 @@ class NewDeviceNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable): MailMessage
     {
-        $subject = __('user-device::translations.mail_subject_new_device');
         $data = $this->mailTemplateData($notifiable);
-
+        $subject = $this->resolveSubject();
         $html = $this->renderMailTemplate($data);
 
         if (is_string($html) && $html !== '') {
@@ -90,10 +87,7 @@ class NewDeviceNotification extends Notification implements ShouldQueue
                 $this->deviceDetails['os'] ?? null,
             ])->filter()->implode(' · '),
             'deviceIp' => (string) ($this->deviceDetails['ip_address'] ?? ''),
-            'deviceLocation' => collect([
-                $this->deviceDetails['city'] ?? null,
-                $this->deviceDetails['country'] ?? null,
-            ])->filter()->implode(', '),
+            'deviceLocation' => $this->deviceLocation(),
             // Notify-only: never fall back to reviewUrl (heco templates omit CTA).
             'magicLink' => config('user-device.enforce_trust', true)
                 ? ($trustUrl ?? $reviewUrl)
@@ -106,6 +100,40 @@ class NewDeviceNotification extends Notification implements ShouldQueue
     protected function emailAddress(mixed $notifiable): string
     {
         return trim((string) data_get($notifiable, 'email', ''));
+    }
+
+    protected function resolveSubject(): string
+    {
+        $fallback = __('user-device::translations.mail_subject_new_device');
+        $bridge = 'Moox\\MailTemplate\\Support\\MailTemplateBridge';
+
+        if (! class_exists($bridge) || ! $bridge::isAvailable()) {
+            return $fallback;
+        }
+
+        $slug = trim((string) config('user-device.mail_template_slug', 'new-device'));
+
+        if ($slug === '') {
+            return $fallback;
+        }
+
+        $title = $bridge::titleBySlug($slug);
+
+        return filled($title) ? (string) $title : $fallback;
+    }
+
+    protected function deviceLocation(): string
+    {
+        $location = collect([
+            $this->deviceDetails['city'] ?? null,
+            $this->deviceDetails['country'] ?? null,
+        ])->filter()->implode(', ');
+
+        if ($location !== '') {
+            return $location;
+        }
+
+        return __('user-device::translations.mail_location_unknown');
     }
 
     /**

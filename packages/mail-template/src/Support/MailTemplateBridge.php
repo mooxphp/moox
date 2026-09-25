@@ -219,4 +219,42 @@ final class MailTemplateBridge
 
         return $renderer->toHtml($template, $data);
     }
+
+    /**
+     * Localized template title (Filament “Betreff”) for use as the email subject.
+     */
+    public static function titleBySlug(string $slug, ?string $locale = null): ?string
+    {
+        $slug = trim($slug);
+
+        if ($slug === '' || ! self::isAvailable()) {
+            return null;
+        }
+
+        $template = app(MailTemplateRenderer::class)->find($slug, $locale);
+
+        if ($template === null) {
+            return null;
+        }
+
+        $translationLocale = method_exists($template, 'getDefaultLocale')
+            ? (string) $template->getDefaultLocale()
+            : (string) ($locale ?? app()->getLocale());
+
+        $translation = null;
+
+        if (method_exists($template, 'getTranslation')) {
+            $translation = $template->getTranslation($translationLocale, false);
+        }
+
+        if ($translation === null) {
+            $translation = $template->translations->first(
+                fn ($row): bool => strcasecmp((string) ($row->locale ?? ''), $translationLocale) === 0
+            ) ?? $template->translations->first();
+        }
+
+        $title = trim((string) ($translation?->title ?? ''));
+
+        return $title !== '' ? $title : null;
+    }
 }
