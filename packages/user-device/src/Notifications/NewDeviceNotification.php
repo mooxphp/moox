@@ -17,7 +17,9 @@ class NewDeviceNotification extends Notification implements ShouldQueue
     /**
      * @param  array<string, mixed>  $deviceDetails
      */
-    public function __construct(protected array $deviceDetails) {}
+    public function __construct(protected array $deviceDetails)
+    {
+    }
 
     /**
      * @param  mixed  $notifiable
