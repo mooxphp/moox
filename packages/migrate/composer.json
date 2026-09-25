@@ -1,0 +1,60 @@
+{
+    "name": "moox/migrate",
+    "description": "Simple moox Entity for Laravel's existing migrations table.",
+    "keywords": [
+        "moox",
+        "Laravel",
+        "Filament",
+        "moox package",
+        "Laravel package",
+        "migrations"
+    ],
+    "homepage": "https://moox.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main"
+    },
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Migrate\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Migrate\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Migrate\\MigrateServiceProvider"
+            ]
+        },
+        "moox": {
+            "name": "moox Migrate",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "install": {
+                "plugins": [
+                    "Moox\\Migrate\\Plugins\\MigratePlugin"
+                ]
+            }
+        }
+    },
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
