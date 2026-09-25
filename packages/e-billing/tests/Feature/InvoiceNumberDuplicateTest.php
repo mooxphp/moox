@@ -242,3 +242,175 @@ test('discard identical content duplicate marks document without creating a revi
         ->and($candidate->ignored_reason['matched_invoice_id'] ?? null)->toBe((string) $existingInvoice->getKey())
         ->and($invoiceClass::query()->where('invoice_number', 'IDEM-400')->count())->toBe(1);
 });
+
+test('issuer scope does not collide across different seller VAT ids', function (): void {
+    config(['e-billing.duplicate_number.scope' => 'issuer']);
+
+    $invoiceClass = InvoiceModels::invoice();
+
+    $invoiceClass::factory()->create([
+        'invoice_number' => 'SCOPE-100',
+        'document_type' => '380',
+        'seller' => sellerParty('Issuer A GmbH', 'DE111111111'),
+    ]);
+
+    $candidate = $invoiceClass::factory()->create([
+        'invoice_number' => 'SCOPE-100',
+        'document_type' => '380',
+        'seller' => sellerParty('Issuer B GmbH', 'DE222222222'),
+    ]);
+
+    expect((new InvoiceNumberDuplicateChecker)->findDuplicate($candidate))->toBeNull();
+});
+
+test('issuer scope collides when seller VAT id matches', function (): void {
+    config(['e-billing.duplicate_number.scope' => 'issuer']);
+
+    $invoiceClass = InvoiceModels::invoice();
+
+    $existing = $invoiceClass::factory()->create([
+        'invoice_number' => 'SCOPE-200',
+        'document_type' => '380',
+        'seller' => sellerParty('Issuer A GmbH', 'DE111111111'),
+    ]);
+
+    $candidate = $invoiceClass::factory()->create([
+        'invoice_number' => 'SCOPE-200',
+        'document_type' => '380',
+        'seller' => sellerParty('Issuer A Trading', 'DE111111111'),
+    ]);
+
+    $duplicate = (new InvoiceNumberDuplicateChecker)->findDuplicate($candidate);
+
+    expect($duplicate)->not->toBeNull()
+        ->and((string) $duplicate->getKey())->toBe((string) $existing->getKey());
+});
+
+test('issuer scope normalizes seller VAT whitespace before comparing', function (): void {
+    config(['e-billing.duplicate_number.scope' => 'issuer']);
+
+    $invoiceClass = InvoiceModels::invoice();
+
+    $existing = $invoiceClass::factory()->create([
+        'invoice_number' => 'SCOPE-250',
+        'document_type' => '380',
+        'seller' => sellerParty('Issuer A GmbH', 'DE 111111111'),
+    ]);
+
+    $candidate = $invoiceClass::factory()->create([
+        'invoice_number' => 'SCOPE-250',
+        'document_type' => '380',
+        'seller' => sellerParty('Issuer A Trading', 'DE111111111'),
+    ]);
+
+    $duplicate = (new InvoiceNumberDuplicateChecker)->findDuplicate($candidate);
+
+    expect($duplicate)->not->toBeNull()
+        ->and((string) $duplicate->getKey())->toBe((string) $existing->getKey());
+});
+
+test('issuer scope buckets blank seller VAT ids together', function (): void {
+    config(['e-billing.duplicate_number.scope' => 'issuer']);
+
+    $invoiceClass = InvoiceModels::invoice();
+
+    $existing = $invoiceClass::factory()->create([
+        'invoice_number' => 'SCOPE-300',
+        'document_type' => '380',
+        'seller' => sellerParty('Unknown Seller', null),
+    ]);
+
+    $candidate = $invoiceClass::factory()->create([
+        'invoice_number' => 'SCOPE-300',
+        'document_type' => '380',
+        'seller' => sellerParty('Other Unknown', null),
+    ]);
+
+    $duplicate = (new InvoiceNumberDuplicateChecker)->findDuplicate($candidate);
+
+    expect($duplicate)->not->toBeNull()
+        ->and((string) $duplicate->getKey())->toBe((string) $existing->getKey());
+});
+
+test('global scope still collides across different seller VAT ids', function (): void {
+    config(['e-billing.duplicate_number.scope' => 'global']);
+
+    $invoiceClass = InvoiceModels::invoice();
+
+    $existing = $invoiceClass::factory()->create([
+        'invoice_number' => 'SCOPE-400',
+        'document_type' => '380',
+        'seller' => sellerParty('Issuer A GmbH', 'DE111111111'),
+    ]);
+
+    $candidate = $invoiceClass::factory()->create([
+        'invoice_number' => 'SCOPE-400',
+        'document_type' => '380',
+        'seller' => sellerParty('Issuer B GmbH', 'DE222222222'),
+    ]);
+
+    $duplicate = (new InvoiceNumberDuplicateChecker)->findDuplicate($candidate);
+
+    expect($duplicate)->not->toBeNull()
+        ->and((string) $duplicate->getKey())->toBe((string) $existing->getKey());
+});
+
+test('identical content duplicate respects issuer scope', function (): void {
+    config(['e-billing.duplicate_number.scope' => 'issuer']);
+
+    $invoiceClass = InvoiceModels::invoice();
+    $hash = hash('sha256', 'same-pdf-bytes-scope');
+
+    $existingInvoice = $invoiceClass::factory()->create([
+        'invoice_number' => 'IDEM-SCOPE-1',
+        'document_type' => '380',
+        'seller' => sellerParty('Issuer A GmbH', 'DE111111111'),
+    ]);
+
+    EbillingDocument::query()->create([
+        'invoice_id' => $existingInvoice->getKey(),
+        'format' => 'zugferd',
+        'gateway_status' => 'validated',
+        'review_status' => InvoiceProcessingStatus::Validated,
+        'source_content_hash' => $hash,
+        'scope' => 'default',
+    ]);
+
+    expect((new InvoiceNumberDuplicateChecker)->findIdenticalContentDuplicate(
+        invoiceNumber: 'IDEM-SCOPE-1',
+        documentType: '380',
+        sourceContentHash: $hash,
+        sellerVatId: 'DE222222222',
+    ))->toBeNull();
+
+    $match = (new InvoiceNumberDuplicateChecker)->findIdenticalContentDuplicate(
+        invoiceNumber: 'IDEM-SCOPE-1',
+        documentType: '380',
+        sourceContentHash: $hash,
+        sellerVatId: 'DE111111111',
+    );
+
+    expect($match)->not->toBeNull()
+        ->and((string) $match->getKey())->toBe((string) $existingInvoice->getKey());
+});
+
+/**
+ * @return array{name: string, vat_id: string|null, tax_number: null, address: array<string, mixed>, contact: null}
+ */
+function sellerParty(string $name, ?string $vatId): array
+{
+    return [
+        'name' => $name,
+        'vat_id' => $vatId,
+        'tax_number' => null,
+        'address' => [
+            'line1' => 'Street 1',
+            'line2' => null,
+            'city' => 'Berlin',
+            'postal_code' => '10115',
+            'subdivision' => null,
+            'country_code' => 'DE',
+        ],
+        'contact' => null,
+    ];
+}

@@ -35,8 +35,10 @@ readonly class InvoiceDraft
         public ?Party $buyer,
         public ?Party $delivery,
         public ?PaymentMeans $payment_means,
+        public ?string $vat_category,
         public array $lines,
         public array $headerCharges,
+        public array $notes = [],
     ) {
     }
 }

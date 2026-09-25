@@ -7,15 +7,31 @@ namespace Moox\EBilling\Support;
 use Moox\Company\Models\Company;
 use Moox\Customer\Models\Customer;
 use Moox\Customer\Models\CustomerAssignment;
+use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 
 /**
- * Resolves a {@see Customer} from a buyer identifier (invoice customer_number).
+ * Resolves a {@see Customer} from a buyer identifier (invoice customer_number)
+ * or from an {@see EbillingDocument} attribution.
  *
- * Used by {@see InvoiceFieldValidator} and {@see EBillingFormatResolver}.
+ * Used by {@see InvoiceFieldValidator}, {@see EBillingFormatResolver},
+ * and {@see CustomerFormatPreferenceResolver}.
  */
 final class CustomerMatcher
 {
+    public function forDocument(EbillingDocument $document): ?Customer
+    {
+        if ($document->customer_id !== null) {
+            return Customer::query()
+                ->withTrashed()
+                ->find($document->customer_id);
+        }
+
+        $document->loadMissing('invoice');
+
+        return $this->match($document->invoice?->customer_number);
+    }
+
     public function match(?string $identifier): ?Customer
     {
         $normalized = $this->normalizeIdentifier($identifier ?? '');

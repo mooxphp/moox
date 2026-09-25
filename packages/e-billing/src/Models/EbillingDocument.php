@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Models;
 
+use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\MySqlConnection;
 use Illuminate\Database\SQLiteConnection;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
@@ -20,6 +23,7 @@ use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Core\Traits\MorphPivot\HasMorphPivotRelations;
 use Moox\Customer\Models\Customer;
 use Moox\EBilling\Enums\AttributionSource;
+use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Formats\ArtifactKind;
@@ -28,8 +32,10 @@ use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\InvoiceModels;
 use Moox\KositValidator\Models\KositValidation;
 use Moox\MailInbox\Models\InboxAttachment;
+use Moox\MailInbox\Models\InboxMessage;
 use Moox\VeraPdf\Models\VeraPdfValidation;
 use RuntimeException;
+use Throwable;
 
 /**
  * Temporary duplication: review/score methods below mirror legacy {@see Invoice}
@@ -44,12 +50,19 @@ use RuntimeException;
  * @property string|null $pdf_storage_path
  * @property string|null $copy_pdf_storage_path
  * @property string $format
+ * @property string|null $profile
  * @property string|null $artifact_content_hash
  * @property string|null $source_content_hash SHA-256 of the source PDF bytes (identity for identical-content duplicates).
  * @property array<string, mixed>|null $ignored_reason
  * @property EBillingAttachmentProcessingStatus|null $gateway_status
  * @property InvoiceProcessingStatus|null $review_status
+ * @property DocumentApprovalStatus|null $approval_status
+ * @property string|null $approval_reason
+ * @property string|null $approval_actor_id
+ * @property Carbon|null $approval_acted_at
+ * @property array<string, mixed>|null $approval_flags
  * @property array<string, mixed>|null $field_validations
+ * @property array<string, mixed>|null $severity_releases
  * @property string|null $invoice_id
  * @property string|null $customer_id Identity of the document (matched customer). Gate visibility on this, resolved live.
  * @property string|null $company_id Reporting only — derived from the matched customer; never an access boundary.
@@ -76,6 +89,8 @@ class EbillingDocument extends BaseItemModel
     ];
 
     /**
+     * severity_releases is intentionally omitted: only ReleaseSeverityFieldAction writes it.
+     *
      * @var list<string>
      */
     protected $fillable = [
@@ -87,6 +102,7 @@ class EbillingDocument extends BaseItemModel
         'pdf_storage_path',
         'copy_pdf_storage_path',
         'format',
+        'profile',
         'artifact_content_hash',
         'source_content_hash',
         'ignored_reason',
@@ -113,8 +129,13 @@ class EbillingDocument extends BaseItemModel
             'ignored_reason' => 'array',
             'gateway_status' => EBillingAttachmentProcessingStatus::class,
             'review_status' => InvoiceProcessingStatus::class,
+            'approval_status' => DocumentApprovalStatus::class,
             'attribution_source' => AttributionSource::class,
             'field_validations' => 'array',
+            // severity_releases and latest approval actor columns are not in $fillable.
+            'severity_releases' => 'array',
+            'approval_flags' => 'array',
+            'approval_acted_at' => 'datetime',
             'validation_score' => 'integer',
             'processed_at' => 'datetime',
         ];
@@ -146,6 +167,55 @@ class EbillingDocument extends BaseItemModel
         $source = $this->source;
 
         return $source instanceof InboxAttachment ? $source : null;
+    }
+
+    /**
+     * Validated To address from the sourcing inbox message, when present.
+     */
+    public function inboxToEmail(): ?string
+    {
+        $message = $this->inboxMessage();
+
+        if ($message === null) {
+            return null;
+        }
+
+        $email = trim((string) ($message->to_email ?? ''));
+
+        if ($email === '' || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return null;
+        }
+
+        return $email;
+    }
+
+    /**
+     * Display name for the sourcing inbox To address, when present.
+     */
+    public function inboxToName(): ?string
+    {
+        $message = $this->inboxMessage();
+
+        if ($message === null) {
+            return null;
+        }
+
+        $name = trim((string) ($message->to_name ?? ''));
+
+        return $name !== '' ? $name : null;
+    }
+
+    private function inboxMessage(): ?InboxMessage
+    {
+        $attachment = $this->inboxAttachment();
+
+        if ($attachment === null) {
+            return null;
+        }
+
+        $attachment->loadMissing('message');
+
+        return $attachment->message;
     }
 
     public function sourceFullPath(): string
@@ -377,6 +447,63 @@ class EbillingDocument extends BaseItemModel
     }
 
     /**
+     * Human label for morph pivot UIs (KoSIT / veraPDF assignments).
+     */
+    public function displayLabel(): string
+    {
+        $invoice = $this->invoice;
+
+        if ($invoice !== null && filled($invoice->invoice_number)) {
+            return (string) $invoice->invoice_number;
+        }
+
+        $original = $this->sourceOriginalFilename();
+
+        if (is_string($original) && $original !== '') {
+            return $original;
+        }
+
+        return (string) $this->getKey();
+    }
+
+    /**
+     * Filament view URL for the related invoice (Activity / Zustellversuche), when present.
+     */
+    public function filamentViewUrl(): ?string
+    {
+        $invoice = $this->invoice;
+
+        if ($invoice === null) {
+            return null;
+        }
+
+        try {
+            $panel = Filament::getCurrentPanel() ?? Filament::getDefaultPanel();
+            $resourceClass = $panel->getModelResource($invoice);
+        } catch (Throwable) {
+            return null;
+        }
+
+        if (! is_string($resourceClass) || ! class_exists($resourceClass)) {
+            return null;
+        }
+
+        foreach (['view', 'edit'] as $page) {
+            if (! $resourceClass::hasPage($page)) {
+                continue;
+            }
+
+            try {
+                return $resourceClass::getUrl($page, ['record' => $invoice], shouldGuessMissingParameters: false);
+            } catch (Throwable) {
+                continue;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @return BelongsTo<Company, $this>
      */
     public function company(): BelongsTo
@@ -390,6 +517,14 @@ class EbillingDocument extends BaseItemModel
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class, 'customer_id');
+    }
+
+    /**
+     * @return HasMany<EbillingDeliveryAttempt, $this>
+     */
+    public function deliveryAttempts(): HasMany
+    {
+        return $this->hasMany(EbillingDeliveryAttempt::class, 'ebilling_document_id');
     }
 
     /**
@@ -414,10 +549,232 @@ class EbillingDocument extends BaseItemModel
                 InvoiceProcessingStatus::DbValidated->value,
             ])
             ->where(function (Builder $outer): void {
-                $outer->where(function (Builder $documentQuery): void {
-                    self::applyJsonHasProblematicFieldStatus($documentQuery, 'field_validations');
-                });
+                self::applyScopeConfiguredFieldBlocksReview($outer);
             });
+    }
+
+    public static function fieldValidationsNeedHumanReview(?array $fieldValidations, ?array $severityReleases): bool
+    {
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps();
+        $validations = is_array($fieldValidations) ? $fieldValidations : [];
+
+        if (self::priorityMapBlocksReview($invoiceFields, $validations, $severityReleases)) {
+            return true;
+        }
+
+        foreach (self::readLineFieldValidationsFromArray($validations) as $lineId => $lineFieldValidations) {
+            if (self::priorityMapBlocksReview($lineFields, $lineFieldValidations, $severityReleases, (string) $lineId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array{0: array<string, string>, 1: array<string, string>}
+     */
+    private static function configuredPriorityMaps(): array
+    {
+        return [
+            self::stringPriorityMap(config('e-billing.field_validation.invoice_fields', [])),
+            self::stringPriorityMap(config('e-billing.field_validation.invoice_line_fields', [])),
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private static function stringPriorityMap(mixed $config): array
+    {
+        if (! is_array($config)) {
+            return [];
+        }
+
+        $map = [];
+
+        foreach ($config as $field => $priority) {
+            if (is_string($field) && is_string($priority)) {
+                $map[$field] = $priority;
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param  array<string, string>  $fields
+     * @param  array<string, mixed>  $validations
+     */
+    private static function priorityMapBlocksReview(
+        array $fields,
+        array $validations,
+        ?array $severityReleases,
+        ?string $lineId = null,
+    ): bool {
+        foreach ($fields as $field => $priority) {
+            $status = self::readFieldStatusFromValidations($validations, $field);
+
+            if (self::configuredFieldBlocksReview($status, $priority, $severityReleases, $field, $lineId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static function configuredFieldBlocksReview(
+        ?string $status,
+        string $priority,
+        ?array $severityReleases,
+        string $field,
+        ?string $lineId = null,
+    ): bool {
+        if (! in_array($priority, ['must', 'should'], true)) {
+            return false;
+        }
+
+        if ($status === 'needs_review') {
+            return true;
+        }
+
+        if ($status !== 'missing') {
+            return false;
+        }
+
+        if ($priority === 'must') {
+            return true;
+        }
+
+        return ! self::hasValidSeverityRelease($severityReleases, $field, $lineId);
+    }
+
+    public static function hasValidSeverityRelease(?array $severityReleases, string $field, ?string $lineId = null): bool
+    {
+        return self::severityReleaseEntryIsValid(
+            self::readSeverityReleaseEntry($severityReleases, $field, $lineId),
+        );
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public static function readSeverityReleaseEntry(?array $severityReleases, string $field, ?string $lineId = null): ?array
+    {
+        if (! is_array($severityReleases)) {
+            return null;
+        }
+
+        if ($lineId !== null) {
+            $lines = $severityReleases['lines'] ?? null;
+            if (! is_array($lines)) {
+                return null;
+            }
+
+            $lineReleases = $lines[$lineId] ?? null;
+            if (! is_array($lineReleases)) {
+                return null;
+            }
+
+            $entry = $lineReleases[$field] ?? null;
+        } else {
+            $entry = $severityReleases[$field] ?? null;
+        }
+
+        return is_array($entry) ? $entry : null;
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $entry
+     */
+    public static function severityReleaseEntryIsValid(?array $entry): bool
+    {
+        if ($entry === null) {
+            return false;
+        }
+
+        $reason = $entry['reason'] ?? null;
+        $releasedAt = $entry['released_at'] ?? null;
+
+        if (! is_string($reason) || trim($reason) === '') {
+            return false;
+        }
+
+        if (! is_string($releasedAt) || trim($releasedAt) === '') {
+            return false;
+        }
+
+        $releasedById = $entry['released_by_id'] ?? null;
+
+        if ($releasedById === null || $releasedById === '') {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $validations
+     */
+    public static function readFieldStatusFromValidations(?array $validations, string $field): ?string
+    {
+        if (! is_array($validations) || ! isset($validations[$field]) || ! is_array($validations[$field])) {
+            return null;
+        }
+
+        $status = $validations[$field]['status'] ?? null;
+
+        return is_string($status) ? $status : null;
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $fieldValidations
+     * @return array<string, array<string, mixed>>
+     */
+    public static function readLineFieldValidationsFromArray(?array $fieldValidations): array
+    {
+        if (! is_array($fieldValidations)) {
+            return [];
+        }
+
+        $lines = $fieldValidations['lines'] ?? null;
+        if (! is_array($lines)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($lines as $lineId => $lineFieldValidations) {
+            if (! is_array($lineFieldValidations)) {
+                continue;
+            }
+
+            $normalized[(string) $lineId] = $lineFieldValidations;
+        }
+
+        return $normalized;
+    }
+
+    public static function fieldValidationAllowsValidatedTransition(
+        ?string $status,
+        string $priority,
+        ?array $severityReleases,
+        string $field,
+        ?string $lineId = null,
+    ): bool {
+        if (! in_array($priority, ['must', 'should'], true)) {
+            return true;
+        }
+
+        if (in_array($status, ['validated', 'db_validated', 'not_applicable', 'parsed'], true)) {
+            return true;
+        }
+
+        if ($status === 'missing' && $priority === 'should' && self::hasValidSeverityRelease($severityReleases, $field, $lineId)) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getValidationScoreAttribute(): ?int
@@ -544,40 +901,185 @@ class EbillingDocument extends BaseItemModel
 
     public function needsHumanReview(): bool
     {
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        if (is_array($invoiceFields)) {
-            foreach ($invoiceFields as $field => $priority) {
-                if (! in_array($priority, ['must', 'should'], true)) {
-                    continue;
-                }
-                $status = $this->readFieldStatus($this->field_validations, (string) $field);
-                if (in_array($status, ['needs_review', 'missing'], true)) {
-                    return true;
-                }
+        return self::fieldValidationsNeedHumanReview(
+            is_array($this->field_validations) ? $this->field_validations : null,
+            is_array($this->severity_releases) ? $this->severity_releases : null,
+        );
+    }
+
+    public function resolveApprovalStatusEnum(): ?DocumentApprovalStatus
+    {
+        $status = $this->approval_status;
+        if ($status instanceof DocumentApprovalStatus) {
+            return $status;
+        }
+
+        $raw = $this->getAttributes()['approval_status'] ?? null;
+
+        return is_string($raw) && $raw !== '' ? DocumentApprovalStatus::tryFrom($raw) : null;
+    }
+
+    public function resetApprovalToPending(): void
+    {
+        $this->approval_status = DocumentApprovalStatus::Pending;
+        $this->approval_reason = null;
+        $this->approval_actor_id = null;
+        $this->approval_acted_at = null;
+    }
+
+    public function hasDuplicateApprovalFlag(): bool
+    {
+        $flags = is_array($this->approval_flags) ? $this->approval_flags : [];
+
+        return isset($flags['duplicate']) && is_array($flags['duplicate']);
+    }
+
+    public function hasAnomalyApprovalFlags(): bool
+    {
+        $flags = is_array($this->approval_flags) ? $this->approval_flags : [];
+        $anomalies = $flags['anomalies'] ?? null;
+
+        return is_array($anomalies) && $anomalies !== [];
+    }
+
+    /**
+     * Sync approval_flags.duplicate from field validations (invoice number collision).
+     * Preserves host-set anomalies.
+     */
+    public function syncApprovalFlagsFromFieldValidations(): void
+    {
+        $flags = is_array($this->approval_flags) ? $this->approval_flags : [];
+        $validations = is_array($this->field_validations) ? $this->field_validations : [];
+        $invoiceNumber = is_array($validations['invoice_number'] ?? null) ? $validations['invoice_number'] : null;
+
+        if (is_array($invoiceNumber) && ($invoiceNumber['reason'] ?? null) === 'duplicate_invoice_number') {
+            $flags['duplicate'] = [
+                'invoice_number' => true,
+                'matched_id' => $invoiceNumber['matched_id'] ?? null,
+                'detected_at' => now()->toIso8601String(),
+            ];
+        } else {
+            unset($flags['duplicate']);
+        }
+
+        $this->approval_flags = $flags === [] ? null : $flags;
+    }
+
+    /**
+     * @param  Builder<EbillingDocument>  $query
+     * @return Builder<EbillingDocument>
+     */
+    public function scopeApprovalPending(Builder $query): Builder
+    {
+        return $query->where('approval_status', DocumentApprovalStatus::Pending->value);
+    }
+
+    /**
+     * Configured must fields whose stored status is missing (invoice + lines).
+     * Confirm hard-block only — see ADR docs/adr/0005-confirm-gate-must-missing-only.md.
+     *
+     * @return list<string>
+     */
+    public static function missingMustFields(?array $fieldValidations): array
+    {
+        return self::mustFieldsWithStatuses($fieldValidations, ['missing']);
+    }
+
+    public static function hasBlockingMustFieldFindings(?array $fieldValidations): bool
+    {
+        return self::mustFieldsWithStatuses($fieldValidations, ['missing', 'needs_review']) !== [];
+    }
+
+    /**
+     * @param  list<string>  $statuses
+     * @return list<string>
+     */
+    private static function mustFieldsWithStatuses(?array $fieldValidations, array $statuses): array
+    {
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps();
+        $validations = is_array($fieldValidations) ? $fieldValidations : [];
+        $matched = self::collectMustFieldsMatching($invoiceFields, $validations, $statuses);
+
+        foreach (self::readLineFieldValidationsFromArray($validations) as $lineFieldValidations) {
+            $matched = array_merge(
+                $matched,
+                self::collectMustFieldsMatching($lineFields, $lineFieldValidations, $statuses),
+            );
+        }
+
+        return array_values(array_unique($matched));
+    }
+
+    /**
+     * @param  array<string, string>  $fields
+     * @param  array<string, mixed>  $validations
+     * @param  list<string>  $statuses
+     * @return list<string>
+     */
+    private static function collectMustFieldsMatching(array $fields, array $validations, array $statuses): array
+    {
+        $matched = [];
+
+        foreach ($fields as $field => $priority) {
+            if ($priority !== 'must') {
+                continue;
+            }
+
+            $status = self::readFieldStatusFromValidations($validations, $field);
+            if (in_array($status, $statuses, true)) {
+                $matched[] = $field;
             }
         }
 
-        $linesFv = is_array($this->field_validations) ? ($this->field_validations['lines'] ?? null) : null;
-        $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
+        return $matched;
+    }
 
-        if (is_array($linesFv) && is_array($lineFields)) {
-            foreach ($linesFv as $lineFieldValidations) {
-                if (! is_array($lineFieldValidations)) {
-                    continue;
-                }
-                foreach ($lineFields as $field => $priority) {
-                    if (! in_array($priority, ['must', 'should'], true)) {
-                        continue;
-                    }
-                    $status = $this->readFieldStatus($lineFieldValidations, (string) $field);
-                    if (in_array($status, ['needs_review', 'missing'], true)) {
-                        return true;
-                    }
-                }
-            }
+    public function hasSeverityRelease(string $field, ?string $lineId = null): bool
+    {
+        return self::hasValidSeverityRelease(
+            is_array($this->severity_releases) ? $this->severity_releases : null,
+            $field,
+            $lineId,
+        );
+    }
+
+    public function resolveConfiguredFieldPriority(string $field, bool $isLineField = false): string
+    {
+        $configKey = $isLineField ? 'invoice_line_fields' : 'invoice_fields';
+        $fields = config("e-billing.field_validation.{$configKey}", []);
+
+        if (! is_array($fields)) {
+            return 'could';
         }
 
-        return false;
+        $priority = $fields[$field] ?? null;
+
+        return is_string($priority) ? $priority : 'could';
+    }
+
+    public function resolveFieldValidationStatus(string $field, ?string $lineId = null): ?string
+    {
+        $validations = is_array($this->field_validations) ? $this->field_validations : [];
+
+        if ($lineId !== null) {
+            $lineFieldValidations = self::readLineFieldValidationsFromArray($validations)[$lineId] ?? null;
+
+            return is_array($lineFieldValidations)
+                ? self::readFieldStatusFromValidations($lineFieldValidations, $field)
+                : null;
+        }
+
+        return self::readFieldStatusFromValidations($validations, $field);
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    public function readLineFieldValidations(): array
+    {
+        return self::readLineFieldValidationsFromArray(
+            is_array($this->field_validations) ? $this->field_validations : null,
+        );
     }
 
     /**
@@ -641,44 +1143,244 @@ class EbillingDocument extends BaseItemModel
      */
     private function readFieldStatus(?array $validations, string $field): ?string
     {
-        if (! is_array($validations) || ! isset($validations[$field]) || ! is_array($validations[$field])) {
-            return null;
-        }
-
-        $status = $validations[$field]['status'] ?? null;
-
-        return is_string($status) ? $status : null;
+        return self::readFieldStatusFromValidations($validations, $field);
     }
 
-    private function statusIsFullyValidated(?string $status): bool
+    /**
+     * @param  Builder<EbillingDocument>  $query
+     */
+    private static function applyScopeConfiguredFieldBlocksReview(Builder $query): void
     {
-        return in_array($status, ['validated', 'db_validated'], true);
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps();
+        $fvColumn = $query->qualifyColumn('field_validations');
+        $srColumn = $query->qualifyColumn('severity_releases');
+        $driver = self::jsonSqlDriver($query);
+
+        $query->where(function (Builder $orQuery) use ($invoiceFields, $lineFields, $fvColumn, $srColumn, $driver): void {
+            $hasCondition = self::appendBlockingFieldOrConditions(
+                $orQuery,
+                $invoiceFields,
+                forLines: false,
+                fvColumn: $fvColumn,
+                srColumn: $srColumn,
+                driver: $driver,
+            );
+            $hasCondition = self::appendBlockingFieldOrConditions(
+                $orQuery,
+                $lineFields,
+                forLines: true,
+                fvColumn: $fvColumn,
+                srColumn: $srColumn,
+                driver: $driver,
+            ) || $hasCondition;
+
+            if (! $hasCondition) {
+                $orQuery->whereRaw('0 = 1');
+            }
+        });
     }
 
-    private static function applyJsonHasProblematicFieldStatus(Builder $query, string $column): void
+    /**
+     * @param  Builder<EbillingDocument>  $query
+     */
+    private static function jsonSqlDriver(Builder $query): string
     {
-        $qualified = $query->qualifyColumn($column);
         $connection = $query->getConnection();
-        $driver = match (true) {
+
+        return match (true) {
             $connection instanceof MySqlConnection => 'mysql',
             $connection instanceof SQLiteConnection => 'sqlite',
             default => 'sqlite',
         };
+    }
 
+    /**
+     * @param  Builder<EbillingDocument>  $orQuery
+     * @param  array<string, string>  $fields
+     */
+    private static function appendBlockingFieldOrConditions(
+        Builder $orQuery,
+        array $fields,
+        bool $forLines,
+        string $fvColumn,
+        string $srColumn,
+        string $driver,
+    ): bool {
+        $hasCondition = false;
+
+        foreach ($fields as $field => $priority) {
+            if (! in_array($priority, ['must', 'should'], true)) {
+                continue;
+            }
+
+            $hasCondition = true;
+            $orQuery->orWhere(function (Builder $fieldQuery) use ($field, $priority, $fvColumn, $srColumn, $driver, $forLines): void {
+                if ($forLines) {
+                    self::applyScopeLineFieldBlocksReview($fieldQuery, $field, $priority, $fvColumn, $srColumn, $driver);
+
+                    return;
+                }
+
+                self::applyScopeInvoiceFieldBlocksReview($fieldQuery, $field, $priority, $fvColumn, $srColumn, $driver);
+            });
+        }
+
+        return $hasCondition;
+    }
+
+    /**
+     * @param  Builder<EbillingDocument>  $query
+     */
+    private static function applyScopeInvoiceFieldBlocksReview(
+        Builder $query,
+        string $field,
+        string $priority,
+        string $fvColumn,
+        string $srColumn,
+        string $driver,
+    ): void {
+        $statusPath = '$.'.$field.'.status';
+        $statusExpr = self::sqlJsonExtract($fvColumn, $statusPath, $driver);
+
+        $query->where(function (Builder $statusQuery) use ($statusExpr, $priority, $srColumn, $field, $driver): void {
+            $statusQuery->whereRaw("{$statusExpr} = ?", ['needs_review']);
+
+            if ($priority === 'must') {
+                $statusQuery->orWhereRaw("{$statusExpr} = ?", ['missing']);
+
+                return;
+            }
+
+            $releaseValid = self::sqlInvoiceSeverityReleaseIsValid($srColumn, $field, $driver);
+            $statusQuery->orWhereRaw("({$statusExpr} = ? AND NOT ({$releaseValid}))", ['missing']);
+        });
+    }
+
+    /**
+     * @param  Builder<EbillingDocument>  $query
+     */
+    private static function applyScopeLineFieldBlocksReview(
+        Builder $query,
+        string $field,
+        string $priority,
+        string $fvColumn,
+        string $srColumn,
+        string $driver,
+    ): void {
         if ($driver === 'mysql') {
-            $needsReviewSearch = "JSON_SEARCH({$qualified}, 'one', 'needs_review', NULL, '\$**.status') IS NOT NULL";
-            $missingSearch = "JSON_SEARCH({$qualified}, 'one', 'missing', NULL, '\$**.status') IS NOT NULL";
+            $releaseValid = self::sqlMySqlLineSeverityReleaseIsValid($srColumn, 'lk.line_key', $field);
+            $statusPath = "CONCAT('$.lines.', lk.line_key, '.{$field}.status')";
+            $statusExpr = "JSON_UNQUOTE(JSON_EXTRACT({$fvColumn}, {$statusPath}))";
+
+            if ($priority === 'must') {
+                $query->whereRaw(
+                    "EXISTS (
+                        SELECT 1
+                        FROM JSON_TABLE(
+                            IFNULL(JSON_KEYS(IFNULL(JSON_EXTRACT({$fvColumn}, '$.lines'), JSON_OBJECT())), JSON_ARRAY()),
+                            '\$[*]' COLUMNS (line_key VARCHAR(191) PATH '\$')
+                        ) AS lk
+                        WHERE {$statusExpr} IN ('missing', 'needs_review')
+                    )",
+                );
+
+                return;
+            }
+
             $query->whereRaw(
-                "({$qualified} IS NOT NULL AND ({$needsReviewSearch} OR {$missingSearch}))"
+                "EXISTS (
+                    SELECT 1
+                    FROM JSON_TABLE(
+                        IFNULL(JSON_KEYS(IFNULL(JSON_EXTRACT({$fvColumn}, '$.lines'), JSON_OBJECT())), JSON_ARRAY()),
+                        '\$[*]' COLUMNS (line_key VARCHAR(191) PATH '\$')
+                    ) AS lk
+                    WHERE {$statusExpr} = 'needs_review'
+                       OR ({$statusExpr} = 'missing' AND NOT ({$releaseValid}))
+                )",
+            );
+
+            return;
+        }
+
+        $statusExpr = "json_extract(line_row.value, '$.{$field}.status')";
+        $releaseValid = self::sqlSqliteLineSeverityReleaseIsValid($srColumn, 'line_row.key', $field);
+
+        if ($priority === 'must') {
+            $query->whereRaw(
+                "EXISTS (
+                    SELECT 1
+                    FROM json_each(json_extract({$fvColumn}, '$.lines')) AS line_row
+                    WHERE {$statusExpr} IN ('missing', 'needs_review')
+                )",
             );
 
             return;
         }
 
         $query->whereRaw(
-            "({$qualified} IS NOT NULL AND ({$qualified} LIKE ? OR {$qualified} LIKE ?))",
-            ['%"status":"needs_review"%', '%"status":"missing"%']
+            "EXISTS (
+                SELECT 1
+                FROM json_each(json_extract({$fvColumn}, '$.lines')) AS line_row
+                WHERE {$statusExpr} = 'needs_review'
+                   OR ({$statusExpr} = 'missing' AND NOT ({$releaseValid}))
+            )",
         );
+    }
+
+    private static function sqlJsonExtract(string $column, string $path, string $driver): string
+    {
+        return match ($driver) {
+            'mysql' => "JSON_UNQUOTE(JSON_EXTRACT({$column}, '{$path}'))",
+            default => "json_extract({$column}, '{$path}')",
+        };
+    }
+
+    private static function sqlInvoiceSeverityReleaseIsValid(string $srColumn, string $field, string $driver): string
+    {
+        $reasonPath = '$.'.$field.'.reason';
+        $releasedAtPath = '$.'.$field.'.released_at';
+
+        $releasedByIdPath = '$.'.$field.'.released_by_id';
+
+        if ($driver === 'mysql') {
+            $reason = "NULLIF(TRIM(JSON_UNQUOTE(JSON_EXTRACT({$srColumn}, '{$reasonPath}'))), '')";
+            $releasedAt = "NULLIF(TRIM(JSON_UNQUOTE(JSON_EXTRACT({$srColumn}, '{$releasedAtPath}'))), '')";
+            $releasedById = "JSON_EXTRACT({$srColumn}, '{$releasedByIdPath}')";
+
+            return "({$reason} IS NOT NULL AND {$releasedAt} IS NOT NULL AND {$releasedById} IS NOT NULL)";
+        }
+
+        $reason = "NULLIF(trim(json_extract({$srColumn}, '{$reasonPath}')), '')";
+        $releasedAt = "NULLIF(trim(json_extract({$srColumn}, '{$releasedAtPath}')), '')";
+        $releasedById = "json_extract({$srColumn}, '{$releasedByIdPath}')";
+
+        return "({$reason} IS NOT NULL AND {$releasedAt} IS NOT NULL AND {$releasedById} IS NOT NULL)";
+    }
+
+    private static function sqlSqliteLineSeverityReleaseIsValid(string $srColumn, string $lineKeyExpr, string $field): string
+    {
+        $reason = "NULLIF(trim(json_extract({$srColumn}, '$.lines.' || {$lineKeyExpr} || '.{$field}.reason')), '')";
+        $releasedAt = "NULLIF(trim(json_extract({$srColumn}, '$.lines.' || {$lineKeyExpr} || '.{$field}.released_at')), '')";
+        $releasedById = "json_extract({$srColumn}, '$.lines.' || {$lineKeyExpr} || '.{$field}.released_by_id')";
+
+        return "({$reason} IS NOT NULL AND {$releasedAt} IS NOT NULL AND {$releasedById} IS NOT NULL)";
+    }
+
+    private static function sqlMySqlLineSeverityReleaseIsValid(string $srColumn, string $lineKeyExpr, string $field): string
+    {
+        $reasonPath = "CONCAT('$.lines.', {$lineKeyExpr}, '.{$field}.reason')";
+        $releasedAtPath = "CONCAT('$.lines.', {$lineKeyExpr}, '.{$field}.released_at')";
+        $releasedByIdPath = "CONCAT('$.lines.', {$lineKeyExpr}, '.{$field}.released_by_id')";
+        $reason = "NULLIF(TRIM(JSON_UNQUOTE(JSON_EXTRACT({$srColumn}, {$reasonPath}))), '')";
+        $releasedAt = "NULLIF(TRIM(JSON_UNQUOTE(JSON_EXTRACT({$srColumn}, {$releasedAtPath}))), '')";
+        $releasedById = "JSON_EXTRACT({$srColumn}, {$releasedByIdPath})";
+
+        return "({$reason} IS NOT NULL AND {$releasedAt} IS NOT NULL AND {$releasedById} IS NOT NULL)";
+    }
+
+    private function statusIsFullyValidated(?string $status): bool
+    {
+        return in_array($status, ['validated', 'db_validated'], true);
     }
 
     private function statusCountsTowardValidationScore(?string $status): bool

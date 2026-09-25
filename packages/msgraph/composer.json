@@ -22,7 +22,8 @@
         "moox/core": "dev-main",
         "moox/mail-inbox": "dev-main",
         "microsoft/microsoft-graph": "^2.0",
-        "guzzlehttp/guzzle": "^7.5"
+        "guzzlehttp/guzzle": "^7.5",
+        "symfony/microsoft-graph-mailer": "^8.0"
     },
     "autoload": {
         "psr-4": {

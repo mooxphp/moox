@@ -11,13 +11,19 @@ use Moox\Invoice\Models\Invoice;
 /**
  * Detects an already-known invoice / credit-note number (billing#13 / #21 / #24).
  *
- * Same number under the same document type always flags review when the source
- * PDF content differs. Byte-identical source PDFs with the same number are not
- * new versions — they are discarded before a second invoice row is created.
- * Soft-deleted invoices are ignored by the default SoftDeletes scope.
+ * Same number under the same document type flags review when the source PDF
+ * content differs. Byte-identical source PDFs with the same number are discarded
+ * before a second invoice row is created. Soft-deleted invoices are ignored.
+ *
+ * Comparison scope is config `e-billing.duplicate_number.scope`:
+ * `global` (default) or `issuer` (also seller VAT id / BT-31).
  */
 final class InvoiceNumberDuplicateChecker
 {
+    public const SCOPE_GLOBAL = 'global';
+
+    public const SCOPE_ISSUER = 'issuer';
+
     public function findDuplicate(Invoice $invoice): ?Invoice
     {
         return $this->findDuplicates($invoice)->first();
@@ -46,7 +52,10 @@ final class InvoiceNumberDuplicateChecker
             $query->whereKeyNot($key);
         }
 
-        return $query->orderBy('created_at')->orderBy('id')->get();
+        return $this->filterByIssuerScope(
+            $query->orderBy('created_at')->orderBy('id')->get(),
+            VatIdNormalizer::normalize($invoice->seller?->vat_id),
+        );
     }
 
     public function isDuplicate(Invoice $invoice): bool
@@ -57,12 +66,14 @@ final class InvoiceNumberDuplicateChecker
     /**
      * Same number + type + source PDF hash as an already stored document.
      * Both hashes must be non-empty; missing hashes never count as identical.
+     * When scope is `issuer`, `$sellerVatId` narrows the match (blank buckets with blank).
      */
     public function findIdenticalContentDuplicate(
         string $invoiceNumber,
         string $documentType,
         string $sourceContentHash,
         ?string $exceptDocumentId = null,
+        ?string $sellerVatId = null,
     ): ?Invoice {
         if (trim($invoiceNumber) === '' || trim($documentType) === '' || trim($sourceContentHash) === '') {
             return null;
@@ -84,14 +95,37 @@ final class InvoiceNumberDuplicateChecker
             $query->whereKeyNot($exceptDocumentId);
         }
 
-        $document = $query->first();
+        /** @var Collection<int, Invoice> $invoices */
+        $invoices = $query->get()
+            ->pluck('invoice')
+            ->filter(fn (mixed $invoice): bool => $invoice instanceof Invoice)
+            ->values();
 
-        if (! $document instanceof EbillingDocument) {
-            return null;
+        return $this->filterByIssuerScope(
+            $invoices,
+            VatIdNormalizer::normalize($sellerVatId),
+        )->first();
+    }
+
+    /**
+     * @param  Collection<int, Invoice>  $invoices
+     * @return Collection<int, Invoice>
+     */
+    private function filterByIssuerScope(Collection $invoices, ?string $normalizedSellerVatId): Collection
+    {
+        if ($this->comparisonScope() !== self::SCOPE_ISSUER) {
+            return $invoices;
         }
 
-        $invoice = $document->invoice;
+        return $invoices
+            ->filter(fn (Invoice $invoice): bool => VatIdNormalizer::normalize($invoice->seller?->vat_id) === $normalizedSellerVatId)
+            ->values();
+    }
 
-        return $invoice instanceof Invoice ? $invoice : null;
+    private function comparisonScope(): string
+    {
+        $scope = config('e-billing.duplicate_number.scope', self::SCOPE_GLOBAL);
+
+        return $scope === self::SCOPE_ISSUER ? self::SCOPE_ISSUER : self::SCOPE_GLOBAL;
     }
 }

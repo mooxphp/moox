@@ -11,10 +11,14 @@ use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceCreated;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\ConfiguredEn16931CodeResolver;
+use Moox\EBilling\Support\DocumentEmissionLabels;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceLine;
 use Moox\Invoice\Support\ChargeDraft;
+use Moox\Invoice\Support\En16931\BankAccount as En16931BankAccount;
+use Moox\Invoice\Support\En16931\PaymentMeans;
 use Moox\Invoice\Support\InvoiceAddress;
 use Moox\Invoice\Support\InvoiceBuilder;
 use Moox\Invoice\Support\InvoiceContact;
@@ -30,12 +34,18 @@ class InvoiceFactory
     public function __construct(
         private readonly InvoiceBuilder $invoiceBuilder = new InvoiceBuilder,
         private readonly ?DocumentTypeCodeResolver $documentTypeCodeResolver = null,
+        private readonly ?ConfiguredEn16931CodeResolver $codeResolver = null,
     ) {
     }
 
     private function documentTypeCodeResolver(): DocumentTypeCodeResolver
     {
         return $this->documentTypeCodeResolver ??= app(DocumentTypeCodeResolver::class);
+    }
+
+    private function codeResolver(): ConfiguredEn16931CodeResolver
+    {
+        return $this->codeResolver ?? app(ConfiguredEn16931CodeResolver::class);
     }
 
     public function createFromDto(InvoiceDto $dto, InboxAttachment $attachment): Invoice
@@ -123,12 +133,14 @@ class InvoiceFactory
             seller: $this->mapSeller($dto),
             buyer: $this->mapBuyer($dto),
             delivery: $dto->deliveryAddress?->toEn16931DeliveryParty(),
-            payment_means: null,
+            payment_means: $this->mapPaymentMeans($dto),
+            vat_category: $this->codeResolver()->vatCategoryCodeFromConfig(),
             lines: array_map(
                 fn (InvoiceLineDto $lineDto): InvoiceLineDraft => $this->buildLineDraftFromDto($lineDto),
                 $dto->lines,
             ),
             headerCharges: $this->buildHeaderChargeDraftsFromDto($dto),
+            notes: $dto->notes,
         );
     }
 
@@ -210,7 +222,8 @@ class InvoiceFactory
             $charges[] = new ChargeDraft(
                 is_charge: true,
                 amount: $dto->materialTestCertificatePrice,
-                reason_text: 'Werkszeugnis',
+                reason_code: 'CAE',
+                reason_text: $dto->materialTestCertificate ?? DocumentEmissionLabels::materialTestCertificate(),
             );
         }
 
@@ -341,5 +354,24 @@ class InvoiceFactory
     private function isNonZeroAmount(?float $amount): bool
     {
         return $amount !== null && (float) $amount !== 0.0;
+    }
+
+    private function mapPaymentMeans(InvoiceDto $dto): PaymentMeans
+    {
+        $bankAccounts = [];
+
+        foreach ($dto->bankAccounts() as $account) {
+            $bankAccounts[] = new En16931BankAccount(
+                iban: $account->iban,
+                bic: $account->bic,
+                bank_name: $account->bankName,
+                account_holder: $account->accountHolder,
+            );
+        }
+
+        return new PaymentMeans(
+            payment_means_code: $this->codeResolver()->resolvePaymentMeansCode($dto->paymentMeansCode),
+            bank_accounts: $bankAccounts,
+        );
     }
 }

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('pdf_storage_path')->nullable();
             $table->string('copy_pdf_storage_path')->nullable();
             $table->string('format')->default('zugferd');
+            $table->string('profile')->nullable();
             $table->string('artifact_content_hash')->nullable();
             $table->string('source_content_hash')->nullable()->index();
             $table->json('ignored_reason')->nullable();

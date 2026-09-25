@@ -13,6 +13,15 @@ use Moox\VeraPdf\Models\VeraPdfValidatable;
 
 return [
 
+    'navigation_group' => 'trans//verapdf::verapdf.navigation_group',
+
+    'resources' => [
+        'verapdf-validation' => [
+            'single' => 'trans//verapdf::verapdf.verapdf-validation',
+            'plural' => 'trans//verapdf::verapdf.verapdf-validations',
+        ],
+    ],
+
     /*
     | Base Path
     |
@@ -91,14 +100,22 @@ return [
     */
     'relations' => [
         'verapdf_validatables' => [
+            'kind' => 'pivot_has_many',
+            'perspective' => 'related',
+            'presentation' => 'tab',
             'label' => 'trans//verapdf::fields.validatables',
+            'translation_prefix' => 'verapdf::fields',
             'relationship' => 'veraPdfValidatables',
             'pivot_model' => VeraPdfValidatable::class,
             'pivot_table' => 'verapdf_validatables',
             'morph_name' => 'validatable',
             'pivot_columns' => [],
+            'actions' => [
+                'header' => [],
+                'record' => ['view'],
+            ],
             'owner_types' => [
-                // Register owner model FQCNs here when wiring morph history.
+                // Owner packages (e.g. e-billing) register types at boot.
             ],
         ],
     ],

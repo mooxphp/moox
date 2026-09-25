@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Support;
 
-use Illuminate\Support\Facades\Log;
-use Moox\Customer\Models\Customer;
+use Moox\EBilling\Contracts\RecipientFormatPreferenceResolverInterface;
+use Moox\EBilling\Data\EffectiveFormat;
+use Moox\EBilling\Data\FormatPreference;
+use Moox\EBilling\Formats\ArtifactKind;
+use Moox\EBilling\Formats\Exceptions\InvalidFormatPreferenceException;
+use Moox\EBilling\Formats\Exceptions\UnknownFormatException;
 use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Models\EbillingDocument;
 
@@ -13,35 +17,51 @@ final class EBillingFormatResolver
 {
     public function __construct(
         private FormatRegistry $registry,
+        private RecipientFormatPreferenceResolverInterface $preferenceResolver,
     ) {
     }
 
     /**
-     * Resolve the format for generation. Once an artifact has been generated
-     * (xml_storage_path is set), the format is frozen — retries use the same format.
-     *
-     * Preference chain: customer column → config.
+     * Once an artifact has been generated (xml_storage_path is set), format and
+     * profile are frozen — retries use document.format + document.profile
+     * (preference port is not consulted again). Both columns are required.
      */
-    public function resolveForGeneration(EbillingDocument $document): string
+    public function resolveForGeneration(EbillingDocument $document): EffectiveFormat
     {
         if ($this->isFrozen($document)) {
-            return (string) $document->format;
+            $format = $document->format;
+            $profile = $document->profile;
+
+            if (! is_string($format) || $format === '' || ! is_string($profile) || $profile === '') {
+                throw new InvalidFormatPreferenceException(
+                    'Frozen e-billing document requires non-empty format and profile; retries use document.format and document.profile only.'
+                );
+            }
+
+            return new EffectiveFormat($format, $profile);
         }
 
-        $preferred = $this->preferredFormatFromCustomer($document);
+        $preference = $this->preferenceResolver->resolve($document);
 
-        if ($preferred !== null && $this->registry->has($preferred)) {
-            return $preferred;
+        if ($preference === null) {
+            $format = (string) config('e-billing.default.format', 'zugferd');
+            $definition = $this->registry->get($format);
+
+            return new EffectiveFormat($format, $definition->profile);
         }
 
-        if ($preferred !== null) {
-            Log::warning('[EBilling] Unknown preferred_ebilling_format, falling back to default', [
-                'preferred' => $preferred,
-                'document_id' => $document->getKey(),
-            ]);
+        if (! $this->registry->has($preference->format)) {
+            throw new UnknownFormatException(
+                "Unknown e-billing format [{$preference->format}] from recipient preference."
+            );
         }
 
-        return (string) config('e-billing.default_format', 'zugferd');
+        $this->assertPreferenceProfileAllowed($preference);
+
+        $definition = $this->registry->get($preference->format);
+        $profile = $preference->profile ?? $definition->profile;
+
+        return new EffectiveFormat($preference->format, $profile);
     }
 
     /**
@@ -52,7 +72,7 @@ final class EBillingFormatResolver
      */
     public function resolveSendVisualCopy(EbillingDocument $document): bool
     {
-        $customer = $document->customer ?? $this->loadCustomer($document);
+        $customer = $document->customer ?? (new CustomerMatcher)->forDocument($document);
 
         if ($customer !== null && $customer->send_visual_copy !== null) {
             return (bool) $customer->send_visual_copy;
@@ -61,37 +81,30 @@ final class EBillingFormatResolver
         return (bool) config('e-billing.send_visual_copy', true);
     }
 
-    /**
-     * A document is frozen when generation has already produced an artifact.
-     */
+    private function assertPreferenceProfileAllowed(FormatPreference $preference): void
+    {
+        $definition = $this->registry->get($preference->format);
+        $profile = $preference->profile;
+
+        if ($definition->artifactKind === ArtifactKind::Xml) {
+            if ($profile !== null) {
+                throw new InvalidFormatPreferenceException(
+                    "Format [{$preference->format}] does not accept a profile preference; profile must be null."
+                );
+            }
+
+            return;
+        }
+
+        if ($profile === null) {
+            return;
+        }
+
+        AllowedProfiles::assertContains($profile, $preference->format);
+    }
+
     private function isFrozen(EbillingDocument $document): bool
     {
         return is_string($document->xml_storage_path) && $document->xml_storage_path !== '';
-    }
-
-    private function preferredFormatFromCustomer(EbillingDocument $document): ?string
-    {
-        $customer = $this->resolveCustomer($document);
-
-        if ($customer === null) {
-            return null;
-        }
-
-        $preferred = $customer->preferred_ebilling_format;
-
-        return is_string($preferred) && $preferred !== '' ? $preferred : null;
-    }
-
-    private function resolveCustomer(EbillingDocument $document): ?Customer
-    {
-        if ($document->customer_id !== null) {
-            return Customer::query()
-                ->withTrashed()
-                ->find($document->customer_id);
-        }
-
-        $document->loadMissing('invoice');
-
-        return (new CustomerMatcher)->match($document->invoice?->customer_number);
     }
 }

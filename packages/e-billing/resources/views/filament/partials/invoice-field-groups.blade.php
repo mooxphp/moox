@@ -1,22 +1,30 @@
 @php
     $groups = $viewModel->groupedFields();
 @endphp
-@forelse($groups as $group)
-    <div
-        class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800/40">
-        <div class="mb-4 border-b border-gray-200 pb-3 dark:border-gray-700">
-            <h2
-                class="flex items-baseline gap-2 text-base font-semibold text-gray-900 dark:text-gray-100">
-                <span>{{ $group['title'] }}</span>
-                <span class="text-xs font-normal text-gray-400 dark:text-gray-500">{{ $group['subtitle'] }}</span>
-            </h2>
+@forelse($groups as $groupKey => $group)
+    <details
+        @if($group['open']) open="open" @endif
+        class="group mb-3 rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800/40">
+        <summary
+            class="cursor-pointer list-none px-4 py-3 [&::-webkit-details-marker]:hidden [&::marker]:hidden">
+            @include('e-billing::filament.partials.invoice-details-summary', [
+                'title' => $group['title'],
+                'subtitle' => $group['subtitle'] !== '' ? $group['subtitle'] : null,
+                'issueCount' => $group['issue_count'],
+                'issueLabel' => $group['issue_label'],
+            ])
+        </summary>
+        <div class="border-t border-gray-200 px-4 pt-2 pb-4 dark:border-gray-700">
+            <dl class="m-0 flex flex-col gap-0">
+                @foreach($group['fields'] as $field)
+                    @include('e-billing::filament.partials.invoice-field-row', ['field' => $field])
+                @endforeach
+            </dl>
         </div>
-        <dl class="m-0 flex flex-col gap-0">
-            @foreach($group['fields'] as $field)
-                @include('e-billing::filament.partials.invoice-field-row', ['field' => $field])
-            @endforeach
-        </dl>
-    </div>
+    </details>
+    @if($groupKey === 'delivery')
+        @include('e-billing::filament.partials.invoice-notes', ['viewModel' => $viewModel])
+    @endif
 @empty
     <div
         class="rounded-xl border border-gray-200 bg-white px-8 py-8 text-center text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-400">

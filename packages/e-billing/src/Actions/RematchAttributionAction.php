@@ -9,13 +9,14 @@ use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 
 /**
- * Explicit re-match: reset to pre-confirmation state and re-run validation.
+ * Explicit field re-evaluation: reset to pre-confirmation state and re-run validation.
  * Manual attributions are left untouched by {@see InvoiceFieldValidator}.
  */
 final class RematchAttributionAction
 {
     public function __construct(
         private InvoiceFieldValidator $validator,
+        private InvalidateDocumentApprovalAction $invalidateApproval,
     ) {
     }
 
@@ -26,5 +27,7 @@ final class RematchAttributionAction
         $document->save();
 
         $this->validator->validate($document);
+
+        $this->invalidateApproval->execute($document->fresh() ?? $document);
     }
 }

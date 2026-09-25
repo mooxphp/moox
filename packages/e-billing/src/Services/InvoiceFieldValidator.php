@@ -94,12 +94,19 @@ class InvoiceFieldValidator
                 $matchedCustomer,
                 $derivedCompanyId,
                 $isManualAttribution,
+                $document,
             );
         }
 
         $lineValidations = [];
         foreach ($invoice->lines as $line) {
-            $lineValidations[(string) $line->getKey()] = $this->validateInvoiceLine($line, $lineFields);
+            $lineValidations[(string) $line->getKey()] = $this->validateInvoiceLine(
+                $invoice,
+                $line,
+                $lineFields,
+                $matchedCustomer,
+                $matchedCompany,
+            );
         }
 
         $invoiceValidations['lines'] = $lineValidations;
@@ -115,6 +122,7 @@ class InvoiceFieldValidator
         }
 
         $document->validation_score = $document->calculateValidationScore();
+        $document->syncApprovalFlagsFromFieldValidations();
         $document->save();
     }
 
@@ -125,6 +133,27 @@ class InvoiceFieldValidator
     {
         $this->fillFieldValidations($document);
 
+        $this->applyReviewStatusFromFieldValidations($document);
+
+        $document->refresh();
+
+        event(new InvoiceValidationCompleted(
+            document: $document,
+            needsHumanReview: $document->needsHumanReview(),
+        ));
+    }
+
+    /**
+     * Re-evaluates review_status after a severity release or other field_validations change
+     * without re-running full validation.
+     */
+    public function refreshReviewOutcome(EbillingDocument $document): void
+    {
+        $this->applyReviewStatusFromFieldValidations($document);
+    }
+
+    private function applyReviewStatusFromFieldValidations(EbillingDocument $document): void
+    {
         $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
         $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
 
@@ -135,20 +164,11 @@ class InvoiceFieldValidator
             $lineFields = [];
         }
 
-        $allMustAndShouldClean = $this->allMustAndShouldFieldsAreClean($document, $invoiceFields, $lineFields);
-
-        if ($allMustAndShouldClean) {
+        if ($this->allMustAndShouldFieldsAreClean($document, $invoiceFields, $lineFields)) {
             $document->transitionTo(InvoiceProcessingStatus::Validated);
         } else {
             $document->transitionTo(InvoiceProcessingStatus::DbValidated);
         }
-
-        $document->refresh();
-
-        event(new InvoiceValidationCompleted(
-            document: $document,
-            needsHumanReview: $document->needsHumanReview(),
-        ));
     }
 
     private function guardAgainstRevalidation(EbillingDocument $document): void
@@ -203,12 +223,8 @@ class InvoiceFieldValidator
         array $invoiceFields,
         array $lineFields,
     ): bool {
-        // `parsed` is clean: present on the document without a master-data check.
-        // Without it, must/should fields that only ever become `parsed` block
-        // automatic progression to Validated forever (#21 / #25).
-        $cleanStatuses = ['validated', 'db_validated', 'not_applicable', 'parsed'];
-
         $validations = is_array($document->field_validations) ? $document->field_validations : [];
+        $severityReleases = is_array($document->severity_releases) ? $document->severity_releases : null;
 
         foreach ($invoiceFields as $field => $priority) {
             if (! is_string($field) || ! is_string($priority)) {
@@ -218,7 +234,7 @@ class InvoiceFieldValidator
                 continue;
             }
             $status = $this->readNestedFieldStatus($validations, $field);
-            if (! in_array($status, $cleanStatuses, true)) {
+            if (! EbillingDocument::fieldValidationAllowsValidatedTransition($status, $priority, $severityReleases, $field)) {
                 return false;
             }
         }
@@ -228,8 +244,8 @@ class InvoiceFieldValidator
             return true;
         }
 
-        foreach ($linesValidations as $lineFieldsValidations) {
-            if (! is_array($lineFieldsValidations)) {
+        foreach ($linesValidations as $lineId => $lineValidations) {
+            if (! is_array($lineValidations)) {
                 continue;
             }
             foreach ($lineFields as $field => $priority) {
@@ -239,8 +255,8 @@ class InvoiceFieldValidator
                 if (! in_array($priority, ['must', 'should'], true)) {
                     continue;
                 }
-                $status = $this->readNestedFieldStatus($lineFieldsValidations, $field);
-                if (! in_array($status, $cleanStatuses, true)) {
+                $status = $this->readNestedFieldStatus($lineValidations, $field);
+                if (! EbillingDocument::fieldValidationAllowsValidatedTransition($status, $priority, $severityReleases, $field, (string) $lineId)) {
                     return false;
                 }
             }
@@ -260,6 +276,7 @@ class InvoiceFieldValidator
         ?Customer $matchedCustomer = null,
         ?string $derivedCompanyId = null,
         bool $isManualAttribution = false,
+        ?EbillingDocument $document = null,
     ): array {
         return match ($field) {
             'invoice_number' => $this->validateInvoiceNumberField($invoice, $priority),
@@ -293,6 +310,16 @@ class InvoiceFieldValidator
                 $priority,
                 $matchedCompany,
                 $matchedCustomer,
+            ),
+            'buyer_email' => $this->validateBuyerEmailField($document, $priority),
+            'delivery_address' => $this->validateDeliveryAddressField(
+                $priority,
+                $invoice->delivery,
+                null,
+                $invoice->buyer,
+                $matchedCustomer,
+                $matchedCompany,
+                false,
             ),
             'shipping_cost', 'packaging_cost', 'minimum_quantity_surcharge', 'freight_flat_rate',
             'discount_amount', 'discount_percent' => $this->validateHeaderChargeField($invoice, $field, $priority),
@@ -497,6 +524,26 @@ class InvoiceFieldValidator
     /**
      * @return array{status: string, source?: string, matched_id?: string}
      */
+
+    /**
+     * Inbox To address for mail-sourced documents (delivery recipient).
+     * Manual uploads / non-mail sources are not_applicable.
+     *
+     * @return array{status: string, source?: string, matched_id?: string}
+     */
+    private function validateBuyerEmailField(?EbillingDocument $document, string $priority): array
+    {
+        if ($document === null || $document->inboxAttachment() === null) {
+            return ['status' => 'not_applicable'];
+        }
+
+        if ($document->inboxToEmail() === null) {
+            return $this->entryForEmptyField('buyer_email', $priority, false);
+        }
+
+        return ['status' => 'parsed'];
+    }
+
     private function validateCustomerAddressField(
         Invoice $invoice,
         string $priority,
@@ -534,6 +581,73 @@ class InvoiceFieldValidator
                 ? $result['matched_id']
                 : (string) $matchedCustomer->id,
         ];
+    }
+
+    /**
+     * @return array{status: string, source?: string, matched_id?: string}
+     */
+    private function validateDeliveryAddressField(
+        string $priority,
+        ?Party $explicitParty,
+        ?Party $headerDelivery,
+        ?Party $buyer,
+        ?Customer $matchedCustomer,
+        ?Company $matchedCompany,
+        bool $isInvoiceLine,
+    ): array {
+        $effectiveParty = $this->resolveEffectiveDeliveryParty($explicitParty, $headerDelivery, $buyer);
+
+        if ($this->isDeliveryPartyEmpty($effectiveParty)) {
+            return $this->entryForEmptyField('delivery_address', $priority, $isInvoiceLine);
+        }
+
+        if ($matchedCustomer === null) {
+            return ['status' => 'parsed'];
+        }
+
+        if (! $effectiveParty instanceof Party) {
+            return $this->entryForEmptyField('delivery_address', $priority, $isInvoiceLine);
+        }
+
+        $result = (new AttributionCorroborator)->corroborateDeliveryParty(
+            $effectiveParty,
+            $matchedCustomer,
+            $matchedCompany,
+        );
+
+        if ($result['corroborates']) {
+            return [
+                'status' => 'db_validated',
+                'source' => 'auto',
+                'matched_id' => $result['matched_id'],
+            ];
+        }
+
+        return [
+            'status' => 'needs_review',
+            'source' => 'auto',
+            'matched_id' => $result['matched_id'],
+        ];
+    }
+
+    private function resolveEffectiveDeliveryParty(
+        ?Party $explicitParty,
+        ?Party $headerDelivery,
+        ?Party $buyer,
+    ): ?Party {
+        if (! $this->isDeliveryPartyEmpty($explicitParty)) {
+            return $explicitParty;
+        }
+
+        if (! $this->isDeliveryPartyEmpty($headerDelivery)) {
+            return $headerDelivery;
+        }
+
+        if (! $this->isDeliveryPartyEmpty($buyer)) {
+            return $buyer;
+        }
+
+        return null;
     }
 
     /**
@@ -600,7 +714,11 @@ class InvoiceFieldValidator
             'supplier_tax_number' => $invoice->seller?->tax_number,
             'supplier_address' => $invoice->seller?->address,
             'agent' => $invoice->seller?->contact?->name,
+            'supplier_email' => $invoice->seller?->contact?->email,
+            'supplier_phone' => $invoice->seller?->contact?->phone,
             'supplier_bank_accounts' => $invoice->payment_means?->bank_accounts ?? [],
+            'payment_means' => $invoice->payment_means?->payment_means_code,
+            'vat_category' => $invoice->vat_category,
             'delivery_address' => $invoice->delivery,
             default => $invoice->getAttribute($field),
         };
@@ -610,8 +728,13 @@ class InvoiceFieldValidator
      * @param  array<string, string>  $lineFields
      * @return array<string, array{status: string, source?: string, matched_id?: string}>
      */
-    private function validateInvoiceLine(InvoiceLine $line, array $lineFields): array
-    {
+    private function validateInvoiceLine(
+        Invoice $invoice,
+        InvoiceLine $line,
+        array $lineFields,
+        ?Customer $matchedCustomer,
+        ?Company $matchedCompany,
+    ): array {
         $line->loadMissing('allowanceCharges');
 
         $validations = [];
@@ -621,7 +744,14 @@ class InvoiceFieldValidator
                 continue;
             }
 
-            $validations[$field] = $this->validateInvoiceLineField($line, $field, $priority);
+            $validations[$field] = $this->validateInvoiceLineField(
+                $invoice,
+                $line,
+                $field,
+                $priority,
+                $matchedCustomer,
+                $matchedCompany,
+            );
         }
 
         return $validations;
@@ -630,9 +760,25 @@ class InvoiceFieldValidator
     /**
      * @return array{status: string, source?: string, matched_id?: string}
      */
-    private function validateInvoiceLineField(InvoiceLine $line, string $field, string $priority): array
-    {
+    private function validateInvoiceLineField(
+        Invoice $invoice,
+        InvoiceLine $line,
+        string $field,
+        string $priority,
+        ?Customer $matchedCustomer,
+        ?Company $matchedCompany,
+    ): array {
         return match ($field) {
+            'delivery_address' => $this->validateDeliveryAddressField(
+                $priority,
+                $line->delivery,
+                $invoice->delivery,
+                $invoice->buyer,
+                $matchedCustomer,
+                $matchedCompany,
+                true,
+            ),
+            'vat_category' => $this->validateGenericInvoiceField($invoice, 'vat_category', $priority),
             'surcharge_amount', 'surcharge_description' => $this->validateLineSurchargeField($line, $field, $priority),
             'material_test_certificate_price' => $this->validateLineMaterialTestCertificatePriceField($line, $priority),
             default => $this->validateGenericInvoiceLineField($line, $field, $priority),
@@ -668,18 +814,7 @@ class InvoiceFieldValidator
      */
     private function validateGenericInvoiceLineField(InvoiceLine $line, string $field, string $priority): array
     {
-        $value = match ($field) {
-            'delivery_address' => $line->delivery,
-            default => $line->getAttribute($field),
-        };
-
-        if ($field === 'delivery_address') {
-            if ($this->isDeliveryPartyEmpty($value)) {
-                return $this->entryForEmptyField($field, $priority, true);
-            }
-
-            return ['status' => 'parsed'];
-        }
+        $value = $line->getAttribute($field);
 
         if ($this->isScalarEmpty($value)) {
             return $this->entryForEmptyField($field, $priority, true);

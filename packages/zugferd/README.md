@@ -10,13 +10,14 @@ Moox Zugferd converts invoice data implementing `ZugferdInvoice` into valid ZUGF
 
 - `ZugferdConverter::convert()` — XML string from any `ZugferdInvoice` implementor
 - `convertToFile()` — writes `{output_path}/{invoiceNumber}.xml`
-- `mergePdfWithXml()` — PDF/A-3 binary with embedded XML; optional `qpdf` decrypt (output is unencrypted)
+- `mergePdfWithXml()` — PDF/A-3 binary with embedded XML; optional `qpdf` decrypt (output is unencrypted); PDF Title via `config('zugferd.pdf_title_template')` / `pdf_title_templates` (default `Seller : Invoice {id}`)
 - `extractXmlFromPdf()` — read embedded XML from a hybrid PDF for validation
 - Contract interfaces for invoices, lines, addresses, bank accounts, and allowance/charges
 - Concrete `AllowanceCharge` DTO for tests and simple consumers
-- Configurable profile: MINIMUM, BASIC, EN16931, EXTENDED, XRECHNUNG (default)
+- Required profile key on convert: MINIMUM, BASIC, EN16931, EXTENDED, XRECHNUNG (unknown keys throw)
 - Optional `deliveryDate` on invoice (BT-72 via `setDocumentSupplyChainEvent`) and on lines (line billing period with start=end for non-EXTENDED profiles, line actual delivery for EXTENDED); profile key selects the line-date carrier; no header invoicing period (BG-14) is derived from delivery dates
-- Optional `shipToName` / `shipToAddress` on invoice (BG-13 via `setDocumentShipTo` / `setDocumentShipToAddress`); address is omitted when country is empty; ship-to tax registration and contact are never emitted
+- Optional `shipToName` / `shipToAddress` on invoice and lines (BG-13 via `setDocumentShipTo` / `setDocumentShipToAddress`); address is omitted when country is empty; ship-to tax registration and contact are never emitted
+- Omit duplicate ShipTo when name + postal fingerprint equals buyer (street, street2, postal code, country; city excluded; keep BT-72); VAT **K** still emits BG-15 (buyer postal OK). Promote shared distinct line ship-to when header empty; else BT-127 notes. Line `itemAttributes` / `itemClassifications` → BG-32 / BT-158; trade refs BT-13 / BT-16 (common line DN fallback) / BT-132 (`purchaseOrderLineReference`); line allowance/charges. `purchaseOrderDate` is never OrderReference IssueDate (UBL-CR-018)
 
 <!--/features-->
 
@@ -54,11 +55,6 @@ Optionally publish configuration:
 php artisan vendor:publish --tag=zugferd-config
 ```
 
-Set the ZUGFeRD profile:
-
-```env
-ZUGFERD_PROFILE=XRECHNUNG
-```
 
 ## Screenshot
 
@@ -73,7 +69,7 @@ Resolve `Moox\Zugferd\ZugferdConverter` from the container.
 ```php
 use Moox\Zugferd\ZugferdConverter;
 
-$xml = app(ZugferdConverter::class)->convert($invoice);
+$xml = app(ZugferdConverter::class)->convert($invoice, 'EN16931');
 ```
 
 `$invoice` must implement `Moox\Zugferd\Contracts\ZugferdInvoice`.
@@ -83,7 +79,7 @@ $xml = app(ZugferdConverter::class)->convert($invoice);
 ```php
 use Moox\EBilling\Adapters\ZugferdInvoiceAdapter;
 
-$xml = app(ZugferdConverter::class)->convert(new ZugferdInvoiceAdapter($invoiceModel));
+$xml = app(ZugferdConverter::class)->convert(new ZugferdInvoiceAdapter($invoiceModel), 'EN16931');
 ```
 
 `GenerateArtifactJob` calls the e-billing gateway, which delegates to `ZugferdConverter` with this adapter.
@@ -91,14 +87,14 @@ $xml = app(ZugferdConverter::class)->convert(new ZugferdInvoiceAdapter($invoiceM
 ### Write XML to disk
 
 ```php
-$path = app(ZugferdConverter::class)->convertToFile($invoice);
+$path = app(ZugferdConverter::class)->convertToFile($invoice, 'EN16931');
 // Default directory: config('zugferd.output_path')
 ```
 
 ### Merge into a ZUGFeRD PDF
 
 ```php
-$pdfBinary = app(ZugferdConverter::class)->mergePdfWithXml('/path/to/invoice.pdf', $xml);
+$pdfBinary = app(ZugferdConverter::class)->mergePdfWithXml('/path/to/invoice.pdf', $xml, '380');
 ```
 
 `GenerateArtifactJob` uses this during hybrid artifact generation (before KOSIT validation).
@@ -119,11 +115,11 @@ Header, parties, totals, `lines`, `bankAccounts`, and `allowanceCharges`.
 - Non-empty trimmed `supplierEmail`
 - Non-empty `bankAccounts` with non-empty IBAN on each account
 
-**Other notable fields:** `documentType` (credit note when value contains `gutschrift` → type code `381`, else `380`), `paymentMeansCode` (default `58`), `dueDate` / `paymentTerms`, `deliveryDate`, `shipToName` / `shipToAddress` (BG-13; address requires a country), `vatRate`, `netTotal`, `vatAmount`, `grossTotal`.
+**Other notable fields:** `documentType` (credit note when value contains `gutschrift` → type code `381`, else `380`), `paymentMeansCode` (default `58`), `dueDate` / `paymentTerms`, `deliveryDate` (BT-72), `documentNotes` (BT-22), `purchaseOrderReference` (BT-13), `despatchAdviceReference` (BT-16; converter may fill from a common line `deliveryNoteNumber`), `purchaseOrderDate` (unstructured notes only — never OrderReference IssueDate), `shipToName` / `shipToAddress` (BG-13; address requires a country; omitted when equal to buyer unless VAT **K**), `vatCategoryCode`, `vatRate`, `netTotal`, `vatAmount`, `grossTotal`.
 
 ### `ZugferdInvoiceLine`
 
-`position`, `description`, `descriptionDetail`, `articleNumber`, `unitPrice`, `quantity`, `unit`, `lineTotal`, `allowanceCharges`.
+`position`, `description`, `descriptionDetail`, `articleNumber`, `unitPrice`, `quantity`, `unit` / `unitCode`, `lineTotal`, `deliveryDate`, `shipToName` / `shipToAddress`, `purchaseOrderLineReference` (BT-132), `orderDocumentReference` (divergent PO document → BT-127), `deliveryNoteNumber`, `purchaseOrderDate` (line note only), `itemAttributes` (BG-32), `itemClassifications` (BT-158), `allowanceCharges`.
 
 ### `ZugferdAddress`
 
@@ -147,9 +143,10 @@ Class: `Moox\Zugferd\ZugferdConverter` (singleton in `ZugferdServiceProvider`).
 
 | Method | Returns | Description |
 |--------|---------|-------------|
-| `convert(ZugferdInvoice $invoice, ?string $profileKey = null): string` | XML string | Builds horstoeko document; optional `$profileKey` overrides `config('zugferd.profile')` and selects how line `deliveryDate` is emitted (line period vs line actual delivery); `getContentSafely()` mitigates stream-resource warnings |
-| `convertToFile(ZugferdInvoice $invoice, ?string $outputPath = null): string` | File path | Writes `{outputPath}/{invoiceNumber}.xml` |
-| `mergePdfWithXml(string $pdfPath, string $xml): string` | PDF binary | Optional qpdf decrypt → merge (unencrypted output) |
+| `convert(ZugferdInvoice $invoice, string $profileKey): string` | XML string | Builds horstoeko document; required `$profileKey` selects how line `deliveryDate` is emitted (line period vs line actual delivery); `getContentSafely()` mitigates stream-resource warnings |
+| `convertToFile(ZugferdInvoice $invoice, string $profileKey, ?string $outputPath = null): string` | File path | Writes `{outputPath}/{invoiceNumber}.xml` |
+| `mergePdfWithXml(string $pdfPath, string $xml, ?string $documentTypeCode = null): string` | PDF binary | Optional qpdf decrypt → merge (unencrypted output); Title from `resolvePdfTitleTemplate($documentTypeCode)` |
+| `resolvePdfTitleTemplate(?string $documentTypeCode = null): string` | Title sprintf template | `pdf_title_templates[$code]` or `pdf_title_template` / `PDF_TITLE_TEMPLATE` |
 | `extractXmlFromPdf(string $absolutePdfPath): string` | XML string | Embedded XML from hybrid PDF |
 
 ### Profile map
@@ -161,9 +158,10 @@ Class: `Moox\Zugferd\ZugferdConverter` (singleton in `ZugferdServiceProvider`).
 | `EN16931` | `PROFILE_EN16931` |
 | `EXTENDED` | `PROFILE_EXTENDED` |
 | `XRECHNUNG` | `PROFILE_XRECHNUNG_3` |
-| *(unknown)* | Falls back to `PROFILE_EN16931` |
 
-Runtime profile: `config('zugferd.profile')` (default `XRECHNUNG`). This package does **not** read `config/e-billing.php` profile keys.
+Callers must pass an explicit profile key (`MINIMUM`, `BASIC`, `EN16931`, `EXTENDED`, `XRECHNUNG`); unknown keys throw. Pipeline defaults live in `e-billing.default.profile` when using `moox/e-billing`.
+
+BT-23 (business process): left to horstoeko profile defaults — Peppol URI on `XRECHNUNG` (`PROFILE_XRECHNUNG_3`); omitted for `EN16931` hybrids. The converter does not force Peppol BT-23 on every profile.
 
 ### Unit codes (`mapUnitCode`)
 
@@ -185,17 +183,17 @@ Runtime profile: `config('zugferd.profile')` (default `XRECHNUNG`). This package
 | `\RuntimeException` | Failed to read merged temp PDF |
 
 ## Configuration
-
 File: `config/zugferd.php`
 
-| Key | Env | Default | Used by |
-|-----|-----|---------|---------|
-| `profile` | `ZUGFERD_PROFILE` | `XRECHNUNG` | `buildDocument()` |
+| Key | Env | Default | Notes |
+|---|---|---|---|
 | `output_path` | — | `storage/app/private/zugferd` | `convertToFile()` only |
+| `pdf_title_template` | — | `%3$s : %2$s %1$s` | Default PDF Title sprintf template (horstoeko: `%1$s` invoice id, `%2$s` doc type name, `%3$s` seller, `%4$s` date) |
+| `pdf_title_templates` | — | `[]` | Optional map of UN/CEFACT document type code → Title template; selected when `mergePdfWithXml(..., $documentTypeCode)` is passed |
+
+`ZugferdConverter::resolvePdfTitleTemplate(?string $documentTypeCode)` picks the map entry or falls back to `pdf_title_template` / `PDF_TITLE_TEMPLATE`.
 
 **Cross-package config:** `mail-inbox.zugferd.pdf_password` — read in `mergePdfWithXml()` only.
-
-No migrations, routes, or Filament UI.
 
 ## Running tests
 
@@ -205,7 +203,7 @@ From the monorepo root:
 php vendor/bin/pest packages/zugferd/tests
 ```
 
-Feature tests cover allowance/charges, address lines, payment means codes, and `IncompleteInvoiceException` for missing supplier address. Delivery-date and ShipTo XML coverage lives in `moox/e-billing` adapter tests. `mergePdfWithXml()` and `convertToFile()` are not covered in this package (e-billing tests exercise the adapter path).
+Unit tests cover `resolvePdfTitleTemplate()` (default vs per-code map vs fallback) and `ShipToPartyEquality`. Delivery-date, omit-duplicate ShipTo, promote/BT-127, BG-32/BT-158, and trade-ref XML coverage lives in `moox/e-billing` (`ZugferdOmitDuplicateConsigneeXmlTest` and related adapter tests). Full `mergePdfWithXml()` / `convertToFile()` PDF round-trips are not covered in this package.
 
 ## See also
 

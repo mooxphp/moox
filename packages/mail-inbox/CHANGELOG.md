@@ -4,6 +4,8 @@
 
 ### Changed
 
+- Package scheduler only registers `mail-inbox:poll` when Scope `default` exists in `mail-inbox.mailboxes` (hosts without `default` must schedule Scopes explicitly).
+
 - **Breaking:** Removed the hollow `connections` array from `config/mail-inbox.php`. Mailboxes still reference a connection **by name**; credential resolution belongs entirely to the driver package.
 - `FetchMailsJob` is the sole owner of `delta_max_pages_per_poll` — each `InboxDriver::fetch()` returns one provider page; the job loops and stops at the configured cap.
 - Host-rejected sync cursors (`InvalidSyncCursorException::$rejectedHost`) clear the stored cursor and are logged at **error** with scope and rejected host (bounded by `cursor_reset_max_per_run`).

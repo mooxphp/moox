@@ -15,7 +15,6 @@
                 @include('e-billing::filament.partials.invoice-line-table', ['viewModel' => $this->invoiceViewModel])
             </div>
 
-            @include('e-billing::filament.partials.invoice-notes', ['viewModel' => $this->invoiceViewModel])
         </div>
 
         <div class="sticky top-4 lg:max-h-[calc(100vh-12rem)]">
@@ -25,17 +24,5 @@
         </div>
     </div>
 
-    @if (class_exists(\Moox\Audit\Filament\RelationManagers\ActivitiesRelationManager::class)
-        && \Moox\Audit\Filament\RelationManagers\ActivitiesRelationManager::canViewForRecord($this->getRecord(), $this::class))
-        <div class="mt-6">
-            <h2 class="mb-3 text-base font-semibold text-gray-900 dark:text-gray-100">
-                {{ __('core::audit.activity') }}
-            </h2>
-
-            @livewire(\Moox\Audit\Filament\RelationManagers\ActivitiesRelationManager::class, [
-                'ownerRecord' => $this->getRecord(),
-                'pageClass' => $this::class,
-            ], key('ebilling-audit-activities-'.$this->getRecord()->getKey()))
-        </div>
-    @endif
+    {{ $this->content }}
 </x-filament-panels::page>

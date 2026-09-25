@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Moox\KositValidator\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
+use Moox\KositValidator\Support\KositValidationMessages;
 
 /**
  * @property string|null $input_path
@@ -16,6 +18,9 @@ use Moox\Core\Entities\Items\Item\BaseItemModel;
  * @property bool $passed
  * @property array<int|string, mixed>|null $errors
  * @property Carbon|null $validated_at
+ * @property-read string $filename
+ * @property-read string $result
+ * @property-read int $errors_count
  */
 class KositValidation extends BaseItemModel
 {
@@ -45,7 +50,7 @@ class KositValidation extends BaseItemModel
 
     public static function getResourceName(): string
     {
-        return 'kosit-validation';
+        return 'kosit-validator';
     }
 
     /**
@@ -79,6 +84,27 @@ class KositValidation extends BaseItemModel
         return $this->input_path !== null
             ? basename($this->input_path)
             : __('kosit-validator::fields.filename_empty');
+    }
+
+    protected function filename(): Attribute
+    {
+        return Attribute::get(fn (): string => $this->filenameLabel());
+    }
+
+    protected function result(): Attribute
+    {
+        return Attribute::get(
+            fn (): string => $this->passed
+                ? __('kosit-validator::fields.result_passed')
+                : __('kosit-validator::fields.result_failed'),
+        );
+    }
+
+    protected function errorsCount(): Attribute
+    {
+        return Attribute::get(
+            fn (): int => KositValidationMessages::counts($this->errors)['error'],
+        );
     }
 
     public function reportHtmlPath(): ?string

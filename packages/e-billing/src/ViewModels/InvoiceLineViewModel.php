@@ -7,6 +7,7 @@ namespace Moox\EBilling\ViewModels;
 use Carbon\Carbon;
 use Moox\EBilling\Support\InvoiceDisplayNumberFormatter;
 use Moox\EBilling\Support\InvoiceFieldLabels;
+use Moox\EBilling\Support\InvoiceUiPresentation;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
 use Moox\EBilling\Support\PartyAddressFormatter;
 use Moox\Invoice\Models\InvoiceLine;
@@ -37,7 +38,7 @@ final class InvoiceLineViewModel
     {
         $names = [
             'position', 'description', 'description_detail',
-            'quantity', 'unit', 'unit_price', 'line_total',
+            'quantity', 'unit', 'unit_price', 'line_total', 'vat_category',
             'article_number', 'material', 'customs_tariff_number',
             'delivery_date', 'delivery_note_number',
             'order_number', 'order_date', 'delivery_address',
@@ -54,17 +55,37 @@ final class InvoiceLineViewModel
      */
     public function relevantFields(): array
     {
-        return array_values(array_filter(
+        $fields = array_values(array_filter(
             $this->fields(),
             fn (FieldViewData $f): bool => $f->value !== null && $f->value !== ''
-                || in_array($f->status(), ['missing', 'needs_review'], true)
+                || in_array($f->status(), ['missing', 'needs_review', 'invalid', 'unmatched'], true)
         ));
+
+        return InvoiceUiPresentation::withoutHidden(
+            $fields,
+            InvoiceUiPresentation::hiddenLineFields(),
+        );
+    }
+
+    /**
+     * @param  list<FieldViewData>|null  $visible  Pass relevantFields() to avoid a second filter pass
+     * @return array{open: bool, issue_count: int, issue_label: ?string}
+     */
+    public function collapsibleState(?array $visible = null): array
+    {
+        return InvoiceUiPresentation::collapsibleState(
+            $visible ?? $this->relevantFields(),
+            defaultOpen: false,
+            map: 'line',
+        );
     }
 
     private function buildField(string $name): FieldViewData
     {
         $entry = $this->lineValidations[$name] ?? null;
-        $validation = is_array($entry) ? $entry : null;
+        $stored = is_array($entry) ? $entry : null;
+        $rawValue = $this->resolveFieldValue($name);
+        $validation = $this->resolveDisplayValidation($name, $rawValue, $stored);
         $status = is_array($validation) && isset($validation['status']) && is_string($validation['status'])
             ? $validation['status']
             : '';
@@ -77,6 +98,55 @@ final class InvoiceLineViewModel
             validation: $validation,
             hint: InvoiceFieldLabels::hint($name, $status, $validation),
         );
+    }
+
+    /**
+     * Same display rules as invoice header fields, using invoice_line MoSCoW maps.
+     *
+     * @return array{status: string}|null
+     */
+    private function resolveDisplayValidation(string $field, mixed $rawValue, ?array $storedValidation): ?array
+    {
+        $hasValue = ! ($rawValue === null || $rawValue === '' || (is_array($rawValue) && $rawValue === []));
+        $keepStored = $storedValidation !== null
+            && ($hasValue || ! in_array($storedValidation['status'] ?? null, ['parsed', 'validated', 'db_validated'], true));
+
+        if ($keepStored) {
+            return $storedValidation;
+        }
+
+        if ($hasValue) {
+            return ['status' => 'parsed'];
+        }
+
+        return $this->emptyLineFieldValidation($field);
+    }
+
+    /**
+     * @return array{status: string}
+     */
+    private function emptyLineFieldValidation(string $field): array
+    {
+        $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
+        $priority = is_array($lineFields) && is_string($lineFields[$field] ?? null)
+            ? $lineFields[$field]
+            : 'could';
+
+        if ($priority === 'could') {
+            return ['status' => 'not_applicable'];
+        }
+
+        if ($priority === 'must') {
+            return ['status' => 'missing'];
+        }
+
+        $contextual = config('e-billing.field_validation.invoice_line_contextual_should', []);
+
+        return [
+            'status' => is_array($contextual) && in_array($field, $contextual, true)
+                ? 'missing'
+                : 'not_applicable',
+        ];
     }
 
     private function formatValue(string $field): mixed
@@ -124,6 +194,7 @@ final class InvoiceLineViewModel
                 $this->line,
             ),
             'delivery_address' => PartyAddressFormatter::format($this->line->delivery),
+            'vat_category' => $this->line->invoice?->vat_category,
             default => $this->line->getAttribute($field),
         };
     }

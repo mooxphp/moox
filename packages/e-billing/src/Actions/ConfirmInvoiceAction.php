@@ -12,14 +12,23 @@ use Moox\Invoice\Models\Invoice;
 
 final class ConfirmInvoiceAction
 {
+    public function __construct(
+        private readonly TryAutoApproveDocumentAction $tryAutoApprove,
+    ) {
+    }
+
     /**
      * Confirms an invoice via human review on its linked {@see EbillingDocument}.
-     * Idempotent: returns false if the document is not in a confirmable state.
+     * Idempotent: returns confirmed=false if the document is not in a confirmable state.
+     *
+     * Hard-block (while db_validated): configured must fields that are missing.
+     * needs_review and missing should findings do not refuse confirm — see ADR 0005.
+     * needsHumanReview() stays unchanged for queue / auto-approve / dispatch.
      *
      * When other versions share the same number + document type, this invoice
      * becomes the current version; older versions remain stored with is_current=false.
      *
-     * @return array{confirmed: bool, previous_current_count: int}
+     * @return array{confirmed: bool, previous_current_count: int, missing_must_fields: list<string>}
      */
     public function execute(Invoice $invoice): array
     {
@@ -28,7 +37,7 @@ final class ConfirmInvoiceAction
             : EbillingDocument::query()->where('invoice_id', $invoice->id)->first();
 
         if (! $document instanceof EbillingDocument) {
-            return ['confirmed' => false, 'previous_current_count' => 0];
+            return $this->failure();
         }
 
         $status = $document->review_status;
@@ -38,7 +47,14 @@ final class ConfirmInvoiceAction
         }
 
         if ($status !== InvoiceProcessingStatus::DbValidated) {
-            return ['confirmed' => false, 'previous_current_count' => 0];
+            return $this->failure();
+        }
+
+        $missingMustFields = EbillingDocument::missingMustFields(
+            is_array($document->field_validations) ? $document->field_validations : null,
+        );
+        if ($missingMustFields !== []) {
+            return $this->failure($missingMustFields);
         }
 
         $previousCurrentCount = 0;
@@ -56,7 +72,29 @@ final class ConfirmInvoiceAction
             wasAutoValidatedFirst: false,
         ));
 
-        return ['confirmed' => true, 'previous_current_count' => $previousCurrentCount];
+        $fresh = $document->fresh();
+        if ($fresh instanceof EbillingDocument) {
+            $this->tryAutoApprove->execute($fresh);
+        }
+
+        return [
+            'confirmed' => true,
+            'previous_current_count' => $previousCurrentCount,
+            'missing_must_fields' => [],
+        ];
+    }
+
+    /**
+     * @param  list<string>  $missingMustFields
+     * @return array{confirmed: bool, previous_current_count: int, missing_must_fields: list<string>}
+     */
+    private function failure(array $missingMustFields = []): array
+    {
+        return [
+            'confirmed' => false,
+            'previous_current_count' => 0,
+            'missing_must_fields' => $missingMustFields,
+        ];
     }
 
     private function countOtherCurrentVersions(Invoice $invoice): int

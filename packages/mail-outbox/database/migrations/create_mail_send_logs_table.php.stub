@@ -1,0 +1,44 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('mail_send_logs', function (Blueprint $table): void {
+            $table->id();
+            $table->string('mailer')->index();
+            $table->string('source')->default('outbox')->index();
+            $table->json('intended_recipients')->nullable();
+            $table->json('actual_recipients')->nullable();
+            $table->string('subject')->nullable();
+            $table->longText('raw_message')->nullable();
+            $table->longText('resend_payload')->nullable();
+            $table->string('status')->default('queued')->index();
+            $table->unsignedInteger('attempt_count')->default(0);
+            $table->text('error')->nullable();
+            $table->string('message_id')->nullable()->index();
+            $table->string('provider_reference')->nullable()->index();
+            $table->string('correlation_id')->nullable()->unique();
+            // String morphs: related models may use integer or UUID keys
+            // (bigint related_id truncates UUID/string primary keys).
+            $table->string('related_type')->nullable();
+            $table->string('related_id')->nullable();
+            $table->index(['related_type', 'related_id']);
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('mail_send_logs');
+    }
+};
+
+
+

@@ -3,6 +3,20 @@
 ## Unreleased
 
 ### Added
+- `ShipToPartyEquality`: ship-to equals buyer when case-insensitive trimmed names match and postal fingerprints match (street, `addressLine2`/street2, postal code, country). City is **not** in the fingerprint.
+- `ZugferdConverter` emission (ADR 0020): omit BT-70 / BG-15 when ship-to equals buyer; keep BT-72; VAT category **K** still emits full BG-15 (buyer postal acceptable when empty) for BR-IC-12 / BR-IC-11. Promote one shared distinct line ship-to to document BG-13 when the header is empty; otherwise divergent line parties, different PO document numbers, and non-common despatch refs → BT-127 notes.
+- Line contracts: `itemAttributes` / `itemClassifications` → BG-32 / BT-158; trade refs BT-13 (`purchaseOrderReference`), BT-16 (`despatchAdviceReference`, with common line DN fallback), BT-132 via `purchaseOrderLineReference`; line allowance/charges.
+- `purchaseOrderDate` is unstructured only (BT-22 / line BT-127 notes) — never OrderReference IssueDate (UBL-CR-018). Header order-date notes are assembled by adapters (e.g. e-billing `InvoiceDocumentNotes`), not by the converter as IssueDate.
 
+### Changed
+- `ZugferdConverter` no longer forces Peppol BT-23 (`urn:fdc:peppol.eu:2017:poacc:billing:01:1.0`) on every profile. XRechnung 3 keeps BT-23 via horstoeko `PROFILE_XRECHNUNG_3`; EN16931 (and other profiles with null `businessprocess`) omit BT-23.
+- `ZugferdInvoice` requires `vatCategoryCode`; converter emits payment means (BT-81) and VAT category (BT-118/151) from the invoice — no hardcoded `58` / `S`.
+- `mergePdfWithXml()` PDF Title metadata is configurable: `config('zugferd.pdf_title_template')` (default `%3$s : %2$s %1$s`, historical horstoeko spacing) and optional per-code map `config('zugferd.pdf_title_templates')`. Optional third argument `$documentTypeCode` selects the map entry; unknown/empty codes fall back to the default template. `ZugferdConverter::resolvePdfTitleTemplate()` exposes the resolution. `PDF_TITLE_TEMPLATE` remains the package fallback constant.
+- `ZugferdConverter::convert()` / `convertToFile()` require an explicit profile key; unknown keys throw. Removed `config('zugferd.profile')` / `ZUGFERD_PROFILE` (pipeline defaults belong in the host / e-billing).
+
+### Added
+
+- Optional `documentNotes` on `ZugferdInvoice` (`list<string>`). `ZugferdConverter` emits each entry as BT-22 via `addDocumentNote` after document information is set.
 - Optional `deliveryDate` on `ZugferdInvoice` and `ZugferdInvoiceLine`. When set on the invoice, `ZugferdConverter` emits BT-72 (actual delivery date) via `setDocumentSupplyChainEvent`. When set on a line, non-EXTENDED profiles emit a line billing period with start and end equal to that date (`setDocumentPositionBillingPeriod`); EXTENDED emits line actual delivery (`setDocumentPositionSupplyChainEvent`). The `convert($invoice, $profileKey)` profile key selects the line-date carrier. The converter never derives a header invoicing period (BG-14) from delivery dates.
-- Optional `shipToName` and `shipToAddress` on `ZugferdInvoice`. When a name or an address with a country is present, `ZugferdConverter` emits ShipTo (BG-13) via `setDocumentShipTo` / `setDocumentShipToAddress`. An address without a country omits the postal address call (the name may still emit). Ship-to tax registration and contact are never written.
+- Optional `shipToName` and `shipToAddress` on `ZugferdInvoice` (and lines). When a name or an address with a country is present, `ZugferdConverter` emits ShipTo (BG-13) via `setDocumentShipTo` / `setDocumentShipToAddress`, subject to the ADR 0020 omit/promote rules above. An address without a country omits the postal address call (the name may still emit). Ship-to tax registration and contact are never written.
+

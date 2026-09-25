@@ -41,6 +41,10 @@ document wording, no host model names. Keep lean.
 - **Derived consignee** — the buyer address standing in when the document names no consignee. Derived
   at read time and marked as such; **never written to the column**, so "read from the document" and
   "assumed by us" stay distinguishable.
+- **Duplicate consignee** — a stored consignee whose name and postal address match the buyer. It is not
+  a second party for the artifact: on emission, BT-70 / BG-15 are omitted unless intra-community supply
+  (VAT category K) requires destination country (BG-15). Delivery date (BT-72) is independent. *Avoid:*
+  treating "present in the column" as "must appear in the XML".
 - **Invoice note** — BT-22, with an optional subject code BT-21 from a code list. Multiple notes per
   invoice, order preserved. A note is prose *about* the invoice; it is not a carrier for facts that
   have their own field. *Avoid:* recovering a structured fact by parsing a note.

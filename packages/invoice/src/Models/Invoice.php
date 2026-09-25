@@ -25,8 +25,10 @@ use Moox\Invoice\Support\InvoiceModels;
  * @property Party|null $buyer
  * @property Party|null $delivery
  * @property PaymentMeans|null $payment_means
+ * @property string|null $vat_category
  * @property int $document_version
  * @property bool $is_current
+ * @property list<string>|null $notes
  */
 class Invoice extends BaseItemModel
 {
@@ -56,10 +58,12 @@ class Invoice extends BaseItemModel
         'payment_terms',
         'shipping_method',
         'delivery_terms',
+        'notes',
         'seller',
         'buyer',
         'delivery',
         'payment_means',
+        'vat_category',
         'net_total',
         'vat_rate',
         'vat_amount',
@@ -78,6 +82,7 @@ class Invoice extends BaseItemModel
             'payment_means' => PaymentMeansCast::class,
             'document_version' => 'integer',
             'is_current' => 'boolean',
+            'notes' => 'array',
             'net_total' => 'decimal:2',
             'vat_rate' => 'decimal:2',
             'vat_amount' => 'decimal:2',

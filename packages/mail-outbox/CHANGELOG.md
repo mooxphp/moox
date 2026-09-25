@@ -1,0 +1,46 @@
+# Changelog
+
+All notable changes to `moox/mail-outbox` will be documented in this file.
+
+## Unreleased
+
+### Changed
+
+- Send Log Filament column/filter for the Laravel mailer key: EN **Mailbox**, DE **Postfach** (stores the Mailbox id, not the transport).
+
+### Added
+
+- `mail-outbox:test-send` Artisan command (`Commands\SendTestMailCommand`) — sends a probe mail through `SendMailJob` and prints the resulting `mail_send_logs` row; `--to=` (required), `--mailer=` (defaults to `mail.default`), `--test` (route through safe test mode), `--redirect=` (override sandbox address); transport-agnostic
+- `Mail\OutboxTestMail` — minimal, transport-agnostic probe mailable used by `mail-outbox:test-send`
+- Filament `MailSendLogResource` — list with status/mailer/date filters and config-driven tabs; detail view with intended vs actual recipients, identifiers, related-record link, confirmation-gated raw message, and resend action
+- `MailOutboxPlugin` for panel registration via `moox:install`
+- `raw_message` and encrypted `resend_payload` columns on `mail_send_logs`
+- `ResendMailService` — dispatches `SendMailJob` for a new row; unavailable for `suppressed` or `recorded` rows; optional `resend.allowed_mailables` class allow-list
+- Safe test mode — global `MessageSending` interception plus `SendMailJob` mixed-allowlist splitting; Laravel `alwaysTo` on redirect legs; wildcard allowlist; subject prefix; both recipient sets on the log; `suppressed` status; production boot warning; `MailSendLog::deliveredToIntendedRecipients()` contract
+- `RecordSentMailListener` on `MessageSent` — dispatches `RecordSentMailJob` only (no DB work in the listener)
+- `RecordSentMailJob` — records foreign Laravel mail sends from a queue-safe `RecordedSentMailSnapshot` built at dispatch; deduplication by correlation id (unique) or message id (indexed); disable via `record_foreign_mail` / `MAIL_OUTBOX_RECORD_FOREIGN_MAIL`
+- `MailSendSource` enum (`outbox`, `recorded`) on `mail_send_logs.source`
+- `SendMailJob` — queued send of a Mailable through a named Laravel mailer with `JobProgress` and `failed()` hook
+- `MailSendLog` model and `create_mail_send_logs_table` migration (mailer, recipients, subject, status, attempts, error, message id, provider reference, correlation id, polymorphic related)
+- Statuses: `queued`, `sent`, `failed`, `suppressed` (`sent` = provider accepted + logged; `suppressed` = test mode redirected at least one intended recipient)
+- Size guard (`MessageSizeGuard` / `MessageTooLargeException`) before transport, including path and `attachData` attachments
+- Transient vs permanent failure classification (`MailFailureClassifier`) with configurable retry tries/backoff and provider retry-after honouring (delays clamped to ≥ 1s)
+- Correlation: self-assigned header + optional per-mailer provider id read-back (`ProviderMessageIdReader`; default never confuses Message-ID with provider reference)
+- `CONTEXT.md` domain language; config `mail-outbox.php`; Pest feature/unit coverage (mail fake + in-memory transport doubles)
+
+### Fixed
+
+- `mail_send_logs.related_id` is a string (not bigint morph) so UUID-keyed related models (e.g. e-billing documents) can be attached without MySQL truncation
+- `MailableInspector::recipients()` now includes `envelope()` to/cc/bcc addresses, so send-log **intended recipients** are populated for modern Mailables (e.g. `OutboxTestMail`, envelope-only delivery mailables) instead of staying empty
+- Filament send-log list uses a **Delivery** column (Redirected / Direct / —) instead of a redundant "Redirected" column that only ever showed "Redirected"
+- `MailSendLog::isRedirected()` no longer treats an empty/unknown intended set as a redirect — Filament "Umgeleitet" / Redirected requires both intended and actual recipient sets before comparing (avoids false positives when intended was not captured)
+
+- Skip stamping RFC 5322 `Message-ID` on mailers whose transport rejects it (default: `microsoftgraph` / Microsoft Graph)
+- Do not invent package-local RFC 5322 Message-IDs after send; ensure Symfony’s on-wire Message-ID before transport and capture it from the sent copy
+- Attach correlation header once across retries; honour zero retry-after without a tight loop
+- Foreign-mail recorder: listener dispatches a `RecordedSentMailSnapshot` (no live MIME); recordable when identifiers and/or recipients/subject are present; unique `correlation_id`; `failed()` logging; `tries = 1`
+- Test-mode subject prefix now applies to mailables that set their subject via `envelope()`: `MailableRecipientFilter::withSubject` sets the subject on the built Symfony message (after the envelope), so the `[TEST to …]` prefix is no longer overwritten on the `SendMailJob` redirect leg
+- `mail-outbox:test-send` without `--test` honours the ambient `MAIL_OUTBOX_TEST_MODE` instead of forcing test mode off, so the environment switch can be verified; the probe mailable also sets its recipient as `To` so a send no longer fails with a missing-recipient error
+
+
+

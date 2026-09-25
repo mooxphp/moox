@@ -6,6 +6,7 @@ namespace Moox\EBilling\Adapters;
 
 use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
+use Moox\EBilling\Support\InvoiceDocumentNotes;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdAddress;
@@ -127,6 +128,26 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
         }
     }
 
+    public ?string $purchaseOrderReference {
+        get {
+            $value = trim((string) ($this->model->order_number ?? ''));
+
+            return $value !== '' ? $value : null;
+        }
+    }
+
+    public ?string $despatchAdviceReference {
+        get => null;
+    }
+
+    public ?string $purchaseOrderDate {
+        get {
+            $value = trim((string) ($this->model->order_date ?? ''));
+
+            return $value !== '' ? $value : null;
+        }
+    }
+
     public ?string $shipToName {
         get {
             $name = $this->model->delivery?->name;
@@ -148,7 +169,20 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
     }
 
     public ?string $paymentMeansCode {
-        get => $this->model->payment_means?->payment_means_code;
+        get {
+            $means = $this->model->payment_means;
+            if ($means === null) {
+                return null;
+            }
+
+            $code = trim((string) ($means->payment_means_code ?? ''));
+
+            return $code !== '' ? $code : null;
+        }
+    }
+
+    public string $vatCategoryCode {
+        get => trim((string) ($this->model->vat_category ?? ''));
     }
 
     public float $vatRate {
@@ -209,6 +243,11 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
                 $accounts,
             );
         }
+    }
+
+    /** @var list<string> */
+    public array $documentNotes {
+        get => InvoiceDocumentNotes::fromInvoice($this->model);
     }
 
     private static function mapAllowanceCharge(InvoiceAllowanceCharge $charge): AllowanceCharge

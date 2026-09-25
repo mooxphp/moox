@@ -1,16 +1,25 @@
 @php
-    $notes = $viewModel->notes();
+    $notes = $viewModel->notesGroup();
 @endphp
-@if(count($notes) > 0)
-    <div
-        class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800/40">
-        <h2 class="mb-3 text-base font-semibold text-gray-900 dark:text-gray-100">{{ __('e-billing::fields.section_notes') }}</h2>
-        <div class="flex flex-col gap-3">
-            @foreach($notes as $note)
-                <p
-                    class="m-0 rounded-lg bg-gray-50 p-3 text-sm text-gray-800 dark:bg-gray-700/40 dark:text-gray-200">
-                    {{ $note }}</p>
-            @endforeach
+@if($notes !== null)
+    <details
+        @if($notes['open']) open="open" @endif
+        class="group mb-3 rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800/40">
+        <summary
+            class="cursor-pointer list-none px-4 py-3 [&::-webkit-details-marker]:hidden [&::marker]:hidden">
+            @include('e-billing::filament.partials.invoice-details-summary', [
+                'title' => $notes['title'],
+                'subtitle' => $notes['subtitle'],
+                'issueCount' => $notes['issue_count'],
+                'issueLabel' => $notes['issue_label'],
+            ])
+        </summary>
+        <div class="border-t border-gray-200 px-4 pt-2 pb-4 dark:border-gray-700">
+            <dl class="m-0 flex flex-col gap-0">
+                @foreach($notes['fields'] as $field)
+                    @include('e-billing::filament.partials.invoice-field-row', ['field' => $field])
+                @endforeach
+            </dl>
         </div>
-    </div>
+    </details>
 @endif

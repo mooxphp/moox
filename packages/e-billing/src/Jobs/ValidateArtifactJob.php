@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use LogicException;
+use Moox\EBilling\Actions\InitializeDocumentApprovalAction;
+use Moox\EBilling\Actions\TryAutoApproveDocumentAction;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Events\ArtifactValidated;
 use Moox\EBilling\Events\ArtifactValidationFailed;
@@ -67,6 +69,8 @@ class ValidateArtifactJob implements ShouldQueue
         RecordVeraPdfValidation $recordVeraPdfValidation,
         ArtifactValidationPersister $validationPersister,
         InboxMessagePipelineFinalizer $pipelineFinalizer,
+        InitializeDocumentApprovalAction $initializeApproval,
+        TryAutoApproveDocumentAction $tryAutoApprove,
     ): void {
         $this->setProgress(0);
 
@@ -91,7 +95,7 @@ class ValidateArtifactJob implements ShouldQueue
 
         $formatId = $document->format !== ''
             ? $document->format
-            : (string) config('e-billing.default_format', 'zugferd');
+            : (string) config('e-billing.default.format', 'zugferd');
         $definition = $formatRegistry->get($formatId);
 
         $diskName = $document->storage_disk
@@ -147,6 +151,8 @@ class ValidateArtifactJob implements ShouldQueue
                     $supplementalPersisters,
                     $validationPersister,
                     $recordKositValidation,
+                    $initializeApproval,
+                    $tryAutoApprove,
                 );
             } else {
                 $this->persistFailure(
@@ -241,11 +247,10 @@ class ValidateArtifactJob implements ShouldQueue
 
             $absolutePdfPath = Storage::disk($diskName)->path($pdfRelative);
             $xmlString = $strategy->extractXmlForValidation($absolutePdfPath);
-            $tempXmlPath = tempnam(sys_get_temp_dir(), 'ebilling-kosit-');
-            if ($tempXmlPath === false) {
-                throw new \RuntimeException('Failed to allocate temp file for KOSIT validation.');
+            $tempXmlPath = EBillingArtifactNaming::uniqueTempXmlPath($document->sourceOriginalFilename());
+            if (file_put_contents($tempXmlPath, $xmlString) === false) {
+                throw new \RuntimeException('Failed to write temp XML for KOSIT validation.');
             }
-            file_put_contents($tempXmlPath, $xmlString);
 
             return new ValidationInputs(
                 absoluteXmlPath: $tempXmlPath,
@@ -353,6 +358,8 @@ class ValidateArtifactJob implements ShouldQueue
         array $supplementalPersisters,
         ArtifactValidationPersister $validationPersister,
         RecordKositValidation $recordKositValidation,
+        InitializeDocumentApprovalAction $initializeApproval,
+        TryAutoApproveDocumentAction $tryAutoApprove,
     ): void {
         $deliverablePath = $document->deliverableStoragePath($definition->artifactKind);
         if ($deliverablePath === null || $deliverablePath === '') {
@@ -391,6 +398,12 @@ class ValidateArtifactJob implements ShouldQueue
         });
 
         event(new ArtifactValidated($document->getKey(), $formatId));
+
+        $fresh = $document->fresh();
+        if ($fresh instanceof EbillingDocument) {
+            $initializeApproval->execute($fresh);
+            $tryAutoApprove->execute($fresh->fresh() ?? $fresh);
+        }
     }
 
     /**

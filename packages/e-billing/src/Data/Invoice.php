@@ -261,6 +261,9 @@ class Invoice
             deliveryTerms: isset($data['delivery_terms']) && is_string($data['delivery_terms'])
                 ? $data['delivery_terms']
                 : null,
+            paymentMeansCode: isset($data['payment_means_code']) && is_string($data['payment_means_code'])
+                ? $data['payment_means_code']
+                : null,
             netTotal: (float) ($data['net_total'] ?? 0),
             vatRate: (float) ($data['vat_rate'] ?? 19.0),
             vatAmount: (float) ($data['vat_amount'] ?? 0),
@@ -360,6 +363,7 @@ class Invoice
             'payment_terms' => $this->paymentTerms,
             'pricing_basis' => $this->pricingBasis,
             'delivery_terms' => $this->deliveryTerms,
+            'payment_means_code' => $this->paymentMeansCode,
 
             'net_total' => $this->netTotal,
             'vat_rate' => $this->vatRate,

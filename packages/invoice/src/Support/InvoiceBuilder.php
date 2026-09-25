@@ -44,10 +44,12 @@ class InvoiceBuilder
         $invoice->payment_terms = $draft->payment_terms;
         $invoice->shipping_method = $draft->shipping_method;
         $invoice->delivery_terms = $draft->delivery_terms;
+        $invoice->notes = $draft->notes !== [] ? $draft->notes : null;
         $invoice->seller = $draft->seller;
         $invoice->buyer = $draft->buyer;
         $invoice->delivery = $draft->delivery;
         $invoice->payment_means = $draft->payment_means;
+        $invoice->vat_category = $draft->vat_category;
         $invoice->net_total = $draft->net_total;
         $invoice->vat_rate = $draft->vat_rate;
         $invoice->vat_amount = $draft->vat_amount;

@@ -46,11 +46,20 @@ interface ZugferdInvoice
 
     public ?string $deliveryDate { get; }
 
+    public ?string $purchaseOrderReference { get; }
+
+    public ?string $despatchAdviceReference { get; }
+
+    /** Unstructured only (BT-22); never OrderReference IssueDate. */
+    public ?string $purchaseOrderDate { get; }
+
     public ?string $shipToName { get; }
 
     public ?ZugferdAddress $shipToAddress { get; }
 
     public ?string $paymentMeansCode { get; }
+
+    public string $vatCategoryCode { get; }
 
     public float $vatRate { get; }
 
@@ -68,4 +77,7 @@ interface ZugferdInvoice
 
     /** @var list<ZugferdBankAccount> */
     public array $bankAccounts { get; }
+
+    /** @var list<string> */
+    public array $documentNotes { get; }
 }
