@@ -99,3 +99,16 @@ it('allows guest access to public login-link consume routes', function () {
     $response->assertOk();
     $response->assertSeeText('consumed');
 });
+
+it('allows guest access to user-device trust magic-link routes', function () {
+    config()->set('moox-frontend-auth.enabled', true);
+
+    Route::middleware(['web'])->get('/__user_device_trust_except', function () {
+        return response('trust-ok', 200);
+    })->name('user-device.devices.trust');
+
+    $response = $this->get('/__user_device_trust_except');
+
+    $response->assertOk();
+    $response->assertSeeText('trust-ok');
+});

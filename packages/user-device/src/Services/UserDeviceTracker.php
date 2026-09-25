@@ -66,7 +66,7 @@ class UserDeviceTracker
             Log::warning('The session-table does not have a device_id column. Install Moox User Devices package to add this feature.');
         }
 
-        if ($device->wasRecentlyCreated && config('user-device.enforce_trust', true) && method_exists($user, 'notify')) {
+        if ($device->wasRecentlyCreated && method_exists($user, 'notify')) {
             $panelId = class_exists(Filament::class)
                 ? Filament::getCurrentPanel()?->getId()
                 : null;

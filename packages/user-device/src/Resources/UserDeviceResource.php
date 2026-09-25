@@ -16,6 +16,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema as DbSchema;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
@@ -95,6 +96,12 @@ class UserDeviceResource extends BaseItemResource
 
         if (! $authUser) {
             return false;
+        }
+
+        // Self-service panels (e.g. portal) always see own devices only.
+        $panelId = filament()->getCurrentPanel()?->getId();
+        if (is_string($panelId) && $panelId !== 'admin') {
+            return true;
         }
 
         if (! static::permissionSystemAvailable()) {
@@ -194,7 +201,10 @@ class UserDeviceResource extends BaseItemResource
                     ->sortable(),
                 TextColumn::make('user_id')
                     ->label(__('core::user.user_id'))
-                    ->getStateUsing(fn ($record) => optional($record->user)->name ?? 'unknown')
+                    ->getStateUsing(fn (UserDevice $record): string => static::resolveUserLabel($record->user))
+                    ->description(fn (UserDevice $record): ?string => filled($record->user_type)
+                        ? class_basename((string) $record->user_type)
+                        : null)
                     ->sortable(),
                 static::getScopeTableColumn(),
                 TextColumn::make('ip_address')
@@ -234,6 +244,8 @@ class UserDeviceResource extends BaseItemResource
                                 $sub
                                     ->orWhere('name', 'like', "%{$q}%")
                                     ->orWhere('email', 'like', "%{$q}%")
+                                    ->orWhere('username', 'like', "%{$q}%")
+                                    ->orWhere('display_name', 'like', "%{$q}%")
                                     ->orWhere('first_name', 'like', "%{$q}%")
                                     ->orWhere('last_name', 'like', "%{$q}%");
                             });
@@ -247,14 +259,14 @@ class UserDeviceResource extends BaseItemResource
                     ->requiresConfirmation()
                     ->modalHeading(__('user-device::translations.device_delete_modal_heading'))
                     ->modalDescription(__('user-device::translations.device_delete_modal_description'))
-                    ->visible(fn (UserDevice $record): bool => static::permissionSystemAvailable() && static::isShieldAdmin(filament()->auth()->user()))
+                    ->visible(fn (UserDevice $record): bool => static::canManageDevicesAsAdmin())
                     ->successNotificationTitle(__('user-device::translations.device_delete_success_title')),
                 Action::make('trust')
                     ->label(__('user-device::translations.device_trust'))
                     ->requiresConfirmation()
                     ->modalHeading(__('user-device::translations.device_trust_modal_heading'))
                     ->modalDescription(__('user-device::translations.device_trust_modal_description'))
-                    ->visible(fn (UserDevice $record): bool => static::permissionSystemAvailable() && static::isShieldAdmin(filament()->auth()->user()) && ! $record->whitelisted)
+                    ->visible(fn (UserDevice $record): bool => ! $record->whitelisted && static::canManageDevicesAsAdmin())
                     ->action(function (UserDevice $record): void {
                         $record->update(['whitelisted' => true]);
 
@@ -268,7 +280,7 @@ class UserDeviceResource extends BaseItemResource
                     ->requiresConfirmation()
                     ->modalHeading(__('user-device::translations.device_untrust_modal_heading'))
                     ->modalDescription(__('user-device::translations.device_untrust_modal_description'))
-                    ->visible(fn (UserDevice $record): bool => static::permissionSystemAvailable() && static::isShieldAdmin(filament()->auth()->user()) && $record->whitelisted)
+                    ->visible(fn (UserDevice $record): bool => (bool) $record->whitelisted && static::canManageDevicesAsAdmin())
                     ->action(function (UserDevice $record): void {
                         $record->update(['whitelisted' => false]);
 
@@ -286,8 +298,67 @@ class UserDeviceResource extends BaseItemResource
                     ->modalHeading(__('user-device::translations.device_delete_modal_heading'))
                     ->modalDescription(__('user-device::translations.device_delete_modal_description'))
                     ->successNotificationTitle(__('user-device::translations.device_delete_success_title'))
-                    ->visible(fn (): bool => static::permissionSystemAvailable() && static::isShieldAdmin(filament()->auth()->user())),
+                    ->visible(fn (): bool => static::canManageDevicesAsAdmin()),
             ]);
+    }
+
+    /**
+     * Admin ops only (Shield super_admin, or admin panel without Shield when allow_all is on).
+     * Portal users trust via the signed mail link — no self-service Trust button.
+     */
+    public static function canManageDevicesAsAdmin(?object $user = null): bool
+    {
+        $user ??= filament()->auth()->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        if (static::permissionSystemAvailable() && static::isShieldAdmin($user)) {
+            return true;
+        }
+
+        $panelId = filament()->getCurrentPanel()?->getId();
+
+        return $panelId === 'admin'
+            && ! static::permissionSystemAvailable()
+            && (bool) config('user-device.allow_all_devices_without_shield', false);
+    }
+
+    /**
+     * Resolve a human label for polymorphic authenticatables (User, Contact, …).
+     */
+    public static function resolveUserLabel(?Model $user): string
+    {
+        if (! $user instanceof Model) {
+            return 'unknown';
+        }
+
+        if (method_exists($user, 'getFilamentName')) {
+            $label = trim((string) $user->getFilamentName());
+
+            if ($label !== '') {
+                return $label;
+            }
+        }
+
+        if (method_exists($user, 'displayLabel')) {
+            $label = trim((string) $user->displayLabel());
+
+            if ($label !== '') {
+                return $label;
+            }
+        }
+
+        foreach (['name', 'display_name', 'email', 'username'] as $attribute) {
+            $value = $user->getAttribute($attribute);
+
+            if (filled($value)) {
+                return (string) $value;
+            }
+        }
+
+        return (string) $user->getKey();
     }
 
     #[Override]

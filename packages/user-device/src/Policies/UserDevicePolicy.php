@@ -41,7 +41,19 @@ class UserDevicePolicy
 
     public function delete(Authorizable $user, Model $record): bool
     {
-        return $this->isShieldAdmin($user);
+        if ($this->isShieldAdmin($user)) {
+            return true;
+        }
+
+        // Without Shield, Filament Admin still needs delete for ops. Portal
+        // never shows the delete action (canManageDevicesAsAdmin is admin-only).
+        return $this->allowOpsWithoutShield();
+    }
+
+    protected function allowOpsWithoutShield(): bool
+    {
+        return ! $this->permissionSystemAvailable()
+            && (bool) config('user-device.allow_all_devices_without_shield', false);
     }
 
     protected function permissionSystemAvailable(): bool

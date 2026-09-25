@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Moox\UserDevice\Http\Middleware;
 
 use Closure;
-use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Moox\UserDevice\Models\UserDevice;
-use Moox\UserDevice\Resources\UserDeviceResource;
 use Spatie\Permission\PermissionRegistrar;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 class EnsureTrustedDevice
 {
@@ -38,13 +37,6 @@ class EnsureTrustedDevice
             return $next($request);
         }
 
-        $path = '/'.ltrim((string) $request->path(), '/');
-
-        // Always allow navigating to device management (otherwise users get stuck).
-        if ($this->isUserDeviceResourceRequest($path)) {
-            return $next($request);
-        }
-
         $sessionId = session()->getId();
 
         if (blank($sessionId)) {
@@ -58,8 +50,9 @@ class EnsureTrustedDevice
         }
 
         // Fallback: resolve device by user+ip (covers session-regeneration edge cases).
+        // Use the Filament-authenticated user id — Auth::id() is the wrong guard on portal.
         if (blank($deviceId)) {
-            $userId = Auth::id();
+            $userId = $user->getAuthIdentifier();
             if (blank($userId)) {
                 return $next($request);
             }
@@ -100,41 +93,25 @@ class EnsureTrustedDevice
             return $next($request);
         }
 
-        // Hard block: while untrusted, the user can only access the devices page + trust link.
+        // Untrusted: kick back to the login screen with a toast (no panel access).
         Notification::make()
             ->title(__('user-device::translations.device_blocked_title'))
             ->body(__('user-device::translations.device_blocked_body'))
             ->danger()
             ->send();
 
-        $panelId = filament()->getCurrentPanel()?->getId();
+        filament()->auth()->logout();
 
-        $devicesUrl = filled($panelId)
-            ? UserDeviceResource::getUrl('index', panel: $panelId)
-            : UserDeviceResource::getUrl('index');
-
-        return redirect()->to($devicesUrl);
+        return redirect()->to($this->loginUrl());
     }
 
-    private function isUserDeviceResourceRequest(string $path): bool
+    private function loginUrl(): string
     {
-        if (! class_exists(Filament::class)) {
-            return false;
+        try {
+            return (string) (filament()->getLoginUrl() ?? '/');
+        } catch (Throwable) {
+            return '/';
         }
-
-        foreach (Filament::getPanels() as $panel) {
-            try {
-                $devicesIndexPath = parse_url(UserDeviceResource::getUrl('index', panel: $panel->getId()), PHP_URL_PATH);
-
-                if (is_string($devicesIndexPath) && $devicesIndexPath !== '' && str_starts_with($path, $devicesIndexPath)) {
-                    return true;
-                }
-            } catch (\Throwable) {
-                // ignore panels where the resource is not registered
-            }
-        }
-
-        return false;
     }
 
     private function isShieldAdmin(object $user): bool

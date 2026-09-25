@@ -79,19 +79,19 @@
                             <li>{{ __('user-device::translations.mail_step_check_mfa') }}</li>
                         </ul>
 
-                        <div style="margin:0 0 14px;">
-                            @if(filled($trustUrl))
+                        @if(($enforceTrust ?? true) && filled($trustUrl))
+                            <div style="margin:0 0 14px;">
                                 <a href="{{ $trustUrl }}" style="display:inline-block; background:#111827; color:#ffffff; text-decoration:none; padding:10px 16px; border-radius:10px; font-size:14px; font-weight:600;">
                                     {{ __('user-device::translations.mail_cta_trust_device') }}
                                 </a>
-                            @endif
-                        </div>
+                            </div>
 
-                        <p style="margin:0 0 14px; font-size:12px; line-height:18px; color:#6b7280;">
-                            <a href="{{ $reviewUrl }}" style="color:#111827; text-decoration:underline;">
-                                {{ __('user-device::translations.mail_cta_review_devices') }}
-                            </a>
-                        </p>
+                            <p style="margin:0 0 14px; font-size:12px; line-height:18px; color:#6b7280;">
+                                <a href="{{ $reviewUrl }}" style="color:#111827; text-decoration:underline;">
+                                    {{ __('user-device::translations.mail_cta_review_devices') }}
+                                </a>
+                            </p>
+                        @endif
 
                         <p style="margin:0; font-size:12px; line-height:18px; color:#6b7280;">
                             {{ __('user-device::translations.mail_outro_secure_account') }}

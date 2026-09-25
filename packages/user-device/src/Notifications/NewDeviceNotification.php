@@ -15,18 +15,15 @@ class NewDeviceNotification extends Notification implements ShouldQueue
     use Queueable;
 
     /**
-     * Create a new notification instance.
-     *
-     * @return void
+     * @param  array<string, mixed>  $deviceDetails
      */
-    public function __construct(protected $deviceDetails)
+    public function __construct(protected array $deviceDetails)
     {
     }
 
     /**
-     * Get the notification's delivery channels.
-     *
      * @param  mixed  $notifiable
+     * @return array<int, string>
      */
     public function via($notifiable): array
     {
@@ -34,15 +31,22 @@ class NewDeviceNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * Get the mail representation of the notification.
-     *
      * @param  mixed  $notifiable
-     * @return MailMessage
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
+        $data = $this->mailTemplateData($notifiable);
+        $subject = $this->resolveSubject();
+        $html = $this->renderMailTemplate($data);
+
+        if (is_string($html) && $html !== '') {
+            return (new MailMessage)
+                ->subject($subject)
+                ->view('user-device::mail.raw-html', ['html' => $html]);
+        }
+
         return (new MailMessage)
-            ->subject(__('user-device::translations.mail_subject_new_device'))
+            ->subject($subject)
             ->view('user-device::mail.new-device', [
                 'notifiable' => $notifiable,
                 'deviceTitle' => $this->deviceDetails['title'] ?? null,
@@ -52,10 +56,123 @@ class NewDeviceNotification extends Notification implements ShouldQueue
                 'deviceOs' => $this->deviceDetails['os'] ?? null,
                 'deviceCity' => $this->deviceDetails['city'] ?? null,
                 'deviceCountry' => $this->deviceDetails['country'] ?? null,
-                'reviewUrl' => $this->getReviewDevicesUrl(),
-                'trustUrl' => $this->getTrustUrl($notifiable),
+                'reviewUrl' => $data['reviewUrl'],
+                'trustUrl' => $data['magicLink'],
                 'logoUrl' => $this->getLogoUrl(),
+                'enforceTrust' => (bool) config('user-device.enforce_trust', true),
             ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function mailTemplateData(mixed $notifiable): array
+    {
+        $headline = __('user-device::translations.mail_title_new_device');
+        $reviewUrl = $this->getReviewDevicesUrl();
+        $trustUrl = config('user-device.enforce_trust', true)
+            ? $this->getTrustUrl($notifiable)
+            : null;
+        $expiresMinutes = (int) config('user-device.trust_link_expires_minutes', 60);
+
+        return [
+            'title' => $headline,
+            'headline' => $headline,
+            'displayName' => $this->displayName($notifiable),
+            'email' => $this->emailAddress($notifiable),
+            'user' => $notifiable,
+            'subject' => $notifiable,
+            'deviceTitle' => (string) ($this->deviceDetails['title'] ?? ''),
+            'deviceSystem' => collect([
+                $this->deviceDetails['platform'] ?? null,
+                $this->deviceDetails['browser'] ?? null,
+                $this->deviceDetails['os'] ?? null,
+            ])->filter()->implode(' · '),
+            'deviceIp' => (string) ($this->deviceDetails['ip_address'] ?? ''),
+            'deviceLocation' => $this->deviceLocation(),
+            // Notify-only: never fall back to reviewUrl (heco templates omit CTA).
+            'magicLink' => config('user-device.enforce_trust', true)
+                ? ($trustUrl ?? $reviewUrl)
+                : '',
+            'reviewUrl' => $reviewUrl,
+            'expiresMinutes' => $expiresMinutes,
+        ];
+    }
+
+    protected function emailAddress(mixed $notifiable): string
+    {
+        return trim((string) data_get($notifiable, 'email', ''));
+    }
+
+    protected function resolveSubject(): string
+    {
+        $fallback = __('user-device::translations.mail_subject_new_device');
+        $bridge = 'Moox\\MailTemplate\\Support\\MailTemplateBridge';
+
+        if (! class_exists($bridge) || ! $bridge::isAvailable()) {
+            return $fallback;
+        }
+
+        $slug = trim((string) config('user-device.mail_template_slug', 'new-device'));
+
+        if ($slug === '') {
+            return $fallback;
+        }
+
+        $title = $bridge::titleBySlug($slug);
+
+        return filled($title) ? (string) $title : $fallback;
+    }
+
+    protected function deviceLocation(): string
+    {
+        $location = collect([
+            $this->deviceDetails['city'] ?? null,
+            $this->deviceDetails['country'] ?? null,
+        ])->filter()->implode(', ');
+
+        if ($location !== '') {
+            return $location;
+        }
+
+        return __('user-device::translations.mail_location_unknown');
+    }
+
+    /**
+     * Soft-couple to moox/mail-template when available (no hard composer require).
+     *
+     * @param  array<string, mixed>  $data
+     */
+    protected function renderMailTemplate(array $data): ?string
+    {
+        $bridge = 'Moox\\MailTemplate\\Support\\MailTemplateBridge';
+
+        if (! class_exists($bridge) || ! $bridge::isAvailable()) {
+            return null;
+        }
+
+        $slug = trim((string) config('user-device.mail_template_slug', 'new-device'));
+
+        if ($slug === '') {
+            return null;
+        }
+
+        $html = $bridge::toHtmlBySlug($slug, $data);
+
+        return is_string($html) && $html !== '' ? $html : null;
+    }
+
+    protected function displayName(mixed $notifiable): string
+    {
+        $firstName = trim((string) data_get($notifiable, 'first_name', ''));
+        $lastName = trim((string) data_get($notifiable, 'last_name', ''));
+        $fullName = trim($firstName.' '.$lastName);
+
+        if ($fullName !== '') {
+            return $fullName;
+        }
+
+        return trim((string) data_get($notifiable, 'name', data_get($notifiable, 'display_name', '')));
     }
 
     protected function getReviewDevicesUrl(): string
@@ -107,9 +224,8 @@ class NewDeviceNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * Get the array representation of the notification.
-     *
      * @param  mixed  $notifiable
+     * @return array<string, mixed>
      */
     public function toArray($notifiable): array
     {
