@@ -46,7 +46,7 @@ final class InvoiceViewModel
                 'title' => __('e-billing::fields.section_seller_supplier'),
                 'subtitle' => 'BG-4',
                 'fields' => $this->buildFields([
-                    'supplier_name', 'supplier_vat_id', 'supplier_tax_number',
+                    'supplier_name', 'supplier_number', 'supplier_vat_id', 'supplier_tax_number',
                     'supplier_address', 'supplier_bank_accounts', 'supplier_email', 'supplier_phone', 'payment_means', 'agent',
                 ]),
             ],
