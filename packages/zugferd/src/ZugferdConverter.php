@@ -259,6 +259,11 @@ class ZugferdConverter
     {
         $doc->setDocumentSeller($invoice->supplierName);
 
+        $sellerId = $invoice->supplierNumber !== null ? trim($invoice->supplierNumber) : '';
+        if ($sellerId !== '') {
+            $doc->addDocumentSellerId($sellerId);
+        }
+
         if ($invoice->supplierAddress === null) {
             throw new IncompleteInvoiceException('Missing required field: supplierAddress (BG-5 seller postal address).');
         }
