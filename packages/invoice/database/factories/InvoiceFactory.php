@@ -29,6 +29,7 @@ class InvoiceFactory extends Factory
             'due_date' => fake()->optional()->date('Y-m-d'),
             'currency' => 'EUR',
             'customer_number' => fake()->optional()->bothify('000####'),
+            'supplier_number' => fake()->optional()->bothify('5#####'),
             'customer_reference' => fake()->optional()->bothify('REF-####'),
             'order_number' => fake()->optional()->bothify('PO-####'),
             'order_date' => fake()->optional()->date('Y-m-d'),

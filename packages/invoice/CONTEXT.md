@@ -55,6 +55,9 @@ document wording, no host model names. Keep lean.
   in that language.
 - **Buyer identifier** — BT-46. The debtor identity of the document. Distinct from **buyer reference**
   (BT-10); the two are separate terms and must not be conflated.
+- **Seller identifier** (**supplier number**) — BT-29. The seller's identifier as printed on the
+  document (e.g. Lieferanten-Nr.). Distinct from **buyer identifier** and from purchasing master-data
+  supplier numbers. Persisted on `invoices.supplier_number`. *Avoid:* conflating with VAT ID (BT-31).
 - **Payment terms** — BT-20, free text as printed on the document. A term, not a structured discount:
   no early-payment arithmetic is modelled here.
 - **Shipping method** — how the goods travelled. No BT number in EN 16931; ZUGFeRD `EXTENDED`
