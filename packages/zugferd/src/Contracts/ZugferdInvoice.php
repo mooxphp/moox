@@ -42,6 +42,9 @@ interface ZugferdInvoice
 
     public ?string $supplierTaxNumber { get; }
 
+    /** BT-29 seller identifier; null/empty → do not emit. */
+    public ?string $supplierNumber { get; }
+
     public ?string $paymentTerms { get; }
 
     public ?string $deliveryDate { get; }
