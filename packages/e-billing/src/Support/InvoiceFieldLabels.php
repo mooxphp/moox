@@ -170,6 +170,7 @@ final class InvoiceFieldLabels
             'payment_means' => 'BT-81',
             'vat_category' => 'BT-118',
             'supplier_name' => 'BT-27',
+            'supplier_number' => 'BT-29',
             'supplier_vat_id' => 'BT-31',
             'supplier_tax_number' => 'BT-32',
             'supplier_address' => 'BG-5',

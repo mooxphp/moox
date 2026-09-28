@@ -613,6 +613,7 @@ return [
 
             // Seller — MUST (own company data, from system settings later)
             'supplier_name' => 'must',    // BT-27
+            'supplier_number' => 'could', // BT-29
             'supplier_vat_id' => 'must',    // BT-31
             'supplier_tax_number' => 'should', // BT-32
             'supplier_address' => 'must',    // BG-5

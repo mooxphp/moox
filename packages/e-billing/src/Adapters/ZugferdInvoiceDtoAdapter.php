@@ -56,6 +56,8 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
 
     public ?string $supplierTaxNumber;
 
+    public ?string $supplierNumber;
+
     public ?string $paymentTerms;
 
     public ?string $deliveryDate;
@@ -115,6 +117,7 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
         $this->supplierVatId = $invoice->supplierVatId;
         $this->supplierTaxNumber = $invoice->supplierTaxNumber;
         $this->paymentTerms = $invoice->paymentTerms;
+        $this->supplierNumber = $invoice->supplierNumber;
         $this->deliveryDate = DeliveryDateTransmission::documentActualDeliveryDate(
             $invoice->deliveryDate,
             $invoice->lines,

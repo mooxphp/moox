@@ -114,6 +114,9 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
     public ?string $paymentTerms {
         get => $this->model->payment_terms !== null && $this->model->payment_terms !== ''
             ? (string) $this->model->payment_terms
+    public ?string $supplierNumber {
+        get => $this->model->supplier_number !== null
+            ? (string) $this->model->supplier_number
             : null;
     }
 

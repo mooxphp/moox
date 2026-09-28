@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Added
+- Supplier number (EN 16931 BT-29, ADR 0012): persist DTO `supplierNumber` onto `invoices.supplier_number` via `ParsedInvoiceMapper` / `InvoiceFactory`; MoSCoW `could` on invoice / credit-note / corrected-invoice field maps; ViewInvoice supplier (BG-4) group shows `supplier_number`; both Zugferd adapters expose `supplierNumber`. No SQL backfill — next `GenerateArtifactJob` / leave-edit fills the column from `bill_data`.
 - `e-billing.intake.scopes`: optional allowlist of mail-inbox Scope keys for `ProcessInboxAttachmentListener` (null/`[]` = all; non-listed PDFs marked Skipped, no `EbillingDocument`).
 - Optional `e-billing.delivery.from_name` / `EBILLING_DELIVERY_FROM_NAME` (display name only; From address is host-owned).
 
