@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource;
+use Moox\UserDevice\Support\UserDevicePanel;
 use Throwable;
 
 class TrustDeviceController
@@ -57,9 +58,23 @@ class TrustDeviceController
     protected function loginUrl(string $panelId): string
     {
         try {
-            return filament()->getLoginUrl() ?? UserDeviceResource::getUrl('index', panel: $panelId);
+            $login = filament()->getLoginUrl();
+
+            if (filled($login)) {
+                return $login;
+            }
         } catch (Throwable) {
-            return UserDeviceResource::getUrl('index', panel: $panelId);
+            //
         }
+
+        if (UserDevicePanel::registersResource($panelId)) {
+            try {
+                return UserDeviceResource::getUrl('index', panel: $panelId);
+            } catch (Throwable) {
+                //
+            }
+        }
+
+        return url('/'.trim($panelId, '/').'/login');
     }
 }

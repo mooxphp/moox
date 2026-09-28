@@ -8,6 +8,7 @@ use Filament\Support\Concerns\EvaluatesClosures;
 use Moox\UserDevice\Http\Middleware\EnsureTrustedDevice;
 use Moox\UserDevice\Http\Middleware\SyncDeviceIdToSessionRow;
 use Moox\UserDevice\Resources\UserDeviceResource;
+use Moox\UserDevice\Support\UserDevicePanel;
 
 class UserDevicePlugin implements Plugin
 {
@@ -45,13 +46,7 @@ class UserDevicePlugin implements Plugin
 
     protected function shouldRegisterResource(Panel $panel): bool
     {
-        $panels = config('user-device.resource_panels', ['admin']);
-
-        if (! is_array($panels)) {
-            return false;
-        }
-
-        return in_array($panel->getId(), $panels, true);
+        return UserDevicePanel::registersResource($panel->getId());
     }
 
     public function boot(Panel $panel): void

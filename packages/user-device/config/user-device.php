@@ -143,8 +143,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | Only when enabled: Filament resource (nav + /user-devices) registers on
-    | these panel IDs. Other panels with the plugin still get trust middleware.
-    | Default: admin only (portal users trust via mail).
+    | these panel IDs. Other panels with the plugin still get trust middleware
+    | and new-device mail (trust link). Empty array = no resource UI anywhere.
     |
     */
     'resource_panels' => ['admin'],

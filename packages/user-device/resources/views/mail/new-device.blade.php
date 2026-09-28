@@ -86,11 +86,13 @@
                                 </a>
                             </div>
 
-                            <p style="margin:0 0 14px; font-size:12px; line-height:18px; color:#6b7280;">
-                                <a href="{{ $reviewUrl }}" style="color:#111827; text-decoration:underline;">
-                                    {{ __('user-device::translations.mail_cta_review_devices') }}
-                                </a>
-                            </p>
+                            @if(filled($reviewUrl))
+                                <p style="margin:0 0 14px; font-size:12px; line-height:18px; color:#6b7280;">
+                                    <a href="{{ $reviewUrl }}" style="color:#111827; text-decoration:underline;">
+                                        {{ __('user-device::translations.mail_cta_review_devices') }}
+                                    </a>
+                                </p>
+                            @endif
                         @endif
 
                         <p style="margin:0; font-size:12px; line-height:18px; color:#6b7280;">

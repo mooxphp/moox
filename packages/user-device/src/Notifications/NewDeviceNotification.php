@@ -9,6 +9,8 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
 use Moox\UserDevice\Resources\UserDeviceResource;
+use Moox\UserDevice\Support\UserDevicePanel;
+use Throwable;
 
 class NewDeviceNotification extends Notification implements ShouldQueue
 {
@@ -179,13 +181,45 @@ class NewDeviceNotification extends Notification implements ShouldQueue
     {
         $panelId = $this->deviceDetails['panel_id'] ?? null;
 
-        if (filled($panelId) && class_exists(Filament::class)) {
-            $relativeUrl = UserDeviceResource::getUrl('index', panel: $panelId);
-
-            return url($relativeUrl);
+        if (! filled($panelId) || ! class_exists(Filament::class)) {
+            return $this->fallbackReviewDevicesUrl();
         }
 
-        return url(UserDeviceResource::getUrl('index'));
+        $panelId = (string) $panelId;
+
+        // Resource may be hidden per panel (e.g. portal) while trust mail still runs.
+        if (! UserDevicePanel::registersResource($panelId)) {
+            return '';
+        }
+
+        try {
+            return url(UserDeviceResource::getUrl('index', panel: $panelId));
+        } catch (Throwable) {
+            return '';
+        }
+    }
+
+    protected function fallbackReviewDevicesUrl(): string
+    {
+        $panels = config('user-device.resource_panels', ['admin']);
+
+        if (! is_array($panels)) {
+            return '';
+        }
+
+        foreach ($panels as $panelId) {
+            if (! is_string($panelId) || $panelId === '') {
+                continue;
+            }
+
+            try {
+                return url(UserDeviceResource::getUrl('index', panel: $panelId));
+            } catch (Throwable) {
+                continue;
+            }
+        }
+
+        return '';
     }
 
     protected function getLogoUrl(): string
