@@ -184,6 +184,7 @@ The `Invoice` model (`Moox\Invoice\Models\Invoice`) stores the invoice header. I
 -   `due_date` (string, nullable) - Payment due date
 -   `currency` (string, default: `EUR`) - ISO 4217 currency code
 -   `customer_number` (string, nullable, indexed) - Buyer identifier assigned by the seller (EN 16931 **BT-46**); stored verbatim from the document
+-   `supplier_number` (string, nullable, indexed) - Seller identifier (EN 16931 **BT-29**, printed Lieferanten-Nr.); stored verbatim from the document
 -   `customer_reference` (string, nullable) - Reference the buyer asked to see on the document (EN 16931 **BT-10**); distinct from `customer_number`
 -   `order_number` (string, nullable) - Associated order number
 -   `order_date` (string, nullable) - Associated order date

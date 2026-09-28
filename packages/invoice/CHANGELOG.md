@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Nullable indexed `supplier_number` on invoices (EN 16931 BT-29 seller identifier). Flows through `InvoiceDraft` / `InvoiceBuilder` / model / create-table stub; migration stub `add_supplier_number_to_invoices_table` (hosts must publish/run).
 - Nullable `vat_category` on invoices (`InvoiceDraft` / `InvoiceBuilder` / model / create-table stub) for the EN 16931 VAT category stamp (BT-118).
 
 ### Changed

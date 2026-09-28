@@ -37,6 +37,7 @@ class InvoiceBuilder
         $invoice->due_date = $draft->due_date;
         $invoice->currency = $draft->currency;
         $invoice->customer_number = $draft->customer_number;
+        $invoice->supplier_number = $draft->supplier_number;
         $invoice->customer_reference = $draft->customer_reference;
         $invoice->order_number = $draft->order_number;
         $invoice->order_date = $draft->order_date;
