@@ -14,6 +14,9 @@
 - `e-billing.intake.scopes`: optional allowlist of mail-inbox Scope keys for `ProcessInboxAttachmentListener` (null/`[]` = all; non-listed PDFs marked Skipped, no `EbillingDocument`).
 - Optional `e-billing.delivery.from_name` / `EBILLING_DELIVERY_FROM_NAME` (display name only; From address is host-owned).
 
+### Fixed
+- Buyer/seller address mapping: without a street, the next address line (e.g. a PO box "Postfach 16 20") becomes BT-50 instead of repeating the company name; the company only fills BT-50 when no address line exists. Shared as `Data\Address::toEn16931Address()` for `ParsedInvoiceMapper` and `InvoiceFactory` (removed the unused `InvoiceAddress` import).
+
 ### Changed
 - BG-32 BT-160 attribute names and CAE `reason_text` fallbacks follow `e-billing.document_locale` / `EBILLING_DOCUMENT_LOCALE` (package default `en`; lang keys in `e-billing::emission`). Independent of Filament UI locale. Already-emitted artifacts are not regenerated. Hosts that need German (or other) labels set the env/config override.
 

@@ -52,6 +52,34 @@ class Address implements ZugferdAddress
         return Party::deliveryConsignee($name, $address);
     }
 
+    /**
+     * Buyer/seller postal address (BG-5 / BG-8). The first printed line after the name is BT-50: the street,
+     * or — when there is none, e.g. a PO box — the next address line. The company only fills BT-50 when
+     * nothing else is there; it is the party name, not an address line. Null without a country.
+     */
+    public function toEn16931Address(): ?En16931Address
+    {
+        $countryCode = $this->country !== null ? strtoupper(trim($this->country)) : '';
+        if ($countryCode === '') {
+            return null;
+        }
+
+        $lines = array_values(array_filter(
+            [self::trimmedNonEmpty($this->street), self::trimmedNonEmpty($this->addressLine2), self::trimmedNonEmpty($this->addressLine3)],
+            static fn (?string $line): bool => $line !== null,
+        ));
+        $line1 = array_shift($lines) ?? self::trimmedNonEmpty($this->company) ?? '';
+
+        return new En16931Address(
+            line1: $line1,
+            line2: $lines !== [] ? implode("\n", $lines) : null,
+            city: trim((string) ($this->city ?? '')),
+            postal_code: trim((string) ($this->zip ?? '')),
+            subdivision: null,
+            country_code: $countryCode,
+        );
+    }
+
     private static function joinedAddressLines(?string $line2, ?string $line3): ?string
     {
         $trimmedLine2 = self::trimmedNonEmpty($line2);
