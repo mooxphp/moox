@@ -35,9 +35,6 @@ export const LinkBlock = {
     },
     
     renderLinkHTML(scope, data, context = {}) {
-        const linkUrl = data.linkUrl || '';
-        const linkText = data.linkText || data.content || linkUrl;
-        const linkTarget = data.linkTarget || '_blank';
         const { selectedBlockId, draggingBlockId, childBlockTypes, index, addComponentsEnabled } = context;
         
         return `
@@ -45,7 +42,7 @@ export const LinkBlock = {
                 <a 
                     :data-block-id="${scope}.id"
                     :id="${scope}.htmlId || null"
-                    :href="${scope}.linkUrl || '#'"
+                    :href="safeHref(${scope}.linkUrl)"
                     :target="${scope}.linkTarget || '_blank'"
                     :rel="(${scope}.linkTarget || '_blank') === '_blank' ? 'noopener noreferrer' : null"
                     :style="${scope}.style || ''"

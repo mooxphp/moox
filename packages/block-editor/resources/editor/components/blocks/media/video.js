@@ -3,21 +3,8 @@
  * Enthält alle Informationen für Video-Blöcke an einem Ort
  */
 import { BLOCK_TYPES } from '../../block-types.js';
-
-const escapeAttribute = (value) => {
-    if (value === null || value === undefined) return '';
-    return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/'/g, '&#39;');
-};
-
-const escapeForSingleQuotedJs = (value) => {
-    if (value === null || value === undefined) return '';
-    return String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-};
+import { escapeHtmlAttribute, escapeJsSingleQuoted } from '../../../core/utils/format.js';
+import { isSafeAttributeUrl } from '../../../core/utils/dom.js';
 
 export const VideoBlock = {
     type: 'video',
@@ -50,22 +37,24 @@ export const VideoBlock = {
     },
     
     renderVideoHTML(scope, data) {
-        const videoUrl = (data.videoUrl || '').trim();
-        const videoPoster = (data.videoPoster || '').trim();
+        const rawVideoUrl = (data.videoUrl || '').trim();
+        const videoUrl = isSafeAttributeUrl('src', rawVideoUrl) ? rawVideoUrl : '';
+        const rawPoster = (data.videoPoster || '').trim();
+        const videoPoster = isSafeAttributeUrl('src', rawPoster) ? rawPoster : '';
         const videoTitle = data.videoTitle || '';
         const blockId = data.id || '';
         const htmlId = (data.htmlId || '').trim();
         const style = (data.style || '').trim();
         const customClasses = (data.classes || '').trim();
         const videoClasses = ['w-full rounded-lg cursor-pointer', customClasses].filter(Boolean).join(' ');
-        const clickExpression = `handleVideoBlockClick('${escapeForSingleQuotedJs(blockId)}')`;
+        const clickExpression = `handleVideoBlockClick('${escapeJsSingleQuoted(blockId)}')`;
         
         // Wenn kein Video gesetzt ist, zeige Platzhalter
         if (!videoUrl) {
             return `
                 <div class="relative w-full">
                     <div 
-                        data-block-id="${escapeAttribute(blockId)}"
+                        data-block-id="${escapeHtmlAttribute(blockId)}"
                         class="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-8 bg-gray-50 min-h-[200px] cursor-pointer hover:bg-gray-100 transition-colors w-full"
                         @click.stop="${clickExpression}"
                     >
@@ -85,14 +74,14 @@ export const VideoBlock = {
         return `
             <div class="relative w-full">
                 <video 
-                    data-block-id="${escapeAttribute(blockId)}"
-                    src="${escapeAttribute(videoUrl)}"
-                    poster="${escapeAttribute(videoPoster)}"
-                    title="${escapeAttribute(videoTitle)}"
+                    data-block-id="${escapeHtmlAttribute(blockId)}"
+                    src="${escapeHtmlAttribute(videoUrl)}"
+                    poster="${escapeHtmlAttribute(videoPoster)}"
+                    title="${escapeHtmlAttribute(videoTitle)}"
                     controls
-                    id="${escapeAttribute(htmlId)}"
-                    style="${escapeAttribute(style)}"
-                    class="${escapeAttribute(videoClasses)}"
+                    id="${escapeHtmlAttribute(htmlId)}"
+                    style="${escapeHtmlAttribute(style)}"
+                    class="${escapeHtmlAttribute(videoClasses)}"
                     @click.stop="${clickExpression}"
                 ></video>
             </div>

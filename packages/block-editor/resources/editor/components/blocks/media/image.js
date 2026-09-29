@@ -4,21 +4,8 @@
  * Ein Image-Block rendert ein Bild mit Platzhalter wenn kein Bild gesetzt ist
  */
 import { BLOCK_TYPES } from '../../block-types.js';
-
-const escapeAttribute = (value) => {
-    if (value === null || value === undefined) return '';
-    return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/'/g, '&#39;');
-};
-
-const escapeForSingleQuotedJs = (value) => {
-    if (value === null || value === undefined) return '';
-    return String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-};
+import { escapeHtmlAttribute, escapeJsSingleQuoted } from '../../../core/utils/format.js';
+import { isSafeAttributeUrl } from '../../../core/utils/dom.js';
 
 export const ImageBlock = {
     // Block-Typ Name
@@ -54,7 +41,8 @@ export const ImageBlock = {
     },
     
     renderImageHTML(scope, data) {
-        const imageUrl = (data.imageUrl || '').trim();
+        const rawImageUrl = (data.imageUrl || '').trim();
+        const imageUrl = isSafeAttributeUrl('src', rawImageUrl) ? rawImageUrl : '';
         const imageAlt = data.imageAlt || '';
         const imageTitle = data.imageTitle || '';
         const blockId = data.id || '';
@@ -62,14 +50,14 @@ export const ImageBlock = {
         const style = (data.style || '').trim();
         const customClasses = (data.classes || '').trim();
         const imageClasses = ['max-w-full h-auto rounded-lg cursor-pointer', customClasses].filter(Boolean).join(' ');
-        const clickExpression = `handleImageBlockClick('${escapeForSingleQuotedJs(blockId)}')`;
+        const clickExpression = `handleImageBlockClick('${escapeJsSingleQuoted(blockId)}')`;
         
         // Wenn kein Bild gesetzt ist, zeige Platzhalter
         if (!imageUrl) {
             return `
                 <div class="relative w-full">
                     <div 
-                        data-block-id="${escapeAttribute(blockId)}"
+                        data-block-id="${escapeHtmlAttribute(blockId)}"
                         class="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-8 bg-gray-50 min-h-[200px] cursor-pointer hover:bg-gray-100 transition-colors w-full"
                         @click.stop="${clickExpression}"
                     >
@@ -89,13 +77,13 @@ export const ImageBlock = {
         return `
             <div class="relative w-full">
                 <img 
-                    data-block-id="${escapeAttribute(blockId)}"
-                    src="${escapeAttribute(imageUrl)}"
-                    alt="${escapeAttribute(imageAlt)}"
-                    title="${escapeAttribute(imageTitle)}"
-                    id="${escapeAttribute(htmlId)}"
-                    style="${escapeAttribute(style)}"
-                    class="${escapeAttribute(imageClasses)}"
+                    data-block-id="${escapeHtmlAttribute(blockId)}"
+                    src="${escapeHtmlAttribute(imageUrl)}"
+                    alt="${escapeHtmlAttribute(imageAlt)}"
+                    title="${escapeHtmlAttribute(imageTitle)}"
+                    id="${escapeHtmlAttribute(htmlId)}"
+                    style="${escapeHtmlAttribute(style)}"
+                    class="${escapeHtmlAttribute(imageClasses)}"
                     @click.stop="${clickExpression}"
                 />
             </div>

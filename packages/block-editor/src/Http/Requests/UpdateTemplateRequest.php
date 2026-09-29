@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\BlockEditor\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Moox\BlockEditor\Http\Requests\Concerns\SanitizesTemplatePayload;
 use Moox\BlockEditor\Models\Template;
 use Moox\BlockEditor\Support\ApiAuthorization;
-use Moox\BlockEditor\Support\TemplateContentSanitizer;
 
 class UpdateTemplateRequest extends FormRequest
 {
+    use SanitizesTemplatePayload;
+
     public function authorize(): bool
     {
         if (! ApiAuthorization::isEnabled()) {
@@ -43,19 +47,5 @@ class UpdateTemplateRequest extends FormRequest
             ],
             'content' => ['nullable', 'array'],
         ];
-    }
-
-    protected function passedValidation(): void
-    {
-        /** @var TemplateContentSanitizer $sanitizer */
-        $sanitizer = app(TemplateContentSanitizer::class);
-
-        $content = $this->input('content');
-
-        if (is_array($content)) {
-            $this->merge([
-                'content' => $sanitizer->sanitizeBlocks($content),
-            ]);
-        }
     }
 }

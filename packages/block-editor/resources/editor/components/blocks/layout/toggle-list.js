@@ -3,6 +3,7 @@
  * Überschrift (Absatz) mit Trigger rechts; Inhalt kann weitere Block-Komponenten enthalten.
  */
 import { BLOCK_TYPES } from '../../block-types.js';
+import { escapeHtmlAttribute } from '../../../core/utils/format.js';
 
 export const ToggleListBlock = {
     type: 'toggleList',
@@ -31,7 +32,7 @@ export const ToggleListBlock = {
     },
 
     renderToggleListHTML(scope, data, context = {}) {
-        const blockId = data.id || '';
+        const blockId = escapeHtmlAttribute(data.id || '');
         const { selectedBlockId, draggingBlockId, childBlockTypes, index, addComponentsEnabled } = context;
         const placeholder = this.options.placeholder || 'Überschrift...';
         const isChild = scope === 'child';

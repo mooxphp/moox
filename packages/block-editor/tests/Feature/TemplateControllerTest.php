@@ -31,6 +31,8 @@ it('allows authenticated users to manage templates via api', function (): void {
     $template = Template::query()->findOrFail($templateId);
 
     expect($template->content[0]['type'])->toBe('paragraph');
+    expect($template->content[0]['content'])->not->toContain('<script>');
+    expect($template->content[0]['content'])->not->toContain('alert(1)');
 
     $this->actingAs($user)
         ->getJson($indexUrl)
@@ -49,6 +51,50 @@ it('allows authenticated users to manage templates via api', function (): void {
         ->assertNoContent();
 
     $this->assertDatabaseMissing('editor_templates', ['id' => $templateId]);
+});
+
+it('persists sanitized content and strips html from template names', function (): void {
+    $user = User::factory()->create();
+
+    $createResponse = $this->actingAs($user)->postJson(route('moox-editor.templates.index'), [
+        'name' => '<img src=x onerror=alert(1)>Unsafe Name',
+        'slug' => 'unsafe-name',
+        'content' => [
+            [
+                'id' => '1',
+                'type' => 'image',
+                'imageUrl' => 'javascript:alert(1)',
+                'content' => '<p>Safe<script>alert(1)</script></p>',
+            ],
+        ],
+    ]);
+
+    $createResponse->assertCreated();
+
+    $template = Template::query()->findOrFail($createResponse->json('id'));
+
+    expect($template->name)->toBe('Unsafe Name')
+        ->and($template->name)->not->toContain('<img')
+        ->and($template->content[0]['content'])->not->toContain('<script>')
+        ->and($template->content[0]['imageUrl'])->toBe('');
+
+    $this->actingAs($user)
+        ->putJson(route('moox-editor.templates.update', ['template' => $template->id]), [
+            'content' => [
+                [
+                    'id' => '1',
+                    'type' => 'embed',
+                    'embedUrl' => 'javascript:alert(1)',
+                    'videoUrl' => 'https://example.com/video.mp4',
+                ],
+            ],
+        ])
+        ->assertOk();
+
+    $template->refresh();
+
+    expect($template->content[0]['embedUrl'])->toBe('')
+        ->and($template->content[0]['videoUrl'])->toBe('https://example.com/video.mp4');
 });
 
 it('denies guests on templates api routes', function (): void {

@@ -1,12 +1,24 @@
 // DOM Utilities
-function isSafeAttributeUrl(attributeName, value) {
+const ALLOWED_DATA_IMAGE_PREFIXES = [
+    'data:image/png',
+    'data:image/jpeg',
+    'data:image/jpg',
+    'data:image/gif',
+    'data:image/webp',
+];
+
+export function isSafeAttributeUrl(attributeName, value) {
     if (!value || typeof value !== 'string') {
         return false;
     }
 
     const normalizedValue = value.trim().toLowerCase();
 
-    if (normalizedValue.startsWith('javascript:')) {
+    if (
+        normalizedValue.startsWith('javascript:')
+        || normalizedValue.startsWith('vbscript:')
+        || normalizedValue.startsWith('data:text/html')
+    ) {
         return false;
     }
 
@@ -22,16 +34,28 @@ function isSafeAttributeUrl(attributeName, value) {
     }
 
     if (attributeName === 'src') {
-        return (
+        if (
             normalizedValue.startsWith('http://')
             || normalizedValue.startsWith('https://')
-            || normalizedValue.startsWith('data:image/')
             || normalizedValue.startsWith('blob:')
             || normalizedValue.startsWith('/')
-        );
+        ) {
+            return true;
+        }
+
+        return ALLOWED_DATA_IMAGE_PREFIXES.some((prefix) => normalizedValue.startsWith(prefix));
     }
 
     return false;
+}
+
+/** Sichere href für Bindings/Navigation; unsichere Schemes → '#'. */
+export function safeHrefUrl(value) {
+    if (!isSafeAttributeUrl('href', value)) {
+        return '#';
+    }
+
+    return String(value).trim();
 }
 
 export function sanitizeHtmlContent(content) {
@@ -68,10 +92,16 @@ export function sanitizeHtmlContent(content) {
                 return;
             }
 
+            // Unwrap, then sanitize moved children — early return without walk left nested payloads intact.
+            const movedChildren = [];
             while (element.firstChild) {
-                parent.insertBefore(element.firstChild, element);
+                const child = element.firstChild;
+                parent.insertBefore(child, element);
+                movedChildren.push(child);
             }
             parent.removeChild(element);
+            movedChildren.forEach(sanitizeNode);
+
             return;
         }
 
@@ -89,7 +119,7 @@ export function sanitizeHtmlContent(content) {
                 return;
             }
 
-            if ((name === 'href' || name === 'src') && !isSafeAttributeUrl(name, value)) {
+            if ((name === 'href' || name === 'src' || name === 'poster') && !isSafeAttributeUrl(name === 'poster' ? 'src' : name, value)) {
                 element.removeAttribute(attribute.name);
                 return;
             }

@@ -27,8 +27,14 @@ export function getConfirmModalTemplate() {
                 </div>
 
                 <!-- Modal Body -->
-                <div class="flex-1 overflow-y-auto p-6">
-                    <p class="text-gray-700" x-html="confirmModal.message"></p>
+                <div class="flex-1 overflow-y-auto p-6 space-y-3">
+                    <p class="text-gray-700" x-text="confirmModal.message"></p>
+                    <template x-if="confirmModal.showLinkFollow">
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <p><span class="font-semibold">Link-Text:</span> <span x-text="confirmModal.linkFollowText || ''"></span></p>
+                            <p><span class="font-semibold">URL:</span> <span x-text="confirmModal.linkFollowUrl || ''"></span></p>
+                        </div>
+                    </template>
                 </div>
 
                 <!-- Modal Footer -->

@@ -107,19 +107,53 @@ class TemplateContentSanitizer
             }
 
             $normalizedKey = Str::lower((string) $key);
-            if (in_array($normalizedKey, ['content', 'text', 'question', 'answer'], true)) {
+            if (in_array($normalizedKey, [
+                'content',
+                'text',
+                'question',
+                'answer',
+            ], true)) {
                 $node[$key] = $this->sanitizeHtml($value);
 
                 continue;
             }
 
-            if (in_array($normalizedKey, ['href', 'src', 'url', 'poster', 'linkurl'], true)) {
+            if ($normalizedKey === 'id') {
+                $node[$key] = $this->sanitizeId($value);
+
+                continue;
+            }
+
+            if (in_array($normalizedKey, [
+                'href',
+                'src',
+                'url',
+                'poster',
+                'linkurl',
+                'imageurl',
+                'videourl',
+                'videoposter',
+                'embedurl',
+            ], true)) {
                 $node[$key] = $this->sanitizeUrl($value);
 
                 continue;
             }
 
-            if (in_array($normalizedKey, ['name', 'slug', 'title', 'alt', 'htmlid', 'classes', 'style'], true)) {
+            if (in_array($normalizedKey, [
+                'name',
+                'slug',
+                'title',
+                'alt',
+                'htmlid',
+                'classes',
+                'style',
+                'linktext',
+                'imagealt',
+                'imagetitle',
+                'videotitle',
+                'embedtitle',
+            ], true)) {
                 $node[$key] = trim(strip_tags($value));
             }
         }
@@ -162,7 +196,7 @@ class TemplateContentSanitizer
     {
         $tagName = Str::lower($element->tagName);
         if ($tagName !== 'div' && ! in_array($tagName, self::ALLOWED_TAGS, true)) {
-            $this->unwrapElement($element);
+            $this->unwrapElementAndSanitizeChildren($element);
 
             return;
         }
@@ -188,7 +222,7 @@ class TemplateContentSanitizer
                 continue;
             }
 
-            if (in_array($name, ['href', 'src'], true) && $this->sanitizeUrl($value) === '') {
+            if (in_array($name, ['href', 'src', 'poster'], true) && $this->sanitizeUrl($value) === '') {
                 $element->removeAttribute($attribute->name);
             }
         }
@@ -210,18 +244,41 @@ class TemplateContentSanitizer
         }
     }
 
-    private function unwrapElement(DOMElement $element): void
+    private function unwrapElementAndSanitizeChildren(DOMElement $element): void
     {
         $parent = $element->parentNode;
         if ($parent === null) {
             return;
         }
 
+        /** @var list<DOMNode> $movedChildren */
+        $movedChildren = [];
+
         while ($element->firstChild !== null) {
-            $parent->insertBefore($element->firstChild, $element);
+            $child = $element->firstChild;
+            $parent->insertBefore($child, $element);
+            $movedChildren[] = $child;
         }
 
         $parent->removeChild($element);
+
+        foreach ($movedChildren as $childNode) {
+            if ($childNode instanceof DOMElement) {
+                $this->sanitizeElement($childNode);
+            }
+        }
+    }
+
+    private function sanitizeId(string $id): string
+    {
+        $normalized = trim($id);
+        if ($normalized === '') {
+            return '';
+        }
+
+        $safe = preg_replace('/[^A-Za-z0-9_-]/', '', $normalized);
+
+        return is_string($safe) ? $safe : '';
     }
 
     private function sanitizeUrl(string $url): string
@@ -244,11 +301,25 @@ class TemplateContentSanitizer
             || Str::startsWith($lowercaseUrl, '/')
             || Str::startsWith($lowercaseUrl, '#')
             || Str::startsWith($lowercaseUrl, 'blob:')
-            || Str::startsWith($lowercaseUrl, 'data:image/')
         ) {
             return $normalizedUrl;
         }
 
+        if ($this->isAllowedDataImageUrl($lowercaseUrl)) {
+            return $normalizedUrl;
+        }
+
         return '';
+    }
+
+    private function isAllowedDataImageUrl(string $lowercaseUrl): bool
+    {
+        foreach (['data:image/png', 'data:image/jpeg', 'data:image/jpg', 'data:image/gif', 'data:image/webp'] as $prefix) {
+            if (Str::startsWith($lowercaseUrl, $prefix)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

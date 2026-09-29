@@ -4,6 +4,7 @@
  */
 import { BLOCK_TYPES } from '../../block-types.js';
 import { AccordionManagement } from '../../../core/blocks/management.js';
+import { escapeHtmlAttribute, escapeJsSingleQuoted } from '../../../core/utils/format.js';
 
 export const AccordionBlock = {
     type: 'accordion',
@@ -30,7 +31,9 @@ export const AccordionBlock = {
     },
 
     renderAccordionHTML(scope, data) {
-        const blockId = data.id || '';
+        const rawBlockId = data.id || '';
+        const blockId = escapeHtmlAttribute(rawBlockId);
+        const blockIdJs = escapeJsSingleQuoted(rawBlockId);
         const itemsLength = data.accordionData?.items?.length || 0;
 
         return `
@@ -42,7 +45,7 @@ export const AccordionBlock = {
                 <template x-for="(item, itemIndex) in (${scope}.accordionData?.items || [])" :key="item.id">
                     <div class="border-b border-gray-200 last:border-b-0">
                         <button type="button"
-                            @click.stop="toggleAccordionItem('${blockId}', item.id)"
+                            @click.stop="toggleAccordionItem('${blockIdJs}', item.id)"
                             class="w-full flex items-center justify-between gap-2 px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left">
                             <span class="font-medium text-sm text-gray-900" x-text="(item.question || '').replace(/<[^>]*>/g, '').trim() || ('Frage ' + (itemIndex + 1))"></span>
                             <span class="text-gray-500" x-text="item.expanded ? '−' : '+'"></span>
@@ -55,8 +58,8 @@ export const AccordionBlock = {
                                 contenteditable="true"
                                 data-placeholder="Frage eingeben..."
                                 x-init="$nextTick(() => { $el.innerHTML = $sanitizeHtml(item.question || ''); })"
-                                @input="updateAccordionQuestion('${blockId}', item.id, $event.target.innerHTML)"
-                                @blur="commitAccordionQuestion('${blockId}', item.id, $event.target.innerHTML)"
+                                @input="updateAccordionQuestion('${blockIdJs}', item.id, $event.target.innerHTML)"
+                                @blur="commitAccordionQuestion('${blockIdJs}', item.id, $event.target.innerHTML)"
                                 @focus="initBlockContent($event.target, { content: item.question || '' })"
                             ></div>
 
@@ -97,13 +100,13 @@ export const AccordionBlock = {
                                             </div>
                                         </div>
                                         <div :class="selectedBlockId === child.id ? 'opacity-100' : ''" class="absolute -right-20 top-1/2 -translate-y-1/2 flex items-center gap-2 opacity-0 transition-opacity z-10">
-                                            <button type="button" @click.stop="moveAccordionChild('${blockId}', item.id, childIndex, 'up')"
+                                            <button type="button" @click.stop="moveAccordionChild('${blockIdJs}', item.id, childIndex, 'up')"
                                                 :disabled="childIndex === 0"
                                                 :class="childIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''"
                                                 class="flex h-7 w-7 items-center justify-center bg-white rounded shadow hover:bg-gray-100" title="Nach oben">
                                                 ↑
                                             </button>
-                                            <button type="button" @click.stop="moveAccordionChild('${blockId}', item.id, childIndex, 'down')"
+                                            <button type="button" @click.stop="moveAccordionChild('${blockIdJs}', item.id, childIndex, 'down')"
                                                 :disabled="childIndex === ((item.children || []).length - 1)"
                                                 :class="childIndex === ((item.children || []).length - 1) ? 'opacity-50 cursor-not-allowed' : ''"
                                                 class="flex h-7 w-7 items-center justify-center bg-white rounded shadow hover:bg-gray-100" title="Nach unten">
@@ -121,7 +124,7 @@ export const AccordionBlock = {
                                 </template>
                                 <select
                                     x-show="addComponentsEnabled"
-                                    @change.stop="addChildToAccordionItem('${blockId}', item.id, $event.target.value); $event.target.value = ''"
+                                    @change.stop="addChildToAccordionItem('${blockIdJs}', item.id, $event.target.value); $event.target.value = ''"
                                     @click.stop
                                     class="px-3 py-1 text-sm border border-gray-300 rounded bg-white w-full"
                                 >
@@ -133,19 +136,19 @@ export const AccordionBlock = {
                             </div>
 
                             <div class="flex gap-2 pt-1">
-                                <button type="button" @click.stop="moveAccordionItem('${blockId}', itemIndex, 'up')"
+                                <button type="button" @click.stop="moveAccordionItem('${blockIdJs}', itemIndex, 'up')"
                                     :disabled="itemIndex === 0"
                                     :class="itemIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''"
                                     class="px-2 py-1 text-xs bg-gray-100 rounded hover:bg-gray-200">
                                     Nach oben
                                 </button>
-                                <button type="button" @click.stop="moveAccordionItem('${blockId}', itemIndex, 'down')"
+                                <button type="button" @click.stop="moveAccordionItem('${blockIdJs}', itemIndex, 'down')"
                                     :disabled="itemIndex === ((${scope}.accordionData?.items || []).length - 1)"
                                     :class="itemIndex === ((${scope}.accordionData?.items || []).length - 1) ? 'opacity-50 cursor-not-allowed' : ''"
                                     class="px-2 py-1 text-xs bg-gray-100 rounded hover:bg-gray-200">
                                     Nach unten
                                 </button>
-                                <button type="button" @click.stop="removeAccordionItem('${blockId}', item.id)"
+                                <button type="button" @click.stop="removeAccordionItem('${blockIdJs}', item.id)"
                                     :disabled="((${scope}.accordionData?.items || []).length <= 1)"
                                     :class="((${scope}.accordionData?.items || []).length <= 1) ? 'opacity-50 cursor-not-allowed' : ''"
                                     class="px-2 py-1 text-xs bg-red-50 text-red-600 rounded hover:bg-red-100">
@@ -157,7 +160,7 @@ export const AccordionBlock = {
                 </template>
 
                 <div class="p-3 bg-gray-50 border-t border-gray-200">
-                    <button type="button" @click.stop="addAccordionItem('${blockId}')"
+                    <button type="button" @click.stop="addAccordionItem('${blockIdJs}')"
                         class="px-3 py-1.5 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100">
                         + FAQ-Eintrag hinzufügen
                     </button>

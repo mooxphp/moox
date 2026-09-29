@@ -4,6 +4,7 @@
  */
 import { BLOCK_TYPES } from '../../block-types.js';
 import { ListManagement } from '../../../core/blocks/management.js';
+import { escapeHtmlAttribute, escapeJsSingleQuoted } from '../../../core/utils/format.js';
 
 export const ListBlock = {
     type: 'list',
@@ -34,7 +35,9 @@ export const ListBlock = {
     },
     
     renderListHTML(scope, data) {
-        const blockId = data.id || '';
+        const rawBlockId = data.id || '';
+        const blockId = escapeHtmlAttribute(rawBlockId);
+        const blockIdJs = escapeJsSingleQuoted(rawBlockId);
         const items = data.listData?.items || [];
         const itemsLength = items.length;
         const listStyle = data.listData?.listStyle || 'unordered';
@@ -61,16 +64,16 @@ export const ListBlock = {
                             contenteditable="true"
                             data-placeholder="Listen-Eintrag..."
                             x-init="$nextTick(() => { if (item.text !== undefined && item.text !== null) { $el.innerHTML = $sanitizeHtml(item.text || ''); } })"
-                            @input="updateListItemText('${blockId}', item.id, $event.target.innerHTML)"
-                            @blur="commitListItemText('${blockId}', item.id, $event.target.innerHTML)"
-                            @keydown.enter.prevent="addListItem('${blockId}', 'bottom')"
-                            @keydown.backspace="if (!$el.textContent.trim() && ${itemsLength} > 1) { $event.preventDefault(); removeListItem('${blockId}', itemIndex); }"
+                            @input="updateListItemText('${blockIdJs}', item.id, $event.target.innerHTML)"
+                            @blur="commitListItemText('${blockIdJs}', item.id, $event.target.innerHTML)"
+                            @keydown.enter.prevent="addListItem('${blockIdJs}', 'bottom')"
+                            @keydown.backspace="if (!$el.textContent.trim() && ${itemsLength} > 1) { $event.preventDefault(); removeListItem('${blockIdJs}', itemIndex); }"
                             @focus="initBlockContent($event.target, { content: item.text || '' })"
                         ></div>
                         <!-- Actions -->
                         <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button type="button"
-                                @click.stop="moveListItemUp('${blockId}', itemIndex)"
+                                @click.stop="moveListItemUp('${blockIdJs}', itemIndex)"
                                 :disabled="itemIndex === 0"
                                 :class="{'opacity-50 cursor-not-allowed': itemIndex === 0}"
                                 class="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded"
@@ -81,7 +84,7 @@ export const ListBlock = {
                                 </svg>
                             </button>
                             <button type="button"
-                                @click.stop="moveListItemDown('${blockId}', itemIndex)"
+                                @click.stop="moveListItemDown('${blockIdJs}', itemIndex)"
                                 :disabled="itemIndex === ${itemsLength > 0 ? itemsLength - 1 : 0}"
                                 :class="{'opacity-50 cursor-not-allowed': itemIndex === ${itemsLength > 0 ? itemsLength - 1 : 0}}"
                                 class="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded"
@@ -92,7 +95,7 @@ export const ListBlock = {
                                 </svg>
                             </button>
                             <button type="button"
-                                @click.stop="removeListItem('${blockId}', itemIndex)"
+                                @click.stop="removeListItem('${blockIdJs}', itemIndex)"
                                 :disabled="${itemsLength <= 1}"
                                 :class="{'opacity-50 cursor-not-allowed': ${itemsLength <= 1}}"
                                 class="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded"

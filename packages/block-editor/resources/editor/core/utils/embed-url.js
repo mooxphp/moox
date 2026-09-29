@@ -104,7 +104,9 @@ export function normalizeEmbedUrl(rawValue) {
         }
     }
 
-    // Generisches Embed: Alle http/https URLs erlauben.
-    // Hinweis: Manche Seiten blockieren iFrames via X-Frame-Options oder CSP.
-    return { ok: true, value: parsed.toString(), provider: 'generic' };
+    return {
+        ok: false,
+        value: '',
+        error: 'Nur YouTube- und Vimeo-URLs sind als Embed erlaubt.',
+    };
 }

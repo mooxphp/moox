@@ -4,6 +4,7 @@
  */
 import { BLOCK_TYPES } from '../../block-types.js';
 import { ChecklistManagement } from '../../../core/blocks/management.js';
+import { escapeHtmlAttribute, escapeJsSingleQuoted } from '../../../core/utils/format.js';
 
 export const ChecklistBlock = {
     type: 'checklist',
@@ -34,7 +35,9 @@ export const ChecklistBlock = {
     },
     
     renderChecklistHTML(scope, data) {
-        const blockId = data.id || '';
+        const rawBlockId = data.id || '';
+        const blockId = escapeHtmlAttribute(rawBlockId);
+        const blockIdJs = escapeJsSingleQuoted(rawBlockId);
         const items = data.checklistData?.items || [];
         const itemsLength = items.length;
         
@@ -50,7 +53,7 @@ export const ChecklistBlock = {
                         <input 
                             type="checkbox"
                             :checked="item.checked || false"
-                            @change="toggleChecklistItem('${blockId}', itemIndex)"
+                            @change="toggleChecklistItem('${blockIdJs}', itemIndex)"
                             @click.stop
                             class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
                         />
@@ -63,16 +66,16 @@ export const ChecklistBlock = {
                             contenteditable="true"
                             data-placeholder="Checkliste-Eintrag..."
                             x-init="$nextTick(() => { if (item.text !== undefined && item.text !== null) { $el.innerHTML = $sanitizeHtml(item.text || ''); } })"
-                            @input="updateChecklistItemText('${blockId}', item.id, $event.target.innerHTML)"
-                            @blur="commitChecklistItemText('${blockId}', item.id, $event.target.innerHTML)"
-                            @keydown.enter.prevent="addChecklistItem('${blockId}', 'bottom')"
-                            @keydown.backspace="if (!$el.textContent.trim() && ${itemsLength} > 1) { $event.preventDefault(); removeChecklistItem('${blockId}', itemIndex); }"
+                            @input="updateChecklistItemText('${blockIdJs}', item.id, $event.target.innerHTML)"
+                            @blur="commitChecklistItemText('${blockIdJs}', item.id, $event.target.innerHTML)"
+                            @keydown.enter.prevent="addChecklistItem('${blockIdJs}', 'bottom')"
+                            @keydown.backspace="if (!$el.textContent.trim() && ${itemsLength} > 1) { $event.preventDefault(); removeChecklistItem('${blockIdJs}', itemIndex); }"
                             @focus="initBlockContent($event.target, { content: item.text || '' })"
                         ></div>
                         <!-- Actions -->
                         <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button type="button"
-                                @click.stop="moveChecklistItemUp('${blockId}', itemIndex)"
+                                @click.stop="moveChecklistItemUp('${blockIdJs}', itemIndex)"
                                 :disabled="itemIndex === 0"
                                 :class="{'opacity-50 cursor-not-allowed': itemIndex === 0}"
                                 class="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded"
@@ -83,7 +86,7 @@ export const ChecklistBlock = {
                                 </svg>
                             </button>
                             <button type="button"
-                                @click.stop="moveChecklistItemDown('${blockId}', itemIndex)"
+                                @click.stop="moveChecklistItemDown('${blockIdJs}', itemIndex)"
                                 :disabled="itemIndex === ${itemsLength > 0 ? itemsLength - 1 : 0}"
                                 :class="{'opacity-50 cursor-not-allowed': itemIndex === ${itemsLength > 0 ? itemsLength - 1 : 0}}"
                                 class="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded"
@@ -94,7 +97,7 @@ export const ChecklistBlock = {
                                 </svg>
                             </button>
                             <button type="button"
-                                @click.stop="removeChecklistItem('${blockId}', itemIndex)"
+                                @click.stop="removeChecklistItem('${blockIdJs}', itemIndex)"
                                 :disabled="${itemsLength <= 1}"
                                 :class="{'opacity-50 cursor-not-allowed': ${itemsLength <= 1}}"
                                 class="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded"

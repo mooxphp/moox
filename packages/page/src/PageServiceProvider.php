@@ -20,7 +20,11 @@ class PageServiceProvider extends MooxServiceProvider
             ->name('page')
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasMigrations('create_pages_table', 'create_page_translations_table')
+            ->hasMigrations(
+                'create_pages_table',
+                'create_page_translations_table',
+                'convert_page_translation_content_to_blocks'
+            )
             ->hasCommands();
     }
 

@@ -18,6 +18,7 @@
         }
     ],
     "require": {
+        "moox/block-editor": "dev-main",
         "moox/core": "dev-main",
         "moox/localization": "dev-main",
         "moox/media": "dev-main",

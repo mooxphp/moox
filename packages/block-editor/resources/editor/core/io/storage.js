@@ -1,16 +1,9 @@
 // Storage and Import/Export Functions - als Objekt organisiert
 import { BlockManagement } from '../blocks/management.js';
 import { renderJSONBlocks } from '../render/json-renderer.js';
-import { BlockTypes } from '../../components/block-types.js';
+import { regenerateBlockIdsRecursive } from '../utils/block-ids.js';
 import { apiRequest, fetchTemplatesFromApi, normalizeTemplate } from './templates-api.js';
 import { loadThemesFromLocalStorage, saveThemesToLocalStorage } from './theme-local-storage.js';
-let generatedIdSequence = 0;
-
-function createGeneratedId(prefix = 'block') {
-    generatedIdSequence += 1;
-
-    return `${prefix}-${Date.now()}-${generatedIdSequence}-${Math.random().toString(36).slice(2, 8)}`;
-}
 
 function cloneJsonSerializable(value) {
     return JSON.parse(JSON.stringify(value));
@@ -52,145 +45,6 @@ function validateBlockArrayPayload(parsedBlocks) {
             throw new Error(`Block ${i + 1} fehlt 'id' oder 'type' Feld.`);
         }
     }
-}
-
-function assignGeneratedIdsToItems(items, prefix = 'item') {
-    if (!Array.isArray(items)) {
-        return items;
-    }
-
-    return items.map((item) => {
-        if (!item || typeof item !== 'object') {
-            return item;
-        }
-
-        return {
-            ...item,
-            id: createGeneratedId(prefix),
-        };
-    });
-}
-
-function regenerateBlockIdsRecursive(rawBlocks) {
-    if (!Array.isArray(rawBlocks)) {
-        return [];
-    }
-
-    const blocks = cloneJsonSerializable(rawBlocks);
-
-    const normalizeBlocks = (list) => list
-        .map((entry) => {
-            if (!entry || typeof entry !== 'object') {
-                return null;
-            }
-
-            const block = entry;
-            block.id = createGeneratedId('block');
-
-            if (BlockTypes.isColumnLikeBlock(block.type)) {
-                block.children = Array.isArray(block.children)
-                    ? block.children.map((column) => {
-                        if (!column || typeof column !== 'object') {
-                            return {
-                                id: createGeneratedId('col'),
-                                type: 'column',
-                                children: [],
-                            };
-                        }
-
-                        const normalizedColumn = {
-                            ...column,
-                            id: createGeneratedId('col'),
-                            type: 'column',
-                        };
-
-                        normalizedColumn.children = normalizeBlocks(
-                            Array.isArray(normalizedColumn.children) ? normalizedColumn.children : []
-                        );
-
-                        return normalizedColumn;
-                    })
-                    : [];
-            } else if (block.type === 'tabs' && block.tabsData && typeof block.tabsData === 'object') {
-                const tabsData = block.tabsData;
-                const previousActiveId = tabsData.activeTabId ?? null;
-                const tabIdMap = new Map();
-
-                tabsData.items = Array.isArray(tabsData.items)
-                    ? tabsData.items
-                        .map((item) => {
-                            if (!item || typeof item !== 'object') {
-                                return null;
-                            }
-
-                            const originalTabId = item.id ?? null;
-                            const newTabId = createGeneratedId('tab');
-
-                            if (originalTabId !== null && originalTabId !== undefined && originalTabId !== '') {
-                                tabIdMap.set(String(originalTabId), newTabId);
-                            }
-
-                            const normalizedItem = {
-                                ...item,
-                                id: newTabId,
-                            };
-
-                            normalizedItem.children = normalizeBlocks(
-                                Array.isArray(normalizedItem.children) ? normalizedItem.children : []
-                            );
-
-                            return normalizedItem;
-                        })
-                        .filter((item) => item !== null)
-                    : [];
-
-                if (previousActiveId !== null && previousActiveId !== undefined && tabIdMap.has(String(previousActiveId))) {
-                    tabsData.activeTabId = tabIdMap.get(String(previousActiveId));
-                } else {
-                    tabsData.activeTabId = tabsData.items[0]?.id ?? null;
-                }
-            } else if (Array.isArray(block.children)) {
-                block.children = normalizeBlocks(block.children);
-            }
-
-            if (block.tableData?.cells && Array.isArray(block.tableData.cells)) {
-                block.tableData.cells = block.tableData.cells.map((row) => {
-                    if (!Array.isArray(row)) {
-                        return [];
-                    }
-
-                    return row.map((cell) => {
-                        if (!cell || typeof cell !== 'object') {
-                            return cell;
-                        }
-
-                        const normalizedCell = {
-                            ...cell,
-                            id: createGeneratedId('cell'),
-                        };
-
-                        if (Array.isArray(normalizedCell.blocks)) {
-                            normalizedCell.blocks = normalizeBlocks(normalizedCell.blocks);
-                        }
-
-                        return normalizedCell;
-                    });
-                });
-            }
-
-            if (Array.isArray(block.checklistData?.items)) {
-                block.checklistData.items = assignGeneratedIdsToItems(block.checklistData.items);
-            }
-
-            if (Array.isArray(block.listData?.items)) {
-                block.listData.items = assignGeneratedIdsToItems(block.listData.items);
-            }
-
-            return block;
-        })
-        .filter((entry) => entry !== null);
-
-    return normalizeBlocks(blocks);
 }
 
 export const Storage = {
@@ -330,8 +184,9 @@ export const Storage = {
             throw new Error('Theme-Daten sind ungültig.');
         }
 
-        // Rendere alle Blöcke aus dem JSON (zentrale Funktion)
-        const renderedBlocks = renderJSONBlocks(parsedBlocks, blockIdCounter);
+        // Immer neue IDs — Theme-JSON darf keine attacker-kontrollierten IDs behalten.
+        const blocksWithFreshIds = regenerateBlockIdsRecursive(parsedBlocks);
+        const renderedBlocks = renderJSONBlocks(blocksWithFreshIds, blockIdCounter);
         
         blocks.splice(0, blocks.length, ...renderedBlocks);
         
@@ -443,8 +298,9 @@ export const Storage = {
                     // Validiere Block-Struktur
                     validateBlockArrayPayload(parsedBlocks);
 
-                    // Rendere alle Blöcke aus dem JSON (zentrale Funktion)
-                    const renderedBlocks = renderJSONBlocks(parsedBlocks, 0);
+                    // Immer neue IDs — Theme-Datei-Import darf keine attacker-kontrollierten IDs behalten.
+                    const blocksWithFreshIds = regenerateBlockIdsRecursive(parsedBlocks);
+                    const renderedBlocks = renderJSONBlocks(blocksWithFreshIds, 0);
 
                     // Extrahiere Theme-Namen aus Dateinamen
                     const filename = file.name.replace('.json', '');

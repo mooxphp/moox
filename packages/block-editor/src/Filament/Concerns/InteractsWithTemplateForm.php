@@ -22,6 +22,10 @@ trait InteractsWithTemplateForm
             $data['content'] = $sanitizer->sanitizeBlocks($data['content']);
         }
 
+        if (isset($data['name']) && is_string($data['name'])) {
+            $data['name'] = trim(strip_tags($data['name']));
+        }
+
         return $data;
     }
 

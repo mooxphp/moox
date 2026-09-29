@@ -92,3 +92,60 @@ it('sanitizes accordion question fields as html content', function (): void {
         ->and($question)->not->toContain('<script>')
         ->and($question)->toContain('Question');
 });
+
+it('sanitizes media url fields and rejects svg data urls', function (): void {
+    $sanitizer = new TemplateContentSanitizer;
+
+    $result = $sanitizer->sanitizeBlocks([
+        [
+            'imageUrl' => 'javascript:alert(1)',
+            'videoUrl' => 'https://example.com/video.mp4',
+            'videoPoster' => 'data:image/svg+xml,<svg></svg>',
+            'embedUrl' => 'https://www.youtube.com/embed/abc',
+            'linkText' => '<b>Click</b>',
+            'src' => 'data:image/png;base64,abc',
+        ],
+    ]);
+
+    expect($result[0]['imageUrl'])->toBe('')
+        ->and($result[0]['videoUrl'])->toBe('https://example.com/video.mp4')
+        ->and($result[0]['videoPoster'])->toBe('')
+        ->and($result[0]['embedUrl'])->toBe('https://www.youtube.com/embed/abc')
+        ->and($result[0]['linkText'])->toBe('Click')
+        ->and($result[0]['src'])->toBe('data:image/png;base64,abc');
+});
+
+it('strips unsafe characters from block ids', function (): void {
+    $sanitizer = new TemplateContentSanitizer;
+
+    $result = $sanitizer->sanitizeBlocks([
+        [
+            'id' => '"><img src=x onerror=alert(1)>',
+            'type' => 'paragraph',
+            'content' => '<p>Safe</p>',
+        ],
+    ]);
+
+    expect($result[0]['id'])->toBe('imgsrcxonerroralert1')
+        ->and($result[0]['id'])->not->toContain('"')
+        ->and($result[0]['id'])->not->toContain('<');
+});
+
+it('sanitizes children after unwrapping disallowed wrapper tags', function (): void {
+    $sanitizer = new TemplateContentSanitizer;
+
+    $result = $sanitizer->sanitizeBlocks([
+        [
+            'content' => '<svg><img src=x onerror=alert(1)></svg>',
+            'text' => '<math><img src=x onerror=alert(1)></math>',
+            'question' => '<custom-wrapper><p onclick="evil()">Q</p></custom-wrapper>',
+        ],
+    ]);
+
+    expect($result[0]['content'])->not->toContain('onerror')
+        ->and($result[0]['content'])->not->toContain('<svg')
+        ->and($result[0]['text'])->not->toContain('onerror')
+        ->and($result[0]['text'])->not->toContain('<math')
+        ->and($result[0]['question'])->not->toContain('onclick')
+        ->and($result[0]['question'])->toContain('Q');
+});

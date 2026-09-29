@@ -1,28 +1,6 @@
 import { getBlockComponent } from '../../components/blocks/index.js';
+import { escapeHtmlAttribute, escapeJsSingleQuoted } from '../utils/format.js';
 import { getChildrenSignature as buildChildrenSignature, getRenderSignature as buildRenderSignature } from './signature.js';
-
-function escapeHtmlAttribute(value) {
-    if (value === null || value === undefined) {
-        return '';
-    }
-
-    return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/'/g, '&#39;');
-}
-
-function escapeJsSingleQuoted(value) {
-    if (value === null || value === undefined) {
-        return '';
-    }
-
-    return String(value)
-        .replace(/\\/g, '\\\\')
-        .replace(/'/g, "\\'");
-}
 
 function normalizeDataBlockIdBindings(html, block = null) {
     if (typeof html !== 'string' || html.length === 0) {

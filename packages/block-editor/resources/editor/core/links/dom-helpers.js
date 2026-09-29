@@ -1,3 +1,6 @@
+import { createUniqueId } from '../utils/format.js';
+import { safeHrefUrl } from '../utils/dom.js';
+
 export function applyLinkUnderline(linkElement) {
     if (!linkElement || linkElement.tagName !== 'A') {
         return;
@@ -24,7 +27,7 @@ export function placeSelectionMarkers(range) {
         return null;
     }
 
-    const markerId = `link-marker-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const markerId = createUniqueId('link-marker');
     const startMarker = document.createElement('span');
     const endMarker = document.createElement('span');
 
@@ -96,7 +99,7 @@ export function createLinkFromRange(range, url, target) {
     }
 
     const link = document.createElement('a');
-    link.setAttribute('href', url);
+    link.setAttribute('href', safeHrefUrl(url));
     if (target && target !== '_self') {
         link.setAttribute('target', target);
     }

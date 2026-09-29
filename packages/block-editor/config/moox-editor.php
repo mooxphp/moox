@@ -46,5 +46,23 @@ return [
         |
         */
         'authorization' => null,
+
+        /*
+        |--------------------------------------------------------------------------
+        | Template Permissions
+        |--------------------------------------------------------------------------
+        |
+        | Used by TemplatePolicy when Spatie Permission is installed and the
+        | named permission exists in the database. Override names here if your
+        | host uses a different permission naming scheme.
+        |
+        */
+        'permissions' => [
+            'view_any' => 'ViewAny:Template',
+            'view' => 'View:Template',
+            'create' => 'Create:Template',
+            'update' => 'Update:Template',
+            'delete' => 'Delete:Template',
+        ],
     ],
 ];

@@ -27,4 +27,14 @@ class PageTranslation extends BaseDraftTranslationModel
             'author_type',
         ];
     }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function getCustomCasts(): array
+    {
+        return [
+            'content' => 'array',
+        ];
+    }
 }

@@ -129,14 +129,21 @@ class PageFactory extends Factory
 
     /**
      * Get localized content based on locale
+     *
+     * @return array<int, array<string, mixed>>
      */
-    private function getLocalizedContent(string $locale): string
+    private function getLocalizedContent(string $locale): array
     {
-        $content = $this->faker->paragraphs(rand(3, 8), true);
-
+        $paragraphs = $this->faker->paragraphs(rand(3, 8), true);
         $suffix = isset(self::LOCALES[$locale]) ? ' ('.self::LOCALES[$locale].' )' : '';
 
-        return $content.$suffix;
+        return [
+            [
+                'id' => (string) $this->faker->uuid(),
+                'type' => 'paragraph',
+                'content' => '<p>'.$paragraphs.$suffix.'</p>',
+            ],
+        ];
     }
 
     /**

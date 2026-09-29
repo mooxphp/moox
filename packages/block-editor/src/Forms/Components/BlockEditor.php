@@ -4,6 +4,7 @@ namespace Moox\BlockEditor\Forms\Components;
 
 use Closure;
 use Filament\Forms\Components\Field;
+use Moox\BlockEditor\Support\TemplateContentSanitizer;
 
 class BlockEditor extends Field
 {
@@ -91,11 +92,21 @@ class BlockEditor extends Field
                 return '[]';
             }
 
+            $blocks = $state;
+
             if (is_string($state)) {
-                return $state;
+                $decoded = json_decode($state, true);
+                $blocks = is_array($decoded) ? $decoded : null;
             }
 
-            return json_encode($state, JSON_UNESCAPED_UNICODE) ?: '[]';
+            if (! is_array($blocks)) {
+                return '[]';
+            }
+
+            /** @var TemplateContentSanitizer $sanitizer */
+            $sanitizer = app(TemplateContentSanitizer::class);
+
+            return json_encode($sanitizer->sanitizeBlocks($blocks), JSON_UNESCAPED_UNICODE) ?: '[]';
         });
     }
 

@@ -41,7 +41,7 @@ export function getNotificationTemplate() {
                     </svg>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium" x-html="notification.message"></p>
+                    <p class="text-sm font-medium" x-text="notification.message"></p>
                 </div>
                 <button type="button" @click.stop="hideNotification()"
                     class="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors">

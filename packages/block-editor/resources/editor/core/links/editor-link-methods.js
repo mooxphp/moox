@@ -1,4 +1,5 @@
 import { getRequiredTrimmedUrl } from '../input/url-input.js';
+import { isSafeAttributeUrl, safeHrefUrl } from '../utils/dom.js';
 import {
     buildLinkFollowConfirmModal as createLinkFollowConfirmModal,
 } from '../modals/confirm-builders.js';
@@ -115,6 +116,11 @@ export const editorLinkMethods = {
         }
 
         const url = urlInput.value;
+        if (!isSafeAttributeUrl('href', url)) {
+            this.showNotification('Bitte geben Sie eine gültige URL ein (z.B. https://example.com)', 'warning');
+            return;
+        }
+
         const target = this.linkModal.target;
 
         const handlers = {
@@ -169,7 +175,7 @@ export const editorLinkMethods = {
         const linkElement = this.getLinkElementFromRange(range);
 
         if (linkElement) {
-            linkElement.setAttribute('href', url);
+            linkElement.setAttribute('href', safeHrefUrl(url));
             applyLinkTargetHelper(linkElement, target);
             this.applyLinkUnderline(linkElement);
         } else {
@@ -201,7 +207,7 @@ export const editorLinkMethods = {
             return false;
         }
 
-        this.linkModal.element.setAttribute('href', url);
+        this.linkModal.element.setAttribute('href', safeHrefUrl(url));
         applyLinkTargetHelper(this.linkModal.element, target);
         this.applyLinkUnderline(this.linkModal.element);
 
@@ -364,6 +370,10 @@ export const editorLinkMethods = {
         return this.getLinkTypeFromUrl(url).icon;
     },
 
+    safeHref(url) {
+        return safeHrefUrl(url);
+    },
+
     // Rückwärtskompatibilität: Alte Funktionen als Wrapper
     openLinkSettingsModal(blockId) {
         this.openLinkModal('block', { blockId });
@@ -391,10 +401,17 @@ export const editorLinkMethods = {
             { linkUrl, linkText, linkTarget },
             {
                 onConfirm: () => {
+                    const safeUrl = safeHrefUrl(linkUrl);
+                    if (safeUrl === '#') {
+                        this.showNotification('Ungültige oder unsichere Link-URL', 'warning');
+                        this.closeConfirmModal();
+                        return;
+                    }
+
                     if (linkTarget === '_blank') {
-                        window.open(linkUrl, '_blank', 'noopener,noreferrer');
+                        window.open(safeUrl, '_blank', 'noopener,noreferrer');
                     } else {
-                        window.location.href = linkUrl;
+                        window.location.href = safeUrl;
                     }
                     this.closeConfirmModal();
                 },

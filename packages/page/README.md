@@ -17,7 +17,7 @@ Draft is a publishable Moox Entity that can be used to create and manage Pages, 
 -   Title with Slug fields
 -   Active field (Toggle)
 -   Description field (Editor)
--   Content field (Markdown)
+-   Content field (Block Editor)
 -   Data field (Key-Value)
 -   Image field (Media)
 -   Author field (User)

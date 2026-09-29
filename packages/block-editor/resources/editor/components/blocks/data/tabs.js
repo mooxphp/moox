@@ -4,6 +4,7 @@
  */
 import { BLOCK_TYPES } from '../../block-types.js';
 import { TabsManagement } from '../../../core/blocks/management.js';
+import { escapeHtmlAttribute, escapeJsSingleQuoted } from '../../../core/utils/format.js';
 
 export const TabsBlock = {
     type: 'tabs',
@@ -30,7 +31,9 @@ export const TabsBlock = {
     },
 
     renderTabsHTML(scope, data) {
-        const blockId = data.id || '';
+        const rawBlockId = data.id || '';
+        const blockId = escapeHtmlAttribute(rawBlockId);
+        const blockIdJs = escapeJsSingleQuoted(rawBlockId);
         return `
             <div x-show="${scope}.type === 'tabs'"
                  data-block-id="${blockId}"
@@ -40,14 +43,14 @@ export const TabsBlock = {
                 <div class="flex flex-wrap items-center gap-2 p-2 border-b border-gray-200 bg-gray-50">
                     <template x-for="(tab, tabIndex) in (${scope}.tabsData?.items || [])" :key="tab.id">
                         <button type="button"
-                            @click.stop="setActiveTab('${blockId}', tab.id)"
+                            @click.stop="setActiveTab('${blockIdJs}', tab.id)"
                             :class="(${scope}.tabsData?.activeTabId === tab.id) ? 'bg-white text-blue-700 border-blue-200' : 'bg-gray-100 text-gray-700 border-transparent hover:bg-gray-200'"
                             class="px-3 py-1.5 rounded-md border text-sm transition-colors">
                             <span x-text="tab.title || ('Tab ' + (tabIndex + 1))"></span>
                         </button>
                     </template>
                     <button type="button"
-                        @click.stop="addTabItem('${blockId}')"
+                        @click.stop="addTabItem('${blockIdJs}')"
                         class="px-2.5 py-1.5 rounded-md border border-dashed border-gray-300 text-gray-600 text-sm hover:bg-gray-100 transition-colors"
                         title="Tab hinzufügen">
                         +
@@ -60,12 +63,12 @@ export const TabsBlock = {
                             <div class="flex items-center gap-2">
                                 <input type="text"
                                     :value="tab.title || ''"
-                                    @input="updateTabTitle('${blockId}', tab.id, $event.target.value)"
-                                    @blur="commitTabTitle('${blockId}', tab.id, $event.target.value)"
+                                    @input="updateTabTitle('${blockIdJs}', tab.id, $event.target.value)"
+                                    @blur="commitTabTitle('${blockIdJs}', tab.id, $event.target.value)"
                                     class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Tab-Titel...">
                                 <button type="button"
-                                    @click.stop="removeTabItem('${blockId}', tab.id)"
+                                    @click.stop="removeTabItem('${blockIdJs}', tab.id)"
                                     :disabled="(${scope}.tabsData?.items || []).length <= 1"
                                     :class="{ 'opacity-50 cursor-not-allowed': ((${scope}.tabsData?.items || []).length <= 1) }"
                                     class="p-2 rounded hover:bg-red-50 text-red-600"
@@ -109,13 +112,13 @@ export const TabsBlock = {
                                             </div>
                                         </div>
                                         <div :class="selectedBlockId === child.id ? 'opacity-100' : ''" class="absolute -right-20 top-1/2 -translate-y-1/2 flex items-center gap-2 opacity-0 transition-opacity z-10">
-                                            <button type="button" @click.stop="moveTabChild('${blockId}', tab.id, childIndex, 'up')"
+                                            <button type="button" @click.stop="moveTabChild('${blockIdJs}', tab.id, childIndex, 'up')"
                                                 :disabled="childIndex === 0"
                                                 :class="childIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''"
                                                 class="flex h-7 w-7 items-center justify-center bg-white rounded shadow hover:bg-gray-100" title="Nach oben">
                                                 ↑
                                             </button>
-                                            <button type="button" @click.stop="moveTabChild('${blockId}', tab.id, childIndex, 'down')"
+                                            <button type="button" @click.stop="moveTabChild('${blockIdJs}', tab.id, childIndex, 'down')"
                                                 :disabled="childIndex === ((tab.children || []).length - 1)"
                                                 :class="childIndex === ((tab.children || []).length - 1) ? 'opacity-50 cursor-not-allowed' : ''"
                                                 class="flex h-7 w-7 items-center justify-center bg-white rounded shadow hover:bg-gray-100" title="Nach unten">
@@ -134,7 +137,7 @@ export const TabsBlock = {
 
                                 <select
                                     x-show="addComponentsEnabled"
-                                    @change.stop="addChildToTab('${blockId}', tab.id, $event.target.value); $event.target.value = ''"
+                                    @change.stop="addChildToTab('${blockIdJs}', tab.id, $event.target.value); $event.target.value = ''"
                                     @click.stop
                                     class="px-3 py-1 text-sm border border-gray-300 rounded bg-white w-full"
                                 >

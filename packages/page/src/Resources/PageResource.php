@@ -4,7 +4,6 @@ namespace Moox\Page\Resources;
 
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
@@ -16,6 +15,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Unique;
+use Moox\BlockEditor\Forms\Components\BlockEditor;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
@@ -95,7 +95,7 @@ class PageResource extends BaseDraftResource
 
                                         return $rule;
                                     },
-                                    'table' => 'draft_translations',
+                                    'table' => 'page_translations',
                                     'column' => 'slug',
                                 ]
                             ),
@@ -105,8 +105,9 @@ class PageResource extends BaseDraftResource
                                 ->label(__('core::core.active')),
                             RichEditor::make('description')
                                 ->label(__('core::core.description')),
-                            MarkdownEditor::make('content')
-                                ->label(__('core::core.content')),
+                            BlockEditor::make('content')
+                                ->label(__('core::core.content'))
+                                ->columnSpanFull(),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
@@ -171,7 +172,17 @@ class PageResource extends BaseDraftResource
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('content')
-                    ->limit(50)
+                    ->formatStateUsing(function (mixed $state): string {
+                        if (blank($state)) {
+                            return '';
+                        }
+
+                        $json = is_string($state)
+                            ? $state
+                            : (json_encode($state, JSON_UNESCAPED_UNICODE) ?: '');
+
+                        return str($json)->limit(50)->toString();
+                    })
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('author.name')
                     ->label('Author')

@@ -1,0 +1,76 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        if (! Schema::hasTable('page_translations') || ! Schema::hasColumn('page_translations', 'content')) {
+            return;
+        }
+
+        $rows = DB::table('page_translations')->select(['id', 'content'])->orderBy('id')->get();
+
+        foreach ($rows as $row) {
+            $blocks = $this->normalizeContent($row->content);
+
+            DB::table('page_translations')->where('id', $row->id)->update([
+                'content' => json_encode($blocks, JSON_UNESCAPED_UNICODE),
+            ]);
+        }
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        //
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function normalizeContent(mixed $content): array
+    {
+        if ($content === null || $content === '') {
+            return [];
+        }
+
+        $decoded = $content;
+
+        if (is_string($content)) {
+            $json = json_decode($content, true);
+            $decoded = json_last_error() === JSON_ERROR_NONE ? $json : $content;
+        }
+
+        if (is_array($decoded) && array_is_list($decoded)) {
+            $looksLikeBlocks = $decoded === [] || (isset($decoded[0]) && is_array($decoded[0]));
+
+            if ($looksLikeBlocks) {
+                return $decoded;
+            }
+        }
+
+        $text = is_string($decoded) ? $decoded : (is_scalar($decoded) ? (string) $decoded : '');
+
+        if (trim($text) === '') {
+            return [];
+        }
+
+        return [
+            [
+                'id' => (string) Str::uuid(),
+                'type' => 'paragraph',
+                'content' => $text,
+            ],
+        ];
+    }
+};

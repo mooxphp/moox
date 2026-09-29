@@ -96,9 +96,9 @@ export function getLinkModalTemplate() {
                             </label>
                             <div
                                 class="border border-gray-300 rounded-lg p-4 bg-gray-50 min-h-[60px] flex items-center">
-                                <a x-show="linkModal.url && linkModal.url.trim() !== ''" :href="linkModal.url"
+                                <a x-show="linkModal.url && linkModal.url.trim() !== ''" :href="safeHref(linkModal.url)"
                                     :target="linkModal.target || '_blank'"
-                                    class="text-blue-600 hover:text-blue-800 hover:underline" @click.stop>
+                                    class="text-blue-600 hover:text-blue-800 hover:underline" @click.prevent>
                                     <span
                                         x-text="(linkModal.linkText && linkModal.linkText.trim() !== '') ? linkModal.linkText : (linkModal.url || 'Keine URL eingegeben')"></span>
                                 </a>

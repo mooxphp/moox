@@ -4,6 +4,7 @@
  */
 import { BLOCK_TYPES } from '../../block-types.js';
 import { TableManagement } from '../../../core/blocks/management.js';
+import { escapeHtmlAttribute, escapeJsSingleQuoted } from '../../../core/utils/format.js';
 
 export const TableBlock = {
     type: 'table',
@@ -34,7 +35,9 @@ export const TableBlock = {
     },
     
     renderTableHTML(scope, data) {
-        const blockId = data.id || '';
+        const rawBlockId = data.id || '';
+        const blockId = escapeHtmlAttribute(rawBlockId);
+        const blockIdJs = escapeJsSingleQuoted(rawBlockId);
         
         return `
             <div x-show="${scope}.type === 'table'" class="overflow-x-auto">
@@ -68,24 +71,24 @@ export const TableBlock = {
                                                         <div class="cellblock-content" x-html="renderBlock(cellBlock)"
                                                              x-init="$nextTick(() => window.Alpine && window.Alpine.initTree($el))"></div>
                                                         <div class="absolute right-0 top-0 opacity-0 group-hover/cb:opacity-100 flex gap-0.5 text-xs">
-                                                            <button type="button" @click.stop="addBlockInTableCellAfter('${blockId}', cell.id, bi)" title="Block einfügen">+</button>
-                                                            <button type="button" @click.stop="removeBlockFromTableCell('${blockId}', cell.id, bi)" title="Entfernen">×</button>
-                                                            <button type="button" @click.stop="moveBlockInTableCell('${blockId}', cell.id, bi, 'up')" :disabled="bi === 0">↑</button>
-                                                            <button type="button" @click.stop="moveBlockInTableCell('${blockId}', cell.id, bi, 'down')" :disabled="bi === (cell.blocks || []).length - 1">↓</button>
+                                                            <button type="button" @click.stop="addBlockInTableCellAfter('${blockIdJs}', cell.id, bi)" title="Block einfügen">+</button>
+                                                            <button type="button" @click.stop="removeBlockFromTableCell('${blockIdJs}', cell.id, bi)" title="Entfernen">×</button>
+                                                            <button type="button" @click.stop="moveBlockInTableCell('${blockIdJs}', cell.id, bi, 'up')" :disabled="bi === 0">↑</button>
+                                                            <button type="button" @click.stop="moveBlockInTableCell('${blockIdJs}', cell.id, bi, 'down')" :disabled="bi === (cell.blocks || []).length - 1">↓</button>
                                                         </div>
                                                     </div>
                                                 </template>
-                                                <button type="button" @click="addBlockToTableCell('${blockId}', cell.id, 'paragraph')" class="text-xs text-gray-500 hover:text-blue-600">+ Block</button>
+                                                <button type="button" @click="addBlockToTableCell('${blockIdJs}', cell.id, 'paragraph')" class="text-xs text-gray-500 hover:text-blue-600">+ Block</button>
                                             </div>
                                         </template>
                                         <template x-if="!(cell.blocks || []).length">
                                             <div contenteditable="true" class="min-h-[1.5rem] outline-none"
                                                 x-init="$nextTick(() => { if (cell.content !== undefined && cell.content !== null) $el.innerHTML = $sanitizeHtml(cell.content || ''); })"
                                                 x-effect="if (cell.content !== undefined && cell.content !== null && document.activeElement !== $el && $el.innerHTML !== $sanitizeHtml(cell.content || '')) { $el.innerHTML = $sanitizeHtml(cell.content || ''); }"
-                                                @input="updateTableCellContent('${blockId}', cell.id, $event.target.innerHTML)"
-                                                @blur="commitTableCellContent('${blockId}', cell.id, $event.target.innerHTML)"
-                                                @focus="selectBlock('${blockId}'); initTableCellContent($event.target, cell)"
-                                                @keydown="handleTableCellTabNavigation($event, '${blockId}', rowIndex, colIndex, 'header')"
+                                                @input="updateTableCellContent('${blockIdJs}', cell.id, $event.target.innerHTML)"
+                                                @blur="commitTableCellContent('${blockIdJs}', cell.id, $event.target.innerHTML)"
+                                                @focus="selectBlock('${blockIdJs}'); initTableCellContent($event.target, cell)"
+                                                @keydown="handleTableCellTabNavigation($event, '${blockIdJs}', rowIndex, colIndex, 'header')"
                                             ></div>
                                         </template>
                                     </th>
@@ -118,24 +121,24 @@ export const TableBlock = {
                                                         <div class="cellblock-content" x-html="renderBlock(cellBlock)"
                                                              x-init="$nextTick(() => window.Alpine && window.Alpine.initTree($el))"></div>
                                                         <div class="absolute right-0 top-0 opacity-0 group-hover/cb:opacity-100 flex gap-0.5 text-xs">
-                                                            <button type="button" @click.stop="addBlockInTableCellAfter('${blockId}', cell.id, bi)" title="Block einfügen">+</button>
-                                                            <button type="button" @click.stop="removeBlockFromTableCell('${blockId}', cell.id, bi)" title="Entfernen">×</button>
-                                                            <button type="button" @click.stop="moveBlockInTableCell('${blockId}', cell.id, bi, 'up')" :disabled="bi === 0">↑</button>
-                                                            <button type="button" @click.stop="moveBlockInTableCell('${blockId}', cell.id, bi, 'down')" :disabled="bi === (cell.blocks || []).length - 1">↓</button>
+                                                            <button type="button" @click.stop="addBlockInTableCellAfter('${blockIdJs}', cell.id, bi)" title="Block einfügen">+</button>
+                                                            <button type="button" @click.stop="removeBlockFromTableCell('${blockIdJs}', cell.id, bi)" title="Entfernen">×</button>
+                                                            <button type="button" @click.stop="moveBlockInTableCell('${blockIdJs}', cell.id, bi, 'up')" :disabled="bi === 0">↑</button>
+                                                            <button type="button" @click.stop="moveBlockInTableCell('${blockIdJs}', cell.id, bi, 'down')" :disabled="bi === (cell.blocks || []).length - 1">↓</button>
                                                         </div>
                                                     </div>
                                                 </template>
-                                                <button type="button" @click="addBlockToTableCell('${blockId}', cell.id, 'paragraph')" class="text-xs text-gray-500 hover:text-blue-600">+ Block</button>
+                                                <button type="button" @click="addBlockToTableCell('${blockIdJs}', cell.id, 'paragraph')" class="text-xs text-gray-500 hover:text-blue-600">+ Block</button>
                                             </div>
                                         </template>
                                         <template x-if="!(cell.blocks || []).length">
                                             <div contenteditable="true" class="min-h-[1.5rem] outline-none"
                                                 x-init="$nextTick(() => { if (cell.content !== undefined && cell.content !== null) $el.innerHTML = $sanitizeHtml(cell.content || ''); })"
                                                 x-effect="if (cell.content !== undefined && cell.content !== null && document.activeElement !== $el && $el.innerHTML !== $sanitizeHtml(cell.content || '')) { $el.innerHTML = $sanitizeHtml(cell.content || ''); }"
-                                                @input="updateTableCellContent('${blockId}', cell.id, $event.target.innerHTML)"
-                                                @blur="commitTableCellContent('${blockId}', cell.id, $event.target.innerHTML)"
-                                                @focus="selectBlock('${blockId}'); initTableCellContent($event.target, cell)"
-                                                @keydown="handleTableCellTabNavigation($event, '${blockId}', rowIndex, colIndex, 'body')"
+                                                @input="updateTableCellContent('${blockIdJs}', cell.id, $event.target.innerHTML)"
+                                                @blur="commitTableCellContent('${blockIdJs}', cell.id, $event.target.innerHTML)"
+                                                @focus="selectBlock('${blockIdJs}'); initTableCellContent($event.target, cell)"
+                                                @keydown="handleTableCellTabNavigation($event, '${blockIdJs}', rowIndex, colIndex, 'body')"
                                             ></div>
                                         </template>
                                     </td>
@@ -168,24 +171,24 @@ export const TableBlock = {
                                                         <div class="cellblock-content" x-html="renderBlock(cellBlock)"
                                                              x-init="$nextTick(() => window.Alpine && window.Alpine.initTree($el))"></div>
                                                         <div class="absolute right-0 top-0 opacity-0 group-hover/cb:opacity-100 flex gap-0.5 text-xs">
-                                                            <button type="button" @click.stop="addBlockInTableCellAfter('${blockId}', cell.id, bi)" title="Block einfügen">+</button>
-                                                            <button type="button" @click.stop="removeBlockFromTableCell('${blockId}', cell.id, bi)" title="Entfernen">×</button>
-                                                            <button type="button" @click.stop="moveBlockInTableCell('${blockId}', cell.id, bi, 'up')" :disabled="bi === 0">↑</button>
-                                                            <button type="button" @click.stop="moveBlockInTableCell('${blockId}', cell.id, bi, 'down')" :disabled="bi === (cell.blocks || []).length - 1">↓</button>
+                                                            <button type="button" @click.stop="addBlockInTableCellAfter('${blockIdJs}', cell.id, bi)" title="Block einfügen">+</button>
+                                                            <button type="button" @click.stop="removeBlockFromTableCell('${blockIdJs}', cell.id, bi)" title="Entfernen">×</button>
+                                                            <button type="button" @click.stop="moveBlockInTableCell('${blockIdJs}', cell.id, bi, 'up')" :disabled="bi === 0">↑</button>
+                                                            <button type="button" @click.stop="moveBlockInTableCell('${blockIdJs}', cell.id, bi, 'down')" :disabled="bi === (cell.blocks || []).length - 1">↓</button>
                                                         </div>
                                                     </div>
                                                 </template>
-                                                <button type="button" @click="addBlockToTableCell('${blockId}', cell.id, 'paragraph')" class="text-xs text-gray-500 hover:text-blue-600">+ Block</button>
+                                                <button type="button" @click="addBlockToTableCell('${blockIdJs}', cell.id, 'paragraph')" class="text-xs text-gray-500 hover:text-blue-600">+ Block</button>
                                             </div>
                                         </template>
                                         <template x-if="!(cell.blocks || []).length">
                                             <div contenteditable="true" class="min-h-[1.5rem] outline-none"
                                                 x-init="$nextTick(() => { if (cell.content !== undefined && cell.content !== null) $el.innerHTML = $sanitizeHtml(cell.content || ''); })"
                                                 x-effect="if (cell.content !== undefined && cell.content !== null && document.activeElement !== $el && $el.innerHTML !== $sanitizeHtml(cell.content || '')) { $el.innerHTML = $sanitizeHtml(cell.content || ''); }"
-                                                @input="updateTableCellContent('${blockId}', cell.id, $event.target.innerHTML)"
-                                                @blur="commitTableCellContent('${blockId}', cell.id, $event.target.innerHTML)"
-                                                @focus="selectBlock('${blockId}'); initTableCellContent($event.target, cell)"
-                                                @keydown="handleTableCellTabNavigation($event, '${blockId}', rowIndex, colIndex, 'footer')"
+                                                @input="updateTableCellContent('${blockIdJs}', cell.id, $event.target.innerHTML)"
+                                                @blur="commitTableCellContent('${blockIdJs}', cell.id, $event.target.innerHTML)"
+                                                @focus="selectBlock('${blockIdJs}'); initTableCellContent($event.target, cell)"
+                                                @keydown="handleTableCellTabNavigation($event, '${blockIdJs}', rowIndex, colIndex, 'footer')"
                                             ></div>
                                         </template>
                                     </td>

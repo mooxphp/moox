@@ -1,38 +1,10 @@
-function updateBlockIds(block, baseTime, state, parentNewId = null) {
-    const isBlockId = /^block-\d+-\d+$/.test(block.id) || /^\d+$/.test(block.id);
+import { regenerateBlockIdsRecursive } from '../utils/block-ids.js';
 
-    if (isBlockId) {
-        const newId = String(baseTime + state.idCounter++);
-        block.id = newId;
-        if (block.children && Array.isArray(block.children)) {
-            block.children.forEach((child) => updateBlockIds(child, baseTime, state, newId));
-        }
-        return;
-    }
-
-    if (block.id.startsWith('col-') && parentNewId !== null) {
-        const parts = block.id.split('-');
-        const columnIndex = parts[parts.length - 1];
-        block.id = `col-${parentNewId}-${columnIndex}`;
-        if (block.children && Array.isArray(block.children)) {
-            block.children.forEach((child) => updateBlockIds(child, baseTime, state, parentNewId));
-        }
-        return;
-    }
-
-    if (block.children && Array.isArray(block.children)) {
-        block.children.forEach((child) => updateBlockIds(child, baseTime, state, parentNewId));
-    }
-}
-
-export function cloneAndRemapThemeBlocks(parsedBlocks, baseTime = Date.now()) {
-    const state = { idCounter: 0 };
-
-    return parsedBlocks.map((block) => {
-        const newBlock = JSON.parse(JSON.stringify(block));
-        updateBlockIds(newBlock, baseTime, state);
-        return newBlock;
-    });
+/**
+ * Theme-Blöcke klonen und alle IDs neu vergeben (keine Legacy-IDs behalten).
+ */
+export function cloneAndRemapThemeBlocks(parsedBlocks) {
+    return regenerateBlockIdsRecursive(parsedBlocks);
 }
 
 export function getThemeBlocksByName(themes, themeName) {

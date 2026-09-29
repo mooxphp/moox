@@ -1,16 +1,9 @@
 import { BLOCK_TYPES } from '../../components/block-types.js';
 
-function decodeEntities(text) {
-    const textarea = document.createElement('textarea');
-    textarea.innerHTML = text;
-    return textarea.value;
-}
-
 function parseJsonCandidates(value) {
-    const trimmed = value.trim();
-    const decoded = decodeEntities(trimmed).trim();
-
-    return decoded !== trimmed ? [trimmed, decoded] : [trimmed];
+    // data-* Attribute werden vom Browser bereits entity-decoded gelesen;
+    // kein textarea.innerHTML-Sink für Entity-Decode.
+    return [String(value ?? '').trim()];
 }
 
 function parseBooleanAttribute(rootElement, datasetKey, attributeName, defaultValue) {

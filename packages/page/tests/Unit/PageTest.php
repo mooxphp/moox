@@ -21,7 +21,9 @@ test('draft can be created with real data in different languages', function () {
         'slug' => 'english-title',
         'permalink' => 'https://example.com/permalink',
         'description' => 'English description',
-        'content' => 'English content here',
+        'content' => [
+            ['id' => 'en-1', 'type' => 'paragraph', 'content' => 'English content here'],
+        ],
         'author_id' => 1,
         'author_type' => $user::class,
     ]);
@@ -31,7 +33,9 @@ test('draft can be created with real data in different languages', function () {
         'slug' => 'deutscher-titel',
         'permalink' => 'https://example.com/permalink-de',
         'description' => 'Deutsche Beschreibung',
-        'content' => 'Deutscher Inhalt hier',
+        'content' => [
+            ['id' => 'de-1', 'type' => 'paragraph', 'content' => 'Deutscher Inhalt hier'],
+        ],
         'author_id' => 1,
         'author_type' => $user::class,
     ]);
@@ -40,7 +44,9 @@ test('draft can be created with real data in different languages', function () {
         'slug' => 'español-titel',
         'permalink' => 'https://example.com/permalink-es',
         'description' => 'Español Beschreibung',
-        'content' => 'Español Inhalt hier',
+        'content' => [
+            ['id' => 'es-1', 'type' => 'paragraph', 'content' => 'Español Inhalt hier'],
+        ],
         'author_id' => 1,
         'author_type' => $user::class,
     ]);
@@ -56,7 +62,9 @@ test('draft can be created with real data in different languages', function () {
     expect($page->title)->toBe('English Title');
     expect($page->slug)->toBe('english-title');
     expect($page->description)->toBe('English description');
-    expect($page->content)->toBe('English content here');
+    expect($page->content)->toBe([
+        ['id' => 'en-1', 'type' => 'paragraph', 'content' => 'English content here'],
+    ]);
     expect($page->author_id)->toBe(1);
     expect($page->author_type)->toBe($user::class);
     expect($page->hasTranslation('en'))->toBeTrue();
@@ -75,9 +83,15 @@ test('draft can be created with real data in different languages', function () {
     expect($page->translate('en')->description)->toBe('English description');
     expect($page->translate('de')->description)->toBe('Deutsche Beschreibung');
     expect($page->translate('es')->description)->toBe('Español Beschreibung');
-    expect($page->translate('en')->content)->toBe('English content here');
-    expect($page->translate('de')->content)->toBe('Deutscher Inhalt hier');
-    expect($page->translate('es')->content)->toBe('Español Inhalt hier');
+    expect($page->translate('en')->content)->toBe([
+        ['id' => 'en-1', 'type' => 'paragraph', 'content' => 'English content here'],
+    ]);
+    expect($page->translate('de')->content)->toBe([
+        ['id' => 'de-1', 'type' => 'paragraph', 'content' => 'Deutscher Inhalt hier'],
+    ]);
+    expect($page->translate('es')->content)->toBe([
+        ['id' => 'es-1', 'type' => 'paragraph', 'content' => 'Español Inhalt hier'],
+    ]);
     expect($page->translate('en')->author_id)->toBe(1);
     expect($page->translate('de')->author_id)->toBe(1);
     expect($page->translate('es')->author_id)->toBe(1);

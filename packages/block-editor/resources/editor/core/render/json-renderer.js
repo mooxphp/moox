@@ -2,9 +2,10 @@
 import { BlockComponents, getBlockComponent } from '../../components/blocks/index.js';
 import { BlockManagement } from '../blocks/management.js';
 import { BLOCK_TYPES, BlockTypes } from '../../components/block-types.js';
+import { createUniqueId } from '../utils/format.js';
 
 function createRendererId(prefix) {
-    return `${prefix}-${Date.now()}-${Math.random()}`;
+    return createUniqueId(prefix);
 }
 
 function renderChildBlock(child, blockIdCounter) {
