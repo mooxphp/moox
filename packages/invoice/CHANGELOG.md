@@ -4,6 +4,7 @@
 
 ### Added
 - Nullable indexed `supplier_number` on invoices (EN 16931 BT-29 seller identifier). Flows through `InvoiceDraft` / `InvoiceBuilder` / model / create-table stub; migration stub `add_supplier_number_to_invoices_table` (hosts must publish/run).
+- Nullable `preceding_invoices` (json) on invoices for the EN 16931 preceding invoice reference (BG-3: list of `{number, date}`, BT-25/BT-26). `InvoiceDraft::$preceding_invoices` (default `[]`), persisted by `InvoiceBuilder`, cast as array on the model. Migration stub `add_preceding_invoices_to_invoices_table`; hosts must publish/run it.
 - Nullable `vat_category` on invoices (`InvoiceDraft` / `InvoiceBuilder` / model / create-table stub) for the EN 16931 VAT category stamp (BT-118).
 
 ### Changed

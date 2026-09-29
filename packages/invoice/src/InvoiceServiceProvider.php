@@ -21,6 +21,7 @@ class InvoiceServiceProvider extends MooxServiceProvider
                 'convert_delivery_json_to_party_shape',
                 'add_document_versioning_to_invoices_table',
                 'add_vat_category_to_invoices_table',
+                'add_preceding_invoices_to_invoices_table',
                 'add_supplier_number_to_invoices_table',
             ])
             ->hasCommands();

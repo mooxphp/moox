@@ -83,4 +83,11 @@ interface ZugferdInvoice
 
     /** @var list<string> */
     public array $documentNotes { get; }
+
+    /**
+     * BG-3 preceding invoice references: BT-25 number, BT-26 issue date (Y-m-d).
+     *
+     * @var list<array{number: string, date: ?string}>
+     */
+    public array $precedingInvoices { get; }
 }

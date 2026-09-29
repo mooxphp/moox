@@ -217,6 +217,7 @@ class ZugferdConverter
         $this->setSeller($document, $invoice);
         $this->setBuyer($document, $invoice);
         $this->setTradeReferences($document, $invoice);
+        $this->setPrecedingInvoices($document, $invoice);
         $this->setDelivery($document, $invoice);
         if (trim($invoice->vatCategoryCode) === '') {
             throw new IncompleteInvoiceException('Missing required field: vatCategoryCode (BT-118).');
@@ -250,6 +251,25 @@ class ZugferdConverter
     {
         foreach ($invoice->documentNotes as $note) {
             $doc->addDocumentNote($note);
+        }
+    }
+
+    /**
+     * BG-3: one InvoiceReferencedDocument per preceding invoice (BT-25, optional BT-26).
+     */
+    private function setPrecedingInvoices(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
+    {
+        foreach ($invoice->precedingInvoices as $reference) {
+            $number = trim($reference['number']);
+            if ($number === '') {
+                continue;
+            }
+
+            $date = $reference['date'] !== null
+                ? (\DateTime::createFromFormat('!Y-m-d', $reference['date']) ?: null)
+                : null;
+
+            $doc->addDocumentInvoiceReferencedDocument($number, null, $date);
         }
     }
 

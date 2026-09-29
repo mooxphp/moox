@@ -4,6 +4,7 @@
 
 ### Added
 - `ZugferdInvoice` gains `?string $supplierNumber` (BT-29). **Breaking for custom implementations.** `ZugferdConverter` emits `addDocumentSellerId` when non-empty (trimmed); omits when null/empty; no scheme ID.
+- `ZugferdInvoice` contract gains `array $precedingInvoices` (`list<array{number, date}>`, BG-3: BT-25 number, BT-26 issue date). **Breaking for custom implementations of the contract.** `ZugferdConverter` emits one `ram:InvoiceReferencedDocument` (IssuerAssignedID + optional FormattedIssueDateTime) per entry.
 - `ShipToPartyEquality`: ship-to equals buyer when case-insensitive trimmed names match and postal fingerprints match (street, `addressLine2`/street2, postal code, country). City is **not** in the fingerprint.
 - `ZugferdConverter` emission (ADR 0020): omit BT-70 / BG-15 when ship-to equals buyer; keep BT-72; VAT category **K** still emits full BG-15 (buyer postal acceptable when empty) for BR-IC-12 / BR-IC-11. Promote one shared distinct line ship-to to document BG-13 when the header is empty; otherwise divergent line parties, different PO document numbers, and non-common despatch refs → BT-127 notes.
 - Line contracts: `itemAttributes` / `itemClassifications` → BG-32 / BT-158; trade refs BT-13 (`purchaseOrderReference`), BT-16 (`despatchAdviceReference`, with common line DN fallback), BT-132 via `purchaseOrderLineReference`; line allowance/charges.

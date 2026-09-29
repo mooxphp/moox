@@ -192,6 +192,7 @@ The `Invoice` model (`Moox\Invoice\Models\Invoice`) stores the invoice header. I
 -   `payment_terms` (text, nullable) - Payment terms free text (EN 16931 **BT-20**)
 -   `shipping_method` (string, nullable) - Shipping / delivery method as shown on the document
 -   `delivery_terms` (string, nullable) - Delivery terms / freight bearer (e.g. ex works; free text; serialized as note in e-billing / ZUGFeRD layer; not payment terms)
+-   `preceding_invoices` (json, nullable) - Preceding invoice references (EN 16931 **BG-3**: list of `{number, date}`, BT-25/BT-26)
 -   `seller` (json, nullable) - Seller party snapshot; cast to `Party` via `PartyCast`
 -   `buyer` (json, nullable) - Buyer party snapshot; cast to `Party` via `PartyCast`
 -   `delivery` (json, nullable) - Consignee party (name + address); cast to `Party` via `DeliveryPartyCast`. VAT identifier, tax number, and contact are not stored. A stored consignee may lack `country_code`; BR-57 is enforced at emission.
