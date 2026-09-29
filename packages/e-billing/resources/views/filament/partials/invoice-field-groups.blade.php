@@ -1,7 +1,13 @@
 @php
     $groups = $viewModel->groupedFields();
+    $insertNotesBeforeTotals = ! array_key_exists('delivery', $groups);
+    $notesRendered = false;
 @endphp
 @forelse($groups as $groupKey => $group)
+    @if($insertNotesBeforeTotals && $groupKey === 'totals')
+        @include('e-billing::filament.partials.invoice-notes', ['viewModel' => $viewModel])
+        @php $notesRendered = true; @endphp
+    @endif
     <details
         @if($group['open']) open="open" @endif
         class="group mb-3 rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800/40">
@@ -24,6 +30,7 @@
     </details>
     @if($groupKey === 'delivery')
         @include('e-billing::filament.partials.invoice-notes', ['viewModel' => $viewModel])
+        @php $notesRendered = true; @endphp
     @endif
 @empty
     <div
@@ -31,3 +38,6 @@
         {{ __('e-billing::fields.empty_no_field_data') }}
     </div>
 @endforelse
+@if(! $notesRendered)
+    @include('e-billing::filament.partials.invoice-notes', ['viewModel' => $viewModel])
+@endif

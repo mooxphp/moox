@@ -15,6 +15,7 @@
 - Optional `e-billing.delivery.from_name` / `EBILLING_DELIVERY_FROM_NAME` (display name only; From address is host-owned).
 
 ### Fixed
+- ViewInvoice Notes (`section_notes` / BT-22) still render when the Delivery group is omitted (empty after denylist) — e.g. credit notes / corrected invoices that hide `delivery_address` / `delivery_date`. Previously notes were only included after the delivery `<details>`, so they vanished with that group.
 - Buyer/seller address mapping: without a street, the next address line (e.g. a PO box "Postfach 16 20") becomes BT-50 instead of repeating the company name; the company only fills BT-50 when no address line exists. Shared as `Data\Address::toEn16931Address()` for `ParsedInvoiceMapper` and `InvoiceFactory` (removed the unused `InvoiceAddress` import).
 
 ### Changed
