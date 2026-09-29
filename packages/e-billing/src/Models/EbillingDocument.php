@@ -976,8 +976,11 @@ class EbillingDocument extends BaseItemModel
      * @param  list<string>  $statuses
      * @return list<string>
      */
-    private static function mustFieldsWithStatuses(?array $fieldValidations, array $statuses, ?string $documentType): array
-    {
+    private static function mustFieldsWithStatuses(
+        ?array $fieldValidations,
+        array $statuses,
+        ?string $documentType,
+    ): array {
         [$invoiceFields, $lineFields] = self::configuredPriorityMaps($documentType);
         $validations = is_array($fieldValidations) ? $fieldValidations : [];
         $matched = self::collectMustFieldsMatching($invoiceFields, $validations, $statuses);
@@ -1135,7 +1138,10 @@ class EbillingDocument extends BaseItemModel
         $query->where(function (Builder $byType) use ($ownPriorityTypes): void {
             foreach ($ownPriorityTypes as $type) {
                 $byType->orWhere(function (Builder $ofType) use ($type): void {
-                    $ofType->whereHas('invoice', fn (Builder $invoice): Builder => $invoice->where('document_type', $type))
+                    $ofType->whereHas(
+                        'invoice',
+                        fn (Builder $invoice): Builder => $invoice->where('document_type', $type),
+                    )
                         ->where(fn (Builder $inner) => self::applyScopeProfileFieldBlocksReview($inner, $type));
                 });
             }

@@ -775,6 +775,8 @@ class InvoiceFieldValidator
 
     private function getInvoiceFieldValue(Invoice $invoice, string $field): mixed
     {
+        $precedingReference = PrecedingInvoiceReferences::first($invoice->preceding_invoices);
+
         return match ($field) {
             'customer_name' => $invoice->buyer?->name,
             'customer_vat_id' => $invoice->buyer?->vat_id,
@@ -791,8 +793,8 @@ class InvoiceFieldValidator
             'payment_means' => $invoice->payment_means?->payment_means_code,
             'vat_category' => $invoice->vat_category,
             'delivery_address' => $invoice->delivery,
-            'preceding_invoice_number' => PrecedingInvoiceReferences::first($invoice->preceding_invoices)['number'] ?? null,
-            'preceding_invoice_date' => PrecedingInvoiceReferences::first($invoice->preceding_invoices)['date'] ?? null,
+            'preceding_invoice_number' => $precedingReference['number'] ?? null,
+            'preceding_invoice_date' => $precedingReference['date'] ?? null,
             default => $invoice->getAttribute($field),
         };
     }
@@ -921,7 +923,9 @@ class InvoiceFieldValidator
             return ['status' => 'missing'];
         }
 
-        if (in_array($field, FieldValidationProfile::contextualShould($this->profileDocumentType, $isInvoiceLine), true)) {
+        $contextualShould = FieldValidationProfile::contextualShould($this->profileDocumentType, $isInvoiceLine);
+
+        if (in_array($field, $contextualShould, true)) {
             return ['status' => 'missing'];
         }
 

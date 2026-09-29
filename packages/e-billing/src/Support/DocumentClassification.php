@@ -92,7 +92,10 @@ final class DocumentClassification
             return [];
         }
 
-        $resourceTypes = array_map(strval(...), (array) config("e-billing.resources.{$resourceKey}.document_types", []));
+        $resourceTypes = array_map(
+            strval(...),
+            (array) config("e-billing.resources.{$resourceKey}.document_types", []),
+        );
         $allowedCodes = array_map(strval(...), (array) config('e-billing.allowed_document_type_codes', []));
         $selectable = [];
 

@@ -175,7 +175,8 @@ return [
                 .'for an independent reason – for example a bonus, a discount or a return. '
                 .'Amounts are stated as positive values. Not meant: self-billing, where the buyer '
                 .'issues the document.',
-            'rule' => 'The original invoice was correct. The amount owed changed afterwards for an independent commercial reason. No reference to the original invoice is needed.',
+            'rule' => 'The original invoice was correct. The amount owed changed afterwards '
+                .'for an independent commercial reason. No reference to the original invoice is needed.',
             'examples' => [
                 'Year-end rebate or bonus for a reached sales volume',
                 'Subsequent discount, price reduction or cash discount',
@@ -188,7 +189,8 @@ return [
                 .'wrong quantity, a wrong price or a full cancellation. The original invoice must '
                 .'be referenced by number and date. When the correction is issued as a credit of '
                 .'the difference, the amounts are negative.',
-            'rule' => 'The original invoice was wrong or is cancelled. The original invoice must be referenced by number and date.',
+            'rule' => 'The original invoice was wrong or is cancelled. '
+                .'The original invoice must be referenced by number and date.',
             'examples' => [
                 'A wrong quantity or price was invoiced',
                 'A mandatory invoice detail was wrong or missing',
@@ -199,7 +201,8 @@ return [
     'document_classification_help' => [
         'title' => 'Which document type do I choose?',
         'placeholder' => 'Choose a document type',
-        'helper' => 'Required. What matters is whether the original invoice was wrong – not whether the document is called a credit note.',
+        'helper' => 'Required. What matters is whether the original invoice was wrong – '
+            .'not whether the document is called a credit note.',
     ],
 
     // Filters
@@ -335,13 +338,16 @@ return [
     'hint_review_delivery_date' => 'Several delivery dates cannot satisfy the intra-community '
         .'actual delivery date rule without aggregating them into a period.',
     'hint_review_duplicate_invoice_number' => 'This document number already exists and needs review.',
-    'hint_review_declared_document_type' => 'A different document type was chosen at upload than the document carries – please check.',
+    'hint_review_declared_document_type' => 'A different document type was chosen at upload than the document carries '
+        .'– please check.',
     'hint_review_default' => 'This field should be reviewed manually.',
 
     // Field hints — informational (no validation status)
     'hint_info_buyer_email' => 'From inbox To — not checked against master data.',
-    'hint_warning_preceding_invoice_not_found' => 'Preceding invoice not found in the system — please check (does not block).',
-    'hint_warning_preceding_invoice_date_mismatch' => 'Date differs from the stored preceding invoice — please check (does not block).',
+    'hint_warning_preceding_invoice_not_found' => 'Preceding invoice not found in the system — please check '
+        .'(does not block).',
+    'hint_warning_preceding_invoice_date_mismatch' => 'Date differs from the stored preceding invoice — '
+        .'please check (does not block).',
 
     'section_kosit_validations' => 'KoSIT validations',
     'kosit_validations_empty' => 'No KoSIT validations yet.',
