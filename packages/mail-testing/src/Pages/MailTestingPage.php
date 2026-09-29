@@ -17,11 +17,15 @@ use Filament\Schemas\Components\EmbeddedSchema;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Js;
 use Moox\MailTemplate\Models\MailTemplate;
+use Moox\MailTemplate\Support\MailSendConfig;
 use Moox\MailTesting\Enums\Engine;
 use Moox\MailTesting\Enums\FillMode;
 use Moox\MailTesting\Enums\PersistBackend;
@@ -30,13 +34,11 @@ use Moox\MailTesting\Jobs\RenderMailTestingRunJob;
 use Moox\MailTesting\Models\MailTestingMessage;
 use Moox\MailTesting\Models\MailTestingRun;
 use Moox\MailTesting\Support\HtmlLength;
-use Moox\MailTesting\Support\MailTestingRunService;
 use Moox\MailTesting\Support\MailTestingWorkerStatus;
 use Moox\MailTesting\Support\NormalizedHtml;
 use Moox\MailTesting\Support\VariableBinding;
 use Moox\MailTesting\Support\VariableStore;
 use Moox\Mjml\Enums\ValidationLevel;
-use Throwable;
 
 /**
  * @property-read Schema $form
@@ -53,6 +55,16 @@ class MailTestingPage extends Page
      * @var array<string, mixed>|null
      */
     public ?array $data = [];
+
+    /**
+     * @var array<string, string>
+     */
+    public array $templateSlugOptions = [];
+
+    /**
+     * @var array<string, array<string, string>>
+     */
+    public array $templateLocales = [];
 
     public static function getNavigationGroup(): ?string
     {
@@ -82,6 +94,7 @@ class MailTestingPage extends Page
     public function mount(): void
     {
         $saved = app(VariableStore::class)->read();
+        $this->hydrateTemplateOptions();
 
         $this->form->fill([
             'count' => (int) config('mail-testing.default_count', 500),
@@ -95,6 +108,7 @@ class MailTestingPage extends Page
             'recipient_mode' => $saved['recipient_mode'],
             'variables' => $saved['variables'],
             'source_template_slug' => null,
+            'source_template_locale' => null,
         ]);
     }
 
@@ -110,20 +124,44 @@ class MailTestingPage extends Page
                 Section::make(__('mail-testing::translations.fieldset_test'))
                     ->description(__('mail-testing::translations.fieldset_test_help'))
                     ->icon('heroicon-o-play')
-                    ->columns(['default' => 1, 'md' => 2])
+                    ->columns(1)
                     ->schema([
                         Select::make('source_template_slug')
                             ->label(__('mail-testing::translations.source_template'))
                             ->placeholder(__('mail-testing::translations.source_template_placeholder'))
                             ->helperText(__('mail-testing::translations.source_template_help'))
-                            ->options(fn (): array => MailTemplate::query()
-                                ->orderBy('slug')
-                                ->pluck('slug', 'slug')
-                                ->all())
-                            ->searchable()
+                            ->options(function (): array {
+                                if ($this->templateSlugOptions === []) {
+                                    $this->hydrateTemplateOptions();
+                                }
+
+                                return $this->templateSlugOptions;
+                            })
+                            ->native()
                             ->required()
                             ->live()
-                            ->columnSpanFull(),
+                            ->extraInputAttributes([
+                                'x-on:change' => $this->syncLocaleSelectOnTemplateChangeScript(),
+                            ])
+                            ->afterStateUpdated(function (Set $set, mixed $state): void {
+                                $slug = is_string($state) && $state !== '' ? $state : null;
+                                $options = $this->localeOptionsForTemplate($slug);
+                                $set('source_template_locale', array_key_first($options));
+                            }),
+                        Select::make('source_template_locale')
+                            ->label(__('mail-testing::translations.source_template_locale'))
+                            ->placeholder(__('mail-testing::translations.source_template_locale_placeholder'))
+                            ->helperText(__('mail-testing::translations.source_template_locale_help'))
+                            ->options(fn (Get $get): array => $this->localeOptionsForTemplate(
+                                is_string($get('source_template_slug')) ? $get('source_template_slug') : null,
+                            ))
+                            ->native()
+                            ->disabled(fn (Get $get): bool => ! filled($get('source_template_slug')))
+                            ->required()
+                            ->validationMessages([
+                                'required' => __('mail-testing::translations.locale_required'),
+                            ])
+                            ->live(),
                         TextInput::make('count')
                             ->label(__('mail-testing::translations.count'))
                             ->numeric()
@@ -263,11 +301,16 @@ class MailTestingPage extends Page
     {
         return [
             Action::make('start')
-                ->label(fn (): string => MailTestingWorkerStatus::shouldQueue()
-                    ? __('mail-testing::translations.start_queued')
-                    : __('mail-testing::translations.start_inline'))
+                ->label(__('mail-testing::translations.start'))
                 ->icon('heroicon-o-play')
-                ->color(fn (): string => MailTestingWorkerStatus::shouldQueue() ? 'primary' : 'warning')
+                ->color(fn (): string => MailTestingWorkerStatus::shouldQueue() ? 'primary' : 'gray')
+                ->disabled(fn (): bool => ! MailTestingWorkerStatus::shouldQueue())
+                ->tooltip(fn (): ?string => MailTestingWorkerStatus::shouldQueue()
+                    ? null
+                    : __('mail-testing::translations.queue_required'))
+                ->extraAttributes(fn (): array => MailTestingWorkerStatus::shouldQueue()
+                    ? []
+                    : ['class' => 'fi-color-gray'])
                 ->submit('start')
                 ->formId('form'),
         ];
@@ -296,25 +339,25 @@ class MailTestingPage extends Page
             ->whereIn('status', [RunStatus::Pending, RunStatus::Running])
             ->exists();
 
-        return $isOpen ? '10s' : null;
+        if ($isOpen) {
+            return '10s';
+        }
+
+        if (MailTestingWorkerStatus::usesQueue() && ! MailTestingWorkerStatus::isActive()) {
+            return '10s';
+        }
+
+        return null;
     }
 
     public function workerBadgeColor(): string
     {
-        if (! MailTestingWorkerStatus::usesQueue()) {
-            return 'info';
-        }
-
-        return MailTestingWorkerStatus::isActive() ? 'success' : 'warning';
+        return MailTestingWorkerStatus::shouldQueue() ? 'success' : 'gray';
     }
 
     public function workerBadgeIcon(): string
     {
-        if (! MailTestingWorkerStatus::usesQueue()) {
-            return 'heroicon-m-bolt';
-        }
-
-        return MailTestingWorkerStatus::isActive()
+        return MailTestingWorkerStatus::shouldQueue()
             ? 'heroicon-m-signal'
             : 'heroicon-m-signal-slash';
     }
@@ -333,20 +376,11 @@ class MailTestingPage extends Page
         return MailTestingWorkerStatus::shouldQueue();
     }
 
-    public function workerIsActive(): bool
-    {
-        return MailTestingWorkerStatus::isActive();
-    }
-
     public function workerStatusLabel(): string
     {
-        if (! MailTestingWorkerStatus::usesQueue()) {
-            return __('mail-testing::translations.queue_sync');
-        }
-
-        return MailTestingWorkerStatus::isActive()
-            ? __('mail-testing::translations.worker_active', ['queue' => MailTestingWorkerStatus::queueName()])
-            : __('mail-testing::translations.worker_inactive');
+        return MailTestingWorkerStatus::shouldQueue()
+            ? __('mail-testing::translations.worker_active')
+            : __('mail-testing::translations.queue_required');
     }
 
     public function workerCommand(): string
@@ -390,6 +424,7 @@ class MailTestingPage extends Page
             'ignore_includes' => (bool) $state['ignore_includes'],
             'recipient_mode' => $recipient->value,
             'template_slug' => (string) ($state['source_template_slug'] ?? ''),
+            'locale' => $this->selectedLocale($state),
             'variables' => array_map(
                 fn (VariableBinding $binding): array => $binding->toArray(),
                 VariableBinding::collect($state['variables'] ?? []),
@@ -399,6 +434,15 @@ class MailTestingPage extends Page
 
     public function start(): void
     {
+        if (! MailTestingWorkerStatus::shouldQueue()) {
+            Notification::make()
+                ->warning()
+                ->title(__('mail-testing::translations.queue_required'))
+                ->send();
+
+            return;
+        }
+
         $state = $this->form->getState();
         $count = (int) $state['count'];
         $engine = Engine::from((string) $state['engine']);
@@ -416,33 +460,11 @@ class MailTestingPage extends Page
             'options_fingerprint' => MailTestingRun::fingerprint($count, $persist, $options),
         ]);
 
-        if (MailTestingWorkerStatus::shouldQueue()) {
-            RenderMailTestingRunJob::dispatch($run->getKey());
-
-            Notification::make()
-                ->success()
-                ->title(__('mail-testing::translations.run_queued', ['id' => $run->getKey()]))
-                ->send();
-
-            return;
-        }
-
-        set_time_limit(0);
-
-        try {
-            app(MailTestingRunService::class)->execute($run);
-        } catch (Throwable $exception) {
-            Notification::make()
-                ->danger()
-                ->title($exception->getMessage())
-                ->send();
-
-            return;
-        }
+        RenderMailTestingRunJob::dispatch($run->getKey());
 
         Notification::make()
             ->success()
-            ->title(__('mail-testing::translations.run_done', ['id' => $run->getKey()]))
+            ->title(__('mail-testing::translations.run_queued', ['id' => $run->getKey()]))
             ->send();
     }
 
@@ -571,5 +593,127 @@ class MailTestingPage extends Page
             'node_length' => HtmlLength::of(is_string($nodeHtml) ? $nodeHtml : null),
             'same_delta' => $sameDelta,
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $state
+     */
+    private function selectedLocale(array $state): ?string
+    {
+        $locale = trim((string) ($state['source_template_locale'] ?? ''));
+
+        return $locale !== '' ? $locale : null;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function localeOptionsForTemplate(?string $slug): array
+    {
+        if (! is_string($slug) || $slug === '') {
+            return [];
+        }
+
+        if (! array_key_exists($slug, $this->templateLocales)) {
+            $this->templateLocales[$slug] = $this->queryLocaleOptions($slug);
+            $this->templateSlugOptions[$slug] = $slug;
+            ksort($this->templateSlugOptions);
+        }
+
+        return $this->templateLocales[$slug];
+    }
+
+    private function hydrateTemplateOptions(): void
+    {
+        $labels = MailSendConfig::localeOptions();
+        $slugs = [];
+        $locales = [];
+
+        $templates = MailTemplate::query()
+            ->with('translations')
+            ->orderBy('slug')
+            ->get(['id', 'slug']);
+
+        foreach ($templates as $template) {
+            $slug = (string) $template->slug;
+            $slugs[$slug] = $slug;
+            $locales[$slug] = $this->optionsFromTranslations($template, $labels);
+        }
+
+        $this->templateSlugOptions = $slugs;
+        $this->templateLocales = $locales;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function queryLocaleOptions(string $slug): array
+    {
+        $template = MailTemplate::query()
+            ->with('translations')
+            ->where('slug', $slug)
+            ->first();
+
+        if (! $template instanceof MailTemplate) {
+            return [];
+        }
+
+        return $this->optionsFromTranslations($template, MailSendConfig::localeOptions());
+    }
+
+    /**
+     * @param  array<string, string>  $labels
+     * @return array<string, string>
+     */
+    private function optionsFromTranslations(MailTemplate $template, array $labels): array
+    {
+        $options = [];
+
+        foreach ($template->translations as $translation) {
+            $locale = trim((string) $translation->getAttribute('locale'));
+
+            if ($locale === '') {
+                continue;
+            }
+
+            $options[$locale] = $labels[$locale] ?? $locale;
+        }
+
+        ksort($options);
+
+        return $options;
+    }
+
+    private function syncLocaleSelectOnTemplateChangeScript(): string
+    {
+        $placeholder = Js::from(__('mail-testing::translations.source_template_locale_placeholder'));
+
+        return <<<JS
+            const localeSelect = document.getElementById('form.source_template_locale');
+            if (! localeSelect) {
+                return;
+            }
+
+            const slug = \$event.target.value;
+            const locales = (\$wire.templateLocales && \$wire.templateLocales[slug]) ? \$wire.templateLocales[slug] : {};
+
+            localeSelect.innerHTML = '';
+
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = {$placeholder};
+            localeSelect.appendChild(placeholder);
+
+            Object.keys(locales).forEach((value) => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = locales[value];
+                localeSelect.appendChild(option);
+            });
+
+            const first = Object.keys(locales)[0] ?? '';
+            localeSelect.value = first;
+            localeSelect.disabled = first === '';
+        JS;
     }
 }

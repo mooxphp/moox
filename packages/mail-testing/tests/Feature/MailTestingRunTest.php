@@ -58,12 +58,50 @@ it('renders personalized html and records three clocks plus total wall time', fu
     $html = $message?->resolvedHtml();
 
     expect($html)->toBeString()
-        ->and($html)->toContain('Sehr geehrte')
+        ->and($html)->not->toContain('{displayName}')
         ->and($html)->not->toContain('<mjml');
 });
 
 it('fails when the template option is missing', function (): void {
     $this->artisan('mail-testing:render', [
+        '--count' => 1,
+        '--engine' => 'php',
+    ])->assertFailed();
+
+    expect(MailTestingRun::query()->count())->toBe(0);
+});
+
+it('renders the english translation when locale is en_US', function (): void {
+    $template = MailTemplate::query()->where('slug', 'login-link')->first();
+    $template?->translations()->first()?->forceFill([
+        'mail_content' => '<mj-text>GERMAN-LOGIN</mj-text>',
+    ])->save();
+    $template?->translateOrNew('en_US')->fill([
+        'title' => 'Login',
+        'mail_content' => '<mj-text>ENGLISH-LOGIN</mj-text>',
+        'footer' => null,
+    ])->save();
+
+    $this->artisan('mail-testing:render', [
+        '--template' => 'login-link',
+        '--locale' => 'en_US',
+        '--count' => 1,
+        '--engine' => 'php',
+        '--persist' => 'storage',
+        '--validation' => 'soft',
+    ])->assertSuccessful();
+
+    $html = MailTestingMessage::query()->first()?->resolvedHtml();
+
+    expect($html)->toBeString()
+        ->and($html)->toContain('ENGLISH-LOGIN')
+        ->and($html)->not->toContain('GERMAN-LOGIN');
+});
+
+it('fails when the locale is not on the template', function (): void {
+    $this->artisan('mail-testing:render', [
+        '--template' => 'login-link',
+        '--locale' => 'fr_FR',
         '--count' => 1,
         '--engine' => 'php',
     ])->assertFailed();

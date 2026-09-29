@@ -22,7 +22,7 @@ final class MailTestingPayload
         }
 
         return [
-            'anrede' => FormalAnrede::fromContact($contact),
+            'anrede' => '',
             'displayName' => $displayName !== '' ? $displayName : $firstName,
             'firstName' => $firstName,
             'lastName' => $lastName,

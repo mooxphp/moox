@@ -22,7 +22,7 @@ it('keeps demo variable values identical for every position', function (): void 
         ->and($second['invoiceNumber'])->toBe('RE-2026-001')
         ->and($first['firstName'])->toBe('Max')
         ->and($first['lastName'])->toBe('Mustermann')
-        ->and($first['anrede'])->toBe('Sehr geehrter Herr Mustermann');
+        ->and($first['anrede'])->toBe('');
 });
 
 it('repeats random values for the same fingerprint and position', function (): void {

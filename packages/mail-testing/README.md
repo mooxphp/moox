@@ -13,7 +13,7 @@ The package is part of the **Moox ecosystem** — Filament packages for Laravel 
 - Token list with **Demo** or **Random** values; recipient Demo is Max Mustermann
 - PHP vs Node comparison: normalized SHA-1 hashes, byte and character counts, side-by-side HTML sample
 - Artisan command `mail-testing:render` for the same options as the UI
-- Dedicated queue `mail-testing` (configurable), or inline when no worker is listening
+- Dedicated queue `mail-testing` (configurable), or Laravel’s `default` queue when that worker is listening
 
 ## Requirements
 
@@ -85,17 +85,17 @@ On disk `local`, HTML lives under `storage/app/private/mail-testing/{runId}/{pos
 ## First run (Filament)
 
 1. Open **Mail Testing → MJML run**.
-2. Choose an existing **mail template**. The run uses that template’s layout and body as stored. The original is not changed.
+2. Choose an existing **mail template** and one of its **languages**. The run uses that template’s layout and body as stored. The original is not changed.
 3. Set **count**, **engine** (PHP or Node), and **storage**.
 4. Optionally add tokens under **Variables** and click **Save**.
 5. Start the run.
 
-If `QUEUE_CONNECTION` is not `sync` and a worker is listening on `mail-testing`, the run is queued. Otherwise it runs in the HTTP request (`set_time_limit(0)`).
+The start button always dispatches `RenderMailTestingRunJob`. It is enabled only when a worker is listening on `mail-testing` or `default`. Otherwise it is gray and disabled, with the message **Please start the queue worker**. `QUEUE_CONNECTION=sync` is not enough; a real worker is required.
 
 Worker:
 
 ```bash
-php artisan queue:work --queue=mail-testing --tries=1 --timeout=0
+php artisan queue:work --queue=mail-testing,default --tries=1 --timeout=0
 ```
 
 `queue:work` keeps classes in memory. After changing converter, composer, or payload code, restart the worker (`php artisan queue:restart` or stop/start the process).
@@ -109,6 +109,7 @@ These options are stored on the run as JSON and included in `options_fingerprint
 | Option | Values | Notes |
 | --- | --- | --- |
 | Mail template | Existing `mail_templates.slug` | Required. Layout and body come from that template. The original is not written. |
+| Language | Translation locale on the template | Required in the UI. Only locales that exist on the chosen template. |
 | Count | Integer ≥ `min_count` | Number of HTML mails in the run |
 | Engine | `php`, `node` | Sets `mjml.use_php_renderer` for this run, then restores the previous value |
 | Storage | `storage`, `database` | `storage`: one file per mail. `database`: HTML in `mail_testing_messages.html` |
@@ -136,7 +137,7 @@ Contact fields on the payload:
 
 | Token | Source |
 | --- | --- |
-| `{anrede}` | Formal German salutation from `salutation_code`, academic title, last name |
+| `{anrede}` | Empty unless set under **Variables** |
 | `{displayName}` | `display_name`, or first + last name |
 | `{firstName}` | `first_name` |
 | `{lastName}` | `last_name` |
@@ -158,13 +159,14 @@ PHP validation is stricter than Node. Mixed body MJML (`mj-text` then `mj-sectio
 ## Artisan
 
 ```bash
-php artisan mail-testing:render --template=login --count=50 --engine=php --persist=storage --validation=soft
-php artisan mail-testing:render --template=login --count=50 --engine=node --persist=storage --validation=soft
+php artisan mail-testing:render --template=login --locale=de_DE --count=50 --engine=php --persist=storage --validation=soft
+php artisan mail-testing:render --template=login --locale=de_DE --count=50 --engine=node --persist=storage --validation=soft
 ```
 
 | Flag | Default | Same as UI |
 | --- | --- | --- |
 | `--template=` | (required) | Mail template slug |
+| `--locale=` | (optional) | Translation locale on the template |
 | `--count=` | `mail-testing.default_count` | Count |
 | `--engine=` | `php` | `php` or `node` |
 | `--persist=` | `storage` | `storage` or `database` |
@@ -174,7 +176,7 @@ php artisan mail-testing:render --template=login --count=50 --engine=node --pers
 | `--keep-comments` | off | Keep comments |
 | `--ignore-includes` | off | Ignore includes |
 
-The command runs **inline** (no queue). Recipient mode and the token list are not CLI flags; they come from `mail-testing-variables.json` only if you start from Filament. The Artisan command stores MJML flags and `template_slug` on `options` (no `recipient_mode` / `variables`), so factory random contacts are used unless you extend the command.
+The command runs **inline** (no queue). Recipient mode and the token list are not CLI flags; they come from `mail-testing-variables.json` only if you start from Filament. The Artisan command stores MJML flags, `template_slug`, and `locale` on `options` (no `recipient_mode` / `variables`), so factory random contacts are used unless you extend the command.
 
 The Filament **Environment** block shows the equivalent `mail-testing:render` line for the current form (without variables).
 
@@ -182,12 +184,12 @@ The Filament **Environment** block shows the equivalent `mail-testing:render` li
 
 `RenderMailTestingRunJob`:
 
-- Queue: `config('mail-testing.queues.name')` (default `mail-testing`)
+- Queue: `mail-testing` when a worker is listening there, otherwise `default`. On `sync`, the configured name (`mail-testing`) is used
 - Connection: `config('mail-testing.queues.connection')` when set
 - `$tries = 1`
 - `$timeout` from `mail-testing.timeout` (default `0`)
 
-A heartbeat is written on `Illuminate\Queue\Events\Looping` when the worker listens to that queue (15 seconds). The page uses it to decide queued vs inline start. Polling is 1s while a run is pending/running, otherwise 2s if queues are used.
+A heartbeat is written on `Illuminate\Queue\Events\Looping` when the worker listens to `mail-testing` or `default` (15 seconds). The page uses it to enable or gray out the start button. Polling is 10s while a run is pending or running, and while waiting for a worker.
 
 ## Results
 
@@ -249,7 +251,7 @@ For each position `1…count`:
 3. `MailTestingConverter::convert()` → `Mjml::new()` with the run’s MJML flags → HTML.
 4. Persist + `html_hash` + `byte_length` + per-mail timings.
 
-The run uses the template slug stored on `options.template_slug`. Pick it on the page or pass `--template=` to Artisan.
+The run uses `options.template_slug` and `options.locale`. Pick them on the page or pass `--template=` and `--locale=` to Artisan.
 
 ## License
 

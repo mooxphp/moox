@@ -40,7 +40,7 @@ final class HtmlLength
         ]);
     }
 
-    public static function number(int $value): string
+    private static function number(int $value): string
     {
         $formatted = Number::format($value, locale: app()->getLocale());
 

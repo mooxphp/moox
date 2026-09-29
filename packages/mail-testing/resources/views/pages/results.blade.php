@@ -9,17 +9,12 @@
     $run = $this->latestRun();
     $engineRuns = $this->engineRuns();
     $comparison = $this->comparison();
-    $workerActive = $this->workerIsActive();
     $willQueue = $this->willQueue();
     $workerCommand = $this->workerCommand();
     $renderCommand = $this->renderCommand();
     $hint = $willQueue
         ? __('mail-testing::translations.worker_hint_active')
-        : ($workerActive
-            ? __('mail-testing::translations.queue_sync')
-            : __('mail-testing::translations.worker_hint_inactive', [
-                'queue' => MailTestingWorkerStatus::queueName(),
-            ]));
+        : __('mail-testing::translations.queue_required');
     $completedRuns = array_values(array_filter(
         $engineRuns,
         fn (MailTestingRun $engineRun): bool => $engineRun->status === RunStatus::Completed,
@@ -57,7 +52,7 @@
     >
         <x-slot name="afterHeader">
             <span class="inline-flex items-center gap-2">
-                @if ($workerActive && MailTestingWorkerStatus::usesQueue())
+                @if ($willQueue)
                     <span class="relative flex size-2.5" aria-hidden="true">
                         <span class="absolute inline-flex size-full rounded-full bg-success-400 opacity-75 motion-safe:animate-ping"></span>
                         <span class="relative inline-flex size-2.5 rounded-full bg-success-500"></span>

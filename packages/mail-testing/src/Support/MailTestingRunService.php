@@ -42,10 +42,16 @@ final class MailTestingRunService
                 throw new RuntimeException(__('mail-testing::translations.template_required'));
             }
 
-            $template = $this->renderer->find($slug);
+            $locale = is_array($run->options) ? ($run->options['locale'] ?? null) : null;
+            $locale = is_string($locale) && $locale !== '' ? $locale : null;
+            $template = $this->renderer->find($slug, $locale);
 
             if (! $template instanceof MailTemplate) {
                 throw new RuntimeException(__('mail-testing::translations.template_missing'));
+            }
+
+            if ($locale !== null && ! $template->hasTranslation($locale)) {
+                throw new RuntimeException(__('mail-testing::translations.locale_missing'));
             }
 
             $composeTotal = 0;

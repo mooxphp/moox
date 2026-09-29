@@ -32,7 +32,8 @@ beforeEach(function (): void {
 
     app()->setLocale('de');
     Storage::fake((string) config('mail-testing.disk', 'local'));
-    MailTemplate::factory()->create(['slug' => 'invoice']);
+    $this->invoice = MailTemplate::factory()->create(['slug' => 'invoice']);
+    $this->invoiceLocale = (string) $this->invoice->translations()->value('locale');
 });
 
 it('shows grouped test settings instead of a mixed three-column form', function (): void {
@@ -45,7 +46,7 @@ it('shows grouped test settings instead of a mixed three-column form', function 
         ->assertSee(__('mail-testing::translations.fieldset_variables_help'))
         ->assertSee(__('mail-testing::translations.source_template'))
         ->assertDontSee('Template setzen')
-        ->assertSee('php artisan queue:work --queue=mail-testing --tries=1 --timeout=0')
+        ->assertSee('php artisan queue:work --queue=mail-testing,default --tries=1 --timeout=0')
         ->assertSee('php artisan mail-testing:render')
         ->assertDontSee('keepComments')
         ->assertSee(__('mail-testing::translations.persist_storage_help'))
@@ -127,20 +128,43 @@ it('does not poll after a run has failed', function (): void {
         ->assertDontSeeHtml('wire:poll');
 });
 
-it('starts the run inline when no mail-testing worker is listening', function (): void {
+it('shows a gray start button and does not start when no worker is listening', function (): void {
     config(['queue.default' => 'database']);
     Cache::flush();
     Queue::fake();
 
     Livewire::test(MailTestingPage::class)
+        ->assertSee(__('mail-testing::translations.start'))
+        ->assertSee(__('mail-testing::translations.queue_required'))
+        ->assertSeeHtml('fi-disabled')
+        ->assertSeeHtml('fi-color-gray')
+        ->assertSeeHtml('wire:poll.10s')
         ->set('data.source_template_slug', 'invoice')
+        ->set('data.source_template_locale', $this->invoiceLocale)
         ->set('data.count', 2)
         ->call('start')
-        ->assertNotified();
+        ->assertNotified(__('mail-testing::translations.queue_required'));
 
     Queue::assertNothingPushed();
-    expect(MailTestingRun::query()->count())->toBe(1)
-        ->and(MailTestingRun::query()->first()?->status)->not->toBe(RunStatus::Pending);
+    expect(MailTestingRun::query()->count())->toBe(0);
+});
+
+it('does not start on the sync driver without a worker', function (): void {
+    config(['queue.default' => 'sync']);
+    Cache::flush();
+    Queue::fake();
+
+    Livewire::test(MailTestingPage::class)
+        ->assertSee(__('mail-testing::translations.start'))
+        ->assertSee(__('mail-testing::translations.queue_required'))
+        ->set('data.source_template_slug', 'invoice')
+        ->set('data.source_template_locale', $this->invoiceLocale)
+        ->set('data.count', 2)
+        ->call('start')
+        ->assertNotified(__('mail-testing::translations.queue_required'));
+
+    Queue::assertNothingPushed();
+    expect(MailTestingRun::query()->count())->toBe(0);
 });
 
 it('queues the run when the mail-testing worker heartbeat is fresh', function (): void {
@@ -151,13 +175,51 @@ it('queues the run when the mail-testing worker heartbeat is fresh', function ()
 
     Livewire::test(MailTestingPage::class)
         ->set('data.source_template_slug', 'invoice')
+        ->set('data.source_template_locale', $this->invoiceLocale)
         ->set('data.count', 2)
         ->call('start')
-        ->assertSee(__('mail-testing::translations.start_queued'))
+        ->assertSee(__('mail-testing::translations.start'))
+        ->assertDontSee(__('mail-testing::translations.queue_required'))
         ->assertNotified();
 
-    Queue::assertPushed(RenderMailTestingRunJob::class);
+    Queue::assertPushedOn('mail-testing', RenderMailTestingRunJob::class);
     expect(MailTestingRun::query()->first()?->status)->toBe(RunStatus::Pending);
+});
+
+it('queues the run on default when only a default worker is listening', function (): void {
+    config(['queue.default' => 'database']);
+    Cache::flush();
+    Queue::fake();
+    MailTestingWorkerStatus::rememberIfListening('default');
+
+    Livewire::test(MailTestingPage::class)
+        ->assertSee(__('mail-testing::translations.start'))
+        ->assertDontSee(__('mail-testing::translations.queue_required'))
+        ->set('data.source_template_slug', 'invoice')
+        ->set('data.source_template_locale', $this->invoiceLocale)
+        ->set('data.count', 2)
+        ->call('start')
+        ->assertNotified();
+
+    Queue::assertPushedOn('default', RenderMailTestingRunJob::class);
+    expect(MailTestingRun::query()->first()?->status)->toBe(RunStatus::Pending);
+});
+
+it('prefers mail-testing over default when both workers are listening', function (): void {
+    config(['queue.default' => 'database']);
+    Cache::flush();
+    Queue::fake();
+    MailTestingWorkerStatus::rememberIfListening('mail-testing');
+    MailTestingWorkerStatus::rememberIfListening('default');
+
+    Livewire::test(MailTestingPage::class)
+        ->set('data.source_template_slug', 'invoice')
+        ->set('data.source_template_locale', $this->invoiceLocale)
+        ->set('data.count', 2)
+        ->call('start')
+        ->assertNotified();
+
+    Queue::assertPushedOn('mail-testing', RenderMailTestingRunJob::class);
 });
 
 it('stores recipient mode and variable bindings on the queued run', function (): void {
@@ -168,6 +230,7 @@ it('stores recipient mode and variable bindings on the queued run', function ():
 
     Livewire::test(MailTestingPage::class)
         ->set('data.source_template_slug', 'invoice')
+        ->set('data.source_template_locale', $this->invoiceLocale)
         ->set('data.count', 1)
         ->set('data.recipient_mode', 'demo')
         ->set('data.variables', [
@@ -180,6 +243,7 @@ it('stores recipient mode and variable bindings on the queued run', function ():
 
     expect($run?->options['recipient_mode'])->toBe('demo')
         ->and($run?->options['template_slug'])->toBe('invoice')
+        ->and($run?->options['locale'])->toBe($this->invoiceLocale)
         ->and($run?->options['variables'])->toBe([
             ['token' => 'invoiceNumber', 'mode' => 'demo', 'value' => 'RE-2026-001'],
         ]);
@@ -193,23 +257,153 @@ it('stores the selected template on the queued run', function (): void {
 
     Livewire::test(MailTestingPage::class)
         ->set('data.source_template_slug', 'invoice')
+        ->set('data.source_template_locale', $this->invoiceLocale)
         ->set('data.count', 1)
         ->call('start')
         ->assertNotified();
 
     expect(MailTestingRun::query()->first()?->options['template_slug'])->toBe('invoice')
+        ->and(MailTestingRun::query()->first()?->options['locale'])->toBe($this->invoiceLocale)
         ->and(MailTestingWorkerStatus::renderCommand([
             'count' => 1,
             'engine' => 'php',
             'persist_backend' => 'storage',
             'validation_level' => 'soft',
             'source_template_slug' => 'invoice',
-        ]))->toContain('--template=invoice');
+            'source_template_locale' => $this->invoiceLocale,
+        ]))->toContain('--template=invoice')
+        ->toContain('--locale='.$this->invoiceLocale);
+});
+
+it('offers only locales that exist on the selected template', function (): void {
+    $bilingual = MailTemplate::factory()->create(['slug' => 'bilingual']);
+    $bilingual->translations()->withTrashed()->forceDelete();
+    $bilingual->unsetRelation('translations');
+    $bilingual->translateOrNew('de_DE')->fill([
+        'title' => 'Rechnung',
+        'mail_content' => '<mj-text>DE-BODY</mj-text>',
+        'footer' => null,
+    ])->save();
+    $bilingual->translateOrNew('en_US')->fill([
+        'title' => 'Invoice',
+        'mail_content' => '<mj-text>EN-BODY</mj-text>',
+        'footer' => null,
+    ])->save();
+
+    $page = Livewire::test(MailTestingPage::class)
+        ->set('data.source_template_slug', 'bilingual');
+
+    $method = new \ReflectionMethod(MailTestingPage::class, 'localeOptionsForTemplate');
+    $method->setAccessible(true);
+    $options = $method->invoke($page->instance(), 'bilingual');
+
+    expect($options)->toHaveKeys(['de_DE', 'en_US'])
+        ->and(array_keys($options))->toBe(['de_DE', 'en_US'])
+        ->and($page->get('data.source_template_locale'))->toBe('de_DE');
+});
+
+it('stores the selected locale on the queued run', function (): void {
+    $bilingual = MailTemplate::factory()->create(['slug' => 'bilingual']);
+    $bilingual->translations()->withTrashed()->forceDelete();
+    $bilingual->unsetRelation('translations');
+    $bilingual->translateOrNew('de_DE')->fill([
+        'title' => 'Rechnung',
+        'mail_content' => '<mj-text>DE-BODY</mj-text>',
+        'footer' => null,
+    ])->save();
+    $bilingual->translateOrNew('en_US')->fill([
+        'title' => 'Invoice',
+        'mail_content' => '<mj-text>EN-BODY</mj-text>',
+        'footer' => null,
+    ])->save();
+
+    config(['queue.default' => 'database']);
+    Cache::flush();
+    Queue::fake();
+    MailTestingWorkerStatus::rememberIfListening('mail-testing');
+
+    Livewire::test(MailTestingPage::class)
+        ->set('data.source_template_slug', 'bilingual')
+        ->set('data.source_template_locale', 'en_US')
+        ->set('data.count', 1)
+        ->call('start')
+        ->assertNotified();
+
+    expect(MailTestingRun::query()->first()?->options['template_slug'])->toBe('bilingual')
+        ->and(MailTestingRun::query()->first()?->options['locale'])->toBe('en_US');
+});
+
+it('replaces the locale whenever the template changes', function (): void {
+    $bilingual = MailTemplate::factory()->create(['slug' => 'bilingual']);
+    $bilingual->translations()->withTrashed()->forceDelete();
+    $bilingual->unsetRelation('translations');
+    $bilingual->translateOrNew('de_DE')->fill([
+        'title' => 'Rechnung',
+        'mail_content' => '<mj-text>DE-BODY</mj-text>',
+        'footer' => null,
+    ])->save();
+    $bilingual->translateOrNew('en_US')->fill([
+        'title' => 'Invoice',
+        'mail_content' => '<mj-text>EN-BODY</mj-text>',
+        'footer' => null,
+    ])->save();
+
+    $other = MailTemplate::factory()->create(['slug' => 'notice']);
+    $other->translations()->withTrashed()->forceDelete();
+    $other->unsetRelation('translations');
+    $other->translateOrNew('de_DE')->fill([
+        'title' => 'Hinweis',
+        'mail_content' => '<mj-text>NOTICE-DE</mj-text>',
+        'footer' => null,
+    ])->save();
+    $other->translateOrNew('en_US')->fill([
+        'title' => 'Notice',
+        'mail_content' => '<mj-text>NOTICE-EN</mj-text>',
+        'footer' => null,
+    ])->save();
+
+    Livewire::test(MailTestingPage::class)
+        ->set('data.source_template_slug', 'bilingual')
+        ->set('data.source_template_locale', 'en_US')
+        ->set('data.source_template_slug', 'notice')
+        ->assertSet('data.source_template_locale', 'de_DE');
+});
+
+it('resets the locale when the next template does not have it', function (): void {
+    $bilingual = MailTemplate::factory()->create(['slug' => 'bilingual']);
+    $bilingual->translations()->withTrashed()->forceDelete();
+    $bilingual->unsetRelation('translations');
+    $bilingual->translateOrNew('de_DE')->fill([
+        'title' => 'Rechnung',
+        'mail_content' => '<mj-text>DE-BODY</mj-text>',
+        'footer' => null,
+    ])->save();
+    $bilingual->translateOrNew('en_US')->fill([
+        'title' => 'Invoice',
+        'mail_content' => '<mj-text>EN-BODY</mj-text>',
+        'footer' => null,
+    ])->save();
+
+    $reminder = MailTemplate::factory()->create(['slug' => 'reminder']);
+    $reminder->translations()->withTrashed()->forceDelete();
+    $reminder->unsetRelation('translations');
+    $reminder->translateOrNew('de_DE')->fill([
+        'title' => 'Mahnung',
+        'mail_content' => '<mj-text>REMINDER</mj-text>',
+        'footer' => null,
+    ])->save();
+
+    Livewire::test(MailTestingPage::class)
+        ->set('data.source_template_slug', 'bilingual')
+        ->set('data.source_template_locale', 'en_US')
+        ->set('data.source_template_slug', 'reminder')
+        ->assertSet('data.source_template_locale', 'de_DE');
 });
 
 it('saves variables and restores them on the next visit', function (): void {
     Livewire::test(MailTestingPage::class)
         ->set('data.source_template_slug', 'invoice')
+        ->set('data.source_template_locale', $this->invoiceLocale)
         ->set('data.recipient_mode', 'demo')
         ->set('data.variables', [
             ['token' => 'invoiceNumber', 'mode' => 'random', 'value' => 'RE-####'],

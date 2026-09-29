@@ -11,6 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Moox\MailTesting\Models\MailTestingRun;
 use Moox\MailTesting\Support\MailTestingRunService;
+use Moox\MailTesting\Support\MailTestingWorkerStatus;
 
 final class RenderMailTestingRunJob implements ShouldQueue
 {
@@ -32,7 +33,7 @@ final class RenderMailTestingRunJob implements ShouldQueue
             $this->onConnection($connection);
         }
 
-        $this->onQueue((string) config('mail-testing.queues.name', 'mail-testing'));
+        $this->onQueue(MailTestingWorkerStatus::targetQueue());
     }
 
     public function handle(MailTestingRunService $service): void

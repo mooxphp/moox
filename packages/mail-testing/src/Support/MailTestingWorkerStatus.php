@@ -8,9 +8,26 @@ use Illuminate\Support\Facades\Cache;
 
 final class MailTestingWorkerStatus
 {
+    public const DEFAULT_QUEUE = 'default';
+
     public static function queueName(): string
     {
         return (string) config('mail-testing.queues.name', 'mail-testing');
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function acceptedQueues(): array
+    {
+        $configured = self::queueName();
+        $queues = [$configured];
+
+        if ($configured !== self::DEFAULT_QUEUE) {
+            $queues[] = self::DEFAULT_QUEUE;
+        }
+
+        return $queues;
     }
 
     public static function usesQueue(): bool
@@ -20,19 +37,13 @@ final class MailTestingWorkerStatus
 
     public static function isActive(): bool
     {
-        if (! self::usesQueue()) {
-            return true;
+        foreach (self::acceptedQueues() as $queue) {
+            if (self::isListeningTo($queue)) {
+                return true;
+            }
         }
 
-        if (Cache::has(self::heartbeatKey())) {
-            return true;
-        }
-
-        if (app()->runningUnitTests()) {
-            return false;
-        }
-
-        return self::processIsListening();
+        return false;
     }
 
     public static function shouldQueue(): bool
@@ -40,9 +51,24 @@ final class MailTestingWorkerStatus
         return self::usesQueue() && self::isActive();
     }
 
+    public static function targetQueue(): string
+    {
+        $preferred = self::queueName();
+
+        if (self::isListeningTo($preferred)) {
+            return $preferred;
+        }
+
+        if ($preferred !== self::DEFAULT_QUEUE && self::isListeningTo(self::DEFAULT_QUEUE)) {
+            return self::DEFAULT_QUEUE;
+        }
+
+        return $preferred;
+    }
+
     public static function workerCommand(): string
     {
-        return 'php artisan queue:work --queue='.self::queueName().' --tries=1 --timeout=0';
+        return 'php artisan queue:work --queue='.implode(',', self::acceptedQueues()).' --tries=1 --timeout=0';
     }
 
     /**
@@ -56,6 +82,7 @@ final class MailTestingWorkerStatus
             '--engine='.(string) ($state['engine'] ?? 'php'),
             '--persist='.(string) ($state['persist_backend'] ?? 'storage'),
             ...self::templateFlag($state),
+            ...self::localeFlag($state),
             '--validation='.(string) ($state['validation_level'] ?? 'soft'),
         ];
 
@@ -73,6 +100,30 @@ final class MailTestingWorkerStatus
         return implode(' ', $parts);
     }
 
+    public static function rememberIfListening(string $queues): void
+    {
+        foreach (self::acceptedQueues() as $queue) {
+            if (! self::listensToQueue($queues, $queue)) {
+                continue;
+            }
+
+            Cache::put(self::heartbeatKey($queue), true, 15);
+        }
+    }
+
+    public static function commandListensToQueue(string $commandLine, string $queue): bool
+    {
+        if (preg_match('/\bqueue:(?:work|listen)\b/', $commandLine) !== 1) {
+            return false;
+        }
+
+        if (preg_match('/--queue(?:=|\s+)["\']?([^\s"\']+)/', $commandLine, $matches) === 1) {
+            return self::listensToQueue($matches[1], $queue);
+        }
+
+        return $queue === self::DEFAULT_QUEUE;
+    }
+
     /**
      * @param  array<string, mixed>  $state
      * @return list<string>
@@ -88,16 +139,41 @@ final class MailTestingWorkerStatus
         return ['--template='.$slug];
     }
 
-    public static function rememberIfListening(string $queues): void
+    /**
+     * @param  array<string, mixed>  $state
+     * @return list<string>
+     */
+    private static function localeFlag(array $state): array
     {
-        if (! self::listensToQueue($queues, self::queueName())) {
-            return;
+        $locale = $state['source_template_locale'] ?? null;
+
+        if (! is_string($locale) || $locale === '') {
+            return [];
         }
 
-        Cache::put(self::heartbeatKey(), true, 15);
+        return ['--locale='.$locale];
     }
 
-    public static function listensToQueue(string $queues, string $queue): bool
+    private static function isListeningTo(string $queue): bool
+    {
+        if (Cache::has(self::heartbeatKey($queue))) {
+            return true;
+        }
+
+        if (app()->runningUnitTests()) {
+            return false;
+        }
+
+        foreach (self::phpCommandLines() as $line) {
+            if (self::commandListensToQueue($line, $queue)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static function listensToQueue(string $queues, string $queue): bool
     {
         foreach (explode(',', $queues) as $name) {
             if (trim($name) === $queue) {
@@ -108,35 +184,9 @@ final class MailTestingWorkerStatus
         return false;
     }
 
-    public static function commandListensToQueue(string $commandLine, string $queue): bool
+    private static function heartbeatKey(string $queue): string
     {
-        if (preg_match('/\bqueue:(?:work|listen)\b/', $commandLine) !== 1) {
-            return false;
-        }
-
-        if (preg_match('/--queue(?:=|\s+)["\']?([^\s"\']+)/', $commandLine, $matches) === 1) {
-            return self::listensToQueue($matches[1], $queue);
-        }
-
-        return false;
-    }
-
-    public static function heartbeatKey(): string
-    {
-        return 'mail-testing.worker-heartbeat.'.self::queueName();
-    }
-
-    private static function processIsListening(): bool
-    {
-        $queue = self::queueName();
-
-        foreach (self::phpCommandLines() as $line) {
-            if (self::commandListensToQueue($line, $queue)) {
-                return true;
-            }
-        }
-
-        return false;
+        return 'mail-testing.worker-heartbeat.'.$queue;
     }
 
     /**

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\MailTesting\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 use Moox\MailTemplate\Models\MailTemplate;
 use Moox\MailTesting\Enums\Engine;
 use Moox\MailTesting\Enums\PersistBackend;
@@ -20,6 +21,7 @@ class RenderMailTestingCommand extends Command
         {--engine=php : php or node}
         {--persist=storage : storage or database}
         {--template= : Mail template slug}
+        {--locale= : Translation locale on the template}
         {--validation=soft : skip, soft or strict}
         {--minify : Minify HTML}
         {--beautify : Beautify HTML}
@@ -67,6 +69,12 @@ class RenderMailTestingCommand extends Command
             return self::FAILURE;
         }
 
+        $locale = $this->locale($templateSlug);
+
+        if ($locale === false) {
+            return self::FAILURE;
+        }
+
         $options = [
             'validation_level' => $validation->value,
             'minify' => (bool) $this->option('minify'),
@@ -74,6 +82,7 @@ class RenderMailTestingCommand extends Command
             'keep_comments' => (bool) $this->option('keep-comments'),
             'ignore_includes' => (bool) $this->option('ignore-includes'),
             'template_slug' => $templateSlug,
+            'locale' => $locale,
         ];
 
         $run = MailTestingRun::query()->create([
@@ -86,7 +95,7 @@ class RenderMailTestingCommand extends Command
             'options_fingerprint' => MailTestingRun::fingerprint($count, $persist, $options),
         ]);
 
-        $this->info("Run {$run->getKey()}: {$count} mails, template={$templateSlug}, engine={$engine->value}, persist={$persist->value}");
+        $this->info("Run {$run->getKey()}: {$count} mails, template={$templateSlug}".($locale !== null ? ", locale={$locale}" : '').", engine={$engine->value}, persist={$persist->value}");
 
         $service->execute($run);
 
@@ -125,5 +134,29 @@ class RenderMailTestingCommand extends Command
         }
 
         return $slug;
+    }
+
+    private function locale(string $templateSlug): string|false|null
+    {
+        $locale = $this->option('locale');
+
+        if (! is_string($locale) || $locale === '') {
+            return null;
+        }
+
+        $exists = MailTemplate::query()
+            ->where('slug', $templateSlug)
+            ->whereHas('translations', function (Builder $query) use ($locale): void {
+                $query->where('locale', $locale);
+            })
+            ->exists();
+
+        if (! $exists) {
+            $this->error("Locale {$locale} is not on template {$templateSlug}.");
+
+            return false;
+        }
+
+        return $locale;
     }
 }
