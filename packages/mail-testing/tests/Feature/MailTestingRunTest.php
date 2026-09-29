@@ -13,7 +13,6 @@ use Moox\MailTesting\Enums\PersistBackend;
 use Moox\MailTesting\Enums\RunStatus;
 use Moox\MailTesting\Models\MailTestingMessage;
 use Moox\MailTesting\Models\MailTestingRun;
-use Moox\MailTesting\Support\EnsureTestTemplate;
 use Moox\MailTesting\Support\LoadMailTemplateMigrations;
 use Moox\MailTesting\Support\MailTestingRunService;
 use Tests\TestCase;
@@ -24,12 +23,18 @@ beforeEach(function (): void {
     LoadMailTemplateMigrations::run();
     Storage::fake((string) config('mail-testing.disk', 'local'));
 
-    $source = MailLayout::factory()->create(['slug' => 'login-link']);
-    app(EnsureTestTemplate::class)->ensure((int) $source->getKey());
+    MailTemplate::factory()
+        ->translation([
+            'title' => 'Login',
+            'mail_content' => '<mj-text>{anrede}</mj-text><mj-text>{displayName}</mj-text>',
+            'footer' => null,
+        ])
+        ->create(['slug' => 'login-link']);
 });
 
 it('renders personalized html and records three clocks plus total wall time', function (): void {
     $this->artisan('mail-testing:render', [
+        '--template' => 'login-link',
         '--count' => 2,
         '--engine' => 'php',
         '--persist' => 'storage',
@@ -57,15 +62,20 @@ it('renders personalized html and records three clocks plus total wall time', fu
         ->and($html)->not->toContain('<mjml');
 });
 
+it('fails when the template option is missing', function (): void {
+    $this->artisan('mail-testing:render', [
+        '--count' => 1,
+        '--engine' => 'php',
+    ])->assertFailed();
+
+    expect(MailTestingRun::query()->count())->toBe(0);
+});
+
 it('interpolates demo variables into the rendered html', function (): void {
-    $layout = MailLayout::query()->where('slug', 'login-link')->first();
-
-    expect($layout)->not->toBeNull();
-
-    app(EnsureTestTemplate::class)->ensure(
-        (int) $layout->getKey(),
-        '<mj-text>Rechnung {invoiceNumber} für {firstName}</mj-text>',
-    );
+    $template = MailTemplate::query()->where('slug', 'login-link')->first();
+    $template?->translations()->first()?->forceFill([
+        'mail_content' => '<mj-text>Rechnung {invoiceNumber} für {firstName}</mj-text>',
+    ])->save();
 
     $options = [
         'validation_level' => 'soft',
@@ -74,6 +84,7 @@ it('interpolates demo variables into the rendered html', function (): void {
         'keep_comments' => false,
         'ignore_includes' => false,
         'recipient_mode' => 'demo',
+        'template_slug' => 'login-link',
         'variables' => [
             ['token' => 'invoiceNumber', 'mode' => 'demo', 'value' => 'RE-2026-001'],
         ],
@@ -99,23 +110,37 @@ it('interpolates demo variables into the rendered html', function (): void {
         ->and($html)->not->toContain('{invoiceNumber}');
 });
 
-it('uses the template layout unless the run selects another one', function (): void {
-    $templateLayout = MailLayout::query()->where('slug', 'login-link')->first();
-    $templateFooter = $templateLayout?->translations()->first();
-    $templateFooter?->forceFill([
-        'footer' => '<mj-text>FOOTER-TEMPLATE</mj-text>',
+it('renders the selected template without changing the original', function (): void {
+    $first = MailTemplate::query()->where('slug', 'login-link')->first();
+    $first?->mailLayout?->translations()->first()?->forceFill([
+        'footer' => '<mj-text>FOOTER-LOGIN</mj-text>',
+    ])->save();
+    $first?->translations()->first()?->forceFill([
+        'mail_content' => '<mj-text>INHALT-LOGIN</mj-text>',
     ])->save();
 
-    $selected = MailLayout::factory()
+    $invoiceLayout = MailLayout::factory()
         ->translation([
             'title' => 'Rechnung',
-            'footer' => '<mj-text>FOOTER-AUSWAHL</mj-text>',
+            'footer' => '<mj-text>FOOTER-RECHNUNG</mj-text>',
         ])
-        ->create(['slug' => 'rechnung']);
+        ->create(['slug' => 'rechnung-layout']);
 
-    app(EnsureTestTemplate::class)->ensure((int) $templateLayout?->getKey(), '<mj-text>Inhalt</mj-text>');
+    MailTemplate::factory()
+        ->translation([
+            'title' => 'Rechnung',
+            'mail_content' => '<mj-text>INHALT-RECHNUNG</mj-text>',
+            'footer' => null,
+        ])
+        ->create([
+            'slug' => 'rechnung',
+            'mail_layout_id' => $invoiceLayout->getKey(),
+        ]);
 
-    $render = function (?int $layoutId): string {
+    $storedLayoutId = $first?->mail_layout_id;
+    $storedContent = $first?->translations()->first()?->mail_content;
+
+    $render = function (string $slug): string {
         $options = [
             'validation_level' => 'soft',
             'minify' => false,
@@ -124,7 +149,7 @@ it('uses the template layout unless the run selects another one', function (): v
             'ignore_includes' => false,
             'recipient_mode' => 'demo',
             'variables' => [],
-            'layout_id' => $layoutId,
+            'template_slug' => $slug,
         ];
 
         $run = MailTestingRun::query()->create([
@@ -145,16 +170,24 @@ it('uses the template layout unless the run selects another one', function (): v
             ?->resolvedHtml();
     };
 
-    $storedLayoutId = MailTemplate::query()->where('slug', 'test')->value('mail_layout_id');
+    expect($render('login-link'))
+        ->toContain('FOOTER-LOGIN')
+        ->toContain('INHALT-LOGIN')
+        ->not->toContain('FOOTER-RECHNUNG')
+        ->not->toContain('INHALT-RECHNUNG');
 
-    expect($render(null))->toContain('FOOTER-TEMPLATE')->not->toContain('FOOTER-AUSWAHL');
-
-    expect($render((int) $selected->getKey()))->toContain('FOOTER-AUSWAHL')->not->toContain('FOOTER-TEMPLATE')
-        ->and(MailTemplate::query()->where('slug', 'test')->value('mail_layout_id'))->toBe($storedLayoutId);
+    expect($render('rechnung'))
+        ->toContain('FOOTER-RECHNUNG')
+        ->toContain('INHALT-RECHNUNG')
+        ->not->toContain('FOOTER-LOGIN')
+        ->and(MailTemplate::query()->where('slug', 'login-link')->value('mail_layout_id'))->toBe($storedLayoutId)
+        ->and(MailTemplate::query()->where('slug', 'login-link')->first()?->translations()->first()?->mail_content)
+        ->toBe($storedContent);
 });
 
 it('stores html in the database when asked', function (): void {
     $this->artisan('mail-testing:render', [
+        '--template' => 'login-link',
         '--count' => 1,
         '--engine' => 'php',
         '--persist' => 'database',

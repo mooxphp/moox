@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\MailTesting\Support;
 
 use Illuminate\Support\Facades\Storage;
-use Moox\MailTemplate\Models\MailLayout;
 use Moox\MailTemplate\Models\MailTemplate;
 use Moox\MailTemplate\Support\MailTemplateRenderer;
 use Moox\MailTesting\Enums\Engine;
@@ -37,13 +36,17 @@ final class MailTestingRunService
         config(['mjml.use_php_renderer' => $run->engine === Engine::Php]);
 
         try {
-            $template = $this->renderer->find((string) config('mail-testing.template_slug', 'test'));
+            $slug = is_array($run->options) ? ($run->options['template_slug'] ?? null) : null;
 
-            if (! $template instanceof MailTemplate) {
-                throw new RuntimeException('Test mail template is missing. Create it from the Mail Testing page.');
+            if (! is_string($slug) || $slug === '') {
+                throw new RuntimeException(__('mail-testing::translations.template_required'));
             }
 
-            $this->applyLayout($template, is_array($run->options) ? ($run->options['layout_id'] ?? null) : null);
+            $template = $this->renderer->find($slug);
+
+            if (! $template instanceof MailTemplate) {
+                throw new RuntimeException(__('mail-testing::translations.template_missing'));
+            }
 
             $composeTotal = 0;
             $convertTotal = 0;
@@ -136,23 +139,6 @@ final class MailTestingRunService
             'storage_path' => $path,
             'html' => $storedHtml,
         ]);
-    }
-
-    private function applyLayout(MailTemplate $template, mixed $layoutId): void
-    {
-        if (! is_numeric($layoutId) || (int) $layoutId < 1) {
-            return;
-        }
-
-        $layout = MailLayout::query()->with('translations')->find((int) $layoutId);
-
-        if (! $layout instanceof MailLayout) {
-            throw new RuntimeException(__('mail-testing::translations.layout_missing'));
-        }
-
-        $template->mail_layout_id = $layout->getKey();
-        $template->unsetRelation('mailLayout');
-        $template->setRelation('mailLayout', $layout);
     }
 
     private function elapsedMs(int $startedAt): int

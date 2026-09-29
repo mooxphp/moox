@@ -7,7 +7,6 @@ namespace Moox\MailTesting\Pages;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ToggleButtons;
@@ -22,7 +21,7 @@ use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Illuminate\Contracts\Support\Htmlable;
-use Moox\MailTemplate\Models\MailLayout;
+use Moox\MailTemplate\Models\MailTemplate;
 use Moox\MailTesting\Enums\Engine;
 use Moox\MailTesting\Enums\FillMode;
 use Moox\MailTesting\Enums\PersistBackend;
@@ -30,7 +29,6 @@ use Moox\MailTesting\Enums\RunStatus;
 use Moox\MailTesting\Jobs\RenderMailTestingRunJob;
 use Moox\MailTesting\Models\MailTestingMessage;
 use Moox\MailTesting\Models\MailTestingRun;
-use Moox\MailTesting\Support\EnsureTestTemplate;
 use Moox\MailTesting\Support\HtmlLength;
 use Moox\MailTesting\Support\MailTestingRunService;
 use Moox\MailTesting\Support\MailTestingWorkerStatus;
@@ -96,7 +94,7 @@ class MailTestingPage extends Page
             'ignore_includes' => false,
             'recipient_mode' => $saved['recipient_mode'],
             'variables' => $saved['variables'],
-            'source_layout_id' => null,
+            'source_template_slug' => null,
         ]);
     }
 
@@ -114,15 +112,17 @@ class MailTestingPage extends Page
                     ->icon('heroicon-o-play')
                     ->columns(['default' => 1, 'md' => 2])
                     ->schema([
-                        Select::make('source_layout_id')
-                            ->label(__('mail-testing::translations.source_layout'))
-                            ->placeholder(__('mail-testing::translations.source_layout_placeholder'))
-                            ->helperText(__('mail-testing::translations.source_layout_help'))
-                            ->options(fn (): array => MailLayout::query()
+                        Select::make('source_template_slug')
+                            ->label(__('mail-testing::translations.source_template'))
+                            ->placeholder(__('mail-testing::translations.source_template_placeholder'))
+                            ->helperText(__('mail-testing::translations.source_template_help'))
+                            ->options(fn (): array => MailTemplate::query()
                                 ->orderBy('slug')
-                                ->pluck('slug', 'id')
+                                ->pluck('slug', 'slug')
                                 ->all())
                             ->searchable()
+                            ->required()
+                            ->live()
                             ->columnSpanFull(),
                         TextInput::make('count')
                             ->label(__('mail-testing::translations.count'))
@@ -262,31 +262,6 @@ class MailTestingPage extends Page
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('ensureTemplate')
-                ->label(__('mail-testing::translations.ensure_template'))
-                ->icon('heroicon-o-document-plus')
-                ->color('gray')
-                ->modalHeading(__('mail-testing::translations.ensure_template_heading'))
-                ->modalDescription(__('mail-testing::translations.ensure_template_description'))
-                ->modalSubmitActionLabel(__('mail-testing::translations.ensure_template_submit'))
-                ->modalWidth(Width::FiveExtraLarge)
-                ->fillForm(fn (): array => [
-                    'mail_content' => EnsureTestTemplate::currentOrDefaultContent(),
-                ])
-                ->schema([
-                    Textarea::make('mail_content')
-                        ->label(__('mail-testing::translations.mail_content'))
-                        ->helperText(__('mail-testing::translations.mail_content_help'))
-                        ->rows(18)
-                        ->required()
-                        ->extraInputAttributes([
-                            'class' => 'font-mono text-sm',
-                            'spellcheck' => 'false',
-                        ]),
-                ])
-                ->action(function (array $data): void {
-                    $this->saveTestTemplate((string) ($data['mail_content'] ?? ''));
-                }),
             Action::make('start')
                 ->label(fn (): string => MailTestingWorkerStatus::shouldQueue()
                     ? __('mail-testing::translations.start_queued')
@@ -384,30 +359,6 @@ class MailTestingPage extends Page
         return MailTestingWorkerStatus::renderCommand($this->data ?? []);
     }
 
-    public function saveTestTemplate(string $mailContent): void
-    {
-        $selectedLayout = $this->form->getState()['source_layout_id'] ?? null;
-
-        try {
-            app(EnsureTestTemplate::class)->ensure(
-                filled($selectedLayout) ? (int) $selectedLayout : null,
-                $mailContent,
-            );
-        } catch (Throwable $exception) {
-            Notification::make()
-                ->danger()
-                ->title($exception->getMessage())
-                ->send();
-
-            return;
-        }
-
-        Notification::make()
-            ->success()
-            ->title(__('mail-testing::translations.template_ready'))
-            ->send();
-    }
-
     public function saveVariables(): void
     {
         $state = $this->form->getState();
@@ -438,7 +389,7 @@ class MailTestingPage extends Page
             'keep_comments' => (bool) $state['keep_comments'],
             'ignore_includes' => (bool) $state['ignore_includes'],
             'recipient_mode' => $recipient->value,
-            'layout_id' => filled($state['source_layout_id'] ?? null) ? (int) $state['source_layout_id'] : null,
+            'template_slug' => (string) ($state['source_template_slug'] ?? ''),
             'variables' => array_map(
                 fn (VariableBinding $binding): array => $binding->toArray(),
                 VariableBinding::collect($state['variables'] ?? []),

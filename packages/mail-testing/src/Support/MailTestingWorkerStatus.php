@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\MailTesting\Support;
 
 use Illuminate\Support\Facades\Cache;
-use Moox\MailTemplate\Models\MailLayout;
 
 final class MailTestingWorkerStatus
 {
@@ -56,7 +55,7 @@ final class MailTestingWorkerStatus
             '--count='.(int) ($state['count'] ?? 1),
             '--engine='.(string) ($state['engine'] ?? 'php'),
             '--persist='.(string) ($state['persist_backend'] ?? 'storage'),
-            ...self::layoutFlag($state),
+            ...self::templateFlag($state),
             '--validation='.(string) ($state['validation_level'] ?? 'soft'),
         ];
 
@@ -78,19 +77,15 @@ final class MailTestingWorkerStatus
      * @param  array<string, mixed>  $state
      * @return list<string>
      */
-    private static function layoutFlag(array $state): array
+    private static function templateFlag(array $state): array
     {
-        if (! filled($state['source_layout_id'] ?? null)) {
-            return [];
-        }
-
-        $slug = MailLayout::query()->whereKey((int) $state['source_layout_id'])->value('slug');
+        $slug = $state['source_template_slug'] ?? null;
 
         if (! is_string($slug) || $slug === '') {
             return [];
         }
 
-        return ['--layout='.$slug];
+        return ['--template='.$slug];
     }
 
     public static function rememberIfListening(string $queues): void

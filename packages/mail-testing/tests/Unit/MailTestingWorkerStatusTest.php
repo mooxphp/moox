@@ -17,7 +17,8 @@ it('builds the worker and render commands', function (): void {
             'persist_backend' => 'storage',
             'validation_level' => 'soft',
             'minify' => true,
-        ]))->toBe('php artisan mail-testing:render --count=100 --engine=php --persist=storage --validation=soft --minify');
+            'source_template_slug' => 'login',
+        ]))->toBe('php artisan mail-testing:render --count=100 --engine=php --persist=storage --template=login --validation=soft --minify');
 });
 
 it('detects queue:work command lines that listen on mail-testing', function (): void {

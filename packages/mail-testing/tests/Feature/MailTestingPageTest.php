@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
-use Moox\MailTemplate\Models\MailLayout;
 use Moox\MailTemplate\Models\MailTemplate;
 use Moox\MailTesting\Enums\Engine;
 use Moox\MailTesting\Enums\PersistBackend;
@@ -33,7 +32,7 @@ beforeEach(function (): void {
 
     app()->setLocale('de');
     Storage::fake((string) config('mail-testing.disk', 'local'));
-    MailLayout::factory()->create(['slug' => 'invoice']);
+    MailTemplate::factory()->create(['slug' => 'invoice']);
 });
 
 it('shows grouped test settings instead of a mixed three-column form', function (): void {
@@ -44,7 +43,8 @@ it('shows grouped test settings instead of a mixed three-column form', function 
         ->assertSee(__('mail-testing::translations.save_variables'))
         ->assertSee(__('mail-testing::translations.fieldset_mjml'))
         ->assertSee(__('mail-testing::translations.fieldset_variables_help'))
-        ->assertSee(__('mail-testing::translations.source_layout'))
+        ->assertSee(__('mail-testing::translations.source_template'))
+        ->assertDontSee('Template setzen')
         ->assertSee('php artisan queue:work --queue=mail-testing --tries=1 --timeout=0')
         ->assertSee('php artisan mail-testing:render')
         ->assertDontSee('keepComments')
@@ -54,28 +54,6 @@ it('shows grouped test settings instead of a mixed three-column form', function 
         ->assertSeeHtml('form="form"');
 
     expect(substr_count($page->html(), 'isCollapsed: true'))->toBe(2);
-});
-
-it('saves custom mjml from the template modal', function (): void {
-    $mjml = <<<'MJML'
-<mj-text>Hallo {displayName}</mj-text>
-<mj-button href="https://www.heco.de">Zur Website</mj-button>
-MJML;
-
-    $layout = MailLayout::query()->where('slug', 'invoice')->first();
-
-    Livewire::test(MailTestingPage::class)
-        ->set('data.source_layout_id', $layout?->getKey())
-        ->callAction('ensureTemplate', [
-            'mail_content' => $mjml,
-        ])
-        ->assertNotified(__('mail-testing::translations.template_ready'));
-
-    $template = MailTemplate::query()->where('slug', 'test')->first();
-
-    expect($template)->not->toBeNull()
-        ->and($template?->mailLayout?->slug)->toBe('invoice')
-        ->and($template?->translations->first()?->mail_content)->toBe($mjml);
 });
 
 it('lists php and node run times in one table so the values line up', function (): void {
@@ -155,6 +133,7 @@ it('starts the run inline when no mail-testing worker is listening', function ()
     Queue::fake();
 
     Livewire::test(MailTestingPage::class)
+        ->set('data.source_template_slug', 'invoice')
         ->set('data.count', 2)
         ->call('start')
         ->assertNotified();
@@ -171,6 +150,7 @@ it('queues the run when the mail-testing worker heartbeat is fresh', function ()
     MailTestingWorkerStatus::rememberIfListening('mail-testing');
 
     Livewire::test(MailTestingPage::class)
+        ->set('data.source_template_slug', 'invoice')
         ->set('data.count', 2)
         ->call('start')
         ->assertSee(__('mail-testing::translations.start_queued'))
@@ -187,6 +167,7 @@ it('stores recipient mode and variable bindings on the queued run', function ():
     MailTestingWorkerStatus::rememberIfListening('mail-testing');
 
     Livewire::test(MailTestingPage::class)
+        ->set('data.source_template_slug', 'invoice')
         ->set('data.count', 1)
         ->set('data.recipient_mode', 'demo')
         ->set('data.variables', [
@@ -198,38 +179,37 @@ it('stores recipient mode and variable bindings on the queued run', function ():
     $run = MailTestingRun::query()->first();
 
     expect($run?->options['recipient_mode'])->toBe('demo')
-        ->and($run?->options['layout_id'])->toBeNull()
+        ->and($run?->options['template_slug'])->toBe('invoice')
         ->and($run?->options['variables'])->toBe([
             ['token' => 'invoiceNumber', 'mode' => 'demo', 'value' => 'RE-2026-001'],
         ]);
 });
 
-it('stores the selected layout on the queued run', function (): void {
+it('stores the selected template on the queued run', function (): void {
     config(['queue.default' => 'database']);
     Cache::flush();
     Queue::fake();
     MailTestingWorkerStatus::rememberIfListening('mail-testing');
 
-    $layout = MailLayout::query()->where('slug', 'invoice')->first();
-
     Livewire::test(MailTestingPage::class)
-        ->set('data.source_layout_id', $layout?->getKey())
+        ->set('data.source_template_slug', 'invoice')
         ->set('data.count', 1)
         ->call('start')
         ->assertNotified();
 
-    expect(MailTestingRun::query()->first()?->options['layout_id'])->toBe($layout?->getKey())
+    expect(MailTestingRun::query()->first()?->options['template_slug'])->toBe('invoice')
         ->and(MailTestingWorkerStatus::renderCommand([
             'count' => 1,
             'engine' => 'php',
             'persist_backend' => 'storage',
             'validation_level' => 'soft',
-            'source_layout_id' => $layout?->getKey(),
-        ]))->toContain('--layout=invoice');
+            'source_template_slug' => 'invoice',
+        ]))->toContain('--template=invoice');
 });
 
 it('saves variables and restores them on the next visit', function (): void {
     Livewire::test(MailTestingPage::class)
+        ->set('data.source_template_slug', 'invoice')
         ->set('data.recipient_mode', 'demo')
         ->set('data.variables', [
             ['token' => 'invoiceNumber', 'mode' => 'random', 'value' => 'RE-####'],

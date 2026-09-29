@@ -6,7 +6,7 @@ The package is part of the **Moox ecosystem** — Filament packages for Laravel 
 
 ## Features
 
-- Filament page **MJML run** (`/admin/mail-testing`): configure a run, set the test template, start it, watch progress
+- Filament page **MJML run** (`/admin/mail-testing`): pick an existing mail template, configure a run, start it, watch progress
 - Filament resource **Test mails**: list, filter, preview, compare PHP and Node HTML, delete
 - Two engines per run: PHP (`shyim/mjml-php` via `moox/mjml`) or Node (`spatie/mjml-php`)
 - Persist HTML on the configured disk or in the database
@@ -74,8 +74,6 @@ That adds:
 | --- | --- | --- | --- |
 | `default_count` | `MAIL_TESTING_DEFAULT_COUNT` | `500` | Default number of mails on the form |
 | `min_count` | — | `1` | Minimum count |
-| `template_slug` | — | `test` | Mail template used for every run |
-| `layout_slug` | — | `mail-testing` | No longer used. The run uses the test template layout, or the layout selected on the page |
 | `disk` | `MAIL_TESTING_DISK` | `local` | Disk for HTML files and the saved variable list |
 | `timeout` | `MAIL_TESTING_JOB_TIMEOUT` | `0` | Queue job timeout in seconds (`0` = no limit) |
 | `progress_every` | — | `25` | How often the run row is updated during a run |
@@ -87,8 +85,8 @@ On disk `local`, HTML lives under `storage/app/private/mail-testing/{runId}/{pos
 ## First run (Filament)
 
 1. Open **Mail Testing → MJML run**.
-2. **Set template** stores the MJML body on the test template. Leave **source layout** empty to keep the layout already on that template. Choose a layout to attach its logo, colors, and footer to the template. Default tokens: `{anrede}`, `{displayName}`, `{firstName}`, `{lastName}`.
-3. Set **count**, **engine** (PHP or Node), and **storage**. An empty source layout uses the template layout. A selected layout is used for that run only.
+2. Choose an existing **mail template**. The run uses that template’s layout and body as stored. The original is not changed.
+3. Set **count**, **engine** (PHP or Node), and **storage**.
 4. Optionally add tokens under **Variables** and click **Save**.
 5. Start the run.
 
@@ -110,7 +108,7 @@ These options are stored on the run as JSON and included in `options_fingerprint
 
 | Option | Values | Notes |
 | --- | --- | --- |
-| Source layout | Existing `mail_layouts.id` | Used only when creating/updating the test template, not during convert |
+| Mail template | Existing `mail_templates.slug` | Required. Layout and body come from that template. The original is not written. |
 | Count | Integer ≥ `min_count` | Number of HTML mails in the run |
 | Engine | `php`, `node` | Sets `mjml.use_php_renderer` for this run, then restores the previous value |
 | Storage | `storage`, `database` | `storage`: one file per mail. `database`: HTML in `mail_testing_messages.html` |
@@ -160,12 +158,13 @@ PHP validation is stricter than Node. Mixed body MJML (`mj-text` then `mj-sectio
 ## Artisan
 
 ```bash
-php artisan mail-testing:render --count=50 --engine=php --persist=storage --validation=soft
-php artisan mail-testing:render --count=50 --engine=node --persist=storage --validation=soft
+php artisan mail-testing:render --template=login --count=50 --engine=php --persist=storage --validation=soft
+php artisan mail-testing:render --template=login --count=50 --engine=node --persist=storage --validation=soft
 ```
 
 | Flag | Default | Same as UI |
 | --- | --- | --- |
+| `--template=` | (required) | Mail template slug |
 | `--count=` | `mail-testing.default_count` | Count |
 | `--engine=` | `php` | `php` or `node` |
 | `--persist=` | `storage` | `storage` or `database` |
@@ -175,7 +174,7 @@ php artisan mail-testing:render --count=50 --engine=node --persist=storage --val
 | `--keep-comments` | off | Keep comments |
 | `--ignore-includes` | off | Ignore includes |
 
-The command runs **inline** (no queue). Recipient mode and the token list are not CLI flags; they come from `mail-testing-variables.json` only if you start from Filament. The Artisan command currently stores only the MJML flags on `options` (no `recipient_mode` / `variables`), so factory random contacts are used unless you extend the command.
+The command runs **inline** (no queue). Recipient mode and the token list are not CLI flags; they come from `mail-testing-variables.json` only if you start from Filament. The Artisan command stores MJML flags and `template_slug` on `options` (no `recipient_mode` / `variables`), so factory random contacts are used unless you extend the command.
 
 The Filament **Environment** block shows the equivalent `mail-testing:render` line for the current form (without variables).
 
@@ -250,7 +249,7 @@ For each position `1…count`:
 3. `MailTestingConverter::convert()` → `Mjml::new()` with the run’s MJML flags → HTML.
 4. Persist + `html_hash` + `byte_length` + per-mail timings.
 
-The template slug is always `mail-testing.template_slug` (`test`). Create it from the page before the first run.
+The run uses the template slug stored on `options.template_slug`. Pick it on the page or pass `--template=` to Artisan.
 
 ## License
 

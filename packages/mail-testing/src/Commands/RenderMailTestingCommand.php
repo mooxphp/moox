@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Moox\MailTesting\Commands;
 
 use Illuminate\Console\Command;
-use Moox\MailTemplate\Models\MailLayout;
+use Moox\MailTemplate\Models\MailTemplate;
 use Moox\MailTesting\Enums\Engine;
 use Moox\MailTesting\Enums\PersistBackend;
 use Moox\MailTesting\Enums\RunStatus;
@@ -19,7 +19,7 @@ class RenderMailTestingCommand extends Command
         {--count= : Number of mails to generate}
         {--engine=php : php or node}
         {--persist=storage : storage or database}
-        {--layout= : Layout slug. Empty uses the layout on the test template}
+        {--template= : Mail template slug}
         {--validation=soft : skip, soft or strict}
         {--minify : Minify HTML}
         {--beautify : Beautify HTML}
@@ -61,9 +61,9 @@ class RenderMailTestingCommand extends Command
             return self::FAILURE;
         }
 
-        $layoutId = $this->layoutId();
+        $templateSlug = $this->templateSlug();
 
-        if ($layoutId === false) {
+        if ($templateSlug === false) {
             return self::FAILURE;
         }
 
@@ -73,7 +73,7 @@ class RenderMailTestingCommand extends Command
             'beautify' => (bool) $this->option('beautify'),
             'keep_comments' => (bool) $this->option('keep-comments'),
             'ignore_includes' => (bool) $this->option('ignore-includes'),
-            'layout_id' => $layoutId,
+            'template_slug' => $templateSlug,
         ];
 
         $run = MailTestingRun::query()->create([
@@ -86,7 +86,7 @@ class RenderMailTestingCommand extends Command
             'options_fingerprint' => MailTestingRun::fingerprint($count, $persist, $options),
         ]);
 
-        $this->info("Run {$run->getKey()}: {$count} mails, engine={$engine->value}, persist={$persist->value}");
+        $this->info("Run {$run->getKey()}: {$count} mails, template={$templateSlug}, engine={$engine->value}, persist={$persist->value}");
 
         $service->execute($run);
 
@@ -106,22 +106,24 @@ class RenderMailTestingCommand extends Command
         return $run->status === RunStatus::Completed ? self::SUCCESS : self::FAILURE;
     }
 
-    private function layoutId(): int|false|null
+    private function templateSlug(): string|false
     {
-        $slug = $this->option('layout');
+        $slug = $this->option('template');
 
         if (! is_string($slug) || $slug === '') {
-            return null;
-        }
-
-        $layout = MailLayout::query()->where('slug', $slug)->first();
-
-        if (! $layout instanceof MailLayout) {
-            $this->error("Layout {$slug} was not found.");
+            $this->error('A template slug is required.');
 
             return false;
         }
 
-        return (int) $layout->getKey();
+        $template = MailTemplate::query()->where('slug', $slug)->first();
+
+        if (! $template instanceof MailTemplate) {
+            $this->error("Template {$slug} was not found.");
+
+            return false;
+        }
+
+        return $slug;
     }
 }
