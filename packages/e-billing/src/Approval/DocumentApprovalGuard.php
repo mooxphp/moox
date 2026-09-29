@@ -7,6 +7,7 @@ namespace Moox\EBilling\Approval;
 use InvalidArgumentException;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\CreditNoteSign;
 
 final class DocumentApprovalGuard
 {
@@ -24,8 +25,13 @@ final class DocumentApprovalGuard
             return false;
         }
 
+        if (CreditNoteSign::hasNegativeTotal($document->invoice)) {
+            return false;
+        }
+
         return ! EbillingDocument::hasBlockingMustFieldFindings(
             is_array($document->field_validations) ? $document->field_validations : null,
+            $document->profileDocumentType(),
         );
     }
 

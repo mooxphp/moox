@@ -13,4 +13,5 @@ enum AutoApproveFailureReason: string
     case AnomalyFlagged = 'anomaly_flagged';
     case AutoApproveDisabled = 'auto_approve_disabled';
     case ApprovalNotPending = 'approval_not_pending';
+    case CreditNoteNegativeTotal = 'credit_note_negative_total';
 }
