@@ -21,6 +21,7 @@ class UserDevicePlugin implements Plugin
 
     public function register(Panel $panel): void
     {
+        // Plugin present on the panel is not enough — master switch must be on.
         if (! config('user-device.enabled', false)) {
             return;
         }

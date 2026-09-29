@@ -24,7 +24,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | Master switch for device tracking on login and session sync.
-    | When false: no tracking, no trust middleware, no devices resource.
+    | When false: no tracking, no trust middleware, no devices resource —
+    | even if UserDevicePlugin is listed on a panel.
+    | When true: only panels that register UserDevicePlugin get track/mail/trust.
     |
     */
     'enabled' => env('USER_DEVICE_ENABLED', false),
@@ -143,8 +145,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | Only when enabled: Filament resource (nav + /user-devices) registers on
-    | these panel IDs. Other panels with the plugin still get trust middleware
-    | and new-device mail (trust link). Empty array = no resource UI anywhere.
+    | these panel IDs. Tracking, trust middleware and new-device mail only run
+    | on panels that register UserDevicePlugin (admin/portal). Empty array =
+    | no resource UI anywhere; plugin still controls logic per panel.
     |
     */
     'resource_panels' => ['admin'],
