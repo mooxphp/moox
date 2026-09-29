@@ -94,7 +94,7 @@ Published as `config/e-billing.php`.
 | `default_customer_country` | Transitional fallback buyer country when the parser derives none (default `DE`); removed in a future master-data phase |
 | `supplier` | Central supplier master data copied onto invoices as a snapshot at creation time |
 | `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length`, `name_legal_form_stop_words`, `buyer_address_roles` (billing + postal), `delivery_address_roles` (delivery first, then postal/billing fallback) |
-| `field_validation` | MoSCoW priority rules for invoice and line fields |
+| `field_validation` | MoSCoW priority rules for invoice and line fields. `credit_note_*` siblings (fields, line fields, contextual-should lists) apply to BT-3 `381` documents; a host that omits a `credit_note_*` key falls back to the `invoice_*` key (ADR 0009) |
 | `approval` | Dispatch approval gate: `required`, `auto_approve_enabled` |
 | `notification` | Review announce strategy: `immediate` / `batched`, batch key, window minutes, optional `recorder` class |
 | `escalation` | Overdue-approval scan: `day_counting`, `working_weekdays`, `exclude_dates`, ordered `levels` (`key` / `after` / `unit`); empty `levels` disables the feature |
@@ -219,6 +219,12 @@ Two related checks answer different questions:
 Within awaiting-review statuses, both use the same field predicate (including valid severity releases on **should** fields). When several severities apply, the most severe finding wins.
 
 Changing a field's configured priority changes its behaviour with no code change.
+
+### Document-type profiles (credit notes, corrected invoices)
+
+`FieldValidationProfile` selects which MoSCoW and ViewInvoice-denylist maps apply, keyed on the invoice's `document_type` (BT-3), ADR 0009. `field_validation.document_type_profiles` maps a type code to a key prefix — package default `381 => credit_note`, `384 => corrected_invoice`. A mapped type reads `field_validation.{prefix}_fields` / `{prefix}_line_fields` / `{prefix}_contextual_should` / `{prefix}_line_contextual_should` and `invoice_ui.{prefix}_fields_hidden` / `{prefix}_line_fields_hidden`; unmapped types read the `invoice_*` keys, and a host config that omits a `{prefix}_*` key falls back to the matching `invoice_*` key. The package default config spells out both profiles: the credit-note profile adds `preceding_invoice_number` / `preceding_invoice_date` as `could`, the corrected-invoice profile as `should`; invoices hide both fields.
+
+**Preceding invoice reference (BG-3):** `preceding_invoice_number` / `preceding_invoice_date` map to `Invoice::$preceding_invoices[0]` (BT-25/BT-26). When present, `InvoiceFieldValidator` looks the referenced invoice up among stored invoices — number comparison ignores separators (`30641.25` matches `3064125`) — and never blocks: not found or a differing date is `status: parsed` with a `reason` (`preceding_invoice_not_found` / `preceding_invoice_date_mismatch`); a match sets `matched_id` and ViewInvoice renders `preceding_invoice_number` as a link to that invoice.
 
 ### Duplicate document-number rule
 

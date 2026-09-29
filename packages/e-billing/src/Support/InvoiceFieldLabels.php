@@ -82,6 +82,8 @@ final class InvoiceFieldLabels
             'seller_bank_name' => __('e-billing::fields.seller_bank_name'),
             'buyer_address' => __('e-billing::fields.buyer_address'),
             'buyer_tax_id' => __('e-billing::fields.buyer_tax_id'),
+            'preceding_invoice_number' => __('e-billing::fields.preceding_invoice_number'),
+            'preceding_invoice_date' => __('e-billing::fields.preceding_invoice_date'),
             default => Str::headline(str_replace('_', ' ', $fieldName)),
         };
     }
@@ -158,6 +160,8 @@ final class InvoiceFieldLabels
             'currency' => 'BT-5',
             'due_date' => 'BT-9',
             'customer_reference' => 'BT-10',
+            'preceding_invoice_number' => 'BG-3 / BT-25',
+            'preceding_invoice_date' => 'BG-3 / BT-26',
             'customer_number' => 'BT-46',
             'order_number' => 'BT-13',
             'payment_terms' => 'BT-20',
@@ -255,6 +259,15 @@ final class InvoiceFieldLabels
         // Display-only inbox To — no master-data corroboration yet (deferred).
         if ($field === 'buyer_email') {
             return __('e-billing::fields.hint_info_buyer_email');
+        }
+
+        // Preceding invoice lookup warns without blocking (ADR 0009 addendum).
+        if ($field === 'preceding_invoice_number') {
+            return match ($validation['reason'] ?? null) {
+                'preceding_invoice_not_found' => __('e-billing::fields.hint_warning_preceding_invoice_not_found'),
+                'preceding_invoice_date_mismatch' => __('e-billing::fields.hint_warning_preceding_invoice_date_mismatch'),
+                default => null,
+            };
         }
 
         return null;

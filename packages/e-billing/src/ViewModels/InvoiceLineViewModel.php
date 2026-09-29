@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\EBilling\ViewModels;
 
 use Carbon\Carbon;
+use Moox\EBilling\Support\FieldValidationProfile;
 use Moox\EBilling\Support\InvoiceDisplayNumberFormatter;
 use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\EBilling\Support\InvoiceUiPresentation;
@@ -20,6 +21,7 @@ final class InvoiceLineViewModel
     public function __construct(
         private InvoiceLine $line, // Extend InvoiceLine in your host app if needed
         private array $lineValidations = [],
+        private ?string $documentType = null,
     ) {
         $this->line->loadMissing('allowanceCharges');
     }
@@ -63,7 +65,7 @@ final class InvoiceLineViewModel
 
         return InvoiceUiPresentation::withoutHidden(
             $fields,
-            InvoiceUiPresentation::hiddenLineFields(),
+            InvoiceUiPresentation::hiddenLineFields($this->documentType),
         );
     }
 
@@ -77,6 +79,7 @@ final class InvoiceLineViewModel
             $visible ?? $this->relevantFields(),
             defaultOpen: false,
             map: 'line',
+            documentType: $this->documentType,
         );
     }
 
@@ -127,10 +130,7 @@ final class InvoiceLineViewModel
      */
     private function emptyLineFieldValidation(string $field): array
     {
-        $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
-        $priority = is_array($lineFields) && is_string($lineFields[$field] ?? null)
-            ? $lineFields[$field]
-            : 'could';
+        $priority = FieldValidationProfile::priority($field, $this->documentType, isLineField: true);
 
         if ($priority === 'could') {
             return ['status' => 'not_applicable'];
@@ -140,10 +140,8 @@ final class InvoiceLineViewModel
             return ['status' => 'missing'];
         }
 
-        $contextual = config('e-billing.field_validation.invoice_line_contextual_should', []);
-
         return [
-            'status' => is_array($contextual) && in_array($field, $contextual, true)
+            'status' => in_array($field, FieldValidationProfile::contextualShould($this->documentType, forLines: true), true)
                 ? 'missing'
                 : 'not_applicable',
         ];

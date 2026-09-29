@@ -13,6 +13,7 @@ final class FieldViewData
         public readonly mixed $value,
         public readonly ?array $validation,
         public readonly ?string $hint,
+        public readonly ?string $url = null,
     ) {
     }
 

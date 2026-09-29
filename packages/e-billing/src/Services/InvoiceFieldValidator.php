@@ -17,6 +17,7 @@ use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\InvoiceNumberDuplicateChecker;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
+use Moox\EBilling\Support\PrecedingInvoiceReferences;
 use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceLine;
@@ -324,9 +325,58 @@ class InvoiceFieldValidator
             'shipping_cost', 'packaging_cost', 'minimum_quantity_surcharge', 'freight_flat_rate',
             'discount_amount', 'discount_percent' => $this->validateHeaderChargeField($invoice, $field, $priority),
             'delivery_date' => $this->validateDeliveryDateField($invoice, $priority),
+            'preceding_invoice_number' => $this->validatePrecedingInvoiceNumberField($invoice, $priority),
             default => $this->validateGenericInvoiceField($invoice, $field, $priority),
         };
     }
+
+    /**
+     * BT-25: looks the referenced invoice up among stored documents (separators ignored).
+     * Not finding it, or finding a different BT-26 date, is a warning (`reason`), never a blocking status:
+     * invoices older than the system are legitimately unknown (ADR 0009 addendum).
+     *
+     * @return array{status: string, reason?: string, matched_id?: string}
+     */
+    private function validatePrecedingInvoiceNumberField(Invoice $invoice, string $priority): array
+    {
+        $generic = $this->validateGenericInvoiceField($invoice, 'preceding_invoice_number', $priority);
+
+        if (($generic['status'] ?? null) !== 'parsed') {
+            return $generic;
+        }
+
+        $reference = PrecedingInvoiceReferences::first($invoice->preceding_invoices);
+        if ($reference === null) {
+            return $generic;
+        }
+
+        $original = $this->findPrecedingInvoice($invoice, $reference['number']);
+
+        if (! $original instanceof Invoice) {
+            return ['status' => 'parsed', 'reason' => 'preceding_invoice_not_found'];
+        }
+
+        $originalDate = substr((string) $original->invoice_date, 0, 10);
+
+        if ($reference['date'] !== null && $originalDate !== $reference['date']) {
+            return [
+                'status' => 'parsed',
+                'reason' => 'preceding_invoice_date_mismatch',
+                'matched_id' => (string) $original->getKey(),
+            ];
+        }
+
+        return ['status' => 'parsed', 'matched_id' => (string) $original->getKey()];
+    }
+
+    private function findPrecedingInvoice(Invoice $invoice, string $number): ?Invoice
+    {
+        $comparable = PrecedingInvoiceReferences::comparableNumber($number);
+        $digits = preg_replace('/\D/', '', $number);
+
+        if ($comparable === '' || $digits === null || $digits === '') {
+            return null;
+        }
 
     /**
      * @return array{status: string, source?: string, matched_id?: string, reason?: string}
@@ -720,6 +770,8 @@ class InvoiceFieldValidator
             'payment_means' => $invoice->payment_means?->payment_means_code,
             'vat_category' => $invoice->vat_category,
             'delivery_address' => $invoice->delivery,
+            'preceding_invoice_number' => PrecedingInvoiceReferences::first($invoice->preceding_invoices)['number'] ?? null,
+            'preceding_invoice_date' => PrecedingInvoiceReferences::first($invoice->preceding_invoices)['date'] ?? null,
             default => $invoice->getAttribute($field),
         };
     }

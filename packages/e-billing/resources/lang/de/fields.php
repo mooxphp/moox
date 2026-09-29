@@ -74,6 +74,8 @@ return [
     'seller_bank_name' => 'Bank Lieferant',
     'buyer_address' => 'Empfängeradresse',
     'buyer_tax_id' => 'USt-IdNr. Empfänger',
+    'preceding_invoice_number' => 'Bezugsrechnung',
+    'preceding_invoice_date' => 'Datum Bezugsrechnung',
     'buyer_email' => 'Empfänger-E-Mail',
     'tax_number' => 'Steuernummer',
     'supplier' => 'Lieferant',
@@ -299,6 +301,8 @@ return [
 
     // Field hints — informational (no validation status)
     'hint_info_buyer_email' => 'Aus Posteingang (An) — nicht mit Stammdaten abgeglichen.',
+    'hint_warning_preceding_invoice_not_found' => 'Bezugsrechnung nicht im System gefunden — bitte prüfen (blockiert nicht).',
+    'hint_warning_preceding_invoice_date_mismatch' => 'Datum weicht von der gespeicherten Bezugsrechnung ab — bitte prüfen (blockiert nicht).',
 
     'section_kosit_validations' => 'KoSIT-Validierungen',
     'kosit_validations_empty' => 'Noch keine KoSIT-Validierungen.',

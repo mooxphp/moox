@@ -28,6 +28,7 @@ use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Formats\ArtifactKind;
 use Moox\EBilling\Support\EBillingArtifactNaming;
+use Moox\EBilling\Support\FieldValidationProfile;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\InvoiceModels;
 use Moox\KositValidator\Models\KositValidation;
@@ -553,9 +554,12 @@ class EbillingDocument extends BaseItemModel
             });
     }
 
-    public static function fieldValidationsNeedHumanReview(?array $fieldValidations, ?array $severityReleases): bool
-    {
-        [$invoiceFields, $lineFields] = self::configuredPriorityMaps();
+    public static function fieldValidationsNeedHumanReview(
+        ?array $fieldValidations,
+        ?array $severityReleases,
+        ?string $documentType = null,
+    ): bool {
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps($documentType);
         $validations = is_array($fieldValidations) ? $fieldValidations : [];
 
         if (self::priorityMapBlocksReview($invoiceFields, $validations, $severityReleases)) {
@@ -574,32 +578,12 @@ class EbillingDocument extends BaseItemModel
     /**
      * @return array{0: array<string, string>, 1: array<string, string>}
      */
-    private static function configuredPriorityMaps(): array
+    private static function configuredPriorityMaps(?string $documentType): array
     {
         return [
-            self::stringPriorityMap(config('e-billing.field_validation.invoice_fields', [])),
-            self::stringPriorityMap(config('e-billing.field_validation.invoice_line_fields', [])),
+            FieldValidationProfile::invoiceFields($documentType),
+            FieldValidationProfile::lineFields($documentType),
         ];
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private static function stringPriorityMap(mixed $config): array
-    {
-        if (! is_array($config)) {
-            return [];
-        }
-
-        $map = [];
-
-        foreach ($config as $field => $priority) {
-            if (is_string($field) && is_string($priority)) {
-                $map[$field] = $priority;
-            }
-        }
-
-        return $map;
     }
 
     /**
@@ -802,15 +786,7 @@ class EbillingDocument extends BaseItemModel
             return null;
         }
 
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
-
-        if (! is_array($invoiceFields)) {
-            $invoiceFields = [];
-        }
-        if (! is_array($lineFields)) {
-            $lineFields = [];
-        }
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps($this->profileDocumentType());
 
         $total = 0;
         $valid = 0;
@@ -881,12 +857,7 @@ class EbillingDocument extends BaseItemModel
 
     public function isFullyValidated(): bool
     {
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        if (! is_array($invoiceFields)) {
-            return true;
-        }
-
-        foreach ($invoiceFields as $field => $priority) {
+        foreach (FieldValidationProfile::invoiceFields($this->profileDocumentType()) as $field => $priority) {
             if ($priority !== 'must') {
                 continue;
             }
@@ -904,7 +875,18 @@ class EbillingDocument extends BaseItemModel
         return self::fieldValidationsNeedHumanReview(
             is_array($this->field_validations) ? $this->field_validations : null,
             is_array($this->severity_releases) ? $this->severity_releases : null,
+            $this->profileDocumentType(),
         );
+    }
+
+    /**
+     * BT-3 of the linked invoice; selects the MoSCoW profile (ADR 0009). Null reads the invoice profile.
+     */
+    public function profileDocumentType(): ?string
+    {
+        $type = $this->invoice?->document_type;
+
+        return is_string($type) && $type !== '' ? $type : null;
     }
 
     public function resolveApprovalStatusEnum(): ?DocumentApprovalStatus
@@ -980,23 +962,23 @@ class EbillingDocument extends BaseItemModel
      *
      * @return list<string>
      */
-    public static function missingMustFields(?array $fieldValidations): array
+    public static function missingMustFields(?array $fieldValidations, ?string $documentType = null): array
     {
-        return self::mustFieldsWithStatuses($fieldValidations, ['missing']);
+        return self::mustFieldsWithStatuses($fieldValidations, ['missing'], $documentType);
     }
 
-    public static function hasBlockingMustFieldFindings(?array $fieldValidations): bool
+    public static function hasBlockingMustFieldFindings(?array $fieldValidations, ?string $documentType = null): bool
     {
-        return self::mustFieldsWithStatuses($fieldValidations, ['missing', 'needs_review']) !== [];
+        return self::mustFieldsWithStatuses($fieldValidations, ['missing', 'needs_review'], $documentType) !== [];
     }
 
     /**
      * @param  list<string>  $statuses
      * @return list<string>
      */
-    private static function mustFieldsWithStatuses(?array $fieldValidations, array $statuses): array
+    private static function mustFieldsWithStatuses(?array $fieldValidations, array $statuses, ?string $documentType): array
     {
-        [$invoiceFields, $lineFields] = self::configuredPriorityMaps();
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps($documentType);
         $validations = is_array($fieldValidations) ? $fieldValidations : [];
         $matched = self::collectMustFieldsMatching($invoiceFields, $validations, $statuses);
 
@@ -1045,16 +1027,7 @@ class EbillingDocument extends BaseItemModel
 
     public function resolveConfiguredFieldPriority(string $field, bool $isLineField = false): string
     {
-        $configKey = $isLineField ? 'invoice_line_fields' : 'invoice_fields';
-        $fields = config("e-billing.field_validation.{$configKey}", []);
-
-        if (! is_array($fields)) {
-            return 'could';
-        }
-
-        $priority = $fields[$field] ?? null;
-
-        return is_string($priority) ? $priority : 'could';
+        return FieldValidationProfile::priority($field, $this->profileDocumentType(), $isLineField);
     }
 
     public function resolveFieldValidationStatus(string $field, ?string $lineId = null): ?string
@@ -1151,7 +1124,37 @@ class EbillingDocument extends BaseItemModel
      */
     private static function applyScopeConfiguredFieldBlocksReview(Builder $query): void
     {
-        [$invoiceFields, $lineFields] = self::configuredPriorityMaps();
+        $ownPriorityTypes = FieldValidationProfile::documentTypesWithOwnPriorities();
+
+        if ($ownPriorityTypes === []) {
+            self::applyScopeProfileFieldBlocksReview($query, null);
+
+            return;
+        }
+
+        $query->where(function (Builder $byType) use ($ownPriorityTypes): void {
+            foreach ($ownPriorityTypes as $type) {
+                $byType->orWhere(function (Builder $ofType) use ($type): void {
+                    $ofType->whereHas('invoice', fn (Builder $invoice): Builder => $invoice->where('document_type', $type))
+                        ->where(fn (Builder $inner) => self::applyScopeProfileFieldBlocksReview($inner, $type));
+                });
+            }
+
+            $byType->orWhere(function (Builder $others) use ($ownPriorityTypes): void {
+                $others->whereDoesntHave(
+                    'invoice',
+                    fn (Builder $invoice): Builder => $invoice->whereIn('document_type', $ownPriorityTypes),
+                )->where(fn (Builder $inner) => self::applyScopeProfileFieldBlocksReview($inner, null));
+            });
+        });
+    }
+
+    /**
+     * @param  Builder<EbillingDocument>  $query
+     */
+    private static function applyScopeProfileFieldBlocksReview(Builder $query, ?string $documentType): void
+    {
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps($documentType);
         $fvColumn = $query->qualifyColumn('field_validations');
         $srColumn = $query->qualifyColumn('severity_releases');
         $driver = self::jsonSqlDriver($query);
