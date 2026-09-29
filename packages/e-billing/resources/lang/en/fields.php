@@ -163,6 +163,38 @@ return [
     'tab_needs_review' => 'Review needed',
     'tab_confirmed' => 'Confirmed',
     'tab_deleted' => 'Deleted',
+    'tab_credit_notes' => 'Credit notes',
+    'tab_corrected_invoices' => 'Corrected invoices',
+
+    // Document classification (ADR 0011): label, "when to choose" hint, upload instruction (rule + examples).
+    // Hosts override via lang/vendor/e-billing; example lists merge by index, so keep the same length.
+    'document_classification' => [
+        '381' => [
+            'label' => 'Credit note (381)',
+            'hint' => 'Choose when the original invoice was correct and the amount owed changed afterwards for an independent reason – for example a bonus, a discount or a return. Amounts are stated as positive values. Not meant: self-billing, where the buyer issues the document.',
+            'rule' => 'The original invoice was correct. The amount owed changed afterwards for an independent commercial reason. No reference to the original invoice is needed.',
+            'examples' => [
+                'Year-end rebate or bonus for a reached sales volume',
+                'Subsequent discount, price reduction or cash discount',
+                'Return of goods that were delivered and invoiced correctly',
+            ],
+        ],
+        '384' => [
+            'label' => 'Corrected invoice (384)',
+            'hint' => 'Choose when an invoice already issued was wrong or is cancelled – for example a wrong quantity, a wrong price or a full cancellation. The original invoice must be referenced by number and date. When the correction is issued as a credit of the difference, the amounts are negative.',
+            'rule' => 'The original invoice was wrong or is cancelled. The original invoice must be referenced by number and date.',
+            'examples' => [
+                'A wrong quantity or price was invoiced',
+                'A mandatory invoice detail was wrong or missing',
+                'Cancellation invoice: full cancellation of an invoice already sent',
+            ],
+        ],
+    ],
+    'document_classification_help' => [
+        'title' => 'Which document type do I choose?',
+        'placeholder' => 'Choose a document type',
+        'helper' => 'Required. What matters is whether the original invoice was wrong – not whether the document is called a credit note.',
+    ],
 
     // Filters
     'filter_needs_review' => 'Review needed',
@@ -297,6 +329,7 @@ return [
     'hint_review_delivery_date' => 'Several delivery dates cannot satisfy the intra-community '
         .'actual delivery date rule without aggregating them into a period.',
     'hint_review_duplicate_invoice_number' => 'This document number already exists and needs review.',
+    'hint_review_declared_document_type' => 'A different document type was chosen at upload than the document carries – please check.',
     'hint_review_default' => 'This field should be reviewed manually.',
 
     // Field hints — informational (no validation status)

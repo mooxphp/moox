@@ -30,7 +30,8 @@ final class InvoiceNumberDuplicateChecker
     }
 
     /**
-     * Other non-deleted invoices with the same number and document type.
+     * Other non-deleted invoices with the same number and document type. Classification types
+     * (e.g. 381 and 384) count as one type: they are the same document classified differently.
      *
      * @return Collection<int, Invoice>
      */
@@ -44,7 +45,7 @@ final class InvoiceNumberDuplicateChecker
 
         $query = Invoice::query()
             ->where('invoice_number', $number)
-            ->where('document_type', $invoice->document_type);
+            ->whereIn('document_type', DocumentClassification::familyOf((string) $invoice->document_type));
 
         $key = $invoice->getKey();
 
@@ -64,7 +65,7 @@ final class InvoiceNumberDuplicateChecker
     }
 
     /**
-     * Same number + type + source PDF hash as an already stored document.
+     * Same number + type (classification types as one family) + source PDF hash as an already stored document.
      * Both hashes must be non-empty; missing hashes never count as identical.
      * When scope is `issuer`, `$sellerVatId` narrows the match (blank buckets with blank).
      */
@@ -85,7 +86,7 @@ final class InvoiceNumberDuplicateChecker
             ->whereHas('invoice', function ($invoiceQuery) use ($invoiceNumber, $documentType): void {
                 $invoiceQuery
                     ->where('invoice_number', $invoiceNumber)
-                    ->where('document_type', $documentType);
+                    ->whereIn('document_type', DocumentClassification::familyOf($documentType));
             })
             ->with('invoice')
             ->orderBy('created_at')

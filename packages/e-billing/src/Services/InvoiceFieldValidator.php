@@ -14,6 +14,8 @@ use Moox\EBilling\Support\AttributionCorroborator;
 use Moox\EBilling\Support\CompanyNameMatcher;
 use Moox\EBilling\Support\CustomerMatcher;
 use Moox\EBilling\Support\DeliveryDateTransmission;
+use Moox\EBilling\Support\DocumentClassification;
+use Moox\EBilling\Support\FieldValidationProfile;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\InvoiceNumberDuplicateChecker;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
@@ -27,6 +29,9 @@ use RuntimeException;
 
 class InvoiceFieldValidator
 {
+    /** BT-3 of the invoice being validated; selects the MoSCoW profile (ADR 0009). */
+    private ?string $profileDocumentType = null;
+
     /**
      * Populate field_validations on the document (invoice-level + lines sub-structure),
      * attribute the document to a {@see Customer} via buyer identifier when present,
@@ -40,15 +45,9 @@ class InvoiceFieldValidator
 
         $invoice = $this->resolveInvoice($document);
 
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
-
-        if (! is_array($invoiceFields)) {
-            $invoiceFields = [];
-        }
-        if (! is_array($lineFields)) {
-            $lineFields = [];
-        }
+        $this->profileDocumentType = $invoice->document_type;
+        $invoiceFields = FieldValidationProfile::invoiceFields($this->profileDocumentType);
+        $lineFields = FieldValidationProfile::lineFields($this->profileDocumentType);
 
         $invoice->loadMissing(['allowanceCharges', 'lines.allowanceCharges']);
 
@@ -84,9 +83,6 @@ class InvoiceFieldValidator
 
         $invoiceValidations = [];
         foreach ($invoiceFields as $field => $priority) {
-            if (! is_string($field) || ! is_string($priority)) {
-                continue;
-            }
             $invoiceValidations[$field] = $this->validateInvoiceField(
                 $invoice,
                 $field,
@@ -155,15 +151,9 @@ class InvoiceFieldValidator
 
     private function applyReviewStatusFromFieldValidations(EbillingDocument $document): void
     {
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
-
-        if (! is_array($invoiceFields)) {
-            $invoiceFields = [];
-        }
-        if (! is_array($lineFields)) {
-            $lineFields = [];
-        }
+        $documentType = $document->profileDocumentType();
+        $invoiceFields = FieldValidationProfile::invoiceFields($documentType);
+        $lineFields = FieldValidationProfile::lineFields($documentType);
 
         if ($this->allMustAndShouldFieldsAreClean($document, $invoiceFields, $lineFields)) {
             $document->transitionTo(InvoiceProcessingStatus::Validated);
@@ -281,6 +271,7 @@ class InvoiceFieldValidator
     ): array {
         return match ($field) {
             'invoice_number' => $this->validateInvoiceNumberField($invoice, $priority),
+            'document_type' => $this->validateDocumentTypeField($invoice, $priority, $document),
             'customer_number' => $this->validateCustomerNumberField(
                 $invoice,
                 $priority,
@@ -331,6 +322,24 @@ class InvoiceFieldValidator
     }
 
     /**
+     * BT-3 against the type the uploader declared (ADR 0011 addendum): a parsed type the declaration could
+     * not replace, e.g. an invoice (380) uploaded as a corrected invoice, is a review case, never overwritten.
+     *
+     * @return array{status: string, reason?: string}
+     */
+    private function validateDocumentTypeField(Invoice $invoice, string $priority, ?EbillingDocument $document): array
+    {
+        $generic = $this->validateGenericInvoiceField($invoice, 'document_type', $priority);
+        $declared = $document instanceof EbillingDocument ? DocumentClassification::declaredFor($document) : null;
+
+        if ($declared !== null && ($generic['status'] ?? null) === 'parsed' && $declared !== $invoice->document_type) {
+            return ['status' => 'needs_review', 'reason' => 'declared_document_type_mismatch'];
+        }
+
+        return $generic;
+    }
+
+    /**
      * BT-25: looks the referenced invoice up among stored documents (separators ignored).
      * Not finding it, or finding a different BT-26 date, is a warning (`reason`), never a blocking status:
      * invoices older than the system are legitimately unknown (ADR 0009 addendum).
@@ -377,6 +386,18 @@ class InvoiceFieldValidator
         if ($comparable === '' || $digits === null || $digits === '') {
             return null;
         }
+
+        // Narrow in SQL on the digit run, then compare separator-insensitively in PHP.
+        return $invoice->newQuery()
+            ->whereKeyNot($invoice->getKey())
+            ->whereNotIn('document_type', FieldValidationProfile::profiledDocumentTypes())
+            ->where('invoice_number', 'like', '%'.substr($digits, 0, 5).'%')
+            ->orderByDesc('is_current')
+            ->get()
+            ->first(fn (Invoice $candidate): bool => PrecedingInvoiceReferences::comparableNumber(
+                (string) $candidate->invoice_number,
+            ) === $comparable);
+    }
 
     /**
      * @return array{status: string, source?: string, matched_id?: string, reason?: string}
@@ -900,14 +921,7 @@ class InvoiceFieldValidator
             return ['status' => 'missing'];
         }
 
-        $key = $isInvoiceLine ? 'invoice_line_contextual_should' : 'invoice_contextual_should';
-        $list = config("e-billing.field_validation.{$key}", []);
-
-        if (! is_array($list)) {
-            return ['status' => 'not_applicable'];
-        }
-
-        if (in_array($field, $list, true)) {
+        if (in_array($field, FieldValidationProfile::contextualShould($this->profileDocumentType, $isInvoiceLine), true)) {
             return ['status' => 'missing'];
         }
 

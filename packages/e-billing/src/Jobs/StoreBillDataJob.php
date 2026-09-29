@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\EBilling;
+use Moox\EBilling\Support\DocumentClassification;
 use Moox\EBilling\Support\SourceContentHasher;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
@@ -77,6 +78,23 @@ final class StoreBillDataJob implements ShouldQueue
         $this->setProgress(20);
 
         $invoice = $eBilling->parseInvoiceFromPdf($document->sourceFullPath());
+
+        $declaredType = DocumentClassification::declaredFor($document);
+        if ($declaredType !== null) {
+            $parsedType = $invoice->documentTypeCode;
+            $invoice = DocumentClassification::applyDeclaredType($invoice, $declaredType);
+
+            if ($invoice->documentTypeCode !== $parsedType) {
+                DocumentClassification::recordActivity(
+                    $document,
+                    $parsedType,
+                    $invoice->documentTypeCode,
+                    DocumentClassification::signsDiffer($parsedType, $invoice->documentTypeCode),
+                    'parsing',
+                );
+            }
+        }
+
         $document->bill_data = $invoice->toArray();
         $document->save();
 
