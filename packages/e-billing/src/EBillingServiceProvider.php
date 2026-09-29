@@ -93,6 +93,7 @@ class EBillingServiceProvider extends MooxServiceProvider
                 'create_ebilling_uploaded_pdf_sources_table',
                 'add_profile_to_ebilling_documents_table',
                 'create_ebilling_delivery_attempts_table',
+                'add_document_type_to_ebilling_uploaded_pdf_sources_table',
             ]);
 
         $this->getMooxPackage()

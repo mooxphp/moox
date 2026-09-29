@@ -249,6 +249,9 @@ final class InvoiceFieldLabels
                 'minimum_quantity_surcharge' => __('e-billing::fields.hint_review_minimum_quantity_surcharge'),
                 'freight_flat_rate' => __('e-billing::fields.hint_review_freight_flat_rate'),
                 'delivery_date' => __('e-billing::fields.hint_review_delivery_date'),
+                'document_type' => ($validation['reason'] ?? null) === 'declared_document_type_mismatch'
+                    ? __('e-billing::fields.hint_review_declared_document_type')
+                    : __('e-billing::fields.hint_review_default'),
                 'invoice_number' => ($validation['reason'] ?? null) === 'duplicate_invoice_number'
                     ? __('e-billing::fields.hint_review_duplicate_invoice_number')
                     : __('e-billing::fields.hint_review_default'),

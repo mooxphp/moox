@@ -163,6 +163,38 @@ return [
     'tab_needs_review' => 'Prüfung nötig',
     'tab_confirmed' => 'Bestätigt',
     'tab_deleted' => 'Gelöscht',
+    'tab_credit_notes' => 'Kaufmännische Gutschriften',
+    'tab_corrected_invoices' => 'Rechnungskorrekturen',
+
+    // Document classification (ADR 0011): label, "when to choose" hint, upload instruction (rule + examples).
+    // Hosts override via lang/vendor/e-billing; example lists merge by index, so keep the same length.
+    'document_classification' => [
+        '381' => [
+            'label' => 'Kaufmännische Gutschrift (381)',
+            'hint' => 'Wählen, wenn die ursprüngliche Rechnung korrekt war und sich der geschuldete Betrag danach aus einem eigenständigen Grund geändert hat – z. B. Bonus, Rabatt oder Rücksendung. Beträge werden positiv ausgewiesen. Nicht gemeint ist die Gutschrift, die der Leistungsempfänger selbst ausstellt (§ 14 Abs. 2 Satz 2 UStG).',
+            'rule' => 'Die ursprüngliche Rechnung war korrekt. Der geschuldete Betrag hat sich danach aus einem eigenständigen kaufmännischen Grund geändert. Ein Bezug auf die Ursprungsrechnung ist nicht nötig.',
+            'examples' => [
+                'Jahresrückvergütung oder Bonus für ein erreichtes Umsatzvolumen',
+                'Nachträglicher Rabatt, Preisnachlass oder Skonto',
+                'Rücksendung (Retoure) ordnungsgemäß gelieferter und berechneter Ware',
+            ],
+        ],
+        '384' => [
+            'label' => 'Rechnungskorrektur (384)',
+            'hint' => 'Wählen, wenn eine bereits gestellte Rechnung fehlerhaft war oder storniert wird – z. B. falsche Menge, falscher Preis oder vollständiger Storno. Die ursprüngliche Rechnung muss mit Nummer und Datum angegeben sein (§ 31 Abs. 5 UStDV). Wird die Korrektur als Gutschrift des Differenzbetrags ausgestellt, sind die Beträge negativ.',
+            'rule' => 'Die ursprüngliche Rechnung war fehlerhaft oder wird storniert. Die Ursprungsrechnung muss mit Nummer und Datum angegeben sein.',
+            'examples' => [
+                'Falsche Menge oder falscher Preis wurde berechnet',
+                'Falsche oder fehlende Pflichtangabe auf der Rechnung',
+                'Stornorechnung: vollständige Stornierung einer bereits übermittelten Rechnung',
+            ],
+        ],
+    ],
+    'document_classification_help' => [
+        'title' => 'Welchen Belegtyp wähle ich?',
+        'placeholder' => 'Belegtyp wählen',
+        'helper' => 'Pflichtangabe. Entscheidend ist, ob die ursprüngliche Rechnung fehlerhaft war – nicht, ob das Dokument „Gutschrift“ heißt.',
+    ],
 
     // Filters
     'filter_needs_review' => 'Prüfung nötig',
@@ -297,6 +329,7 @@ return [
     'hint_review_delivery_date' => 'Mehrere Lieferdaten erfüllen die Regel zur tatsächlichen Lieferung '
         .'bei innergemeinschaftlicher Lieferung nicht, ohne sie zu einem Zeitraum zusammenzuziehen.',
     'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits und muss geprüft werden.',
+    'hint_review_declared_document_type' => 'Beim Hochladen wurde ein anderer Belegtyp gewählt, als das Dokument trägt – bitte prüfen.',
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 
     // Field hints — informational (no validation status)

@@ -12,6 +12,8 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Text;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Icons\Heroicon;
@@ -26,6 +28,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\HtmlString;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Relations\HasResourceRelations;
@@ -40,6 +43,8 @@ use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ListInvoices;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ViewInvoice;
 use Moox\EBilling\Resources\InvoiceResource\RelationManagers\MailSendLogsRelationManager;
+use Moox\EBilling\Support\DocumentClassification;
+use Moox\EBilling\Support\DocumentClassificationLabels;
 use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\InvoiceModels;
@@ -200,6 +205,14 @@ class InvoiceResource extends BaseItemResource
                 ->sortable()
                 ->color('primary')
                 ->weight('medium')
+                ->toggleable(),
+            TextColumn::make('document_type')
+                ->label(__('e-billing::fields.document_type'))
+                ->badge()
+                ->formatStateUsing(fn (?string $state): ?string => $state !== null
+                    ? DocumentClassificationLabels::label($state)
+                    : null)
+                ->visible(count(static::documentTypes()) > 1)
                 ->toggleable(),
             TextColumn::make('document_version')
                 ->label(__('e-billing::fields.document_version'))
@@ -689,6 +702,71 @@ class InvoiceResource extends BaseItemResource
         return $query;
     }
 
+    /**
+     * Declared document type for the manual upload (ADR 0011 addendum): a collapsible "which type?"
+     * instruction and a required choice without preselection. Nothing to choose with fewer than two codes.
+     *
+     * @param  list<string>  $selectableTypes
+     * @return list<Section|Select>
+     */
+    private static function manualUploadDocumentTypeComponents(array $selectableTypes): array
+    {
+        if (count($selectableTypes) < 2) {
+            return [];
+        }
+
+        $options = array_intersect_key(DocumentClassificationLabels::options(), array_flip($selectableTypes));
+
+        return [
+            Section::make(__('e-billing::fields.document_classification_help.title'))
+                ->collapsible()
+                ->collapsed()
+                ->schema([
+                    Text::make(self::documentTypeInstructionHtml(
+                        DocumentClassificationLabels::instruction($selectableTypes),
+                    )),
+                ]),
+            Select::make('document_type')
+                ->label(__('e-billing::fields.document_type'))
+                ->options($options)
+                ->placeholder(__('e-billing::fields.document_classification_help.placeholder'))
+                ->helperText(__('e-billing::fields.document_classification_help.helper'))
+                ->required(),
+        ];
+    }
+
+    /**
+     * One compact block per code: bold label, rule, bulleted examples. Inline styles, because the panel
+     * theme does not ship utility classes for package markup; every text is escaped.
+     *
+     * @param  list<array{label: string, rule: ?string, examples: list<string>}>  $blocks
+     */
+    private static function documentTypeInstructionHtml(array $blocks): HtmlString
+    {
+        $html = '';
+
+        foreach ($blocks as $index => $block) {
+            $html .= $index > 0 ? '<div style="margin-top: 1rem;">' : '<div>';
+            $html .= '<p style="margin: 0; font-weight: 600;">'.e($block['label']).'</p>';
+
+            if ($block['rule'] !== null) {
+                $html .= '<p style="margin: 0.25rem 0 0;">'.e($block['rule']).'</p>';
+            }
+
+            if ($block['examples'] !== []) {
+                $html .= '<ul style="margin: 0.375rem 0 0; padding-inline-start: 1.25rem; list-style: disc outside;">';
+                foreach ($block['examples'] as $example) {
+                    $html .= '<li style="margin: 0.125rem 0 0;">'.e($example).'</li>';
+                }
+                $html .= '</ul>';
+            }
+
+            $html .= '</div>';
+        }
+
+        return new HtmlString($html);
+    }
+
     public static function getManualUploadAction(): ?Action
     {
         $config = config('e-billing.resources.'.static::resourceConfigKey().'.manual_upload');
@@ -703,6 +781,8 @@ class InvoiceResource extends BaseItemResource
         $label = is_string($config['label'] ?? null) ? $config['label'] : __('e-billing::fields.action_manual_upload');
         $scope = is_string($config['scope'] ?? null) ? $config['scope'] : static::resourceConfigKey();
         $requiresLetterhead = (bool) ($config['requires_letterhead_overlay'] ?? false);
+        $resourceKey = static::resourceConfigKey();
+        $selectableTypes = DocumentClassification::selectableForUpload($resourceKey);
 
         return Action::make('manualUpload')
             ->label($label)
@@ -722,8 +802,9 @@ class InvoiceResource extends BaseItemResource
                     ->directory($directory)
                     ->storeFileNamesIn('pdf_original_filename')
                     ->required(),
+                ...self::manualUploadDocumentTypeComponents($selectableTypes),
             ])
-            ->action(function (array $data, $livewire) use ($disk, $scope, $requiresLetterhead): void {
+            ->action(function (array $data, $livewire) use ($disk, $scope, $requiresLetterhead, $resourceKey): void {
                 $path = $data['pdf'] ?? null;
 
                 if (! is_string($path) || $path === '') {
@@ -736,6 +817,8 @@ class InvoiceResource extends BaseItemResource
                     'original_filename' => self::resolveUploadedOriginalFilename($data, $path),
                     'scope' => $scope,
                     'requires_letterhead_overlay' => $requiresLetterhead,
+                    'resource' => $resourceKey,
+                    'document_type' => $data['document_type'] ?? null,
                 ]);
 
                 Notification::make()
