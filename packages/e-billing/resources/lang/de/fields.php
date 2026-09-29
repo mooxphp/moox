@@ -171,7 +171,10 @@ return [
     'document_classification' => [
         '381' => [
             'label' => 'Kaufmännische Gutschrift (381)',
-            'hint' => 'Wählen, wenn die ursprüngliche Rechnung korrekt war und sich der geschuldete Betrag danach aus einem eigenständigen Grund geändert hat – z. B. Bonus, Rabatt oder Rücksendung. Beträge werden positiv ausgewiesen. Nicht gemeint ist die Gutschrift, die der Leistungsempfänger selbst ausstellt (§ 14 Abs. 2 Satz 2 UStG).',
+            'hint' => 'Wählen, wenn die ursprüngliche Rechnung korrekt war und sich der geschuldete Betrag danach '
+                .'aus einem eigenständigen Grund geändert hat – z. B. Bonus, Rabatt oder Rücksendung. '
+                .'Beträge werden positiv ausgewiesen. Nicht gemeint ist die Gutschrift, die der '
+                .'Leistungsempfänger selbst ausstellt (§ 14 Abs. 2 Satz 2 UStG).',
             'rule' => 'Die ursprüngliche Rechnung war korrekt. Der geschuldete Betrag hat sich danach aus einem eigenständigen kaufmännischen Grund geändert. Ein Bezug auf die Ursprungsrechnung ist nicht nötig.',
             'examples' => [
                 'Jahresrückvergütung oder Bonus für ein erreichtes Umsatzvolumen',
@@ -181,7 +184,10 @@ return [
         ],
         '384' => [
             'label' => 'Rechnungskorrektur (384)',
-            'hint' => 'Wählen, wenn eine bereits gestellte Rechnung fehlerhaft war oder storniert wird – z. B. falsche Menge, falscher Preis oder vollständiger Storno. Die ursprüngliche Rechnung muss mit Nummer und Datum angegeben sein (§ 31 Abs. 5 UStDV). Wird die Korrektur als Gutschrift des Differenzbetrags ausgestellt, sind die Beträge negativ.',
+            'hint' => 'Wählen, wenn eine bereits gestellte Rechnung fehlerhaft war oder storniert wird – '
+                .'z. B. falsche Menge, falscher Preis oder vollständiger Storno. Die ursprüngliche '
+                .'Rechnung muss mit Nummer und Datum angegeben sein (§ 31 Abs. 5 UStDV). Wird die '
+                .'Korrektur als Gutschrift des Differenzbetrags ausgestellt, sind die Beträge negativ.',
             'rule' => 'Die ursprüngliche Rechnung war fehlerhaft oder wird storniert. Die Ursprungsrechnung muss mit Nummer und Datum angegeben sein.',
             'examples' => [
                 'Falsche Menge oder falscher Preis wurde berechnet',
