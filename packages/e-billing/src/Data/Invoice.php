@@ -6,6 +6,7 @@ namespace Moox\EBilling\Data;
 
 use Moox\EBilling\Adapters\ZugferdInvoiceDtoAdapter;
 use Moox\EBilling\Support\BillDataAllowanceChargeMapper;
+use Moox\EBilling\Support\PrecedingInvoiceReferences;
 use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdBankAccount;
@@ -69,6 +70,9 @@ class Invoice
 
         /** @var array<int, string> */
         public array $notes = [],
+
+        /** @var list<array{number: string, date: ?string}> BG-3: BT-25 number, BT-26 date (Y-m-d) */
+        public array $precedingInvoices = [],
 
         // Currency
         public string $currency = 'EUR',
@@ -277,6 +281,7 @@ class Invoice
             shippingMethod: isset($data['shipping_method']) && is_string($data['shipping_method']) ? $data['shipping_method'] : null,
             lines: $lines,
             notes: $notes,
+            precedingInvoices: PrecedingInvoiceReferences::normalize($data['preceding_invoices'] ?? null),
             currency: is_string($data['currency'] ?? null) && $data['currency'] !== '' ? $data['currency'] : 'EUR',
         );
 
@@ -380,6 +385,7 @@ class Invoice
 
             'lines' => array_map(fn (InvoiceLine $line) => $line->toArray(), $this->lines),
             'notes' => $this->notes,
+            'preceding_invoices' => $this->precedingInvoices,
         ];
     }
 

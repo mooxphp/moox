@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Adapters;
 
+use Moox\EBilling\Support\CreditNotePaymentTerms;
 use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\EBilling\Support\InvoiceDocumentNotes;
+use Moox\EBilling\Support\PrecedingInvoiceReferences;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdAddress;
@@ -111,13 +113,18 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
         get => $this->model->seller?->tax_number;
     }
 
-    public ?string $paymentTerms {
-        get => $this->model->payment_terms !== null && $this->model->payment_terms !== ''
-            ? (string) $this->model->payment_terms
     public ?string $supplierNumber {
         get => $this->model->supplier_number !== null
             ? (string) $this->model->supplier_number
             : null;
+    }
+
+    public ?string $paymentTerms {
+        get => CreditNotePaymentTerms::forEmission(
+            (string) $this->model->document_type,
+            $this->model->due_date !== null ? (string) $this->model->due_date : null,
+            $this->model->payment_terms !== null ? (string) $this->model->payment_terms : null,
+        );
     }
 
     public ?string $deliveryDate {
@@ -251,6 +258,11 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
     /** @var list<string> */
     public array $documentNotes {
         get => InvoiceDocumentNotes::fromInvoice($this->model);
+    }
+
+    /** @var list<array{number: string, date: ?string}> */
+    public array $precedingInvoices {
+        get => PrecedingInvoiceReferences::normalize($this->model->preceding_invoices);
     }
 
     private static function mapAllowanceCharge(InvoiceAllowanceCharge $charge): AllowanceCharge

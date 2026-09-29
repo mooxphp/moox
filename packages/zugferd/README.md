@@ -16,9 +16,9 @@ Moox Zugferd converts invoice data implementing `ZugferdInvoice` into valid ZUGF
 - Concrete `AllowanceCharge` DTO for tests and simple consumers
 - Required profile key on convert: MINIMUM, BASIC, EN16931, EXTENDED, XRECHNUNG (unknown keys throw)
 - Optional `deliveryDate` on invoice (BT-72 via `setDocumentSupplyChainEvent`) and on lines (line billing period with start=end for non-EXTENDED profiles, line actual delivery for EXTENDED); profile key selects the line-date carrier; no header invoicing period (BG-14) is derived from delivery dates
-- Optional `shipToName` / `shipToAddress` on invoice and lines (BG-13 via `setDocumentShipTo` / `setDocumentShipToAddress`); address is omitted when country is empty; ship-to tax registration and contact are never emitted
 - Optional `supplierNumber` (BT-29; emit via `addDocumentSellerId` when non-empty, omit when empty/whitespace), `shipToName` / `shipToAddress` on invoice and lines (BG-13 via `setDocumentShipTo` / `setDocumentShipToAddress`); address is omitted when country is empty; ship-to tax registration and contact are never emitted
 - Omit duplicate ShipTo when name + postal fingerprint equals buyer (street, street2, postal code, country; city excluded; keep BT-72); VAT **K** still emits BG-15 (buyer postal OK). Promote shared distinct line ship-to when header empty; else BT-127 notes. Line `itemAttributes` / `itemClassifications` → BG-32 / BT-158; trade refs BT-13 / BT-16 (common line DN fallback) / BT-132 (`purchaseOrderLineReference`); line allowance/charges. `purchaseOrderDate` is never OrderReference IssueDate (UBL-CR-018)
+- Optional `precedingInvoices` on invoice (BG-3): one `ram:InvoiceReferencedDocument` per entry (IssuerAssignedID + optional FormattedIssueDateTime)
 
 <!--/features-->
 
@@ -116,7 +116,6 @@ Header, parties, totals, `lines`, `bankAccounts`, and `allowanceCharges`.
 - Non-empty trimmed `supplierEmail`
 - Non-empty `bankAccounts` with non-empty IBAN on each account
 
-**Other notable fields:** `documentType` (credit note when value contains `gutschrift` → type code `381`, else `380`), `paymentMeansCode` (default `58`), `dueDate` / `paymentTerms`, `deliveryDate` (BT-72), `documentNotes` (BT-22), `purchaseOrderReference` (BT-13), `despatchAdviceReference` (BT-16; converter may fill from a common line `deliveryNoteNumber`), `purchaseOrderDate` (unstructured notes only — never OrderReference IssueDate), `shipToName` / `shipToAddress` (BG-13; address requires a country; omitted when equal to buyer unless VAT **K**), `vatCategoryCode`, `vatRate`, `netTotal`, `vatAmount`, `grossTotal`.
 **Other notable fields:** `documentType` (credit note when value contains `gutschrift` → type code `381`, else `380`), `paymentMeansCode` (default `58`), `dueDate` / `paymentTerms`, `supplierNumber` (BT-29; emit via `addDocumentSellerId` when non-empty), `deliveryDate` (BT-72), `documentNotes` (BT-22), `purchaseOrderReference` (BT-13), `despatchAdviceReference` (BT-16; converter may fill from a common line `deliveryNoteNumber`), `purchaseOrderDate` (unstructured notes only — never OrderReference IssueDate), `shipToName` / `shipToAddress` (BG-13; address requires a country; omitted when equal to buyer unless VAT **K**), `precedingInvoices` (BG-3: `list<array{number, date}>`, BT-25/BT-26 — one `InvoiceReferencedDocument` per entry), `vatCategoryCode`, `vatRate`, `netTotal`, `vatAmount`, `grossTotal`.
 
 ### `ZugferdInvoiceLine`

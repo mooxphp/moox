@@ -29,6 +29,7 @@ use Moox\Invoice\Support\InvoiceModels;
  * @property int $document_version
  * @property bool $is_current
  * @property list<string>|null $notes
+ * @property list<array{number: string, date: ?string}>|null $preceding_invoices
  */
 class Invoice extends BaseItemModel
 {
@@ -60,6 +61,7 @@ class Invoice extends BaseItemModel
         'shipping_method',
         'delivery_terms',
         'notes',
+        'preceding_invoices',
         'seller',
         'buyer',
         'delivery',
@@ -84,6 +86,7 @@ class Invoice extends BaseItemModel
             'document_version' => 'integer',
             'is_current' => 'boolean',
             'notes' => 'array',
+            'preceding_invoices' => 'array',
             'net_total' => 'decimal:2',
             'vat_rate' => 'decimal:2',
             'vat_amount' => 'decimal:2',
