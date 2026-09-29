@@ -35,6 +35,8 @@
             @elseif(is_string($field->value) && str_contains($field->value, "\n"))
                 <div
                     class="m-0 font-inherit text-sm whitespace-pre-wrap text-gray-800 dark:text-gray-200">{{ $field->value }}</div>
+            @elseif($field->url !== null && $field->value !== null && $field->value !== '')
+                <a href="{{ $field->url }}" class="text-primary-600 underline hover:text-primary-500 dark:text-primary-400">{{ $field->value }}</a>
             @elseif($field->value !== null && $field->value !== '')
                 {{ $field->value }}
             @else

@@ -7,6 +7,7 @@ namespace Moox\EBilling\Approval;
 use Moox\EBilling\Enums\AutoApproveFailureReason;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\CreditNoteSign;
 
 final class AutoApproveEvaluator
 {
@@ -32,8 +33,13 @@ final class AutoApproveEvaluator
 
         if (EbillingDocument::hasBlockingMustFieldFindings(
             is_array($document->field_validations) ? $document->field_validations : null,
+            $document->profileDocumentType(),
         )) {
             $failures[] = AutoApproveFailureReason::MustFieldBlocked;
+        }
+
+        if (CreditNoteSign::hasNegativeTotal($document->invoice)) {
+            $failures[] = AutoApproveFailureReason::CreditNoteNegativeTotal;
         }
 
         if ($document->hasDuplicateApprovalFlag()) {

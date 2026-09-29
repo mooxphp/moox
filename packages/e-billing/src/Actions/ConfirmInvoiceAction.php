@@ -52,6 +52,7 @@ final class ConfirmInvoiceAction
 
         $missingMustFields = EbillingDocument::missingMustFields(
             is_array($document->field_validations) ? $document->field_validations : null,
+            $invoice->document_type,
         );
         if ($missingMustFields !== []) {
             return $this->failure($missingMustFields);

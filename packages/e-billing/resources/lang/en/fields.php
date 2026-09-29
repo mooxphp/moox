@@ -74,6 +74,8 @@ return [
     'seller_bank_name' => 'Supplier bank',
     'buyer_address' => 'Recipient address',
     'buyer_tax_id' => 'Recipient VAT ID',
+    'preceding_invoice_number' => 'Preceding invoice',
+    'preceding_invoice_date' => 'Preceding invoice date',
     'buyer_email' => 'Recipient email',
     'tax_number' => 'Tax number',
     'supplier' => 'Supplier',
@@ -299,6 +301,8 @@ return [
 
     // Field hints — informational (no validation status)
     'hint_info_buyer_email' => 'From inbox To — not checked against master data.',
+    'hint_warning_preceding_invoice_not_found' => 'Preceding invoice not found in the system — please check (does not block).',
+    'hint_warning_preceding_invoice_date_mismatch' => 'Date differs from the stored preceding invoice — please check (does not block).',
 
     'section_kosit_validations' => 'KoSIT validations',
     'kosit_validations_empty' => 'No KoSIT validations yet.',

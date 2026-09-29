@@ -8,10 +8,13 @@ use Carbon\Carbon;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Resources\InvoiceResource;
+use Moox\EBilling\Support\FieldValidationProfile;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\EBilling\Support\InvoiceUiPresentation;
 use Moox\EBilling\Support\PartyAddressFormatter;
+use Moox\EBilling\Support\PrecedingInvoiceReferences;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\En16931\BankAccount;
 
@@ -38,6 +41,7 @@ final class InvoiceViewModel
                 'subtitle' => '',
                 'fields' => $this->buildFields([
                     'invoice_number', 'invoice_date', 'document_type',
+                    'preceding_invoice_number', 'preceding_invoice_date',
                     'due_date', 'currency', 'order_number', 'order_date',
                     'customer_reference', 'payment_terms', 'material_test_certificate',
                 ]),
@@ -86,6 +90,7 @@ final class InvoiceViewModel
                 $group['fields'],
                 InvoiceUiPresentation::groupDefaultOpen($key),
                 'invoice',
+                $this->documentType(),
             );
 
             $out[$key] = [
@@ -115,7 +120,7 @@ final class InvoiceViewModel
                     ? $lineValidationsRoot[$lineKey]
                     : [];
 
-                return new InvoiceLineViewModel($line, $validations);
+                return new InvoiceLineViewModel($line, $validations, $this->documentType());
             })
             ->all();
     }
@@ -152,6 +157,7 @@ final class InvoiceViewModel
             $fields,
             InvoiceUiPresentation::groupDefaultOpen('notes'),
             'invoice',
+            $this->documentType(),
         );
 
         return [
@@ -346,7 +352,7 @@ final class InvoiceViewModel
             return number_format((float) $value, 2, ',', '.').' %';
         }
 
-        if (in_array($field, ['invoice_date', 'due_date', 'order_date', 'delivery_date'], true)
+        if (in_array($field, ['invoice_date', 'due_date', 'order_date', 'delivery_date', 'preceding_invoice_date'], true)
             && is_string($value) && $value !== '') {
             try {
                 return Carbon::parse($value)->format('d.m.Y');
@@ -382,8 +388,33 @@ final class InvoiceViewModel
             'vat_category' => $this->invoice->vat_category,
             // Keep empty when no distinct consignee (ADR 0020 / 0014).
             'delivery_address' => PartyAddressFormatter::format($this->invoice->delivery),
+            'preceding_invoice_number' => PrecedingInvoiceReferences::first($this->invoice->preceding_invoices)['number'] ?? null,
+            'preceding_invoice_date' => PrecedingInvoiceReferences::first($this->invoice->preceding_invoices)['date'] ?? null,
             default => $this->invoice->getAttribute($field),
         };
+    }
+
+    private function documentType(): ?string
+    {
+        $type = $this->invoice->document_type;
+
+        return $type !== '' ? $type : null;
+    }
+
+    /**
+     * Link to the stored invoice a preceding-invoice reference resolved to (ADR 0009 addendum).
+     *
+     * @param  array<string, mixed>|null  $validation
+     */
+    private function fieldUrl(string $field, ?array $validation): ?string
+    {
+        $matchedId = $validation['matched_id'] ?? null;
+
+        if ($field !== 'preceding_invoice_number' || ! is_string($matchedId) || $matchedId === '') {
+            return null;
+        }
+
+        return InvoiceResource::getUrl('view', ['record' => $matchedId]);
     }
 
     /**
@@ -437,12 +468,13 @@ final class InvoiceViewModel
                 value: $this->formatValue($name),
                 validation: $validation,
                 hint: InvoiceFieldLabels::hint($name, $status, $validation),
+                url: $this->fieldUrl($name, $validation),
             );
         }, $fieldNames);
 
         return InvoiceUiPresentation::withoutHidden(
             $fields,
-            InvoiceUiPresentation::hiddenInvoiceFields(),
+            InvoiceUiPresentation::hiddenInvoiceFields($this->documentType()),
         );
     }
 
@@ -480,10 +512,7 @@ final class InvoiceViewModel
             return ['status' => 'missing'];
         }
 
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        $priority = is_array($invoiceFields) && is_string($invoiceFields[$field] ?? null)
-            ? $invoiceFields[$field]
-            : 'could';
+        $priority = FieldValidationProfile::priority($field, $this->documentType());
 
         if ($priority === 'could') {
             return ['status' => 'not_applicable'];
@@ -493,10 +522,8 @@ final class InvoiceViewModel
             return ['status' => 'missing'];
         }
 
-        $contextual = config('e-billing.field_validation.invoice_contextual_should', []);
-
         return [
-            'status' => is_array($contextual) && in_array($field, $contextual, true)
+            'status' => in_array($field, FieldValidationProfile::contextualShould($this->documentType()), true)
                 ? 'missing'
                 : 'not_applicable',
         ];
