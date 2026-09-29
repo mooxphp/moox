@@ -171,7 +171,10 @@ return [
     'document_classification' => [
         '381' => [
             'label' => 'Credit note (381)',
-            'hint' => 'Choose when the original invoice was correct and the amount owed changed afterwards for an independent reason – for example a bonus, a discount or a return. Amounts are stated as positive values. Not meant: self-billing, where the buyer issues the document.',
+            'hint' => 'Choose when the original invoice was correct and the amount owed changed afterwards '
+                .'for an independent reason – for example a bonus, a discount or a return. '
+                .'Amounts are stated as positive values. Not meant: self-billing, where the buyer '
+                .'issues the document.',
             'rule' => 'The original invoice was correct. The amount owed changed afterwards for an independent commercial reason. No reference to the original invoice is needed.',
             'examples' => [
                 'Year-end rebate or bonus for a reached sales volume',
@@ -181,7 +184,10 @@ return [
         ],
         '384' => [
             'label' => 'Corrected invoice (384)',
-            'hint' => 'Choose when an invoice already issued was wrong or is cancelled – for example a wrong quantity, a wrong price or a full cancellation. The original invoice must be referenced by number and date. When the correction is issued as a credit of the difference, the amounts are negative.',
+            'hint' => 'Choose when an invoice already issued was wrong or is cancelled – for example a '
+                .'wrong quantity, a wrong price or a full cancellation. The original invoice must '
+                .'be referenced by number and date. When the correction is issued as a credit of '
+                .'the difference, the amounts are negative.',
             'rule' => 'The original invoice was wrong or is cancelled. The original invoice must be referenced by number and date.',
             'examples' => [
                 'A wrong quantity or price was invoiced',
