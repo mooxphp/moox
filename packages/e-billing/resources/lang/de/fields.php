@@ -175,7 +175,9 @@ return [
                 .'aus einem eigenständigen Grund geändert hat – z. B. Bonus, Rabatt oder Rücksendung. '
                 .'Beträge werden positiv ausgewiesen. Nicht gemeint ist die Gutschrift, die der '
                 .'Leistungsempfänger selbst ausstellt (§ 14 Abs. 2 Satz 2 UStG).',
-            'rule' => 'Die ursprüngliche Rechnung war korrekt. Der geschuldete Betrag hat sich danach aus einem eigenständigen kaufmännischen Grund geändert. Ein Bezug auf die Ursprungsrechnung ist nicht nötig.',
+            'rule' => 'Die ursprüngliche Rechnung war korrekt. Der geschuldete Betrag hat sich danach '
+                .'aus einem eigenständigen kaufmännischen Grund geändert. '
+                .'Ein Bezug auf die Ursprungsrechnung ist nicht nötig.',
             'examples' => [
                 'Jahresrückvergütung oder Bonus für ein erreichtes Umsatzvolumen',
                 'Nachträglicher Rabatt, Preisnachlass oder Skonto',
@@ -188,7 +190,8 @@ return [
                 .'z. B. falsche Menge, falscher Preis oder vollständiger Storno. Die ursprüngliche '
                 .'Rechnung muss mit Nummer und Datum angegeben sein (§ 31 Abs. 5 UStDV). Wird die '
                 .'Korrektur als Gutschrift des Differenzbetrags ausgestellt, sind die Beträge negativ.',
-            'rule' => 'Die ursprüngliche Rechnung war fehlerhaft oder wird storniert. Die Ursprungsrechnung muss mit Nummer und Datum angegeben sein.',
+            'rule' => 'Die ursprüngliche Rechnung war fehlerhaft oder wird storniert. '
+                .'Die Ursprungsrechnung muss mit Nummer und Datum angegeben sein.',
             'examples' => [
                 'Falsche Menge oder falscher Preis wurde berechnet',
                 'Falsche oder fehlende Pflichtangabe auf der Rechnung',
@@ -199,7 +202,8 @@ return [
     'document_classification_help' => [
         'title' => 'Welchen Belegtyp wähle ich?',
         'placeholder' => 'Belegtyp wählen',
-        'helper' => 'Pflichtangabe. Entscheidend ist, ob die ursprüngliche Rechnung fehlerhaft war – nicht, ob das Dokument „Gutschrift“ heißt.',
+        'helper' => 'Pflichtangabe. Entscheidend ist, ob die ursprüngliche Rechnung fehlerhaft war – '
+            .'nicht, ob das Dokument „Gutschrift“ heißt.',
     ],
 
     // Filters
@@ -335,13 +339,16 @@ return [
     'hint_review_delivery_date' => 'Mehrere Lieferdaten erfüllen die Regel zur tatsächlichen Lieferung '
         .'bei innergemeinschaftlicher Lieferung nicht, ohne sie zu einem Zeitraum zusammenzuziehen.',
     'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits und muss geprüft werden.',
-    'hint_review_declared_document_type' => 'Beim Hochladen wurde ein anderer Belegtyp gewählt, als das Dokument trägt – bitte prüfen.',
+    'hint_review_declared_document_type' => 'Beim Hochladen wurde ein anderer Belegtyp gewählt, '
+        .'als das Dokument trägt – bitte prüfen.',
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 
     // Field hints — informational (no validation status)
     'hint_info_buyer_email' => 'Aus Posteingang (An) — nicht mit Stammdaten abgeglichen.',
-    'hint_warning_preceding_invoice_not_found' => 'Bezugsrechnung nicht im System gefunden — bitte prüfen (blockiert nicht).',
-    'hint_warning_preceding_invoice_date_mismatch' => 'Datum weicht von der gespeicherten Bezugsrechnung ab — bitte prüfen (blockiert nicht).',
+    'hint_warning_preceding_invoice_not_found' => 'Bezugsrechnung nicht im System gefunden — bitte prüfen '
+        .'(blockiert nicht).',
+    'hint_warning_preceding_invoice_date_mismatch' => 'Datum weicht von der gespeicherten Bezugsrechnung ab — '
+        .'bitte prüfen (blockiert nicht).',
 
     'section_kosit_validations' => 'KoSIT-Validierungen',
     'kosit_validations_empty' => 'Noch keine KoSIT-Validierungen.',

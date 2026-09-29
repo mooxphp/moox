@@ -352,7 +352,13 @@ final class InvoiceViewModel
             return number_format((float) $value, 2, ',', '.').' %';
         }
 
-        if (in_array($field, ['invoice_date', 'due_date', 'order_date', 'delivery_date', 'preceding_invoice_date'], true)
+        if (in_array($field, [
+            'invoice_date',
+            'due_date',
+            'order_date',
+            'delivery_date',
+            'preceding_invoice_date',
+        ], true)
             && is_string($value) && $value !== '') {
             try {
                 return Carbon::parse($value)->format('d.m.Y');
@@ -369,6 +375,8 @@ final class InvoiceViewModel
         if (array_key_exists($field, HeaderChargeResolver::FIELD_SPECS)) {
             return HeaderChargeResolver::resolveAmount($this->invoice->allowanceCharges, $field);
         }
+
+        $precedingReference = PrecedingInvoiceReferences::first($this->invoice->preceding_invoices);
 
         return match ($field) {
             'buyer_email' => $this->document?->inboxToEmail(),
@@ -388,8 +396,8 @@ final class InvoiceViewModel
             'vat_category' => $this->invoice->vat_category,
             // Keep empty when no distinct consignee (ADR 0020 / 0014).
             'delivery_address' => PartyAddressFormatter::format($this->invoice->delivery),
-            'preceding_invoice_number' => PrecedingInvoiceReferences::first($this->invoice->preceding_invoices)['number'] ?? null,
-            'preceding_invoice_date' => PrecedingInvoiceReferences::first($this->invoice->preceding_invoices)['date'] ?? null,
+            'preceding_invoice_number' => $precedingReference['number'] ?? null,
+            'preceding_invoice_date' => $precedingReference['date'] ?? null,
             default => $this->invoice->getAttribute($field),
         };
     }

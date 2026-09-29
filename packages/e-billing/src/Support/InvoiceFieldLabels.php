@@ -268,7 +268,9 @@ final class InvoiceFieldLabels
         if ($field === 'preceding_invoice_number') {
             return match ($validation['reason'] ?? null) {
                 'preceding_invoice_not_found' => __('e-billing::fields.hint_warning_preceding_invoice_not_found'),
-                'preceding_invoice_date_mismatch' => __('e-billing::fields.hint_warning_preceding_invoice_date_mismatch'),
+                'preceding_invoice_date_mismatch' => __(
+                    'e-billing::fields.hint_warning_preceding_invoice_date_mismatch',
+                ),
                 default => null,
             };
         }

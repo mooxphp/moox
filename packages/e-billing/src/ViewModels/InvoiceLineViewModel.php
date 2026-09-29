@@ -140,8 +140,10 @@ final class InvoiceLineViewModel
             return ['status' => 'missing'];
         }
 
+        $contextualShould = FieldValidationProfile::contextualShould($this->documentType, forLines: true);
+
         return [
-            'status' => in_array($field, FieldValidationProfile::contextualShould($this->documentType, forLines: true), true)
+            'status' => in_array($field, $contextualShould, true)
                 ? 'missing'
                 : 'not_applicable',
         ];

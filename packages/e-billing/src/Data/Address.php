@@ -18,8 +18,7 @@ class Address implements ZugferdAddress
         public ?string $country = null,
         public ?string $addressLine2 = null,
         public ?string $addressLine3 = null,
-    ) {
-    }
+    ) {}
 
     public function equals(?self $other): bool
     {
@@ -65,7 +64,11 @@ class Address implements ZugferdAddress
         }
 
         $lines = array_values(array_filter(
-            [self::trimmedNonEmpty($this->street), self::trimmedNonEmpty($this->addressLine2), self::trimmedNonEmpty($this->addressLine3)],
+            [
+                self::trimmedNonEmpty($this->street),
+                self::trimmedNonEmpty($this->addressLine2),
+                self::trimmedNonEmpty($this->addressLine3),
+            ],
             static fn (?string $line): bool => $line !== null,
         ));
         $line1 = array_shift($lines) ?? self::trimmedNonEmpty($this->company) ?? '';
