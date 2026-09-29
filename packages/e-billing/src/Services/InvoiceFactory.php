@@ -19,7 +19,6 @@ use Moox\Invoice\Models\InvoiceLine;
 use Moox\Invoice\Support\ChargeDraft;
 use Moox\Invoice\Support\En16931\BankAccount as En16931BankAccount;
 use Moox\Invoice\Support\En16931\PaymentMeans;
-use Moox\Invoice\Support\InvoiceAddress;
 use Moox\Invoice\Support\InvoiceBuilder;
 use Moox\Invoice\Support\InvoiceContact;
 use Moox\Invoice\Support\InvoiceDraft;
@@ -144,6 +143,7 @@ class InvoiceFactory
             ),
             headerCharges: $this->buildHeaderChargeDraftsFromDto($dto),
             notes: $dto->notes,
+            preceding_invoices: $dto->precedingInvoices,
         );
     }
 
@@ -306,7 +306,7 @@ class InvoiceFactory
             return null;
         }
 
-        $invoiceAddress = $this->mapInvoiceAddress($address);
+        $invoiceAddress = $address?->toEn16931Address();
         if ($invoiceAddress === null) {
             return null;
         }
@@ -317,40 +317,6 @@ class InvoiceFactory
             tax_number: $taxNumber,
             address: $invoiceAddress,
             contact: $contact,
-        );
-    }
-
-    private function mapInvoiceAddress(?Address $address): ?InvoiceAddress
-    {
-        if ($address === null) {
-            return null;
-        }
-
-        $countryCode = $address->country !== null ? strtoupper(trim($address->country)) : '';
-        if ($countryCode === '') {
-            return null;
-        }
-
-        $line1 = trim((string) ($address->street ?? ''));
-        if ($line1 === '' && $address->company !== null) {
-            $line1 = trim($address->company);
-        }
-
-        $line2 = $address->addressLine2;
-        if ($address->addressLine3 !== null && trim($address->addressLine3) !== '') {
-            $line3 = trim($address->addressLine3);
-            $line2 = $line2 !== null && trim($line2) !== ''
-                ? trim($line2)."\n".$line3
-                : $line3;
-        }
-
-        return new InvoiceAddress(
-            line1: $line1,
-            line2: $line2 !== null && trim($line2) !== '' ? trim($line2) : null,
-            city: trim((string) ($address->city ?? '')),
-            postal_code: trim((string) ($address->zip ?? '')),
-            subdivision: null,
-            country_code: $countryCode,
         );
     }
 
