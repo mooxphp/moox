@@ -21,7 +21,8 @@ final class MailTestingRunService
         private readonly MailTestingConverter $converter,
         private readonly MailTemplateRenderer $renderer,
         private readonly PayloadResolver $payloadResolver,
-    ) {}
+    ) {
+    }
 
     public function execute(MailTestingRun $run): MailTestingRun
     {

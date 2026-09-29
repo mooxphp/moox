@@ -220,8 +220,7 @@ function makeStoredMailTestingMessage(
     int $position = 1,
     string $html = '<html>test</html>',
     Engine $engine = Engine::Php,
-): MailTestingMessage
-{
+): MailTestingMessage {
     $run ??= MailTestingRun::query()->create([
         'status' => RunStatus::Completed,
         'engine' => $engine,

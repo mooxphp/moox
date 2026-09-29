@@ -13,7 +13,8 @@ final class MailTestingConverter
 {
     public function __construct(
         private readonly MailTemplateRenderer $renderer,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $data

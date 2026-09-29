@@ -293,7 +293,7 @@ it('offers only locales that exist on the selected template', function (): void 
     $page = Livewire::test(MailTestingPage::class)
         ->set('data.source_template_slug', 'bilingual');
 
-    $method = new \ReflectionMethod(MailTestingPage::class, 'localeOptionsForTemplate');
+    $method = new ReflectionMethod(MailTestingPage::class, 'localeOptionsForTemplate');
     $method->setAccessible(true);
     $options = $method->invoke($page->instance(), 'bilingual');
 

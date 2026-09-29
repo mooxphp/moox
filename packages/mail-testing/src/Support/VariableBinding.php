@@ -12,7 +12,8 @@ final class VariableBinding
         public string $token,
         public FillMode $mode,
         public string $value,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $row
