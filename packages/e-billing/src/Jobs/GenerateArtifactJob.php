@@ -127,36 +127,44 @@ class GenerateArtifactJob implements ShouldQueue
         $this->setProgress(25);
 
         $sourceHash = $sourceContentHasher->ensureOnDocument($document->fresh() ?? $document);
-        $dto = InvoiceDto::fromArray($billData);
 
-        $documentType = null;
-        try {
-            $documentType = $documentTypeCodeResolver->resolveFromCodeOrLabel(
-                $dto->documentTypeCode,
-                $dto->documentType,
-            );
-        } catch (Throwable) {
+        // The payload is read only until the case has its Invoice (ADR 0013); later runs generate from its rows.
+        $invoice = $document->invoice;
+        $mappedBillData = null;
+        if ($invoice === null) {
+            $dto = InvoiceDto::fromArray($billData);
             $documentType = null;
-        }
-
-        if (is_string($sourceHash) && $sourceHash !== '' && is_string($documentType) && $documentType !== '') {
-            $identical = $duplicateChecker->findIdenticalContentDuplicate(
-                invoiceNumber: (string) $dto->invoiceNumber,
-                documentType: $documentType,
-                sourceContentHash: $sourceHash,
-                exceptDocumentId: (string) $document->getKey(),
-                sellerVatId: $dto->supplierVatId,
-            );
-
-            if ($identical !== null) {
-                $discardIdenticalContentDuplicate->execute($document->fresh() ?? $document, $identical);
-                $this->setProgress(100);
-
-                return;
+            try {
+                $documentType = $documentTypeCodeResolver->resolveFromCodeOrLabel(
+                    $dto->documentTypeCode,
+                    $dto->documentType,
+                );
+            } catch (Throwable) {
+                $documentType = null;
             }
+
+            if (is_string($sourceHash) && $sourceHash !== '' && is_string($documentType) && $documentType !== '') {
+                $identical = $duplicateChecker->findIdenticalContentDuplicate(
+                    invoiceNumber: (string) $dto->invoiceNumber,
+                    documentType: $documentType,
+                    sourceContentHash: $sourceHash,
+                    exceptDocumentId: (string) $document->getKey(),
+                    sellerVatId: $dto->supplierVatId,
+                );
+
+                if ($identical !== null) {
+                    $discardIdenticalContentDuplicate->execute($document->fresh() ?? $document, $identical);
+                    $this->setProgress(100);
+
+                    return;
+                }
+            }
+
+            $invoice = $parsedInvoiceMapper->createFromDto($dto, $document);
+            $mappedBillData = $dto->toArray();
         }
 
-        $invoice = $parsedInvoiceMapper->createFromDto($dto, $document);
+        $documentType = $invoice->document_type;
 
         $this->setProgress(40);
 
@@ -237,15 +245,15 @@ class GenerateArtifactJob implements ShouldQueue
 
         $this->setProgress(80);
 
-        $billDataArray = $dto->toArray();
-
         $document->format = $formatId;
         $document->profile = $effective->profile;
         $document->storage_disk = $diskName;
         $document->xml_storage_path = $relativeXmlPath;
         $document->pdf_storage_path = $relativePdfPath;
         $document->copy_pdf_storage_path = $relativeCopyPdfPath;
-        $document->bill_data = $billDataArray;
+        if ($mappedBillData !== null) {
+            $document->bill_data = $mappedBillData;
+        }
         $document->artifact_content_hash = null;
         $document->gateway_status = EBillingAttachmentProcessingStatus::Validating;
         $document->save();

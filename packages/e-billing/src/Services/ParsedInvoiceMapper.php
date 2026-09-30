@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Moox\EBilling\Services;
 
 use Illuminate\Support\Facades\DB;
+use LogicException;
 use Moox\EBilling\Data\Address;
 use Moox\EBilling\Data\Invoice as InvoiceDto;
 use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
-use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceCreated;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\ConfiguredEn16931CodeResolver;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\Invoice\Models\Invoice;
-use Moox\Invoice\Models\InvoiceLine;
 use Moox\Invoice\Support\ChargeDraft;
 use Moox\Invoice\Support\En16931\BankAccount as En16931BankAccount;
 use Moox\Invoice\Support\En16931\Contact;
@@ -23,7 +22,7 @@ use Moox\Invoice\Support\En16931\PaymentMeans;
 use Moox\Invoice\Support\InvoiceBuilder;
 use Moox\Invoice\Support\InvoiceDraft;
 use Moox\Invoice\Support\InvoiceLineDraft;
-use RuntimeException;
+use Moox\Invoice\Support\InvoiceModels;
 
 class ParsedInvoiceMapper
 {
@@ -44,38 +43,22 @@ class ParsedInvoiceMapper
         return $this->codeResolver ?? app(ConfiguredEn16931CodeResolver::class);
     }
 
-    // Extend Invoice in your host app if needed
+    /**
+     * Maps the parsed payload into the case's Invoice exactly once (ADR 0013). Afterwards the
+     * Invoice rows are the working model; there is no re-parse, so existing rows are never rebuilt.
+     *
+     * @throws LogicException when the document already has its Invoice
+     */
     public function createFromDto(InvoiceDto $dto, EbillingDocument $document): Invoice
     {
-        // Extend Invoice in your host app if needed
-        $invoice = DB::transaction(function () use ($dto, $document): Invoice {
-            $existingInvoice = $this->findExistingInvoiceForDocument($document);
+        $existingInvoice = $this->findExistingInvoiceForDocument($document);
+        if ($existingInvoice !== null) {
+            throw new LogicException(
+                "Document #{$document->getKey()} already has Invoice #{$existingInvoice->getKey()}; the parsed payload is mapped only once."
+            );
+        }
 
-            if ($existingInvoice !== null) {
-                $reviewStatus = $document->review_status;
-                $isReviewed = $reviewStatus === InvoiceProcessingStatus::HumanConfirmed
-                    || $reviewStatus === InvoiceProcessingStatus::Validated;
-                if ($isReviewed) {
-                    throw new RuntimeException(
-                        "Cannot re-create Invoice #{$existingInvoice->id} for document #{$document->getKey()}: "
-                        ."document review status is '{$reviewStatus->value}'. "
-                        .'Manual intervention required.'
-                    );
-                }
-
-                // Extend InvoiceLine in your host app if needed
-                $existingInvoice->lines()->each(function (InvoiceLine $line): void {
-                    $line->allowanceCharges()->delete();
-                    $line->delete();
-                });
-                $existingInvoice->allowanceCharges()->delete();
-                $existingInvoice->delete();
-            }
-
-            $draft = $this->buildDraftFromDto($dto);
-
-            return $this->invoiceBuilder->build($draft);
-        });
+        $invoice = DB::transaction(fn (): Invoice => $this->invoiceBuilder->build($this->buildDraftFromDto($dto)));
 
         $this->linkDocumentToInvoice($document, $invoice);
 
@@ -89,6 +72,7 @@ class ParsedInvoiceMapper
     {
         $document->invoice_id = $invoice->id;
         $document->save();
+        $document->setRelation('invoice', $invoice);
     }
 
     private function findExistingInvoiceForDocument(EbillingDocument $document): ?Invoice
@@ -97,7 +81,8 @@ class ParsedInvoiceMapper
             return null;
         }
 
-        return Invoice::query()->find($document->invoice_id);
+        // A soft-deleted Invoice still counts: re-mapping would silently replace it.
+        return InvoiceModels::invoice()::query()->withTrashed()->find($document->invoice_id);
     }
 
     private function buildDraftFromDto(InvoiceDto $dto): InvoiceDraft
