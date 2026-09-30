@@ -166,6 +166,31 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Outbound mail
+    |--------------------------------------------------------------------------
+    |
+    | enabled: when false, links are still issued but no mail is queued or
+    | sent. Package default is on so existing installs keep sending; a host
+    | that must not emit mail (for example a server) defaults this off and
+    | opts in with LOGIN_LINK_MAIL_ENABLED=true.
+    | Mail uses LOGIN_LINK_MAILER when that name is set, otherwise the
+    | application default mailer. Envelope From is the process mail_from
+    | when set, otherwise the application from address.
+    | outbox: when true and moox/mail-outbox is installed, send through
+    | SendMailJob instead of Mail::. test_mode forces that job's sandbox
+    | redirect (mail-outbox.test_mode.redirect_to).
+    |
+    */
+
+    'mail' => [
+        'enabled' => (bool) env('LOGIN_LINK_MAIL_ENABLED', true),
+        'mailer' => env('LOGIN_LINK_MAILER'),
+        'outbox' => (bool) env('LOGIN_LINK_MAIL_OUTBOX', false),
+        'test_mode' => (bool) env('LOGIN_LINK_MAIL_TEST_MODE', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Optional moox/mail-template
     |--------------------------------------------------------------------------
     |

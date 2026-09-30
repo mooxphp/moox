@@ -27,6 +27,10 @@ Curious what the install command does? See manual installation below.
 | `enabled=true`, `enforce_trust=true` (default) | Track + hard-block + trust mail until confirmed |
 | `enabled=true`, `enforce_trust=false` | **Track only** — no login gate, no trust mail; new devices marked trusted |
 
+### Outbound mail
+
+The trust mail uses `USER_DEVICE_MAILER` when set, otherwise the application default mailer. `USER_DEVICE_MAIL_ENABLED=false` still records the device and sends nothing.
+
 ### User flow (secure mode: `enforce_trust=true`)
 
 1. **User logs in**
