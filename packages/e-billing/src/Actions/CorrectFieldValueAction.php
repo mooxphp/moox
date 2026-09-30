@@ -32,11 +32,51 @@ final class CorrectFieldValueAction
 {
     public const ACTIVITY_EVENT = 'value_corrected';
 
+    public const REFUSAL_NOT_CONFIGURED = 'not_configured';
+
+    public const REFUSAL_NOT_AUDITED = 'not_audited';
+
+    public const REFUSAL_UNKNOWN_KEY = 'unknown_key';
+
+    /**
+     * JSON sub-keys a correction may add when the parser left them out (ADR 0004 addendum): the parser
+     * found nothing and the reviewer supplies what the document says. Any other missing key is refused.
+     */
+    private const CREATABLE_KEYS = [
+        'seller.contact.name', 'seller.contact.phone', 'seller.contact.email',
+        'buyer.contact.name', 'buyer.contact.phone', 'buyer.contact.email',
+        'delivery.name',
+        'delivery.address.line1', 'delivery.address.line2', 'delivery.address.postal_code',
+        'delivery.address.city', 'delivery.address.subdivision', 'delivery.address.country_code',
+        'payment_means.payment_means_code',
+        'payment_means.bank_accounts.0.iban', 'payment_means.bank_accounts.0.bic', 'payment_means.bank_accounts.0.bank_name',
+        'preceding_invoices.0.number', 'preceding_invoices.0.date',
+    ];
+
+    /**
+     * Column nullability per table, read once per process.
+     *
+     * @var array<string, array<string, bool>>
+     */
+    private static array $nullableColumns = [];
+
     /**
      * @param  string  $attribute  attribute of the target; JSON sub-keys with dots, e.g. `buyer.vat_id`
      * @return bool false when the value is unchanged
      */
     public function execute(EbillingDocument $document, Model $target, string $attribute, mixed $value, ?string $note = null): bool
+    {
+        return $this->executeMany($document, $target, [$attribute => $value], $note) > 0;
+    }
+
+    /**
+     * Several fields of one record saved together, e.g. the parts of an address. Each changed field is
+     * still its own correction; unchanged fields record nothing.
+     *
+     * @param  array<string, mixed>  $values  attribute => corrected value
+     * @return int the number of corrections recorded
+     */
+    public function executeMany(EbillingDocument $document, Model $target, array $values, ?string $note = null): int
     {
         if (auth()->user() === null) {
             throw new InvalidArgumentException('An authenticated actor is required to correct a value.');
@@ -51,17 +91,24 @@ final class CorrectFieldValueAction
             throw new InvalidArgumentException("Document #{$document->id} has no linked invoice.");
         }
 
-        $field = $this->fieldPrefix($invoice, $target).$attribute;
+        $fields = [];
+        foreach ($values as $attribute => $value) {
+            $fields[$attribute] = $this->field($invoice, $target, $attribute);
 
-        if (! $this->isCorrectable($field) || ! $this->hasAttribute($target, $attribute) || ! ParsedValueHistory::isAudited($target, $attribute)) {
-            throw new InvalidArgumentException("The field {$field} is not correctable.");
+            if ($this->refusal($invoice, $target, $attribute) !== null) {
+                throw new InvalidArgumentException("The field {$fields[$attribute]} is not correctable.");
+            }
+
+            if (is_string($value)) {
+                $values[$attribute] = trim($value) === '' ? null : trim($value);
+            }
+
+            if ($values[$attribute] === null && ! $this->isNullable($target, $attribute)) {
+                throw new InvalidArgumentException("The field {$fields[$attribute]} cannot be empty.");
+            }
         }
 
-        if (is_string($value)) {
-            $value = trim($value) === '' ? null : trim($value);
-        }
-
-        $corrected = DB::transaction(function () use ($document, $invoice, $target, $attribute, $value, $field, $note): bool {
+        $count = DB::transaction(function () use ($document, $invoice, $target, $values, $fields, $note): int {
             // Re-read under lock: an approval or another correction may have landed since the models were loaded.
             $lockedDocument = $document->newQuery()->lockForUpdate()->findOrFail($document->getKey());
             if ($lockedDocument->resolveApprovalStatusEnum() !== DocumentApprovalStatus::Pending) {
@@ -69,49 +116,95 @@ final class CorrectFieldValueAction
             }
 
             $row = $target->newQuery()->lockForUpdate()->findOrFail($target->getKey());
-            $parsedValue = ParsedValueHistory::parsedValue($row, $attribute);
-            $previousValue = $this->valueOf($row, $attribute);
 
-            $this->assign($row, $attribute, $value);
-            $correctedValue = $this->valueOf($row, $attribute);
+            $parsedValues = [];
+            $previousValues = [];
+            foreach (array_keys($values) as $attribute) {
+                $parsedValues[$attribute] = ParsedValueHistory::parsedValue($row, $attribute);
+                $previousValues[$attribute] = $this->valueOf($row, $attribute);
+            }
 
-            if ($this->comparable($row, $attribute, $correctedValue) === $this->comparable($row, $attribute, $previousValue)) {
-                return false;
+            $this->assign($row, $values);
+
+            $changes = [];
+            foreach ($values as $attribute => $value) {
+                $correctedValue = $this->valueOf($row, $attribute);
+                $corrected = $this->comparable($row, $attribute, $correctedValue);
+
+                // A JSON value object may drop what it cannot hold, e.g. a consignee without an address.
+                if ($this->splitAttribute($attribute)[1] !== null && $corrected !== $this->comparable($row, $attribute, $value)) {
+                    throw new InvalidArgumentException("The field {$fields[$attribute]} cannot be set to this value on its own.");
+                }
+
+                if ($corrected !== $this->comparable($row, $attribute, $previousValues[$attribute])) {
+                    $changes[$attribute] = $correctedValue;
+                }
+            }
+
+            if ($changes === []) {
+                return 0;
             }
 
             if (! $row->save()) {
                 throw new RuntimeException('The corrected value could not be saved.');
             }
 
-            $activity = MooxActivityLogger::log('e-billing', self::ACTIVITY_EVENT, [
-                'event' => self::ACTIVITY_EVENT,
-                'entry_type' => 'audit',
-                'subject' => $invoice,
-                'properties' => [
-                    'action_type' => ReviewerActionType::ValueCorrection->value,
-                    'field' => $field,
-                    'target_type' => $target->getMorphClass(),
-                    'target_id' => $target->getKey(),
-                    'position' => $this->position($target),
-                    'parsed_value' => $parsedValue,
-                    'previous_value' => $previousValue,
-                    'corrected_value' => $correctedValue,
-                    'note' => $note,
-                ],
-            ]);
+            foreach ($changes as $attribute => $correctedValue) {
+                $activity = MooxActivityLogger::log('e-billing', self::ACTIVITY_EVENT, [
+                    'event' => self::ACTIVITY_EVENT,
+                    'entry_type' => 'audit',
+                    'subject' => $invoice,
+                    'properties' => [
+                        'action_type' => ReviewerActionType::ValueCorrection->value,
+                        'field' => $fields[$attribute],
+                        'target_type' => $target->getMorphClass(),
+                        'target_id' => $target->getKey(),
+                        'position' => $this->position($target),
+                        'parsed_value' => $parsedValues[$attribute],
+                        'previous_value' => $previousValues[$attribute],
+                        'corrected_value' => $correctedValue,
+                        'note' => $note,
+                    ],
+                ]);
 
-            if ($activity === null) {
-                throw new RuntimeException('The value correction could not be recorded.');
+                if ($activity === null) {
+                    throw new RuntimeException('The value correction could not be recorded.');
+                }
             }
 
-            return true;
+            return count($changes);
         });
 
-        if ($corrected) {
+        if ($count > 0) {
             $target->refresh();
         }
 
-        return $corrected;
+        return $count;
+    }
+
+    /**
+     * Why a field of this record cannot be corrected, as one of the `REFUSAL_*` codes, or null when it can.
+     * The approval state is not part of it: that is checked under lock when saving.
+     */
+    public function refusal(Invoice $invoice, Model $target, string $attribute): ?string
+    {
+        if (! $this->isCorrectable($this->field($invoice, $target, $attribute))) {
+            return self::REFUSAL_NOT_CONFIGURED;
+        }
+
+        if (! ParsedValueHistory::isAudited($target, $attribute)) {
+            return self::REFUSAL_NOT_AUDITED;
+        }
+
+        return $this->hasAttribute($target, $attribute) ? null : self::REFUSAL_UNKNOWN_KEY;
+    }
+
+    /**
+     * The normalised field a correction of this record's attribute is recorded under, e.g. `lines.quantity`.
+     */
+    public function field(Invoice $invoice, Model $target, string $attribute): string
+    {
+        return $this->fieldPrefix($invoice, $target).$attribute;
     }
 
     /**
@@ -158,13 +251,34 @@ final class CorrectFieldValueAction
     }
 
     /**
-     * A JSON sub-key must exist in the column's structure; a correction never adds keys.
+     * A JSON sub-key must exist in the column's structure, or be one the parser may have left out.
      */
     private function hasAttribute(Model $model, string $attribute): bool
     {
         [$column, $path] = $this->splitAttribute($attribute);
 
-        return $path === null || Arr::has($this->asArray($model->getAttribute($column)), $path);
+        return $path === null
+            || in_array($attribute, self::CREATABLE_KEYS, true)
+            || Arr::has($this->asArray($model->getAttribute($column)), $path);
+    }
+
+    /**
+     * A column-level attribute can be cleared only when its column accepts null; JSON sub-keys are
+     * checked by their value object when it is rebuilt.
+     */
+    private function isNullable(Model $model, string $attribute): bool
+    {
+        [$column, $path] = $this->splitAttribute($attribute);
+        if ($path !== null) {
+            return true;
+        }
+
+        $table = $model->getTable();
+        self::$nullableColumns[$table] ??= collect($model->getConnection()->getSchemaBuilder()->getColumns($table))
+            ->mapWithKeys(fn (array $definition): array => [$definition['name'] => (bool) $definition['nullable']])
+            ->all();
+
+        return self::$nullableColumns[$table][$column] ?? true;
     }
 
     private function valueOf(Model $model, string $attribute): mixed
@@ -179,19 +293,31 @@ final class CorrectFieldValueAction
         return Arr::get($this->asArray($value), $path);
     }
 
-    private function assign(Model $model, string $attribute, mixed $value): void
+    /**
+     * JSON sub-keys of one column are set together, so its value object is rebuilt once from all of them.
+     *
+     * @param  array<string, mixed>  $values
+     */
+    private function assign(Model $model, array $values): void
     {
-        [$column, $path] = $this->splitAttribute($attribute);
+        $columns = [];
 
-        if ($path === null) {
-            $model->setAttribute($column, $value);
+        foreach ($values as $attribute => $value) {
+            [$column, $path] = $this->splitAttribute($attribute);
 
-            return;
+            if ($path === null) {
+                $model->setAttribute($column, $value);
+
+                continue;
+            }
+
+            $columns[$column] ??= $this->asArray($model->getAttribute($column));
+            Arr::set($columns[$column], $path, $value);
         }
 
-        $data = $this->asArray($model->getAttribute($column));
-        Arr::set($data, $path, $value);
-        $model->setAttribute($column, $data);
+        foreach ($columns as $column => $data) {
+            $model->setAttribute($column, $data);
+        }
     }
 
     /**

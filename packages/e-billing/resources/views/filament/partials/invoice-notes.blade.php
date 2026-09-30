@@ -1,5 +1,5 @@
 @php
-    $notes = $viewModel->notesGroup();
+    $notes = $viewModel->notesGroup($editing ?? false);
 @endphp
 @if($notes !== null)
     <details

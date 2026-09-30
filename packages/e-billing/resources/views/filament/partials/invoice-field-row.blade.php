@@ -8,6 +8,8 @@
         'red' => 'border border-red-500/20 bg-red-50 text-red-700 dark:border-red-500/30 dark:bg-red-500/15 dark:text-red-300',
         default => 'border border-gray-500/20 bg-gray-100 text-gray-600 dark:border-gray-500/30 dark:bg-gray-500/15 dark:text-gray-300',
     };
+    /** Review workspace state, when rendered by ViewInvoice (ADR 0004). */
+    $reviewEdit = isset($workspace) && $field->editKey !== null ? $workspace->edit($field->editKey) : null;
 @endphp
 <div
     class="flex items-start justify-between gap-3 border-b border-gray-200 py-2 last:border-b-0 last:pb-0 dark:border-gray-700">
@@ -51,8 +53,24 @@
                 {{ $field->hint }}
             </div>
         @endif
+        @if($reviewEdit !== null)
+            @if($correctionNote = $workspace->correctionNote($field->editKey))
+                <div class="mt-1 text-xs text-blue-700 dark:text-blue-300">{{ $correctionNote }}</div>
+            @endif
+            @if(($editing ?? false) && $workspace->isFlagged($field->editKey))
+                <div class="mt-1 text-xs text-amber-700 dark:text-amber-300">
+                    {{ __('e-billing::fields.review_not_in_master_data') }}
+                </div>
+            @endif
+            @if(($editing ?? false) && ! $reviewEdit->isEditable())
+                <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $reviewEdit->reason }}</div>
+            @endif
+        @endif
     </div>
-    <div class="shrink-0">
+    <div class="flex shrink-0 items-center gap-1">
+        @if(($editing ?? false) && $reviewEdit?->isEditable())
+            {{ ($page->editFieldAction)(['key' => $field->editKey]) }}
+        @endif
         <span
             class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium {{ $badgeSurface }}">
             <span class="hidden sm:inline" aria-hidden="true">●</span>

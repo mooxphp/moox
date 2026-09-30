@@ -33,13 +33,9 @@ use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
-use Moox\Customer\Models\Customer;
 use Moox\EBilling\Actions\CreateManualUploadDocumentAction;
-use Moox\EBilling\Actions\RematchAttributionAction;
-use Moox\EBilling\Actions\SetInvoiceAttributionAction;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
-use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ListInvoices;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ViewInvoice;
 use Moox\EBilling\Resources\InvoiceResource\RelationManagers\MailSendLogsRelationManager;
@@ -482,39 +478,6 @@ class InvoiceResource extends BaseItemResource
                 ->label(__('e-billing::fields.action_details'))
                 ->icon(Heroicon::OutlinedEye)
                 ->url(fn (Invoice $record): string => self::getUrl('view', ['record' => $record])),
-            Action::make('rematch')
-                ->label(__('e-billing::fields.action_rematch'))
-                ->icon(Heroicon::OutlinedArrowPath)
-                ->color('warning')
-                ->requiresConfirmation()
-                ->modalHeading(__('e-billing::fields.action_rematch_modal_heading'))
-                ->modalDescription(__('e-billing::fields.action_rematch_modal_description'))
-                ->modalSubmitActionLabel(__('e-billing::fields.action_rematch_submit'))
-                ->visible(fn (Invoice $record): bool => $record->ebillingDocument instanceof EbillingDocument)
-                ->action(function (Invoice $record): void {
-                    $document = $record->ebillingDocument;
-                    if (! $document instanceof EbillingDocument) {
-                        return;
-                    }
-
-                    try {
-                        app(RematchAttributionAction::class)->execute($document);
-                    } catch (Throwable) {
-                        Notification::make()
-                            ->title(__('e-billing::fields.notification_rematch_failed_title'))
-                            ->body(__('e-billing::fields.notification_rematch_failed_body'))
-                            ->danger()
-                            ->send();
-
-                        return;
-                    }
-
-                    Notification::make()
-                        ->title(__('e-billing::fields.notification_rematch_success_title'))
-                        ->body(__('e-billing::fields.notification_rematch_success_body'))
-                        ->success()
-                        ->send();
-                }),
             Action::make('kosit_report')
                 ->label(__('e-billing::fields.action_kosit_report'))
                 ->icon(Heroicon::OutlinedDocumentMagnifyingGlass)
@@ -861,81 +824,6 @@ class InvoiceResource extends BaseItemResource
         }
 
         return basename($storedPath);
-    }
-
-    /**
-     * Filament header action for manual customer attribution.
-     *
-     * Not registered on {@see ViewInvoice}; kept for a later surface.
-     */
-    public static function getSetAttributionAction(Invoice $record): Action
-    {
-        $document = $record->ebillingDocument;
-
-        return Action::make('set_attribution')
-            ->label(__('e-billing::fields.action_set_attribution'))
-            ->icon(Heroicon::OutlinedUserCircle)
-            ->color('gray')
-            ->modalHeading(__('e-billing::fields.action_set_attribution_modal_heading'))
-            ->modalDescription(__('e-billing::fields.action_set_attribution_modal_description'))
-            ->modalSubmitActionLabel(__('e-billing::fields.action_set_attribution_submit'))
-            ->visible(fn (): bool => $document instanceof EbillingDocument)
-            ->fillForm(fn (): array => [
-                'customer_id' => $document?->customer_id,
-            ])
-            ->schema([
-                Select::make('customer_id')
-                    ->label(__('e-billing::fields.field_customer'))
-                    ->searchable()
-                    ->nullable()
-                    ->native(false)
-                    ->getSearchResultsUsing(function (string $search): array {
-                        return Customer::query()
-                            ->where(function ($query) use ($search): void {
-                                $query->where('customer_name', 'like', "%{$search}%")
-                                    ->orWhere('customer_number', 'like', "%{$search}%");
-                            })
-                            ->orderBy('customer_name')
-                            ->limit(50)
-                            ->get()
-                            ->mapWithKeys(fn (Customer $customer): array => [
-                                (string) $customer->getKey() => $customer->displayLabel()
-                                    .(filled($customer->customer_number) ? " ({$customer->customer_number})" : ''),
-                            ])
-                            ->all();
-                    })
-                    ->getOptionLabelUsing(function (?string $value): ?string {
-                        if ($value === null || $value === '') {
-                            return null;
-                        }
-
-                        $customer = Customer::query()->withTrashed()->find($value);
-
-                        return $customer instanceof Customer
-                            ? $customer->displayLabel()
-                                .(filled($customer->customer_number) ? " ({$customer->customer_number})" : '')
-                            : $value;
-                    }),
-            ])
-            ->action(function (array $data) use ($record, $document): void {
-                if (! $document instanceof EbillingDocument) {
-                    return;
-                }
-
-                $customerId = $data['customer_id'] ?? null;
-                app(SetInvoiceAttributionAction::class)->execute(
-                    $document,
-                    is_string($customerId) && $customerId !== '' ? $customerId : null,
-                );
-
-                Notification::make()
-                    ->title(__('e-billing::fields.notification_attribution_updated_title'))
-                    ->body(__('e-billing::fields.notification_attribution_updated_body'))
-                    ->success()
-                    ->send();
-
-                $record->load('ebillingDocument');
-            });
     }
 
     public static function shouldRegisterNavigation(): bool

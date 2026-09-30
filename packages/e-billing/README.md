@@ -16,7 +16,7 @@ Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through a
 - MoSCoW severity gating: must/should/could priorities, severity release with auditable actor identity, and review queue aligned with the findings gate
 - Duplicate document-number detection (`invoice_number` + same `document_type`, optionally scoped by seller VAT via `duplicate_number.scope`): differing source PDFs flag `needs_review` and block auto-Validated / auto-approve; identical source PDFs are discarded without a new version
 - Filament `InvoiceResource` for list, filter, and manual review workflows
-- Manual customer attribution and explicit rematch (interim Filament actions via `SetInvoiceAttributionAction` / rematch; to be replaced by the mixed review workspace + leave-edit pipeline — ADR `docs/adr/0004-mixed-review-workspace-and-leave-edit-pipeline.md`, [#47](https://github.com/mooxphp/e-billing/issues/47), [#48](https://github.com/mooxphp/e-billing/issues/48))
+- Review workspace on the invoice view: per-row value corrections and customer attribution in one edit mode, with leave-edit as the single re-match trigger (see [Review workspace](#review-workspace); ADR `docs/adr/0004-mixed-review-workspace-and-leave-edit-pipeline.md`, [#47](https://github.com/mooxphp/e-billing/issues/47), [#48](https://github.com/mooxphp/e-billing/issues/48))
 - Host-bound invoice parser via `InvoiceParserInterface` (no parser ships with this package)
 - Delivery-date carriage into generated artifacts: one unique date → document actual delivery (BT-72); several differing dates → per-line dates only (no document BT-72, no invoicing-period merge); intra-community invoices with multiple dates surface `delivery_date` as `needs_review` (BR-IC-11) instead of aggregating
 - Consignee party on invoice and line `delivery` (name + address): persisted even without a country; detail views show the name first (`PartyAddressFormatter`); field label Consignee (hint BG-13); adapters expose `shipTo*` / trade refs / `itemAttributes` / `itemClassifications`; `moox/zugferd` omits BG-15 when ship-to equals buyer (keep BT-72; VAT **K** still emits), may promote a shared line ship-to, else BT-127 — no tax registration or contact; BG-15 only when a country is present and the party is emitted
@@ -94,6 +94,7 @@ Published as `config/e-billing.php`.
 | `default_customer_country` | Transitional fallback buyer country when the parser derives none (default `DE`); removed in a future master-data phase |
 | `supplier` | Central supplier master data copied onto invoices as a snapshot at creation time |
 | `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length`, `name_legal_form_stop_words`, `buyer_address_roles` (billing + postal), `delivery_address_roles` (delivery first, then postal/billing fallback) |
+| `cross_checked` | Fields checked against master data, shared by the review workspace pickers and the divergence report: `strict` (`EBILLING_CROSS_CHECKED_STRICT`, default `false`) and `fields` (see [Cross-checked fields](#cross-checked-fields)) |
 | `field_validation` | MoSCoW priority rules for invoice and line fields. `credit_note_*` siblings (fields, line fields, contextual-should lists) apply to BT-3 `381` documents; a host that omits a `credit_note_*` key falls back to the `invoice_*` key (ADR 0009) |
 | `approval` | Dispatch approval gate: `required`, `auto_approve_enabled` |
 | `notification` | Review announce strategy: `immediate` / `batched`, batch key, window minutes, optional `recorder` class |
@@ -226,7 +227,7 @@ Changing a field's configured priority changes its behaviour with no code change
 
 **Document classification (ADR 0011):** `ClassifyDocumentTypeAction` lets a reviewer switch a document between the types in `e-billing.document_classification.types` (default `381 => positive`, `384 => negative`) before approval. It negates all document, line and allowance/charge amounts when the signs differ. The field changes are audited by moox/audit like any invoice update, and the act is logged as its own `document_classified` activity (from, to, amounts negated, origin) — never a value correction. `384 => negative` describes a correction issued as a credit (the delta); a host that issues full, positive restatements sets `positive`. Dropdown labels and "when to choose" hints: `DocumentClassificationLabels` (`e-billing::fields.document_classification.{code}.label|hint`). The credit-note list shows both types (`resources.credit_notes.document_types`) with per-type tabs and a type badge.
 
-**Value correction (mooxphp/e-billing#45):** `CorrectFieldValueAction::execute($document, $target, $attribute, $value, $note = null)` lets an authenticated reviewer correct one field of the invoice, a line or an allowance/charge to what the source document says. It works on pending documents only (approved and rejected are refused) and needs no permission beyond an authenticated actor, like approval. The field must match `e-billing.value_correction.fields` (default `['*']`; `Str::is` patterns on the normalised field, e.g. `buyer.vat_id`, `lines.quantity`, `allowance_charges.amount`, `lines.allowance_charges.amount`) and be an attribute audited by moox/audit. JSON columns (`seller`, `buyer`, `delivery`, `payment_means`) are corrected per sub-key; a sub-key the column's structure does not have is refused, so a correction never adds keys. The parsed value is read from the row's `created` activity (`ParsedValueHistory`); a row without one is refused. The document and the corrected row are re-read under a row lock inside the transaction, so an approval that lands after the models were loaded still refuses the correction, and `previous_value` is the stored value. A value equal after normalisation (numeric columns by value, other text trimmed so `0123` differs from `123`, empty string = null, dates by day) is a no-op: the action returns `false` and records nothing. If the save is cancelled (e.g. by a `saving` listener), nothing is recorded. Otherwise it writes the value and logs a `value_corrected` activity (`CorrectFieldValueAction::ACTIVITY_EVENT`, entry type `audit`, log name `e-billing`) on the Invoice with `action_type`, `field`, `target_type`, `target_id`, `position`, `parsed_value`, `previous_value`, `corrected_value` and `note`; actor and time are the activity's causer and `created_at`. **moox/audit is required for this feature** (a composer `suggest`, not a requirement): without it, or with `audit.enabled` / `e-billing.audit.enabled` off, the action throws a `RuntimeException`; when the activity cannot be written (e.g. logging disabled at runtime) the value change is rolled back (this covers the activity only when the activity log uses the default database connection). Corrections are append-only by convention: no package code updates or deletes activities, but moox/audit does not enforce immutability yet (mooxphp/audit#2), so keep `audit` entries out of retention pruning. `ReviewerActionType` names the reviewer acts (`value_correction`, `approval`, `rejection`, `severity_release`); only value corrections mean the parser read a value wrong. There is no UI yet (review workspace: mooxphp/e-billing#47), and regenerating or revalidating after a correction is not part of this action.
+**Value correction (mooxphp/e-billing#45):** `CorrectFieldValueAction::execute($document, $target, $attribute, $value, $note = null)` lets an authenticated reviewer correct one field of the invoice, a line or an allowance/charge to what the source document says. It works on pending documents only (approved and rejected are refused) and needs no permission beyond an authenticated actor, like approval. The field must match `e-billing.value_correction.fields` (default `['*']`; `Str::is` patterns on the normalised field, e.g. `buyer.vat_id`, `lines.quantity`, `allowance_charges.amount`, `lines.allowance_charges.amount`) and be an attribute audited by moox/audit. JSON columns (`seller`, `buyer`, `delivery`, `payment_means`) are corrected per sub-key; a sub-key the column's structure does not have is refused, except the fixed `CREATABLE_KEYS` set the parser may leave out (see [Review workspace](#review-workspace)). The parsed value is read from the row's `created` activity (`ParsedValueHistory`); a row without one is refused. The document and the corrected row are re-read under a row lock inside the transaction, so an approval that lands after the models were loaded still refuses the correction, and `previous_value` is the stored value. A value equal after normalisation (numeric columns by value, other text trimmed so `0123` differs from `123`, empty string = null, dates by day) is a no-op: the action returns `false` and records nothing. If the save is cancelled (e.g. by a `saving` listener), nothing is recorded. Otherwise it writes the value and logs a `value_corrected` activity (`CorrectFieldValueAction::ACTIVITY_EVENT`, entry type `audit`, log name `e-billing`) on the Invoice with `action_type`, `field`, `target_type`, `target_id`, `position`, `parsed_value`, `previous_value`, `corrected_value` and `note`; actor and time are the activity's causer and `created_at`. **moox/audit is required for this feature** (a composer `suggest`, not a requirement): without it, or with `audit.enabled` / `e-billing.audit.enabled` off, the action throws a `RuntimeException`; when the activity cannot be written (e.g. logging disabled at runtime) the value change is rolled back (this covers the activity only when the activity log uses the default database connection). Corrections are append-only by convention: no package code updates or deletes activities, but moox/audit does not enforce immutability yet (mooxphp/audit#2), so keep `audit` entries out of retention pruning. `ReviewerActionType` names the reviewer acts (`value_correction`, `approval`, `rejection`, `severity_release`); only value corrections mean the parser read a value wrong. There is no UI yet (review workspace: mooxphp/e-billing#47), and regenerating or revalidating after a correction is not part of this action.
 
 **Declared document type at upload:** `resources.{key}.manual_upload.document_types` (credit notes: `['381', '384']`) adds a required type choice without preselection to the upload dialog, with a collapsible instruction built from `document_classification.{code}.rule|examples` and `document_classification_help.*`. Codes must be in the resource's `document_types`, `document_classification.types` and `allowed_document_type_codes`. One code is applied without a choice; an empty list leaves the parser in charge. The choice is stored on the uploaded source, logged as `document_classified` (origin `upload`) and applied after parsing: a parsed 381/384 is replaced (with the sign flip), any other parsed type is kept and flagged for review. Credit notes and corrected invoices count as one type for duplicate detection. Hosts override the examples in `lang/vendor/e-billing/{locale}/fields.php`; example lists merge by index, so keep them the same length. Run the migration `add_document_type_to_ebilling_uploaded_pdf_sources_table`.
 
@@ -302,7 +303,7 @@ Final pipeline stage after approval: get an approved document to its recipients 
 
 Hosts may still bind their own `DeliveryRecipientResolverInterface` to replace this policy.
 
-**Invoice view:** the buyer section shows display-only `buyer_email` = inbox To email (validated `InboxMessage.to_email`). It is not corroborated against master data; the UI shows a soft informational hint (`hint_info_buyer_email`). Labels: en `Recipient email` / de `Empfänger-E-Mail`.
+**Invoice view:** the buyer section shows `buyer_email` = `EbillingDocument::recipientEmail()`: the address a reviewer set on the document (`buyer.contact.email`, BT-58; `documentRecipientEmail()`), else the validated inbox To email (`InboxMessage.to_email`). It is not corroborated against master data; the UI shows a soft informational hint (`hint_info_buyer_email`). A set document address counts as present for validation. Reviewers set it in the [review workspace](#delivery-recipient-in-review). Labels: en `Recipient email` / de `Empfänger-E-Mail`.
 
 **Records:** table `ebilling_delivery_attempts` — one row per channel × recipient × attempt (append-only; re-dispatch adds rows). No document-level “delivered” flag. Invoice detail shows the attempt history; when `moox/audit` is present, each attempt also writes an Activity entry (`delivery_attempted`); configured `audit.log_events` attributes become Spatie `attribute_changes` for the Änderungen UI (same path as model audits).
 
@@ -502,3 +503,80 @@ Presentation-only config under `e-billing.invoice_ui` (does **not** change MoSCo
 
 Groups with **visible** blocking `must` findings force-open and show a text+colour issue count on the summary. Denylisted fields do not count toward that marker. Empty groups after the denylist are omitted. See ADR `docs/adr/0007-invoice-view-field-denylist-and-collapsible-groups.md`.
 
+
+## Review workspace
+
+Edit mode on the invoice and credit-note view pages (`ViewInvoice` / `ViewCreditNote`) combines value corrections and customer attribution in one place. Design rationale: ADR `docs/adr/0004-mixed-review-workspace-and-leave-edit-pipeline.md` ([#47](https://github.com/mooxphp/e-billing/issues/47), [#48](https://github.com/mooxphp/e-billing/issues/48)).
+
+### Requirements
+
+Edit mode is available only while the document's approval status is `pending` and `moox/audit` auditing is available (a correction keeps the parsed value in the audit trail). Otherwise the header actions do not appear.
+
+### Edit and leave
+
+- **Edit** (`start_review_edit`) turns on edit mode. **Confirm** and **approve** are hidden while you edit.
+- Each row gets a pencil action (`editField`) that opens a slide-over on the start side, so the PDF preview stays visible. It saves exactly that row as a value correction. The note is optional.
+- Customer attribution changes through `editAttribution` inside the edit banner (`SetInvoiceAttributionAction`, `attribution_source = manual`).
+- **Finish editing** (`finish_review_edit`, with confirmation) leaves edit mode and runs `RematchAttributionAction` synchronously; a manual attribution is preserved. Regeneration, re-validation and the stale-artifact approval block on leave follow in [#48](https://github.com/mooxphp/e-billing/issues/48). Per-field saves never re-match.
+
+The standalone `set_attribution` and `rematch` actions (view header and invoice list row action) and `InvoiceResource::getSetAttributionAction()` are removed, together with their translation keys.
+
+### Which rows can be edited
+
+Every row resolves through `ReviewFieldCatalog` (row keys `invoice:{field}`, `notes:{index}`, `line:{lineId}:{field}`) to either an edit or a visible, translated reason (`e-billing::fields.review_not_editable.*`):
+
+| Reason key | Meaning |
+|---|---|
+| `not_configured` | Field is not in `value_correction.fields` |
+| `not_audited` | Attribute is not audited, so its parsed value could not be kept |
+| `unknown_key` | The document has no such value |
+| `unknown_field` | Row is not mapped to an editable field |
+| `no_charge_row` | The allowance/charge row does not exist; adding one is not supported |
+| `document_level` | Line `vat_category` is a document-level value; correct it under Amounts |
+| `not_classifiable` | The document type is not one of `document_classification.types` |
+
+- **Addresses** (buyer, seller, delivery, line delivery) and **bank accounts** edit in one slide-over but record one correction per changed sub-field (`CorrectFieldValueAction::executeMany()`).
+- **Header charges and line surcharges** edit the existing allowance/charge row (`amount`, `percentage`, `reason_text`).
+- **`document_type`** switches between the configured classification types through `ClassifyDocumentTypeAction`; it is not a value correction.
+- Corrected rows show "Corrected. Parsed value: …" (from `ParsedValueHistory::correctedFields()`), in and outside edit mode.
+
+An attribute must also be audited by its model to be correctable: the `invoice.audit` attributes of `moox/invoice` (and any host override) decide which fields get a pencil rather than `not_audited`.
+
+`CorrectFieldValueAction` can create a fixed set of JSON sub-keys the parser left out (`CREATABLE_KEYS`): seller/buyer contact name, phone and email; delivery name and address parts; the `payment_means` code and the first bank account's `iban` / `bic` / `bank_name`; the first preceding invoice's number and date. The parsed value of a created key is `null`. JSON sub-keys of one column are written together, and a value a JSON value object would drop is refused. `refusal()` returns the `REFUSAL_*` code for a field that cannot be corrected; `field()` returns its normalised field name.
+
+### Cross-checked fields
+
+`e-billing.cross_checked` is the single catalogue of fields checked against master data. The review workspace uses it for pickers; the divergence report ([#46](https://github.com/mooxphp/e-billing/issues/46)) is intended to use the same mapping.
+
+```php
+'cross_checked' => [
+    'strict' => (bool) env('EBILLING_CROSS_CHECKED_STRICT', false),
+    'fields' => [
+        'customer_number' => ['record' => 'customer', 'attribute' => 'customer_number'],
+        'customer_name' => ['record' => 'company', 'attribute' => 'name'],
+        'customer_vat_id' => ['record' => 'company', 'attribute' => 'vat_number'],
+        'customer_address' => ['record' => 'company', 'addresses' => 'buyer'],
+        'delivery_address' => ['record' => 'company', 'addresses' => 'delivery'],
+    ],
+],
+```
+
+Each field names the matched `record` (`customer` or `company`) and either an `attribute` of it or its `addresses` filtered by the `corroboration` role config (`buyer` or `delivery`). `CrossCheckedFields` scopes the options to the attributed customer:
+
+| Mode | Behaviour |
+|---|---|
+| `strict = false` (default) | Datalist suggestions plus free text. Addresses add an "Address from master data" picker that fills the parts |
+| `strict = true` | Select-only. For addresses, leaving the picker empty clears the address parts |
+
+Values that are not in the attributed customer's master data are flagged in edit mode, never cleared; a field whose master data has no value is not flagged. Review never writes master data.
+
+A column that does not accept `null` (e.g. `invoice_number`) cannot be cleared; the save is refused with "The field … cannot be empty."
+
+### Delivery recipient in review
+
+The `buyer_email` row edits the document's delivery recipient through `SetRecipientEmailAction`:
+
+- **Mail-sourced documents:** a value correction of `buyer.contact.email`.
+- **Other sources (manual upload):** writes `buyer.contact.email` and logs an audited `recipient_set` activity, so it stays out of parser-feedback data.
+
+Use the `document` recipient strategy (see [Delivery dispatch](#delivery-dispatch)) to deliver only to an address set this way.

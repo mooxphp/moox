@@ -14,6 +14,7 @@ final class FieldViewData
         public readonly ?array $validation,
         public readonly ?string $hint,
         public readonly ?string $url = null,
+        public readonly ?string $editKey = null,
     ) {
     }
 

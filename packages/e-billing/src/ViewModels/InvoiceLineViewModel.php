@@ -11,6 +11,7 @@ use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\EBilling\Support\InvoiceUiPresentation;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
 use Moox\EBilling\Support\PartyAddressFormatter;
+use Moox\EBilling\Support\ReviewFieldCatalog;
 use Moox\Invoice\Models\InvoiceLine;
 
 final class InvoiceLineViewModel
@@ -53,13 +54,15 @@ final class InvoiceLineViewModel
     }
 
     /**
+     * @param  bool  $includeEmpty  also empty fields, so the review workspace can fill them
      * @return list<FieldViewData>
      */
-    public function relevantFields(): array
+    public function relevantFields(bool $includeEmpty = false): array
     {
         $fields = array_values(array_filter(
             $this->fields(),
-            fn (FieldViewData $f): bool => $f->value !== null && $f->value !== ''
+            fn (FieldViewData $f): bool => $includeEmpty
+                || $f->value !== null && $f->value !== ''
                 || in_array($f->status(), ['missing', 'needs_review', 'invalid', 'unmatched'], true)
         ));
 
@@ -100,6 +103,7 @@ final class InvoiceLineViewModel
             value: $this->formatValue($name),
             validation: $validation,
             hint: InvoiceFieldLabels::hint($name, $status, $validation),
+            editKey: ReviewFieldCatalog::lineKey($this->line, $name),
         );
     }
 
