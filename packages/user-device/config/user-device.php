@@ -176,6 +176,29 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Outbound mail
+    |--------------------------------------------------------------------------
+    |
+    | enabled: when false, a new device is still recorded but no mail is sent.
+    | Package default is on so existing installs keep mailing; a host that
+    | must not emit mail defaults this off and opts in with
+    | USER_DEVICE_MAIL_ENABLED=true.
+    | mailer: Laravel mailer name. Empty uses the application default.
+    | outbox sends the new-device mail through moox/mail-outbox. test_mode
+    | forces that send into the outbox sandbox. Both default off here so
+    | other apps keep the notification mail channel; the host opts in.
+    |
+    */
+
+    'mail' => [
+        'enabled' => (bool) env('USER_DEVICE_MAIL_ENABLED', true),
+        'outbox' => (bool) env('USER_DEVICE_MAIL_OUTBOX', false),
+        'mailer' => env('USER_DEVICE_MAILER'),
+        'test_mode' => (bool) env('USER_DEVICE_MAIL_TEST_MODE', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Audit defaults
     |--------------------------------------------------------------------------
     |

@@ -29,7 +29,28 @@ class NewDeviceNotification extends Notification implements ShouldQueue
      */
     public function via($notifiable): array
     {
+        if (! $this->mailIsEnabled()) {
+            return [];
+        }
+
         return ['mail'];
+    }
+
+    private function mailIsEnabled(): bool
+    {
+        return (bool) config('user-device.mail.enabled', true);
+    }
+
+    private function mailMessage(string $subject): MailMessage
+    {
+        $message = (new MailMessage)->subject($subject);
+        $mailer = config('user-device.mail.mailer');
+
+        if (is_string($mailer) && $mailer !== '') {
+            $message->mailer($mailer);
+        }
+
+        return $message;
     }
 
     /**
@@ -42,13 +63,11 @@ class NewDeviceNotification extends Notification implements ShouldQueue
         $html = $this->renderMailTemplate($data);
 
         if (is_string($html) && $html !== '') {
-            return (new MailMessage)
-                ->subject($subject)
+            return $this->mailMessage($subject)
                 ->view('user-device::mail.raw-html', ['html' => $html]);
         }
 
-        return (new MailMessage)
-            ->subject($subject)
+        return $this->mailMessage($subject)
             ->view('user-device::mail.new-device', [
                 'notifiable' => $notifiable,
                 'deviceTitle' => $this->deviceDetails['title'] ?? null,
