@@ -25,6 +25,9 @@
 - Invoice audit registration moved to moox/invoice (`invoice.audit`). `e-billing.audit.models` no longer lists the Invoice attributes; e-billing only adds its subject and attribute label resolvers to Invoice, and adds nothing when `invoice.audit.enabled` is `false`, so that switch really stops invoice auditing. Invoice audit entries now use log name `invoice` instead of `e-billing`.
 - BG-32 BT-160 attribute names and CAE `reason_text` fallbacks follow `e-billing.document_locale` / `EBILLING_DOCUMENT_LOCALE` (package default `en`; lang keys in `e-billing::emission`). Independent of Filament UI locale. Already-emitted artifacts are not regenerated. Hosts that need German (or other) labels set the env/config override.
 
+### Removed
+- `Moox\EBilling\Services\InvoiceFactory` (no caller in the package; referenced classes that no longer exist). `ParsedInvoiceMapper` is the only payload → Invoice mapper.
+
 ### Added
 - **Selective redispatch** (ADR 0008): *Erneut zustellen* / Re-dispatch lets operators choose configured delivery channels (defaults to failed/never-run; warns when re-selecting successes). First post-approval dispatch still runs all channels. Optional channel-key filter on `QueueDocumentDeliveryAction` / `DispatchDocumentJob` / `DispatchDocumentAction`.
 - ADR 0020 emission wiring: `ZugferdInvoice` / line adapters expose `shipTo*`, trade refs, `itemAttributes` / `itemClassifications`; `LineItemAttributeMapper` maps material, weights (kg text), unpriced certificate → BG-32 and customs tariff → BT-158 `HS`.
