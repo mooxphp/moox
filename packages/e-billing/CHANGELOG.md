@@ -19,6 +19,7 @@
 - Buyer/seller address mapping: without a street, the next address line (e.g. a PO box "Postfach 16 20") becomes BT-50 instead of repeating the company name; the company only fills BT-50 when no address line exists. Shared as `Data\Address::toEn16931Address()` for `ParsedInvoiceMapper` and `InvoiceFactory` (removed the unused `InvoiceAddress` import).
 
 ### Changed
+- Invoice audit registration moved to moox/invoice (`invoice.audit`). `e-billing.audit.models` no longer lists the Invoice attributes; e-billing only adds its subject and attribute label resolvers to Invoice, and adds nothing when `invoice.audit.enabled` is `false`, so that switch really stops invoice auditing. Invoice audit entries now use log name `invoice` instead of `e-billing`.
 - BG-32 BT-160 attribute names and CAE `reason_text` fallbacks follow `e-billing.document_locale` / `EBILLING_DOCUMENT_LOCALE` (package default `en`; lang keys in `e-billing::emission`). Independent of Filament UI locale. Already-emitted artifacts are not regenerated. Hosts that need German (or other) labels set the env/config override.
 
 ### Added

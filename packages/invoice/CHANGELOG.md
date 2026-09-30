@@ -3,11 +3,13 @@
 ## Unreleased
 
 ### Added
+- Audit registration with moox/audit: new `invoice.audit` config block (`enabled`, `models`; log name `invoice`), registered in `InvoiceServiceProvider::packageBooted()` when moox/audit is installed. Invoice lines and allowances/charges are now audited too; configured model subclasses (`models.*`) are audited in place of the package models. moox/audit is a composer `suggest`.
 - Nullable indexed `supplier_number` on invoices (EN 16931 BT-29 seller identifier). Flows through `InvoiceDraft` / `InvoiceBuilder` / model / create-table stub; migration stub `add_supplier_number_to_invoices_table` (hosts must publish/run).
 - Nullable `preceding_invoices` (json) on invoices for the EN 16931 preceding invoice reference (BG-3: list of `{number, date}`, BT-25/BT-26). `InvoiceDraft::$preceding_invoices` (default `[]`), persisted by `InvoiceBuilder`, cast as array on the model. Migration stub `add_preceding_invoices_to_invoices_table`; hosts must publish/run it.
 - Nullable `vat_category` on invoices (`InvoiceDraft` / `InvoiceBuilder` / model / create-table stub) for the EN 16931 VAT category stamp (BT-118).
 
 ### Changed
+- The Invoice audit registration moved here from moox/e-billing; its entries use log name `invoice` instead of `e-billing`.
 
 - Invoice and line `delivery` is now a consignee **party** (name + address) via `DeliveryPartyCast`, matching `buyer` / `seller`. Stored JSON is `{name, address}`; VAT identifier, tax number, and contact are never persisted on delivery. A data migration wraps existing address-shaped JSON and strips leftover VAT / tax / contact from already party-shaped rows ([#8](https://github.com/mooxphp/invoice/issues/8)).
 - A stored consignee may lack `country_code`. BR-57 is an emission rule (enforced when BG-15 is written), not a storage rule: `DeliveryPartyCast` keeps an address as read via `Address::fromDocumentArray()` ([#8](https://github.com/mooxphp/invoice/issues/8)).

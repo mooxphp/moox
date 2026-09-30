@@ -279,6 +279,17 @@ Published config: `config/invoice.php`.
 
 Override these entries to swap in custom model implementations; `InvoiceModels` and `InvoiceBuilder` resolve classes from this map.
 
+### Audit
+
+moox/audit is optional (a composer `suggest`). When it is installed, `InvoiceServiceProvider` registers the invoice, its lines and its allowances and charges with it at boot, using log name `invoice`. Invoice lines and allowances/charges are audited too.
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `audit.enabled` | `true` | Register the models with moox/audit. Auditing is also off when moox/audit's own `audit.enabled` is `false`. |
+| `audit.models` | Invoice, InvoiceLine, InvoiceAllowanceCharge | Per package model: `log_name` and the audited `attributes`. |
+
+The keys of `audit.models` are the package models; when `models.*` points to a subclass, the subclass is audited in its place. Override per model in the host's `config/audit.php`.
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.

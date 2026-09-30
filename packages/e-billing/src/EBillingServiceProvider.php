@@ -238,7 +238,8 @@ class EBillingServiceProvider extends MooxServiceProvider
     }
 
     /**
-     * Resolve host invoice model subclasses into the audit registry keys.
+     * Resolve host invoice model subclasses into the audit registry keys. The invoice itself is
+     * registered by moox/invoice; e-billing only adds its labels, so it adds nothing when that is off.
      *
      * @return array<string, mixed>
      */
@@ -247,6 +248,10 @@ class EBillingServiceProvider extends MooxServiceProvider
         /** @var array<string, mixed> $audit */
         $audit = config('e-billing.audit', []);
         $invoiceClass = InvoiceModels::invoice();
+
+        if (! config('invoice.audit.enabled', true) && is_array($audit['models'] ?? null)) {
+            unset($audit['models'][Invoice::class]);
+        }
 
         if ($invoiceClass === Invoice::class) {
             return $audit;
