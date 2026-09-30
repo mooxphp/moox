@@ -94,3 +94,7 @@ and its own migration. If a term needs an industry to explain it, it is not an E
 The test is the *term*, not the presence of a BT number: shipping method and delivery terms have no
 BT number and still belong here, because commerce at large needs them. A material designation needs a
 steel trade to explain it, and does not.
+
+Likewise **processing concerns** stay out: which master-data debtor an invoice was matched to (only
+the printed buyer identifier BT-46 lives here), dispatch approval, generated artifacts and their hashes.
+They belong to the consumer that processes invoices and attach from there.

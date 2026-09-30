@@ -9,6 +9,7 @@
 - Nullable `vat_category` on invoices (`InvoiceDraft` / `InvoiceBuilder` / model / create-table stub) for the EN 16931 VAT category stamp (BT-118).
 
 ### Changed
+- Default `invoice.audit` attributes for `Invoice` now also include `supplier_number`, `notes`, `preceding_invoices` and `vat_category`, so consumers such as moox/e-billing can correct them. Invoices created before this change have no parsed value recorded for these attributes.
 - The Invoice audit registration moved here from moox/e-billing; its entries use log name `invoice` instead of `e-billing`.
 
 - Invoice and line `delivery` is now a consignee **party** (name + address) via `DeliveryPartyCast`, matching `buyer` / `seller`. Stored JSON is `{name, address}`; VAT identifier, tax number, and contact are never persisted on delivery. A data migration wraps existing address-shaped JSON and strips leftover VAT / tax / contact from already party-shaped rows ([#8](https://github.com/mooxphp/invoice/issues/8)).
