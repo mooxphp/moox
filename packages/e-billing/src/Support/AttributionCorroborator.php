@@ -319,7 +319,7 @@ final class AttributionCorroborator
      * @param  list<string>  $roles
      * @return Collection<int, Address>
      */
-    private function roleFilteredAddresses(Company $company, array $roles): Collection
+    public function roleFilteredAddresses(Company $company, array $roles): Collection
     {
         if ($roles === []) {
             return collect();
@@ -355,7 +355,7 @@ final class AttributionCorroborator
     /**
      * @return list<string>
      */
-    private function buyerAddressRoles(): array
+    public function buyerAddressRoles(): array
     {
         $roles = config('e-billing.corroboration.buyer_address_roles');
         if (is_array($roles) && $roles !== []) {
@@ -373,7 +373,7 @@ final class AttributionCorroborator
     /**
      * @return list<string>
      */
-    private function deliveryAddressRoles(): array
+    public function deliveryAddressRoles(): array
     {
         $roles = config('e-billing.corroboration.delivery_address_roles');
         if (is_array($roles) && $roles !== []) {

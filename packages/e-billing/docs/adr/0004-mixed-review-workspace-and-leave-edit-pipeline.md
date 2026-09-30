@@ -69,3 +69,38 @@ Approval remains refused while the artifact predates the most recent correction,
 - Hosts must not expect master-data CRUD from review; CRM gaps stay on the divergence report and owning resources.
 - Strict select-only is a config upgrade without changing workspace shape.
 - Tests should assert: per-field save does not enqueue the full pipeline; leave-edit does; approval stays blocked under stale / in-progress / failed validation; manual attribution survives rematch.
+
+## Addendum (2026-09-30): implementation decisions
+
+Decisions taken while implementing [#47](https://github.com/mooxphp/e-billing/issues/47).
+
+### Every row resolves to an edit or a reason
+
+Each row of the document view resolves through `ReviewFieldCatalog` (row keys `invoice:{field}`, `notes:{index}`, `line:{lineId}:{field}`) to an edit or a visible, translated reason (`e-billing::fields.review_not_editable.*`: `not_configured`, `not_audited`, `unknown_key`, `unknown_field`, `no_charge_row`, `document_level`, `not_classifiable`). No row silently lacks a control.
+
+- Addresses (buyer, seller, delivery, line delivery) and bank accounts edit in one slide-over but record **one correction per changed sub-field** (`CorrectFieldValueAction::executeMany()`), so the correction data stays per field.
+- Header charges and line surcharges edit the **existing** allowance/charge row (`amount`, `percentage`, `reason_text`). A missing row is **not creatable** for now (`no_charge_row` is shown); adding allowance/charge rows is out of scope.
+- A line's `vat_category` is document-level: shown with the `document_level` reason.
+- `document_type` is a classification, not a value correction: it switches between the configured types through `ClassifyDocumentTypeAction` (ADR 0011); other types show `not_classifiable`.
+
+### Value correction may create a fixed set of keys
+
+This amends [#45](https://github.com/mooxphp/e-billing/issues/45)'s "a correction never adds keys". The parser leaves some JSON sub-keys out when the source has nothing to read (contact details, the consignee, payment means detail), and the reviewer must be able to supply them. `CorrectFieldValueAction` may therefore create the keys in `CREATABLE_KEYS` only: seller/buyer contact name/phone/email, delivery name and address parts, `payment_means` code and the first bank account's `iban` / `bic` / `bank_name`, and the first preceding invoice's number/date. The recorded parsed value is `null`. Any other unknown key is still refused. JSON sub-keys of one column are written together, and a value a JSON value object would drop is refused rather than silently lost.
+
+### One catalogue for cross-checked fields
+
+The "cross-checked set" of this ADR is `e-billing.cross_checked`: `fields` maps a field to the matched record (`customer` or `company`) and either an `attribute` or its `addresses` in the buyer or delivery corroboration roles; `strict` (default `false`) switches from datalist suggestions plus free text to select-only. `CrossCheckedFields` scopes options to the attributed customer; addresses use an "Address from master data" picker that fills the parts. Values not in the attributed customer's master data are flagged in edit mode, never cleared; review never writes master data. The divergence report ([#46](https://github.com/mooxphp/e-billing/issues/46)) is meant to derive from the same mapping so there is one list, not two.
+
+### Delivery recipient is a reviewer-set document value
+
+The delivery recipient is `buyer.contact.email` (BT-58), which the parser never fills, so a value there is always the reviewer's. `EbillingDocument::recipientEmail()` returns it, else the inbox To address.
+
+- Mail-sourced documents: setting it is a value correction (`SetRecipientEmailAction`).
+- Other sources (manual upload): there is no mail to have read it from, so it is not a parser mistake. The action writes the value and logs an audited `recipient_set` activity, which keeps it out of parser-feedback data.
+- `ConfigurableDeliveryRecipientResolver` gains the strategy `document` (only the document's address); `inbox_to` prefers the document's address when set. `InvoiceFieldValidator` treats a set document recipient as present.
+
+### Interim leave-edit and hidden approval while editing
+
+Until [#48](https://github.com/mooxphp/e-billing/issues/48) lands, confirmed leave-edit runs `RematchAttributionAction` synchronously (manual attribution preserved) and nothing else; #48 extends it to regenerate and revalidate and adds the stale-artifact approval block. Per-field saves never re-match.
+
+Confirm and approve actions are **hidden while editing**; the reviewer leaves edit mode first, so an approval never skips the re-check that leave-edit runs. Edit mode exists only while the approval status is `pending` and moox/audit auditing is available.

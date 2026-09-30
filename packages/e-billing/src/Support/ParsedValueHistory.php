@@ -40,6 +40,39 @@ final class ParsedValueHistory
         return in_array(explode('.', $attribute, 2)[0], $tracked, true);
     }
 
+    /**
+     * The value parsed before the first correction, per corrected field of the invoice's records,
+     * keyed `{target_type}|{target_id}|{field}`. Empty when auditing is unavailable.
+     *
+     * @return array<string, mixed>
+     */
+    public static function correctedFields(Model $invoice): array
+    {
+        if (! self::isAvailable()) {
+            return [];
+        }
+
+        /** @var class-string<Activity> $activityModel */
+        $activityModel = config('audit.activity_model', Activity::class);
+
+        $parsed = [];
+        $activityModel::query()
+            ->where('subject_type', $invoice->getMorphClass())
+            ->where('subject_id', $invoice->getKey())
+            ->where('event', 'value_corrected')
+            ->oldest('id')
+            ->get()
+            ->each(function (Activity $activity) use (&$parsed): void {
+                $properties = $activity->properties;
+                $key = $properties['target_type'].'|'.$properties['target_id'].'|'.$properties['field'];
+                if (! array_key_exists($key, $parsed)) {
+                    $parsed[$key] = $properties['parsed_value'] ?? null;
+                }
+            });
+
+        return $parsed;
+    }
+
     public static function parsedValue(Model $target, string $attribute): mixed
     {
         /** @var class-string<Activity> $activityModel */

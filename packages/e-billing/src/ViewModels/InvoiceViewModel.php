@@ -15,6 +15,7 @@ use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\EBilling\Support\InvoiceUiPresentation;
 use Moox\EBilling\Support\PartyAddressFormatter;
 use Moox\EBilling\Support\PrecedingInvoiceReferences;
+use Moox\EBilling\Support\ReviewFieldCatalog;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\En16931\BankAccount;
 
@@ -128,13 +129,15 @@ final class InvoiceViewModel
     /**
      * Fields carried as invoice notes (BG-1 / BT-22) when emitted to XRechnung/ZUGFeRD.
      *
+     * @param  bool  $includeEmpty  also empty fields, so the review workspace can fill them
      * @return list<FieldViewData>
      */
-    public function noteFields(): array
+    public function noteFields(bool $includeEmpty = false): array
     {
         $fields = array_values(array_filter(
             $this->buildFields(['delivery_terms', 'shipping_method']),
-            fn (FieldViewData $field): bool => ($field->value !== null && $field->value !== '')
+            fn (FieldViewData $field): bool => $includeEmpty
+                || ($field->value !== null && $field->value !== '')
                 || in_array($field->status(), ['missing', 'needs_review'], true),
         ));
 
@@ -146,9 +149,9 @@ final class InvoiceViewModel
      *
      * @return array{title: string, subtitle: string, fields: list<FieldViewData>, open: bool, issue_count: int, issue_label: ?string}|null
      */
-    public function notesGroup(): ?array
+    public function notesGroup(bool $includeEmpty = false): ?array
     {
-        $fields = $this->noteFields();
+        $fields = $this->noteFields($includeEmpty);
         if ($fields === []) {
             return null;
         }
@@ -179,7 +182,7 @@ final class InvoiceViewModel
         $storedValidation = is_array($validations['notes'] ?? null) ? $validations['notes'] : null;
         $fields = [];
 
-        foreach ($this->parsedNoteTexts() as $note) {
+        foreach ($this->parsedNoteTexts() as $index => $note) {
             $validation = $this->resolveDisplayValidation('notes', $note, $storedValidation);
             $status = is_array($validation) && isset($validation['status']) && is_string($validation['status'])
                 ? $validation['status']
@@ -192,6 +195,7 @@ final class InvoiceViewModel
                 value: $note,
                 validation: $validation,
                 hint: InvoiceFieldLabels::hint('notes', $status, $validation),
+                editKey: ReviewFieldCatalog::noteKey($index),
             );
         }
 
@@ -199,7 +203,7 @@ final class InvoiceViewModel
     }
 
     /**
-     * @return list<string>
+     * @return array<int, string> keyed by the note's index on the invoice
      */
     private function parsedNoteTexts(): array
     {
@@ -209,10 +213,10 @@ final class InvoiceViewModel
             return [];
         }
 
-        return array_values(array_filter(
+        return array_filter(
             $notes,
             fn (mixed $note): bool => is_string($note) && trim($note) !== '',
-        ));
+        );
     }
 
     /**
@@ -379,7 +383,7 @@ final class InvoiceViewModel
         $precedingReference = PrecedingInvoiceReferences::first($this->invoice->preceding_invoices);
 
         return match ($field) {
-            'buyer_email' => $this->document?->inboxToEmail(),
+            'buyer_email' => $this->document?->recipientEmail(),
             'customer_name' => $this->invoice->buyer?->name,
             'customer_vat_id' => $this->invoice->buyer?->vat_id,
             'customer_address' => PartyAddressFormatter::format($this->invoice->buyer),
@@ -477,6 +481,7 @@ final class InvoiceViewModel
                 validation: $validation,
                 hint: InvoiceFieldLabels::hint($name, $status, $validation),
                 url: $this->fieldUrl($name, $validation),
+                editKey: ReviewFieldCatalog::invoiceKey($name),
             );
         }, $fieldNames);
 
