@@ -295,7 +295,8 @@ Final pipeline stage after approval: get an approved document to its recipients 
 
 | Strategy value | Recipients |
 | --- | --- |
-| `inbox_to` | Validated `InboxMessage.to_email` (optional `to_name`); empty or invalid → no recipients |
+| `inbox_to` | The address a reviewer set on the document (`buyer.contact.email`) when there is one, else the validated `InboxMessage.to_email` (optional `to_name`); empty or invalid → no recipients |
+| `document` | Only the address a reviewer set on the document (`buyer.contact.email`, BT-58); none set → no recipients |
 | `master` | Validated attributed `company.email` (optional company name); empty or invalid → no recipients |
 | `none` | Empty list |
 
@@ -311,8 +312,8 @@ Hosts may still bind their own `DeliveryRecipientResolverInterface` to replace t
 | --- | --- | --- |
 | `delivery.enabled` | `false` | When `false`, approve does not queue dispatch and `DispatchDocumentAction` writes no records (gate still asserted) |
 | `delivery.mailer` | `null` | Optional Laravel mailer name (`EBILLING_DELIVERY_MAILER`) for host senders |
-| `delivery.recipients.mail_source` | `inbox_to` | Recipient strategy for mail-sourced documents (`inbox_to` \| `master` \| `none`) |
-| `delivery.recipients.manual_upload` | `none` | Recipient strategy for manual uploads (`inbox_to` \| `master` \| `none`) |
+| `delivery.recipients.mail_source` | `inbox_to` | Recipient strategy for mail-sourced documents (`inbox_to` \| `document` \| `master` \| `none`) |
+| `delivery.recipients.manual_upload` | `none` | Recipient strategy for manual uploads (`inbox_to` \| `document` \| `master` \| `none`) |
 | `delivery.channels` | `[]` | FQCNs implementing `DeliveryChannelInterface` |
 
 ### Review notification announce

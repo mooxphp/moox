@@ -597,13 +597,17 @@ class InvoiceFieldValidator
      */
 
     /**
-     * Inbox To address for mail-sourced documents (delivery recipient).
-     * Manual uploads / non-mail sources are not_applicable.
+     * Delivery recipient: the address a reviewer set on the document, else the inbox To address
+     * for mail-sourced documents. Other sources without a set address are not_applicable.
      *
      * @return array{status: string, source?: string, matched_id?: string}
      */
     private function validateBuyerEmailField(?EbillingDocument $document, string $priority): array
     {
+        if ($document?->documentRecipientEmail() !== null) {
+            return ['status' => 'parsed'];
+        }
+
         if ($document === null || $document->inboxAttachment() === null) {
             return ['status' => 'not_applicable'];
         }
