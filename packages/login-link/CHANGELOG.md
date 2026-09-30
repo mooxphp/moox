@@ -4,6 +4,10 @@ All notable changes to `moox/login-link` will be documented in this file.
 
 ## Unreleased
 
+### Added
+
+- `login-link.mail.enabled` gates outbound mail (default on). When off, links are still issued and nothing is queued. `LOGIN_LINK_MAILER` selects the Laravel mailer; empty uses the application default. Envelope From is the process `mail_from` when set.
+
 ### Changed
 
 - Process form: `template_key` is a Select of mail template slugs when `moox/mail-template` is available (`class_exists` + `login-link.mail_template.enabled`, no composer require). Optional `content` only without mail-template. HTML fallback mail is chrome only (title, body, button, expiry).

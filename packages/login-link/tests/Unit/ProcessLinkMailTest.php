@@ -80,3 +80,23 @@ it('sends the packaged html demo when template_key is empty', function (): void 
         ->toContain('Please continue.')
         ->not->toContain('<mjml');
 });
+
+it('uses the process mail_from as envelope from', function (): void {
+    $link = makeProcessLinkMailRecord('confirm-delivery', 'ack', LinkProcessContext::PUBLIC);
+    $process = LoginLinkProcess::query()->where('slug', 'confirm-delivery')->first();
+    $process->mail_from = 'links@example.com';
+
+    $mail = (new ProcessLinkMail($link, $process))->build();
+
+    expect($mail->hasFrom('links@example.com'))->toBeTrue()
+        ->and($mail->mailer)->toBeEmpty();
+});
+
+it('does not hand a built message to the transport when mail is disabled', function (): void {
+    config()->set('login-link.mail.enabled', false);
+
+    $link = makeProcessLinkMailRecord('confirm-delivery', 'ack', LinkProcessContext::PUBLIC);
+    $process = LoginLinkProcess::query()->where('slug', 'confirm-delivery')->first();
+
+    expect((new ProcessLinkMail($link, $process))->send(app('mail.manager')))->toBeNull();
+});
