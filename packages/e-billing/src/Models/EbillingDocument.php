@@ -171,6 +171,25 @@ class EbillingDocument extends BaseItemModel
     }
 
     /**
+     * Recipient address a reviewer set on the document (BT-58, `buyer.contact.email`). The parser
+     * never fills the buyer contact, so a value here is always a reviewer's (ADR 0004 addendum).
+     */
+    public function documentRecipientEmail(): ?string
+    {
+        $email = trim((string) ($this->invoice?->buyer?->contact->email ?? ''));
+
+        return $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
+    }
+
+    /**
+     * The address the document goes to: the one set on the document, else the inbox To address.
+     */
+    public function recipientEmail(): ?string
+    {
+        return $this->documentRecipientEmail() ?? $this->inboxToEmail();
+    }
+
+    /**
      * Validated To address from the sourcing inbox message, when present.
      */
     public function inboxToEmail(): ?string

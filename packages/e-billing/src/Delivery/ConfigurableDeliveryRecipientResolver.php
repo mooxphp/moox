@@ -14,13 +14,16 @@ use Moox\MailInbox\Models\InboxAttachment;
  * Config-driven recipient policy for {@see MailDeliveryChannel}.
  *
  * Strategies (`e-billing.delivery.recipients.*`):
- * - `inbox_to` — InboxMessage.to_email for mail-sourced documents
+ * - `inbox_to` — the address a reviewer set on the document, else InboxMessage.to_email for mail-sourced documents
+ * - `document` — only the address a reviewer set on the document (`buyer.contact.email`)
  * - `master` — attributed company.email
  * - `none` — no recipients (channel records no_recipient)
  */
 final class ConfigurableDeliveryRecipientResolver implements DeliveryRecipientResolverInterface
 {
     public const STRATEGY_INBOX_TO = 'inbox_to';
+
+    public const STRATEGY_DOCUMENT = 'document';
 
     public const STRATEGY_MASTER = 'master';
 
@@ -34,10 +37,21 @@ final class ConfigurableDeliveryRecipientResolver implements DeliveryRecipientRe
         $strategy = $this->strategyFor($document);
 
         return match ($strategy) {
-            self::STRATEGY_INBOX_TO => $this->fromInboxTo($document),
+            self::STRATEGY_INBOX_TO => $this->fromDocument($document) ?: $this->fromInboxTo($document),
+            self::STRATEGY_DOCUMENT => $this->fromDocument($document),
             self::STRATEGY_MASTER => $this->fromMaster($document),
             default => [],
         };
+    }
+
+    /**
+     * @return list<DeliveryRecipient>
+     */
+    private function fromDocument(EbillingDocument $document): array
+    {
+        $email = $document->documentRecipientEmail();
+
+        return $email === null ? [] : [new DeliveryRecipient(address: $email, kind: 'to')];
     }
 
     private function strategyFor(EbillingDocument $document): string
