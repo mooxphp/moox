@@ -18,7 +18,7 @@ We needed one clear meaning and one persistence shape so review and XRechnung/ZU
 3. **Emit.** When non-empty (after trim), `ZugferdConverter` calls `addDocumentSellerId` (no scheme). Empty/null omits BT-29. Shared converter → XRechnung, ZUGFeRD, and Factur-X.
 4. **MoSCoW.** Priority **`could`** on invoice, credit-note, and corrected-invoice field maps — missing never blocks.
 5. **UI.** Show in the ViewInvoice supplier (BG-4) group for invoices and credit notes; not denylisted.
-6. **No corroboration** against master data. **No SQL backfill** — the next `GenerateArtifactJob` / leave-edit `createFromDto` fills the column from `bill_data`. ViewInvoice reads the column only until then.
+6. **No corroboration** against master data. **No SQL backfill.** Amended by [ADR 0013](0013-invoice-is-the-aggregate-root-e-billing-owns-the-sealed-record.md) (mapped once, no re-parse): no re-map either, so existing invoices keep an empty column; only cases mapped after this change get it. ViewInvoice reads the column only.
 
 ## Considered options
 

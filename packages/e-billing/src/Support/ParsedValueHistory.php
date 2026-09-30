@@ -14,7 +14,7 @@ use Moox\Audit\Support\AuditConfigResolver;
 /**
  * The only place e-billing reads moox/audit's stored history. The value the parser produced for
  * an invoice, line or allowance/charge field is the one in that row's `created` activity:
- * the row is inserted from the parsed data and re-inserted on every re-parse.
+ * the row is inserted from the parsed data once and never rebuilt (ADR 0013).
  */
 final class ParsedValueHistory
 {
