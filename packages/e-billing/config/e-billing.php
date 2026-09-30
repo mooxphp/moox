@@ -1388,7 +1388,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | Registered with moox/audit when installed. Override in config/audit.php.
-    | Tracks the structured invoice and the gateway document (pipeline state).
+    | Tracks the gateway document (pipeline state). The invoice, its lines and
+    | its allowances and charges are registered by moox/invoice (`invoice.audit`);
+    | e-billing only adds its labels to the invoice.
     |
     */
 
@@ -1396,32 +1398,8 @@ return [
         'enabled' => true,
         'models' => [
             Invoice::class => [
-                'log_name' => 'e-billing',
                 'subject_label_resolver' => InvoiceActivitySubjectLabel::class,
                 'attribute_label_resolver' => EbillingActivityAttributeLabels::class,
-                'attributes' => [
-                    'invoice_number',
-                    'invoice_date',
-                    'document_type',
-                    'due_date',
-                    'currency',
-                    'customer_number',
-                    'customer_reference',
-                    'order_number',
-                    'order_date',
-                    'delivery_date',
-                    'payment_terms',
-                    'shipping_method',
-                    'delivery_terms',
-                    'seller',
-                    'buyer',
-                    'delivery',
-                    'payment_means',
-                    'net_total',
-                    'vat_rate',
-                    'vat_amount',
-                    'gross_total',
-                ],
             ],
             EbillingDocument::class => [
                 'log_name' => 'e-billing',
