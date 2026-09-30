@@ -29,13 +29,7 @@ Curious what the install command does? See manual installation below.
 
 ### Outbound mail
 
-The trust mail uses `USER_DEVICE_MAILER` when set, otherwise the application default mailer. `USER_DEVICE_MAIL_ENABLED=false` still records the device and sends nothing. In the heco app the mailer is `invoice-outbound`, shared with invoice delivery and login-link.
-
-| Mode | Env | What you see |
-| --- | --- | --- |
-| Test | `MAIL_OUTBOX_TEST_MODE=true` and `MAIL_OUTBOX_TEST_MODE_REDIRECT_TO` (optional `MAIL_OUTBOX_TEST_MODE_REDIRECT_NAME`) | Mailer stays the configured one. The recipient is rewritten to the sandbox address. |
-| Live | `MAIL_OUTBOX_TEST_MODE=false` | Mailer stays the configured one. The real recipient address is used. |
-| Fake live, local | `USER_DEVICE_MAILER=smtp`, `MAIL_HOST=127.0.0.1`, `MAIL_PORT=2525`, test mode off | The real address is visible locally. The mail does not leave the machine. |
+The trust mail uses `USER_DEVICE_MAILER` when set, otherwise the application default mailer. `USER_DEVICE_MAIL_ENABLED=false` still records the device and sends nothing.
 
 ### User flow (secure mode: `enforce_trust=true`)
 
