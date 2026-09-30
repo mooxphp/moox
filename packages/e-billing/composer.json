@@ -36,6 +36,9 @@
         "moox/pdf-parser": "dev-main",
         "moox/zugferd": "dev-main"
     },
+    "suggest": {
+        "moox/audit": "Activity trail for documents and invoices; required for value corrections"
+    },
     "autoload": {
         "psr-4": {
             "Moox\\EBilling\\": "src"

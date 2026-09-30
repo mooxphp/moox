@@ -1117,6 +1117,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Value correction (mooxphp/e-billing#45)
+    |--------------------------------------------------------------------------
+    |
+    | Fields a reviewer may correct to what the source document says, before
+    | approval. Patterns match the normalised field: `buyer.vat_id`,
+    | `lines.quantity`, `allowance_charges.amount`,
+    | `lines.allowance_charges.amount`; `*` is a wildcard. Only attributes
+    | audited by moox/audit can be corrected, since the parsed value is read
+    | from the audit history. Default: every audited field.
+    |
+    */
+
+    'value_correction' => [
+        'fields' => ['*'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Dispatch approval gate
     |--------------------------------------------------------------------------
     |
