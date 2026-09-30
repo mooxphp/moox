@@ -139,6 +139,7 @@ it('embeds the html preview iframe on the view page', function (): void {
     ])
         ->assertSuccessful()
         ->assertSeeHtml('<iframe')
+        ->assertSeeHtml('sandbox="allow-same-origin"')
         ->assertSee('PHP')
         ->assertSee(MailTestingMessageResource::previewUrl($message), false)
         ->assertSee(__('mail-testing::translations.fieldset_mail'))
