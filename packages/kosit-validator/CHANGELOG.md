@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+### Security
+
+- Default KoSIT validator `1.6.2` -> `1.6.3`, fixing GHSA-hg2c-p2m3-q29m (unrestricted URI
+  resolution in `STRICT_LOCAL` mode allowed remote stylesheet inclusion). New default SHA-256
+  pin. Reinstall with `php artisan kosit:install --force` (and `php artisan config:cache` if
+  your config is cached).
+
+### Changed
+
+- Default XRechnung validator configuration `2026-01-31` -> `2026-08-31` (CEN Schematron
+  1.3.16): CII-SR-465 / CII-SR-466 are raised from warning to error, CII-SR-475 / CII-SR-476
+  are lowered to information. New default SHA-256 pin; the same reinstall applies.
+
 - Models: `filename`, `result`, and `errors_count` accessors for config-driven relation tables.
 - Assignments tab: label “Bezeichnung” / “Label”; View action instead of linking the invoice number.
 - Assignments tab uses Moox Relations (`pivot_has_many` / `HasResourceRelations`); `getResourceName()` is `kosit-validator`. Removed hand-rolled `KositValidatablesRelationManager`.
