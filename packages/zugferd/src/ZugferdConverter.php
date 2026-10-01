@@ -708,8 +708,7 @@ class ZugferdConverter
                 $line->unitCode,
             );
 
-            // Line total WITHOUT surcharges (surcharges go to document level)
-            $doc->setDocumentPositionLineSummation($line->lineTotal);
+            $doc->setDocumentPositionLineSummation($this->lineNetAmount($line));
 
             $doc->addDocumentPositionTax($invoice->vatCategoryCode, 'VAT', $invoice->vatRate);
 
@@ -778,11 +777,13 @@ class ZugferdConverter
 
     private function setTotals(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
     {
-        $lineTotalSum = 0;
+        $lineTotalSum = 0.0;
         foreach ($invoice->lines as $line) {
-            $lineTotalSum += $line->lineTotal;
+            $lineTotalSum += $this->lineNetAmount($line);
         }
 
+        // BT-107 / BT-108 cover document-level allowances and charges only (BR-CO-11, BR-CO-12);
+        // line-level ones are already inside BT-131.
         $chargeTotal = 0.0;
         $allowanceTotal = 0.0;
 
@@ -795,20 +796,6 @@ class ZugferdConverter
                 $chargeTotal += $item->amount;
             } else {
                 $allowanceTotal += $item->amount;
-            }
-        }
-
-        foreach ($invoice->lines as $line) {
-            foreach ($line->allowanceCharges as $item) {
-                if ($item->amount <= 0) {
-                    continue;
-                }
-
-                if ($item->isCharge) {
-                    $chargeTotal += $item->amount;
-                } else {
-                    $allowanceTotal += $item->amount;
-                }
             }
         }
 
@@ -826,6 +813,25 @@ class ZugferdConverter
     }
 
     // ─── Helper functions ─────────────────────────────────────────
+
+    /**
+     * Invoice line net amount (BT-131): the line total (quantity × net price) plus line charges (BG-28)
+     * minus line allowances (BG-27), as emitted by {@see emitLineAllowanceCharges()}.
+     */
+    private function lineNetAmount(ZugferdInvoiceLine $line): float
+    {
+        $amount = $line->lineTotal;
+
+        foreach ($line->allowanceCharges as $item) {
+            if ($item->amount <= 0) {
+                continue;
+            }
+
+            $amount += $item->isCharge ? $item->amount : -$item->amount;
+        }
+
+        return round($amount, 2);
+    }
 
     /**
      * @return array{0: ?string, 1: ?string, 2: ?string}
