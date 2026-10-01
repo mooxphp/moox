@@ -267,7 +267,7 @@ return [
     'action_start_review_edit' => 'Edit',
     'action_finish_review_edit' => 'Finish editing',
     'action_finish_review_edit_modal_heading' => 'Finish editing?',
-    'action_finish_review_edit_modal_description' => 'The customer match and the field checks run again for this document. A manually set customer is kept. If the document was already confirmed, it must be confirmed again.',
+    'action_finish_review_edit_modal_description' => 'The customer match and the field checks run again. If you changed anything, the e-invoice is also regenerated and validated again. A manually set customer is kept. If the document was already confirmed, it must be confirmed again. Approval is possible once validation has passed.',
     'action_finish_review_edit_submit' => 'Finish and re-check',
     'review_mode_title' => 'Editing',
     'review_mode_hint' => 'Correct values to what the source document says. Each field is saved on its own; the checks run again when you finish editing.',
@@ -300,6 +300,16 @@ return [
         'bic' => 'BIC',
         'bank_name' => 'Bank',
     ],
+    'approval_blocked_prefix' => 'Approval not possible yet:',
+    'approval_blocked' => [
+        'pipeline_running' => 'The e-invoice is being regenerated and validated.',
+        'artifact_failed' => 'Generating or validating the e-invoice failed. Correct the document and finish editing to try again.',
+        'artifact_not_validated' => 'The e-invoice has not been validated yet.',
+        'human_review_required' => 'Correct these fields or confirm the document:',
+        'credit_note_negative_total' => 'The credit note has a negative total.',
+        'must_field_missing' => 'These required fields are missing:',
+    ],
+    'review_fields_to_check' => 'Fields to review:',
     'review_not_editable' => [
         'not_configured' => 'Not editable: this field is not in the configured correctable set.',
         'not_audited' => 'Not editable: this field is not recorded in the audit log, so its parsed value could not be kept.',
@@ -320,13 +330,14 @@ return [
     'notification_attribution_updated_title' => 'Attribution updated',
     'notification_attribution_updated_body' => 'The document attribution was saved as a manual match.',
     'notification_review_finished_title' => 'Editing finished',
-    'notification_review_finished_body' => 'The customer match and the field checks ran again.',
+    'notification_review_finished_body' => 'The customer match and the field checks ran again. The e-invoice is being regenerated and validated; the status is shown on this page.',
+    'notification_review_finished_unchanged_body' => 'The customer match and the field checks ran again. Nothing was changed, so the e-invoice was not regenerated.',
+    'notification_review_finish_failed_title' => 'Re-check not started',
+    'notification_review_finish_failed_body' => 'Matching, regeneration and validation could not be started for this document.',
     'notification_review_saved_title' => 'Field saved',
     'notification_review_unchanged_title' => 'No change',
     'notification_review_save_failed_title' => 'Field not saved',
     'notification_review_save_failed_body' => 'The value could not be saved.',
-    'notification_rematch_failed_title' => 'Re-evaluation failed',
-    'notification_rematch_failed_body' => 'Fields could not be re-evaluated for this document.',
     'action_manual_upload' => 'Upload PDF',
     'action_manual_upload_modal_description' => 'The PDF will be taken in, parsed, and prepared as an e-invoice.',
     'action_manual_upload_submit' => 'Upload',
@@ -363,7 +374,7 @@ return [
     'hint_missing_freight_flat_rate' => 'Freight flat rate missing in document.',
     'hint_missing_quantity' => 'Quantity missing on this line item.',
     'hint_missing_description' => 'Line description missing.',
-    'hint_missing_buyer_email' => 'No inbox To email on the sourcing message.',
+    'hint_missing_buyer_email' => 'No delivery recipient email (set one in review, or inbox To when mail-sourced).',
     'hint_missing_default' => 'This required field is missing in the document.',
 
     // Field hints — needs review
@@ -386,7 +397,7 @@ return [
     'hint_review_default' => 'This field should be reviewed manually.',
 
     // Field hints — informational (no validation status)
-    'hint_info_buyer_email' => 'From inbox To — not checked against master data.',
+    'hint_info_buyer_email' => 'Delivery recipient — not checked against master data.',
     'hint_warning_preceding_invoice_not_found' => 'Preceding invoice not found in the system — please check '
         .'(does not block).',
     'hint_warning_preceding_invoice_date_mismatch' => 'Date differs from the stored preceding invoice — '

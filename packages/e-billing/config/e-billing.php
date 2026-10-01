@@ -752,7 +752,7 @@ return [
             'customer_address' => 'must',    // BG-8
             'country' => 'could',    // BT-55
             'customer_vat_id' => 'should',  // BT-48
-            // Inbox To (mail-sourced only; not EN 16931). Empty blocks delivery via inbox_to.
+            // Delivery recipient (not EN 16931): reviewer-set buyer.contact.email, else inbox To when mail-sourced.
             'buyer_email' => 'must',
 
             // Buyer reference
@@ -882,7 +882,7 @@ return [
             'customer_address' => 'must',    // BG-8
             'country' => 'could',    // BT-55
             'customer_vat_id' => 'should',  // BT-48
-            // Inbox To (mail-sourced only; not EN 16931). Empty blocks delivery via inbox_to.
+            // Delivery recipient (not EN 16931): reviewer-set buyer.contact.email, else inbox To when mail-sourced.
             'buyer_email' => 'must',
 
             // Buyer reference
@@ -1001,7 +1001,7 @@ return [
             'customer_address' => 'must',    // BG-8
             'country' => 'could',    // BT-55
             'customer_vat_id' => 'should',  // BT-48
-            // Inbox To (mail-sourced only; not EN 16931). Empty blocks delivery via inbox_to.
+            // Delivery recipient (not EN 16931): reviewer-set buyer.contact.email, else inbox To when mail-sourced.
             'buyer_email' => 'must',
 
             // Buyer reference
