@@ -41,7 +41,8 @@ class SyncDeviceIdToSessionRow
         $deviceId = session()->get('user_device_id');
 
         if (blank($deviceId)) {
-            $userId = Auth::id();
+            // Filament panel guards (e.g. portal) are not Auth::id()'s default guard.
+            $userId = $user->getAuthIdentifier();
             if (blank($userId)) {
                 return $response;
             }
