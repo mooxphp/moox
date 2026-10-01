@@ -1061,14 +1061,34 @@ class EbillingDocument extends BaseItemModel
     }
 
     /**
-     * Configured must fields whose stored status is missing (invoice + lines).
-     * Confirm hard-block only — see ADR docs/adr/0005-confirm-gate-must-missing-only.md.
+     * Review reasons a person cannot accept by confirming: the parsed amounts do not reproduce the printed
+     * net total, so confirmation would release an e-invoice that fails BR-CO-13 (ADR 0012 amendment 2026-10-01).
+     */
+    private const NON_ACCEPTABLE_REVIEW_REASONS = ['totals_mismatch'];
+
+    /**
+     * Configured must fields whose stored status is missing (invoice + lines), plus invoice-level must
+     * findings whose review reason cannot be accepted ({@see NON_ACCEPTABLE_REVIEW_REASONS}).
+     * Confirm hard-block — see ADR docs/adr/0005-confirm-gate-must-missing-only.md.
      *
      * @return list<string>
      */
     public static function missingMustFields(?array $fieldValidations, ?string $documentType = null): array
     {
-        return self::mustFieldsWithStatuses($fieldValidations, ['missing'], $documentType);
+        $blocking = self::mustFieldsWithStatuses($fieldValidations, ['missing'], $documentType);
+
+        [$invoiceFields] = self::configuredPriorityMaps($documentType);
+        foreach ($invoiceFields as $field => $priority) {
+            $reason = is_array($fieldValidations) && is_array($fieldValidations[$field] ?? null)
+                ? ($fieldValidations[$field]['reason'] ?? null)
+                : null;
+
+            if ($priority === 'must' && in_array($reason, self::NON_ACCEPTABLE_REVIEW_REASONS, true)) {
+                $blocking[] = $field;
+            }
+        }
+
+        return array_values(array_unique($blocking));
     }
 
     public static function hasBlockingMustFieldFindings(?array $fieldValidations, ?string $documentType = null): bool

@@ -50,6 +50,7 @@ final class InvoiceFieldLabels
             'minimum_quantity_surcharge' => __('e-billing::fields.minimum_quantity_surcharge'),
             'freight_flat_rate' => __('e-billing::fields.freight_flat_rate'),
             'certificate_cost' => __('e-billing::fields.certificate_cost'),
+            'totals_reconciliation' => __('e-billing::fields.totals_reconciliation'),
             'customs_cost' => __('e-billing::fields.customs_cost'),
             'packaging_cost' => __('e-billing::fields.packaging_cost'),
             'notes' => __('e-billing::fields.notes'),
@@ -197,6 +198,7 @@ final class InvoiceFieldLabels
             'freight_flat_rate' => 'BG-21 / BT-99',
             'certificate_cost' => 'BG-21 / BT-99',
             'customs_cost' => 'BG-21 / BT-99',
+            'totals_reconciliation' => 'BR-CO-13',
             'packaging_cost' => 'BG-21 / BT-99',
             'vat_rate' => 'BT-119',
             'position' => 'BT-126',
@@ -215,7 +217,7 @@ final class InvoiceFieldLabels
     }
 
     /**
-     * @param  array{status?: string, matched_id?: string, reason?: string}|null  $validation
+     * @param  array{status?: string, matched_id?: string, reason?: string, difference?: string}|null  $validation
      */
     public static function hint(string $field, string $status, ?array $validation = null): ?string
     {
@@ -253,6 +255,9 @@ final class InvoiceFieldLabels
                 'minimum_quantity_surcharge' => __('e-billing::fields.hint_review_minimum_quantity_surcharge'),
                 'freight_flat_rate' => __('e-billing::fields.hint_review_freight_flat_rate'),
                 'delivery_date' => __('e-billing::fields.hint_review_delivery_date'),
+                'totals_reconciliation' => __('e-billing::fields.hint_review_totals_reconciliation', [
+                    'difference' => (string) ($validation['difference'] ?? ''),
+                ]),
                 'document_type' => ($validation['reason'] ?? null) === 'declared_document_type_mismatch'
                     ? __('e-billing::fields.hint_review_declared_document_type')
                     : __('e-billing::fields.hint_review_default'),

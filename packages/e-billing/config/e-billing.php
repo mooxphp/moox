@@ -785,6 +785,7 @@ return [
 
             // Amounts — MUST
             'net_total' => 'must',    // BT-109
+            'totals_reconciliation' => 'must',  // BR-CO-13: Σ BT-131 + charges − allowances = BT-109
             'vat_rate' => 'must',    // BT-119
             'vat_amount' => 'must',    // BT-110
             'gross_total' => 'must',    // BT-112
@@ -917,6 +918,7 @@ return [
 
             // Amounts — MUST
             'net_total' => 'must',    // BT-109
+            'totals_reconciliation' => 'must',  // BR-CO-13: Σ BT-131 + charges − allowances = BT-109
             'vat_rate' => 'must',    // BT-119
             'vat_amount' => 'must',    // BT-110
             'gross_total' => 'must',    // BT-112
@@ -1038,6 +1040,7 @@ return [
 
             // Amounts — MUST
             'net_total' => 'must',    // BT-109
+            'totals_reconciliation' => 'must',  // BR-CO-13: Σ BT-131 + charges − allowances = BT-109
             'vat_rate' => 'must',    // BT-119
             'vat_amount' => 'must',    // BT-110
             'gross_total' => 'must',    // BT-112
