@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Fixed
+- `ZugferdConverter` line net amount (BT-131, `ram:LineTotalAmount`) is now line total (quantity x net price) + line-level charges (BG-28) - line-level allowances (BG-27). BT-106 is the sum of BT-131; BT-107 / BT-108 cover document-level allowances and charges only. Previously line charges were added to BT-108 and missing from BT-131, which violated BR-CO-12, BR-CO-13 and BR-S-08.
+
 ### Added
 - `ZugferdInvoice` gains `?string $supplierNumber` (BT-29). **Breaking for custom implementations.** `ZugferdConverter` emits `addDocumentSellerId` when non-empty (trimmed); omits when null/empty; no scheme ID.
 - `ZugferdInvoice` contract gains `array $precedingInvoices` (`list<array{number, date}>`, BG-3: BT-25 number, BT-26 issue date). **Breaking for custom implementations of the contract.** `ZugferdConverter` emits one `ram:InvoiceReferencedDocument` (IssuerAssignedID + optional FormattedIssueDateTime) per entry.
