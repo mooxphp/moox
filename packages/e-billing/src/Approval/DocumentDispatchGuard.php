@@ -38,7 +38,8 @@ final class DocumentDispatchGuard
             return 'artifact_not_validated';
         }
 
-        if ($document->needsHumanReview()) {
+        // A confirmed document's accepted findings do not hold up dispatch (ADR 0005 amendment).
+        if ($document->hasUnacceptedReviewFindings()) {
             return 'human_review_required';
         }
 
