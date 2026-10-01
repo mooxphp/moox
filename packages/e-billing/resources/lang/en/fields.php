@@ -43,6 +43,7 @@ return [
     'freight_flat_rate' => 'Freight flat rate',
     'certificate_cost' => 'Certificate cost',
     'customs_cost' => 'Customs cost',
+    'totals_reconciliation' => 'Totals reconciliation',
     'packaging_cost' => 'Packaging cost',
     'notes' => 'Notes',
     'position' => 'Line item',
@@ -393,6 +394,8 @@ return [
     'hint_review_freight_flat_rate' => 'Freight flat rate should be reviewed manually.',
     'hint_review_delivery_date' => 'Several delivery dates cannot satisfy the intra-community '
         .'actual delivery date rule without aggregating them into a period.',
+    'hint_review_totals_reconciliation' => 'Lines, charges and allowances do not add up to the net total '
+        .'(difference €:difference). Compare line amounts and charges with the PDF.',
     'hint_review_duplicate_invoice_number' => 'This document number already exists and needs review.',
     'hint_review_declared_document_type' => 'A different document type was chosen at upload than the document carries '
         .'– please check.',

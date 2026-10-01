@@ -317,6 +317,7 @@ class InvoiceFieldValidator
             'certificate_cost', 'customs_cost',
             'discount_amount', 'discount_percent' => $this->validateHeaderChargeField($invoice, $field, $priority),
             'delivery_date' => $this->validateDeliveryDateField($invoice, $priority),
+            'totals_reconciliation' => $this->validateTotalsReconciliationField($invoice),
             'preceding_invoice_number' => $this->validatePrecedingInvoiceNumberField($invoice, $priority),
             default => $this->validateGenericInvoiceField($invoice, $field, $priority),
         };
@@ -736,6 +737,40 @@ class InvoiceFieldValidator
         }
 
         return $this->entryForEmptyField($field, $priority, false);
+    }
+
+    /**
+     * BT-109 must equal Σ BT-131 + document charges − document allowances (BR-CO-13), where BT-131 is the
+     * line total plus line charges minus line allowances. A gap above one cent means the parsed amounts
+     * cannot reproduce the printed net total; confirming cannot accept it
+     * ({@see EbillingDocument::missingMustFields()}). Like the ZUGFeRD converter, non-positive
+     * allowance/charge amounts are not emitted and therefore not counted.
+     *
+     * @return array{status: string, reason?: string, difference?: string}
+     */
+    private function validateTotalsReconciliationField(Invoice $invoice): array
+    {
+        $cents = static fn (mixed $amount): int => (int) round((float) $amount * 100);
+        $signed = static fn (iterable $charges): int => collect($charges)
+            ->filter(fn ($charge): bool => (float) $charge->amount > 0)
+            ->sum(fn ($charge): int => ($charge->is_charge ? 1 : -1) * $cents($charge->amount));
+
+        $calculated = $signed($invoice->allowanceCharges);
+        foreach ($invoice->lines as $line) {
+            $calculated += $cents($line->line_total) + $signed($line->allowanceCharges);
+        }
+
+        $difference = $cents($invoice->net_total) - $calculated;
+
+        if (abs($difference) <= 1) {
+            return ['status' => 'parsed'];
+        }
+
+        return [
+            'status' => 'needs_review',
+            'reason' => 'totals_mismatch',
+            'difference' => number_format($difference / 100, 2, '.', ''),
+        ];
     }
 
     /**

@@ -43,6 +43,7 @@ return [
     'freight_flat_rate' => 'Frachtkostenpauschale',
     'certificate_cost' => 'Attestkosten',
     'customs_cost' => 'Zollkosten',
+    'totals_reconciliation' => 'Summenabgleich',
     'packaging_cost' => 'Verpackungskosten',
     'notes' => 'Bemerkungen',
     'position' => 'Position',
@@ -394,6 +395,8 @@ return [
     'hint_review_freight_flat_rate' => 'Frachtkostenpauschale sollte manuell überprüft werden.',
     'hint_review_delivery_date' => 'Mehrere Lieferdaten erfüllen die Regel zur tatsächlichen Lieferung '
         .'bei innergemeinschaftlicher Lieferung nicht, ohne sie zu einem Zeitraum zusammenzuziehen.',
+    'hint_review_totals_reconciliation' => 'Positionen und Zu-/Abschläge ergeben nicht den Nettobetrag '
+        .'(Differenz :difference €). Positionsbeträge und Zuschläge mit dem PDF abgleichen.',
     'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits und muss geprüft werden.',
     'hint_review_declared_document_type' => 'Beim Hochladen wurde ein anderer Belegtyp gewählt, '
         .'als das Dokument trägt – bitte prüfen.',

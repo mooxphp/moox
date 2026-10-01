@@ -77,7 +77,7 @@ final class InvoiceViewModel
                 'title' => __('e-billing::fields.section_amounts'),
                 'subtitle' => 'BG-21 / BG-22',
                 'fields' => $this->buildFields([
-                    'net_total', 'vat_category', 'vat_rate', 'vat_amount', 'gross_total',
+                    'net_total', 'totals_reconciliation', 'vat_category', 'vat_rate', 'vat_amount', 'gross_total',
                     'discount_percent', 'discount_amount',
                     'shipping_cost', 'freight_flat_rate', 'packaging_cost', 'minimum_quantity_surcharge',
                     'certificate_cost', 'customs_cost',
@@ -496,8 +496,24 @@ final class InvoiceViewModel
             'delivery_address' => PartyAddressFormatter::format($this->invoice->delivery),
             'preceding_invoice_number' => $precedingReference['number'] ?? null,
             'preceding_invoice_date' => $precedingReference['date'] ?? null,
+            // Difference to the printed net total; only known once the document has been validated.
+            'totals_reconciliation' => $this->totalsReconciliationDifference(),
             default => $this->invoice->getAttribute($field),
         };
+    }
+
+    private function totalsReconciliationDifference(): ?string
+    {
+        $validations = $this->document?->field_validations;
+        $entry = is_array($validations) ? ($validations['totals_reconciliation'] ?? null) : null;
+
+        if (! is_array($entry)) {
+            return null;
+        }
+
+        $difference = $entry['difference'] ?? null;
+
+        return is_string($difference) ? $difference : '0.00';
     }
 
     private function documentType(): ?string
