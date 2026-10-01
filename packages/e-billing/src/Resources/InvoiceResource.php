@@ -11,8 +11,10 @@ use Filament\Actions\BulkAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
@@ -28,6 +30,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\InteractsWithAuditResourceRelations;
@@ -40,6 +43,7 @@ use Moox\EBilling\Resources\InvoiceResource\Pages\ListInvoices;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ViewInvoice;
 use Moox\EBilling\Resources\InvoiceResource\RelationManagers\MailSendLogsRelationManager;
 use Moox\EBilling\Support\DocumentClassification;
+use Moox\EBilling\Support\FieldValidationProfile;
 use Moox\EBilling\Support\DocumentClassificationLabels;
 use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\Invoice\Models\Invoice;
@@ -672,6 +676,30 @@ class InvoiceResource extends BaseItemResource
      * @param  list<string>  $selectableTypes
      * @return list<Section|Select>
      */
+    /**
+     * @param  list<string>  $selectableTypes
+     */
+    private static function manualUploadRecipientEmailField(array $selectableTypes): TextInput
+    {
+        return TextInput::make('recipient_email')
+            ->label(__('e-billing::fields.buyer_email'))
+            ->helperText(__('e-billing::fields.hint_info_buyer_email'))
+            ->email()
+            ->maxLength(255)
+            ->live(onBlur: true)
+            ->required(function (Get $get) use ($selectableTypes): bool {
+                if (count($selectableTypes) === 1) {
+                    $documentType = $selectableTypes[0];
+                } else {
+                    $declared = $get('document_type');
+                    $documentType = is_int($declared) || is_string($declared) ? (string) $declared : '';
+                }
+
+                return $documentType !== ''
+                    && FieldValidationProfile::priority('buyer_email', $documentType) === 'must';
+            });
+    }
+
     private static function manualUploadDocumentTypeComponents(array $selectableTypes): array
     {
         if (count($selectableTypes) < 2) {
@@ -766,6 +794,7 @@ class InvoiceResource extends BaseItemResource
                     ->storeFileNamesIn('pdf_original_filename')
                     ->required(),
                 ...self::manualUploadDocumentTypeComponents($selectableTypes),
+                self::manualUploadRecipientEmailField($selectableTypes),
             ])
             ->action(function (array $data, $livewire) use ($disk, $scope, $requiresLetterhead, $resourceKey): void {
                 $path = $data['pdf'] ?? null;
@@ -782,6 +811,8 @@ class InvoiceResource extends BaseItemResource
                     'requires_letterhead_overlay' => $requiresLetterhead,
                     'resource' => $resourceKey,
                     'document_type' => $data['document_type'] ?? null,
+                    'recipient_email' => $data['recipient_email'] ?? null,
+                    'uploader_user_id' => Auth::id() !== null ? (string) Auth::id() : null,
                 ]);
 
                 Notification::make()

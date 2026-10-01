@@ -7,6 +7,7 @@ namespace Moox\EBilling\Approval;
 use Moox\EBilling\Enums\AutoApproveFailureReason;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Models\UploadedPdfSource;
 use Moox\EBilling\Support\CreditNoteSign;
 
 final class AutoApproveEvaluator
@@ -33,6 +34,13 @@ final class AutoApproveEvaluator
 
         if ($document->needsHumanReview()) {
             $failures[] = AutoApproveFailureReason::HumanReviewRequired;
+        }
+
+        if (
+            (bool) config('e-billing.approval.manual_upload_requires_human_approval', false)
+            && $document->source instanceof UploadedPdfSource
+        ) {
+            $failures[] = AutoApproveFailureReason::ManualUploadRequiresHumanApproval;
         }
 
         if (EbillingDocument::hasBlockingMustFieldFindings(

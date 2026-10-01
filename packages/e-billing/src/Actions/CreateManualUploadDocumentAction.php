@@ -11,6 +11,7 @@ use Moox\EBilling\Jobs\StoreBillDataJob;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Models\UploadedPdfSource;
 use Moox\EBilling\Support\DocumentClassification;
+use Moox\EBilling\Support\FieldValidationProfile;
 use Moox\EBilling\Support\IdenticalDuplicateNotifier;
 use Moox\EBilling\Support\StoredRelativePath;
 
@@ -24,7 +25,9 @@ final class CreateManualUploadDocumentAction
      *     scope?: ?string,
      *     requires_letterhead_overlay?: bool,
      *     resource?: ?string,
-     *     document_type?: string|int|null
+     *     document_type?: string|int|null,
+     *     recipient_email?: ?string,
+     *     uploader_user_id?: ?string
      * }  $data  `resource` is the e-billing resource config key; `document_type` the declared BT-3 code
      */
     public function execute(array $data): EbillingDocument
@@ -43,6 +46,12 @@ final class CreateManualUploadDocumentAction
         $this->assertWithinMaxSize($configuredDisk, $path);
         $scope = $data['scope'] ?? 'credit-notes';
 
+        $recipientEmail = $this->normalizeRecipientEmail($data['recipient_email'] ?? null);
+        $this->assertRecipientEmailForUpload($declaredType, $recipientEmail);
+
+        $uploaderUserId = $data['uploader_user_id'] ?? null;
+        $uploaderUserId = $uploaderUserId === null || $uploaderUserId === '' ? null : (string) $uploaderUserId;
+
         $source = UploadedPdfSource::query()->create([
             'source_pdf_disk' => $configuredDisk,
             'source_pdf_path' => $path,
@@ -50,6 +59,8 @@ final class CreateManualUploadDocumentAction
             'scope' => $scope,
             'requires_letterhead_overlay' => (bool) ($data['requires_letterhead_overlay'] ?? false),
             'document_type' => $declaredType,
+            'recipient_email' => $recipientEmail,
+            'uploader_user_id' => $uploaderUserId,
         ]);
 
         $document = EbillingDocument::query()->create([
@@ -102,6 +113,35 @@ final class CreateManualUploadDocumentAction
         }
 
         return $declared;
+    }
+
+    private function normalizeRecipientEmail(mixed $value): ?string
+    {
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $trimmed = trim($value);
+
+        return $trimmed === '' ? null : $trimmed;
+    }
+
+    private function assertRecipientEmailForUpload(?string $declaredType, ?string $recipientEmail): void
+    {
+        if ($recipientEmail !== null && ! filter_var($recipientEmail, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException('Recipient email is invalid.');
+        }
+
+        if ($declaredType === null) {
+            return;
+        }
+
+        if (
+            $recipientEmail === null
+            && FieldValidationProfile::priority('buyer_email', $declaredType) === 'must'
+        ) {
+            throw new InvalidArgumentException('Recipient email is required for this document type.');
+        }
     }
 
     private function assertWithinMaxSize(string $disk, string $path): void

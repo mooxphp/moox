@@ -19,4 +19,6 @@ enum AutoApproveFailureReason: string
      * A reviewer changed the document (ADR 0004): a human approves what was re-validated after that.
      */
     case ReviewChanged = 'review_changed';
+
+    case ManualUploadRequiresHumanApproval = 'manual_upload_requires_human_approval';
 }
