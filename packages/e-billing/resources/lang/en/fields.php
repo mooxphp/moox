@@ -41,6 +41,8 @@ return [
     'shipping_cost' => 'Shipping cost',
     'minimum_quantity_surcharge' => 'Minimum quantity surcharge',
     'freight_flat_rate' => 'Freight flat rate',
+    'certificate_cost' => 'Certificate cost',
+    'customs_cost' => 'Customs cost',
     'packaging_cost' => 'Packaging cost',
     'notes' => 'Notes',
     'position' => 'Line item',

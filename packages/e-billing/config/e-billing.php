@@ -795,6 +795,8 @@ return [
             'shipping_cost' => 'could',  // BG-21 / BT-99
             'minimum_quantity_surcharge' => 'could',  // BG-21 / BT-99
             'freight_flat_rate' => 'could',  // BG-21 / BT-99
+            'certificate_cost' => 'could',  // BG-21 / BT-99
+            'customs_cost' => 'could',  // BG-21 / BT-99
             'packaging_cost' => 'could',  // BG-21 / BT-99
         ],
 
@@ -925,6 +927,8 @@ return [
             'shipping_cost' => 'could',  // BG-21 / BT-99
             'minimum_quantity_surcharge' => 'could',  // BG-21 / BT-99
             'freight_flat_rate' => 'could',  // BG-21 / BT-99
+            'certificate_cost' => 'could',  // BG-21 / BT-99
+            'customs_cost' => 'could',  // BG-21 / BT-99
             'packaging_cost' => 'could',  // BG-21 / BT-99
         ],
 
@@ -1044,6 +1048,8 @@ return [
             'shipping_cost' => 'could',  // BG-21 / BT-99
             'minimum_quantity_surcharge' => 'could',  // BG-21 / BT-99
             'freight_flat_rate' => 'could',  // BG-21 / BT-99
+            'certificate_cost' => 'could',  // BG-21 / BT-99
+            'customs_cost' => 'could',  // BG-21 / BT-99
             'packaging_cost' => 'could',  // BG-21 / BT-99
         ],
 

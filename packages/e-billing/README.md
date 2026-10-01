@@ -221,6 +221,7 @@ Within awaiting-review statuses, both use the same field predicate (including va
 
 Changing a field's configured priority changes its behaviour with no code change.
 
+**Document-level certificate and customs charges:** `certificate_cost` (reason code `CAE`, reason text "Attestkosten") and `customs_cost` (reason text "Zollkosten", no reason code) are emitted as BG-21 charges; priority `could` by default. `customs_cost` has no code because UNCL 7161 `ABW` is not in the EN 16931 code-list subset and fails BR-CL-20; a reason text alone satisfies BR-38 / BR-CO-22.
 ### Document-type profiles (credit notes, corrected invoices)
 
 `FieldValidationProfile` selects which MoSCoW and ViewInvoice-denylist maps apply, keyed on the invoice's `document_type` (BT-3), ADR 0009. `field_validation.document_type_profiles` maps a type code to a key prefix — package default `381 => credit_note`, `384 => corrected_invoice`. A mapped type reads `field_validation.{prefix}_fields` / `{prefix}_line_fields` / `{prefix}_contextual_should` / `{prefix}_line_contextual_should` and `invoice_ui.{prefix}_fields_hidden` / `{prefix}_line_fields_hidden`; unmapped types read the `invoice_*` keys, and a host config that omits a `{prefix}_*` key falls back to the matching `invoice_*` key. The package default config spells out both profiles: the credit-note profile adds `preceding_invoice_number` / `preceding_invoice_date` as `could`, the corrected-invoice profile as `should`; invoices hide both fields.

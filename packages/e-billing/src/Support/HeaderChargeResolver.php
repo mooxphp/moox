@@ -16,6 +16,9 @@ final class HeaderChargeResolver
         'packaging_cost' => ['reason_text' => 'Verpackung', 'is_charge' => true],
         'minimum_quantity_surcharge' => ['reason_text' => 'Mindermengenzuschlag', 'is_charge' => true],
         'freight_flat_rate' => ['reason_text' => 'Frachtkostenpauschale', 'is_charge' => true],
+        // Matched by text only: CAE is shared with line-level certificate charges.
+        'certificate_cost' => ['reason_text' => 'Attestkosten', 'is_charge' => true],
+        'customs_cost' => ['reason_text' => 'Zollkosten', 'is_charge' => true],
         'discount_amount' => ['reason_code' => '95', 'is_charge' => false],
         'discount_percent' => ['reason_code' => '95', 'is_charge' => false],
     ];

@@ -80,6 +80,7 @@ final class InvoiceViewModel
                     'net_total', 'vat_category', 'vat_rate', 'vat_amount', 'gross_total',
                     'discount_percent', 'discount_amount',
                     'shipping_cost', 'freight_flat_rate', 'packaging_cost', 'minimum_quantity_surcharge',
+                    'certificate_cost', 'customs_cost',
                 ]),
             ],
         ];
@@ -436,6 +437,7 @@ final class InvoiceViewModel
         if (in_array($field, [
             'net_total', 'vat_amount', 'gross_total', 'discount_amount',
             'shipping_cost', 'freight_flat_rate', 'packaging_cost', 'minimum_quantity_surcharge',
+            'certificate_cost', 'customs_cost', 'totals_reconciliation',
         ], true) && is_numeric($value)) {
             return number_format((float) $value, 2, ',', '.');
         }
