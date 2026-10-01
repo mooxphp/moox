@@ -70,6 +70,8 @@ use Throwable;
  * @property AttributionSource|null $attribution_source How customer_id was set (`auto` matcher vs `manual` operator). Manual survives rematch.
  * @property int|null $validation_score
  * @property string|null $scope
+ * @property Carbon|null $processed_at When the artifact last passed validation.
+ * @property Carbon|null $review_changed_at Last reviewer change to what the artifact is generated from (ADR 0004).
  */
 class EbillingDocument extends BaseItemModel
 {
@@ -139,7 +141,33 @@ class EbillingDocument extends BaseItemModel
             'approval_acted_at' => 'datetime',
             'validation_score' => 'integer',
             'processed_at' => 'datetime',
+            'review_changed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Stamps a reviewer change to what the artifact is generated from: a value correction, a classification,
+     * the recipient or the customer attribution (ADR 0004). Leave-edit regenerates when it is newer than the artifact.
+     * The column is not fillable: only reviewer acts stamp it.
+     */
+    public function markReviewChanged(): void
+    {
+        $this->forceFill(['review_changed_at' => now()])->save();
+    }
+
+    /**
+     * Whether a reviewer changed the document after its artifact was last validated. Until the record files
+     * (mooxphp/e-billing#86) carry their generation time, the last successful validation stands in for it;
+     * edits are refused while the pipeline runs, so no change can fall between generation and validation.
+     */
+    public function hasReviewChangesSinceArtifact(): bool
+    {
+        $changedAt = $this->review_changed_at;
+        if ($changedAt === null) {
+            return false;
+        }
+
+        return $this->processed_at === null || $changedAt->greaterThan($this->processed_at);
     }
 
     public static function getResourceName(): string

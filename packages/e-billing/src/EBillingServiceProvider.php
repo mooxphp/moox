@@ -19,12 +19,12 @@ use Moox\EBilling\Actions\CreateManualUploadDocumentAction;
 use Moox\EBilling\Actions\DispatchDocumentAction;
 use Moox\EBilling\Actions\InitializeDocumentApprovalAction;
 use Moox\EBilling\Actions\InvalidateDocumentApprovalAction;
+use Moox\EBilling\Actions\LeaveEditAction;
 use Moox\EBilling\Actions\QueueDocumentDeliveryAction;
 use Moox\EBilling\Actions\RecordApprovalTransitionAction;
 use Moox\EBilling\Actions\RecordDeliveryAttemptsAction;
 use Moox\EBilling\Actions\RejectDocumentAction;
 use Moox\EBilling\Actions\ReleaseSeverityFieldAction;
-use Moox\EBilling\Actions\RematchAttributionAction;
 use Moox\EBilling\Actions\RestoreRejectedDocumentAction;
 use Moox\EBilling\Actions\SetInvoiceAttributionAction;
 use Moox\EBilling\Actions\TryAutoApproveDocumentAction;
@@ -94,6 +94,7 @@ class EBillingServiceProvider extends MooxServiceProvider
                 'add_profile_to_ebilling_documents_table',
                 'create_ebilling_delivery_attempts_table',
                 'add_document_type_to_ebilling_uploaded_pdf_sources_table',
+                'add_review_changed_at_to_ebilling_documents_table',
             ]);
 
         $this->getMooxPackage()
@@ -114,7 +115,7 @@ class EBillingServiceProvider extends MooxServiceProvider
         $this->app->singleton(ConfirmInvoiceAction::class);
         $this->app->singleton(CreateManualUploadDocumentAction::class);
         $this->app->singleton(SetInvoiceAttributionAction::class);
-        $this->app->singleton(RematchAttributionAction::class);
+        $this->app->singleton(LeaveEditAction::class);
         $this->app->singleton(ReleaseSeverityFieldAction::class);
         $this->app->singleton(AutoApproveEvaluator::class);
         $this->app->singleton(DocumentApprovalGuard::class);
