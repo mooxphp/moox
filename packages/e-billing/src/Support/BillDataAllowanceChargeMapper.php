@@ -22,6 +22,8 @@ final class BillDataAllowanceChargeMapper
         ?float $freightFlatRate,
         ?float $discountAmount,
         ?float $discountPercent,
+        ?float $certificateCost = null,
+        ?float $customsCost = null,
     ): array {
         $items = [];
 
@@ -39,6 +41,16 @@ final class BillDataAllowanceChargeMapper
 
         if ($freightFlatRate !== null && $freightFlatRate > 0) {
             $items[] = new AllowanceCharge(isCharge: true, amount: $freightFlatRate, reasonText: 'Frachtkostenpauschale');
+        }
+
+        // CAE "Certificate of conformance" as for line certificates (ADR 0012), here at document level.
+        if ($certificateCost !== null && $certificateCost > 0) {
+            $items[] = new AllowanceCharge(isCharge: true, amount: $certificateCost, reasonCode: 'CAE', reasonText: 'Attestkosten');
+        }
+
+        // No reason code: UNCL 7161 "ABW Customs duty charge" is outside the EN 16931 subset (BR-CL-20).
+        if ($customsCost !== null && $customsCost > 0) {
+            $items[] = new AllowanceCharge(isCharge: true, amount: $customsCost, reasonText: 'Zollkosten');
         }
 
         if ($discountAmount !== null && $discountAmount > 0) {

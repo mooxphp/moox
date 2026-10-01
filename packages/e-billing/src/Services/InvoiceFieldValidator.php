@@ -314,6 +314,7 @@ class InvoiceFieldValidator
                 false,
             ),
             'shipping_cost', 'packaging_cost', 'minimum_quantity_surcharge', 'freight_flat_rate',
+            'certificate_cost', 'customs_cost',
             'discount_amount', 'discount_percent' => $this->validateHeaderChargeField($invoice, $field, $priority),
             'delivery_date' => $this->validateDeliveryDateField($invoice, $priority),
             'preceding_invoice_number' => $this->validatePrecedingInvoiceNumberField($invoice, $priority),

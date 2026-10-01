@@ -24,6 +24,7 @@ final class DocumentClassification
     private const DOCUMENT_AMOUNTS = [
         'net_total', 'vat_amount', 'gross_total', 'discount_amount',
         'shipping_cost', 'packaging_cost', 'minimum_quantity_surcharge', 'freight_flat_rate',
+        'certificate_cost', 'customs_cost',
     ];
 
     /** @var list<string> bill_data line amounts negated with the sign of the document type */

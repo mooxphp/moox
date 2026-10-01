@@ -63,6 +63,8 @@ class Invoice
         public ?float $minimumQuantitySurcharge = null,
         public ?float $freightFlatRate = null,
         public ?float $packagingCost = null,
+        public ?float $certificateCost = null,
+        public ?float $customsCost = null,
         public ?string $shippingMethod = null,
 
         /** @var InvoiceLine[] */
@@ -113,6 +115,8 @@ class Invoice
             $this->freightFlatRate,
             $this->discountAmount,
             $this->discountPercent,
+            $this->certificateCost,
+            $this->customsCost,
         );
     }
 
@@ -278,6 +282,8 @@ class Invoice
             minimumQuantitySurcharge: isset($data['minimum_quantity_surcharge']) && is_numeric($data['minimum_quantity_surcharge']) ? (float) $data['minimum_quantity_surcharge'] : null,
             freightFlatRate: isset($data['freight_flat_rate']) && is_numeric($data['freight_flat_rate']) ? (float) $data['freight_flat_rate'] : null,
             packagingCost: isset($data['packaging_cost']) && is_numeric($data['packaging_cost']) ? (float) $data['packaging_cost'] : null,
+            certificateCost: isset($data['certificate_cost']) && is_numeric($data['certificate_cost']) ? (float) $data['certificate_cost'] : null,
+            customsCost: isset($data['customs_cost']) && is_numeric($data['customs_cost']) ? (float) $data['customs_cost'] : null,
             shippingMethod: isset($data['shipping_method']) && is_string($data['shipping_method']) ? $data['shipping_method'] : null,
             lines: $lines,
             notes: $notes,
@@ -380,6 +386,8 @@ class Invoice
             'minimum_quantity_surcharge' => $this->minimumQuantitySurcharge,
             'freight_flat_rate' => $this->freightFlatRate,
             'packaging_cost' => $this->packagingCost,
+            'certificate_cost' => $this->certificateCost,
+            'customs_cost' => $this->customsCost,
             'shipping_method' => $this->shippingMethod,
             'currency' => $this->currency,
 

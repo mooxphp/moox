@@ -41,6 +41,8 @@ return [
     'shipping_cost' => 'Versandkosten',
     'minimum_quantity_surcharge' => 'Mindermengenzuschlag',
     'freight_flat_rate' => 'Frachtkostenpauschale',
+    'certificate_cost' => 'Attestkosten',
+    'customs_cost' => 'Zollkosten',
     'packaging_cost' => 'Verpackungskosten',
     'notes' => 'Bemerkungen',
     'position' => 'Position',
