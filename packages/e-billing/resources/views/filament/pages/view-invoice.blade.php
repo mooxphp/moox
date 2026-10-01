@@ -5,7 +5,15 @@
         $editing = $this->reviewEditing;
     @endphp
 
-    @include('e-billing::filament.partials.invoice-status-banner', ['viewModel' => $this->invoiceViewModel])
+    {{-- Leave-edit queues regeneration and re-validation: poll until the pipeline has finished. --}}
+    @if($this->invoiceViewModel->isPipelineRunning())
+        <div wire:poll.5s></div>
+    @endif
+
+    @include('e-billing::filament.partials.invoice-status-banner', [
+        'viewModel' => $this->invoiceViewModel,
+        'showApprovalBlock' => ! $editing,
+    ])
 
     @if($editing)
         @include('e-billing::filament.partials.invoice-review-edit-banner')

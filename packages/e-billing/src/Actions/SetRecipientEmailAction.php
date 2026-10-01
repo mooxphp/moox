@@ -7,6 +7,7 @@ namespace Moox\EBilling\Actions;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Moox\Audit\Services\MooxActivityLogger;
+use Moox\EBilling\Approval\DocumentEditGuard;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\ParsedValueHistory;
@@ -28,6 +29,7 @@ final class SetRecipientEmailAction
 
     public function __construct(
         private readonly CorrectFieldValueAction $correctFieldValue,
+        private readonly DocumentEditGuard $editGuard,
     ) {
     }
 
@@ -71,6 +73,8 @@ final class SetRecipientEmailAction
                 throw new InvalidArgumentException('Only a pending document can be changed.');
             }
 
+            $this->editGuard->assertPipelineIdle($lockedDocument);
+
             $invoice = $lockedDocument->invoice()->lockForUpdate()->first();
             if (! $invoice instanceof Invoice) {
                 throw new InvalidArgumentException("Document #{$document->id} has no linked invoice.");
@@ -109,6 +113,8 @@ final class SetRecipientEmailAction
             if ($activity === null) {
                 throw new RuntimeException('Setting the recipient could not be recorded.');
             }
+
+            $lockedDocument->markReviewChanged();
 
             return true;
         });

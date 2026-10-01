@@ -265,7 +265,18 @@ final class InvoiceViewModel
     public function gatewayStatusBanner(): ?array
     {
         $status = $this->document?->gateway_status;
-        if (! $status instanceof EBillingAttachmentProcessingStatus || ! $status->isFailure()) {
+        if (! $status instanceof EBillingAttachmentProcessingStatus) {
+            return null;
+        }
+
+        if ($this->isPipelineRunning()) {
+            return [
+                'color' => 'blue',
+                'text' => $status->label(),
+            ];
+        }
+
+        if (! $status->isFailure()) {
             return null;
         }
 
@@ -275,6 +286,14 @@ final class InvoiceViewModel
         ];
     }
 
+    /**
+     * Generation or validation is queued or running, e.g. after leave-edit; the page polls until it ends.
+     */
+    public function isPipelineRunning(): bool
+    {
+        return $this->document instanceof EbillingDocument
+            && app(DocumentEditGuard::class)->isPipelineRunning($this->document);
+    }
     public function validationScore(): ?int
     {
         return $this->document?->validation_score;

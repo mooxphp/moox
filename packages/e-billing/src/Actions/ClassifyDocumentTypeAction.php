@@ -6,6 +6,7 @@ namespace Moox\EBilling\Actions;
 
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Moox\EBilling\Approval\DocumentEditGuard;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\DocumentClassification;
@@ -22,6 +23,11 @@ use Moox\Invoice\Models\InvoiceAllowanceCharge;
 final class ClassifyDocumentTypeAction
 {
     public const ACTIVITY_EVENT = DocumentClassification::ACTIVITY_EVENT;
+
+    public function __construct(
+        private readonly DocumentEditGuard $editGuard,
+    ) {
+    }
 
     /**
      * @return bool false when the document already has that type
@@ -55,6 +61,9 @@ final class ClassifyDocumentTypeAction
         }
 
         DB::transaction(function () use ($document, $invoice, $currentType, $documentType): void {
+            // Under lock: leave-edit may have started the pipeline since the document was loaded.
+            $this->editGuard->assertPipelineIdle($document->newQuery()->lockForUpdate()->findOrFail($document->getKey()));
+
             $amountsNegated = DocumentClassification::signsDiffer($currentType, $documentType);
             if ($amountsNegated) {
                 $this->negateAmounts($invoice);
@@ -64,6 +73,7 @@ final class ClassifyDocumentTypeAction
             $invoice->save();
 
             DocumentClassification::recordActivity($document, $currentType, $documentType, $amountsNegated, 'review');
+            $document->markReviewChanged();
         });
 
         return true;

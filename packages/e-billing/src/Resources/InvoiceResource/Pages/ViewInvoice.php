@@ -29,6 +29,7 @@ use Moox\EBilling\Actions\ApproveDocumentAction;
 use Moox\EBilling\Actions\ClassifyDocumentTypeAction;
 use Moox\EBilling\Actions\ConfirmInvoiceAction;
 use Moox\EBilling\Actions\CorrectFieldValueAction;
+use Moox\EBilling\Actions\LeaveEditAction;
 use Moox\EBilling\Actions\QueueDocumentDeliveryAction;
 use Moox\EBilling\Actions\RejectDocumentAction;
 use Moox\EBilling\Actions\RematchAttributionAction;
@@ -235,7 +236,7 @@ class ViewInvoice extends ViewRecord
                 ->modalDescription(__('e-billing::fields.action_finish_review_edit_modal_description'))
                 ->modalSubmitActionLabel(__('e-billing::fields.action_finish_review_edit_submit'))
                 ->visible(fn (): bool => $this->reviewEditing)
-                ->action(fn () => $this->leaveReviewEdit($record)),
+                ->action(fn () => $this->leaveReviewEdit()),
             Action::make('confirm')
                 ->label($attention > 0
                     ? __('e-billing::fields.action_confirm_with_attention', ['count' => $attention])
@@ -455,23 +456,38 @@ class ViewInvoice extends ViewRecord
     }
 
     /**
-     * Leave-edit is the single trigger for re-matching (ADR 0004); mooxphp/e-billing#48 extends it
-     * to regeneration and re-validation.
+     * Leave-edit is the single trigger for re-matching, regeneration and re-validation (ADR 0004,
+     * mooxphp/e-billing#48); the status banner shows the queued pipeline until it ends. When it cannot
+     * start, the reviewer stays in edit mode.
      */
-    private function leaveReviewEdit(Invoice $record): void
+    private function leaveReviewEdit(): void
     {
         $this->reviewEditing = false;
         $document = $this->reviewDocument();
 
         if ($document instanceof EbillingDocument && $this->reviewWorkspace->isAvailable()) {
-            $this->runHeaderAction(
-                $record,
-                fn () => app(RematchAttributionAction::class)->execute($document),
-                'e-billing::fields.notification_review_finished_title',
-                'e-billing::fields.notification_review_finished_body',
-                'e-billing::fields.notification_rematch_failed_title',
-                'e-billing::fields.notification_rematch_failed_body',
-            );
+            try {
+                $started = app(LeaveEditAction::class)->execute($document);
+                $this->reviewEditing = false;
+
+                Notification::make()
+                    ->title(__('e-billing::fields.notification_review_finished_title'))
+                    ->body(__($started
+                        ? 'e-billing::fields.notification_review_finished_body'
+                        : 'e-billing::fields.notification_review_finished_unchanged_body'))
+                    ->success()
+                    ->send();
+            } catch (Throwable $exception) {
+                report($exception);
+
+                Notification::make()
+                    ->title(__('e-billing::fields.notification_review_finish_failed_title'))
+                    ->body(__('e-billing::fields.notification_review_finish_failed_body'))
+                    ->danger()
+                    ->send();
+            }
+        } else {
+            $this->reviewEditing = false;
         }
 
         $this->refreshReviewState();

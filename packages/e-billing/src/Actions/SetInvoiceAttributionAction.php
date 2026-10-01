@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Actions;
 
+use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Moox\Customer\Models\Customer;
+use Moox\EBilling\Approval\DocumentEditGuard;
 use Moox\EBilling\Enums\AttributionSource;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
@@ -18,10 +20,28 @@ final class SetInvoiceAttributionAction
 {
     public function __construct(
         private readonly InvalidateDocumentApprovalAction $invalidateApproval,
+        private readonly DocumentEditGuard $editGuard,
     ) {
     }
 
     public function execute(EbillingDocument $document, ?string $customerId): void
+    {
+        DB::transaction(function () use ($document, $customerId): void {
+            // Under lock: leave-edit may have started the pipeline since the document was loaded.
+            $locked = $document->newQuery()->lockForUpdate()->findOrFail($document->getKey());
+            $this->editGuard->assertPipelineIdle($locked);
+
+            $this->attribute($locked, $customerId);
+        });
+
+        $document->refresh();
+        $this->invalidateApproval->execute($document);
+    }
+
+    /**
+     * A changed attribution is a review change (ADR 0004): leave-edit re-matches and regenerates after it.
+     */
+    private function attribute(EbillingDocument $document, ?string $customerId): void
     {
         if ($customerId === null || $customerId === '') {
             $document->customer_id = null;
@@ -39,9 +59,12 @@ final class SetInvoiceAttributionAction
             $document->attribution_source = AttributionSource::Manual;
         }
 
+        if ($document->isDirty(['customer_id', 'company_id', 'attribution_source'])) {
+            $document->forceFill(['review_changed_at' => now()]);
+        }
+
         $this->invalidateConfirmationIfNeeded($document);
         $document->save();
-        $this->invalidateApproval->execute($document->fresh() ?? $document);
     }
 
     /**
