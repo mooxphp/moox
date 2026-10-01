@@ -64,14 +64,14 @@ return [
     |
     */
     'validator' => [
-        'version' => env('KOSIT_VALIDATOR_VERSION', '1.6.2'),
+        'version' => env('KOSIT_VALIDATOR_VERSION', '1.6.3'),
         'download_url' => env(
             'KOSIT_VALIDATOR_URL',
-            'https://github.com/itplr-kosit/validator/releases/download/v1.6.2/validator-1.6.2-standalone.jar'
+            'https://github.com/itplr-kosit/validator/releases/download/v1.6.3/validator-1.6.3-standalone.jar'
         ),
         'sha256' => env(
             'KOSIT_VALIDATOR_SHA256',
-            '244978514ad48f67c7573acfffc8f4fd73d81feda6f276710033f9913579857e'
+            '799e64befca97d4080e03608c80b85dd5a5ecc5f4ae4f35d1116ec2855b9a7c9'
         ),
     ],
 
@@ -85,14 +85,14 @@ return [
     */
     'xrechnung' => [
         'version' => env('KOSIT_XRECHNUNG_VERSION', '3.0.2'),
-        'release_date' => env('KOSIT_XRECHNUNG_RELEASE_DATE', '2026-01-31'),
+        'release_date' => env('KOSIT_XRECHNUNG_RELEASE_DATE', '2026-08-31'),
         'download_url' => env(
             'KOSIT_XRECHNUNG_URL',
-            'https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-01-31/xrechnung-3.0.2-validator-configuration-2026-01-31.zip'
+            'https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip'
         ),
         'sha256' => env(
             'KOSIT_XRECHNUNG_SHA256',
-            '6a5a5911a421b25fbc423f62f93f894df7b236f5d73ca4f84bb222a945082704'
+            '2530cd107c414511c5d0462ec10f886910395abfca820db82e83d70bf01221a8'
         ),
     ],
 
