@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Moox\Audit\Services\MooxActivityLogger;
+use Moox\EBilling\Approval\DocumentEditGuard;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\ReviewerActionType;
 use Moox\EBilling\Models\EbillingDocument;
@@ -59,6 +60,11 @@ final class CorrectFieldValueAction
      * @var array<string, array<string, bool>>
      */
     private static array $nullableColumns = [];
+
+    public function __construct(
+        private readonly DocumentEditGuard $editGuard,
+    ) {
+    }
 
     /**
      * @param  string  $attribute  attribute of the target; JSON sub-keys with dots, e.g. `buyer.vat_id`
@@ -114,6 +120,8 @@ final class CorrectFieldValueAction
             if ($lockedDocument->resolveApprovalStatusEnum() !== DocumentApprovalStatus::Pending) {
                 throw new InvalidArgumentException('Only a pending document can be corrected.');
             }
+
+            $this->editGuard->assertPipelineIdle($lockedDocument);
 
             $row = $target->newQuery()->lockForUpdate()->findOrFail($target->getKey());
 
@@ -171,6 +179,8 @@ final class CorrectFieldValueAction
                     throw new RuntimeException('The value correction could not be recorded.');
                 }
             }
+
+            $lockedDocument->markReviewChanged();
 
             return count($changes);
         });

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Moox\Customer\Models\Customer;
-use Moox\EBilling\Enums\DocumentApprovalStatus;
+use Moox\EBilling\Approval\DocumentEditGuard;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\CrossCheckedFields;
 use Moox\EBilling\Support\ParsedValueHistory;
@@ -38,11 +38,13 @@ final class ReviewWorkspace
     }
 
     /**
-     * Editing is open while the document awaits approval and corrections can be recorded.
+     * Editing is open while the document awaits approval, no leave-edit pipeline is running
+     * and corrections can be recorded.
      */
     public function isAvailable(): bool
     {
-        return $this->document?->resolveApprovalStatusEnum() === DocumentApprovalStatus::Pending
+        return $this->document instanceof EbillingDocument
+            && app(DocumentEditGuard::class)->canEdit($this->document)
             && ParsedValueHistory::isAvailable();
     }
 

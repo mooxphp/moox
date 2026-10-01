@@ -27,6 +27,10 @@ final class AutoApproveEvaluator
             $failures[] = AutoApproveFailureReason::GatewayNotValidated;
         }
 
+        if ($document->review_changed_at !== null) {
+            $failures[] = AutoApproveFailureReason::ReviewChanged;
+        }
+
         if ($document->needsHumanReview()) {
             $failures[] = AutoApproveFailureReason::HumanReviewRequired;
         }

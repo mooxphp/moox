@@ -14,4 +14,9 @@ enum AutoApproveFailureReason: string
     case AutoApproveDisabled = 'auto_approve_disabled';
     case ApprovalNotPending = 'approval_not_pending';
     case CreditNoteNegativeTotal = 'credit_note_negative_total';
+
+    /**
+     * A reviewer changed the document (ADR 0004): a human approves what was re-validated after that.
+     */
+    case ReviewChanged = 'review_changed';
 }

@@ -99,8 +99,16 @@ The delivery recipient is `buyer.contact.email` (BT-58), which the parser never 
 - Other sources (manual upload): there is no mail to have read it from, so it is not a parser mistake. The action writes the value and logs an audited `recipient_set` activity, which keeps it out of parser-feedback data.
 - `ConfigurableDeliveryRecipientResolver` gains the strategy `document` (only the document's address); `inbox_to` prefers the document's address when set. `InvoiceFieldValidator` treats a set document recipient as present.
 
-### Interim leave-edit and hidden approval while editing
+### Leave-edit pipeline and approval block (#48, phase 1)
 
-Until [#48](https://github.com/mooxphp/e-billing/issues/48) lands, confirmed leave-edit runs `RematchAttributionAction` synchronously (manual attribution preserved) and nothing else; #48 extends it to regenerate and revalidate and adds the stale-artifact approval block. Per-field saves never re-match.
+Confirmed leave-edit runs `LeaveEditAction` (replaces `RematchAttributionAction`), for pending documents only and refused while the pipeline runs (row lock).
 
-Confirm and approve actions are **hidden while editing**; the reviewer leaves edit mode first, so an approval never skips the re-check that leave-edit runs. Edit mode exists only while the approval status is `pending` and moox/audit auditing is available.
+- It always re-runs matching and field checks synchronously (`review_status` reset to `parser_created`, then `InvoiceFieldValidator::validate()`; manual attribution preserved), so fixed master data is picked up.
+- Only when `EbillingDocument::hasReviewChangesSinceArtifact()` it sets `gateway_status = generating` and dispatches `GenerateArtifactJob`. That path is idempotent: it reads the corrected Invoice rows, overwrites the same storage paths, then runs `ValidateArtifactJob`. Per-field saves never start the pipeline.
+- `ebilling_documents.review_changed_at` is stamped by `markReviewChanged()` in the four reviewer acts (`CorrectFieldValueAction`, `ClassifyDocumentTypeAction`, `SetRecipientEmailAction` on the `recipient_set` path, `SetInvoiceAttributionAction` only on an actual change). `hasReviewChangesSinceArtifact()` compares it with `processed_at`. This is an interim stand-in until the record files of [#86](https://github.com/mooxphp/e-billing/issues/86) carry the generation time; it is safe because edits are refused while the pipeline runs (`Approval\DocumentEditGuard`, also behind `ReviewWorkspace::isAvailable()`).
+- `AutoApproveEvaluator` fails with `review_changed` whenever `review_changed_at` is set: a reviewer-changed document is approved by a human who has seen the re-validation result.
+- `DocumentApprovalGuard::blockReason()` returns a code (`not_pending`, `pipeline_running`, `artifact_failed`, `artifact_not_validated`, `must_field_missing`, `human_review_required`, `credit_note_negative_total`, checked in this order; see the ADR 0005 amendment) or `null`.
+
+Approve is still **hidden while editing**, so an approval never skips the re-check that leave-edit runs. Outside edit mode it is shown for every pending document and disabled with the block reason as tooltip; the status banner repeats the reason and shows `generating` / `validating`, and the page polls only while the pipeline runs. Edit mode exists only while the approval status is `pending`, the pipeline is idle and moox/audit auditing is available.
+
+Known follow-up (phase 2, after #86): the stale-artifact approval block comparing `review_changed_at` with the transmitted record file's `updated_at`. Until then approval is blocked by the running pipeline and by failed validation, not by staleness alone.
