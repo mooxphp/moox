@@ -593,12 +593,8 @@ class InvoiceFieldValidator
     }
 
     /**
-     * @return array{status: string, source?: string, matched_id?: string}
-     */
-
-    /**
-     * Delivery recipient: the address a reviewer set on the document, else the inbox To address
-     * for mail-sourced documents. Other sources without a set address are not_applicable.
+     * Delivery recipient: reviewer-set address, else mail-sourced inbox To. Empty → MoSCoW
+     * (must/should missing, could not_applicable) — including manual uploads.
      *
      * @return array{status: string, source?: string, matched_id?: string}
      */
@@ -608,15 +604,11 @@ class InvoiceFieldValidator
             return ['status' => 'parsed'];
         }
 
-        if ($document === null || $document->inboxAttachment() === null) {
-            return ['status' => 'not_applicable'];
+        if ($document?->inboxAttachment() !== null && $document->inboxToEmail() !== null) {
+            return ['status' => 'parsed'];
         }
 
-        if ($document->inboxToEmail() === null) {
-            return $this->entryForEmptyField('buyer_email', $priority, false);
-        }
-
-        return ['status' => 'parsed'];
+        return $this->entryForEmptyField('buyer_email', $priority, false);
     }
 
     private function validateCustomerAddressField(

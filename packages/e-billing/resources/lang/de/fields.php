@@ -268,7 +268,7 @@ return [
     'action_start_review_edit' => 'Bearbeiten',
     'action_finish_review_edit' => 'Bearbeitung beenden',
     'action_finish_review_edit_modal_heading' => 'Bearbeitung beenden?',
-    'action_finish_review_edit_modal_description' => 'Kundenzuordnung und Feldprüfung laufen für dieses Dokument erneut. Ein manuell zugeordneter Kunde bleibt erhalten. War das Dokument bereits bestätigt, muss es erneut bestätigt werden.',
+    'action_finish_review_edit_modal_description' => 'Kundenzuordnung und Feldprüfung laufen erneut. Wurde etwas geändert, wird die E-Rechnung außerdem neu erzeugt und neu validiert. Ein manuell zugeordneter Kunde bleibt erhalten. War das Dokument bereits bestätigt, muss es erneut bestätigt werden. Freigeben ist möglich, sobald die Validierung bestanden ist.',
     'action_finish_review_edit_submit' => 'Beenden und neu prüfen',
     'review_mode_title' => 'Bearbeitung',
     'review_mode_hint' => 'Werte so korrigieren, wie sie im Ursprungsdokument stehen. Jedes Feld wird einzeln gespeichert; die Prüfung läuft beim Beenden erneut.',
@@ -301,6 +301,16 @@ return [
         'bic' => 'BIC',
         'bank_name' => 'Bank',
     ],
+    'approval_blocked_prefix' => 'Freigabe noch nicht möglich:',
+    'approval_blocked' => [
+        'pipeline_running' => 'Die E-Rechnung wird neu erzeugt und validiert.',
+        'artifact_failed' => 'Erzeugen oder Validieren der E-Rechnung ist fehlgeschlagen. Dokument korrigieren und die Bearbeitung beenden, um es erneut zu versuchen.',
+        'artifact_not_validated' => 'Die E-Rechnung ist noch nicht validiert.',
+        'human_review_required' => 'Diese Felder korrigieren oder das Dokument bestätigen:',
+        'credit_note_negative_total' => 'Die Gutschrift hat einen negativen Gesamtbetrag.',
+        'must_field_missing' => 'Diese Pflichtfelder fehlen:',
+    ],
+    'review_fields_to_check' => 'Zu prüfende Felder:',
     'review_not_editable' => [
         'not_configured' => 'Nicht bearbeitbar: Das Feld gehört nicht zu den konfigurierten korrigierbaren Feldern.',
         'not_audited' => 'Nicht bearbeitbar: Das Feld wird nicht im Audit-Log erfasst, der ausgelesene Wert ließe sich nicht erhalten.',
@@ -321,13 +331,14 @@ return [
     'notification_attribution_updated_title' => 'Zuordnung aktualisiert',
     'notification_attribution_updated_body' => 'Die Dokument-Zuordnung wurde als manuell gespeichert.',
     'notification_review_finished_title' => 'Bearbeitung beendet',
-    'notification_review_finished_body' => 'Kundenzuordnung und Feldprüfung sind erneut gelaufen.',
+    'notification_review_finished_body' => 'Kundenzuordnung und Feldprüfung sind erneut gelaufen. Die E-Rechnung wird neu erzeugt und validiert; der Status steht auf dieser Seite.',
+    'notification_review_finished_unchanged_body' => 'Kundenzuordnung und Feldprüfung sind erneut gelaufen. Es wurde nichts geändert, die E-Rechnung wurde daher nicht neu erzeugt.',
+    'notification_review_finish_failed_title' => 'Neuprüfung nicht gestartet',
+    'notification_review_finish_failed_body' => 'Zuordnung, Neuerzeugung und Validierung konnten für dieses Dokument nicht gestartet werden.',
     'notification_review_saved_title' => 'Feld gespeichert',
     'notification_review_unchanged_title' => 'Keine Änderung',
     'notification_review_save_failed_title' => 'Feld nicht gespeichert',
     'notification_review_save_failed_body' => 'Der Wert konnte nicht gespeichert werden.',
-    'notification_rematch_failed_title' => 'Neubewertung fehlgeschlagen',
-    'notification_rematch_failed_body' => 'Die Felder konnten für dieses Dokument nicht neu bewertet werden.',
     'action_manual_upload' => 'PDF hochladen',
     'action_manual_upload_modal_description' => 'Das PDF wird übernommen, ausgewertet und als E-Rechnung aufbereitet.',
     'action_manual_upload_submit' => 'Hochladen',
@@ -364,7 +375,7 @@ return [
     'hint_missing_freight_flat_rate' => 'Frachtkostenpauschale fehlt im Dokument.',
     'hint_missing_quantity' => 'Menge fehlt in dieser Position.',
     'hint_missing_description' => 'Positionsbeschreibung fehlt.',
-    'hint_missing_buyer_email' => 'Keine E-Mail-Adresse (An) in der Posteingangsnachricht.',
+    'hint_missing_buyer_email' => 'Keine Empfänger-E-Mail (in der Prüfung setzen, oder Posteingang An bei Mail).',
     'hint_missing_default' => 'Dieses Pflichtfeld fehlt im Dokument.',
 
     // Field hints — needs review
@@ -387,7 +398,7 @@ return [
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 
     // Field hints — informational (no validation status)
-    'hint_info_buyer_email' => 'Aus Posteingang (An) — nicht mit Stammdaten abgeglichen.',
+    'hint_info_buyer_email' => 'Empfänger für die Zustellung — nicht mit Stammdaten abgeglichen.',
     'hint_warning_preceding_invoice_not_found' => 'Bezugsrechnung nicht im System gefunden — bitte prüfen '
         .'(blockiert nicht).',
     'hint_warning_preceding_invoice_date_mismatch' => 'Datum weicht von der gespeicherten Bezugsrechnung ab — '
