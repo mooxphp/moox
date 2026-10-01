@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use LogicException;
+use Moox\EBilling\Actions\ApplyUploadedRecipientEmailAction;
 use Moox\EBilling\Actions\DiscardIdenticalContentDuplicateAction;
 use Moox\EBilling\Adapters\ZugferdInvoiceAdapter;
 use Moox\EBilling\Contracts\PdfaNormalizerInterface;
@@ -23,6 +24,7 @@ use Moox\EBilling\Formats\ArtifactKind;
 use Moox\EBilling\Formats\Contracts\HybridArtifactGeneratorStrategyInterface;
 use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\Invoice\Models\Invoice;
 use Moox\EBilling\Services\CopyPdfComposer;
 use Moox\EBilling\Services\InboxMessagePipelineFinalizer;
 use Moox\EBilling\Services\InvoiceFieldValidator;
@@ -70,6 +72,7 @@ class GenerateArtifactJob implements ShouldQueue
         InvoiceNumberDuplicateChecker $duplicateChecker,
         DocumentTypeCodeResolver $documentTypeCodeResolver,
         DiscardIdenticalContentDuplicateAction $discardIdenticalContentDuplicate,
+        ApplyUploadedRecipientEmailAction $applyUploadedRecipientEmail,
     ): void {
         $this->setProgress(0);
 
@@ -162,6 +165,16 @@ class GenerateArtifactJob implements ShouldQueue
 
             $invoice = $parsedInvoiceMapper->createFromDto($dto, $document);
             $mappedBillData = $dto->toArray();
+        }
+
+        $document = $document->fresh(['source', 'invoice']) ?? $document;
+        $applyUploadedRecipientEmail->execute($document);
+        $invoice = $document->fresh(['invoice'])->invoice ?? $document->invoice;
+
+        if (! $invoice instanceof Invoice) {
+            throw new LogicException(
+                "Ebilling document [{$document->getKey()}] has no invoice after mapping; cannot generate artifact."
+            );
         }
 
         $documentType = $invoice->document_type;

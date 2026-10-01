@@ -303,6 +303,8 @@ Final pipeline stage after approval: get an approved document to its recipients 
 
 Hosts may still bind their own `DeliveryRecipientResolverInterface` to replace this policy.
 
+**Manual upload:** the upload dialog collects `recipient_email` when enabled (required when MoSCoW `buyer_email` is `must` for the declared document type). It is stored on `UploadedPdfSource` (`uploader_user_id`, `recipient_email_applied_at`) and applied once to `buyer.contact.email` during `GenerateArtifactJob` via `ApplyUploadedRecipientEmailAction` (audited `recipient_set`, origin `upload`).
+
 **Invoice view:** the buyer section shows `buyer_email` = `EbillingDocument::recipientEmail()`: the address a reviewer set on the document (`buyer.contact.email`, BT-58; `documentRecipientEmail()`), else the validated inbox To email (`InboxMessage.to_email`). It is not corroborated against master data; the UI shows a soft informational hint (`hint_info_buyer_email`). A set document address or inbox To counts as present for validation; when both are empty, MoSCoW applies (`must` → `missing`, which blocks confirm/approval — including manual uploads). Reviewers set it in the [review workspace](#delivery-recipient-in-review). Labels: en `Recipient email` / de `Empfänger-E-Mail`.
 
 **Records:** table `ebilling_delivery_attempts` — one row per channel × recipient × attempt (append-only; re-dispatch adds rows). No document-level “delivered” flag. Invoice detail shows the attempt history; when `moox/audit` is present, each attempt also writes an Activity entry (`delivery_attempted`); configured `audit.log_events` attributes become Spatie `attribute_changes` for the Änderungen UI (same path as model audits).

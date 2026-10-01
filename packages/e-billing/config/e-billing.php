@@ -1175,6 +1175,8 @@ return [
     'approval' => [
         'required' => (bool) env('EBILLING_APPROVAL_REQUIRED', true),
         'auto_approve_enabled' => (bool) env('EBILLING_APPROVAL_AUTO_APPROVE', true),
+        // When true, manually uploaded PDFs stay pending until a human approves (auto-approve only).
+        'manual_upload_requires_human_approval' => (bool) env('EBILLING_APPROVAL_MANUAL_UPLOAD_REQUIRES_HUMAN', false),
     ],
 
     /*
