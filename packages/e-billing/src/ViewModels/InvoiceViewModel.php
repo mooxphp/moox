@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Moox\EBilling\ViewModels;
 
 use Carbon\Carbon;
+use Moox\EBilling\Approval\DocumentApprovalGuard;
+use Moox\EBilling\Approval\DocumentEditGuard;
+use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
@@ -224,6 +227,15 @@ final class InvoiceViewModel
      */
     public function statusBanner(): array
     {
+        // The approval decision supersedes the review stage, e.g. "confirmed, waiting for approval".
+        $approval = $this->document?->resolveApprovalStatusEnum();
+        if ($approval === DocumentApprovalStatus::Approved || $approval === DocumentApprovalStatus::Rejected) {
+            return [
+                'color' => $approval === DocumentApprovalStatus::Approved ? 'green' : 'red',
+                'text' => ($approval === DocumentApprovalStatus::Approved ? '✓ ' : '').$approval->label(),
+            ];
+        }
+
         $status = $this->document?->review_status;
         if (! $status instanceof InvoiceProcessingStatus) {
             $raw = $this->document?->getAttributes()['review_status'] ?? null;
@@ -294,6 +306,67 @@ final class InvoiceViewModel
         return $this->document instanceof EbillingDocument
             && app(DocumentEditGuard::class)->isPipelineRunning($this->document);
     }
+
+    /**
+     * Why a pending document cannot be approved yet (ADR 0004), on one line for the disabled approve action's tooltip.
+     */
+    public function approvalBlockReason(): ?string
+    {
+        $block = $this->approvalBlock();
+        if ($block === null) {
+            return null;
+        }
+
+        return $block['fields'] === [] ? $block['message'] : $block['message'].' '.implode(', ', $block['fields']);
+    }
+
+    /**
+     * Fields that still need review, shown while editing even once confirming has accepted them for approval.
+     *
+     * @return list<string> field labels
+     */
+    public function reviewFieldLabels(): array
+    {
+        return $this->document instanceof EbillingDocument
+            ? array_map(InvoiceFieldLabels::label(...), $this->document->humanReviewBlockingFields())
+            : [];
+    }
+
+    /**
+     * Why a pending document cannot be approved yet, for the status banner: the message, and for field-based
+     * reasons the labels of the fields to check, listed one per line.
+     *
+     * @return array{message: string, fields: list<string>}|null
+     */
+    public function approvalBlock(): ?array
+    {
+        $document = $this->document;
+        if (! $document instanceof EbillingDocument
+            || ! (bool) config('e-billing.approval.required', true)
+            || $document->resolveApprovalStatusEnum() !== DocumentApprovalStatus::Pending) {
+            return null;
+        }
+
+        $reason = app(DocumentApprovalGuard::class)->blockReason($document);
+        if ($reason === null) {
+            return null;
+        }
+
+        $fields = match ($reason) {
+            DocumentApprovalGuard::BLOCK_HUMAN_REVIEW_REQUIRED => $document->humanReviewBlockingFields(),
+            DocumentApprovalGuard::BLOCK_MUST_FIELD_MISSING => EbillingDocument::missingMustFields(
+                is_array($document->field_validations) ? $document->field_validations : null,
+                $document->profileDocumentType(),
+            ),
+            default => [],
+        };
+
+        return [
+            'message' => __('e-billing::fields.approval_blocked.'.$reason),
+            'fields' => array_map(InvoiceFieldLabels::label(...), $fields),
+        ];
+    }
+
     public function validationScore(): ?int
     {
         return $this->document?->validation_score;

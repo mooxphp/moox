@@ -32,7 +32,6 @@ use Moox\EBilling\Actions\CorrectFieldValueAction;
 use Moox\EBilling\Actions\LeaveEditAction;
 use Moox\EBilling\Actions\QueueDocumentDeliveryAction;
 use Moox\EBilling\Actions\RejectDocumentAction;
-use Moox\EBilling\Actions\RematchAttributionAction;
 use Moox\EBilling\Actions\RestoreRejectedDocumentAction;
 use Moox\EBilling\Actions\SetInvoiceAttributionAction;
 use Moox\EBilling\Actions\SetRecipientEmailAction;
@@ -40,6 +39,7 @@ use Moox\EBilling\Approval\DocumentApprovalGuard;
 use Moox\EBilling\Approval\DocumentDispatchGuard;
 use Moox\EBilling\Data\SelectiveRedispatchPlan;
 use Moox\EBilling\Delivery\SelectiveRedispatchPlanner;
+use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\InvoiceResource;
@@ -65,7 +65,7 @@ class ViewInvoice extends ViewRecord
 
     /**
      * Mixed review workspace (ADR 0004): per-field corrections and customer attribution;
-     * leaving it re-runs matching.
+     * leaving it re-runs matching, regeneration and validation.
      */
     public bool $reviewEditing = false;
 
@@ -313,7 +313,11 @@ class ViewInvoice extends ViewRecord
                 ->visible(fn (): bool => ! $this->reviewEditing
                     && (bool) config('e-billing.approval.required', true)
                     && $document instanceof EbillingDocument
-                    && app(DocumentApprovalGuard::class)->canApprove($document))
+                    && $document->resolveApprovalStatusEnum() === DocumentApprovalStatus::Pending)
+                // A blocked approval states its reason (ADR 0004); the banner repeats it.
+                ->disabled(fn (): bool => ! $document instanceof EbillingDocument
+                    || ! app(DocumentApprovalGuard::class)->canApprove($document))
+                ->tooltip(fn (): ?string => $this->invoiceViewModel->approvalBlockReason())
                 ->action(function () use ($record, $document): void {
                     if (! $document instanceof EbillingDocument) {
                         return;
@@ -462,7 +466,6 @@ class ViewInvoice extends ViewRecord
      */
     private function leaveReviewEdit(): void
     {
-        $this->reviewEditing = false;
         $document = $this->reviewDocument();
 
         if ($document instanceof EbillingDocument && $this->reviewWorkspace->isAvailable()) {
@@ -766,6 +769,8 @@ class ViewInvoice extends ViewRecord
             ->send();
 
         $record->load('ebillingDocument');
+        // The banner and approve state render from the cached view models.
+        $this->refreshReviewState();
     }
 
     protected function resolveRecord(int|string $key): Model

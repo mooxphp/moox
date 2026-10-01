@@ -208,7 +208,7 @@ Severity release applies to **absent** fields only (`status: missing`). It is no
 
 `ReleaseSeverityFieldAction` writes `released_at`, `released_by_id` (acting identity), `released_by` (display copy), and `reason` to the document's `severity_releases` JSON (invoice-level keys, or `lines.{lineId}.{field}` for line fields). Releases without a reason, without an authenticated actor, or with an entry that fails gate validation are refused. The column is cast but **not** in `$fillable` — only the action writes it; bulk `update([...])` silently drops releases.
 
-`ConfirmInvoiceAction` returns `false` while `needsHumanReview()` is true.
+`ConfirmInvoiceAction` refuses only while a configured must field is missing (ADR 0005); once confirmed, open `needs_review` and missing-should findings no longer block manual approval and dispatch (`hasUnacceptedReviewFindings()`).
 
 Two related checks answer different questions:
 
@@ -269,7 +269,7 @@ A credit note (BT-3 `381`) with a negative gross total (BT-112) blocks approval 
 
 `DocumentDispatchGuard` requires `approval_status = approved` and a non-empty actor id plus `approval_acted_at` when approval is required. Approved-but-missing actor or acted-at blocks with `approval_incomplete`. It never reads Activity. Auto-approve persists with no authenticated user so the Activity causer is the host `audit.system_causer` (when set), not a logged-in operator. Document actor id on the row stays `'system'`.
 
-**Automatic approval** runs after gateway validation when every condition holds separately: gateway validated, no unresolved review findings, no blocking must-field, no duplicate flag (`approval_flags.duplicate`), no anomaly flag (`approval_flags.anomalies`). Failing any one leaves the document pending. Field validation syncs `approval_flags.duplicate` when `invoice_number` has reason `duplicate_invoice_number`; hosts may set `approval_flags.anomalies` on the document for anomaly flags (no dedicated writer API on the model). **Manual approve** requires pending status, a deliverable gateway artifact, no unresolved human-review findings, and no blocking must-field; duplicate and anomaly flags do not block a human sign-off after review is clear.
+**Automatic approval** runs after gateway validation when every condition holds separately: gateway validated, no unresolved review findings, no blocking must-field, no duplicate flag (`approval_flags.duplicate`), no anomaly flag (`approval_flags.anomalies`). Failing any one leaves the document pending. Field validation syncs `approval_flags.duplicate` when `invoice_number` has reason `duplicate_invoice_number`; hosts may set `approval_flags.anomalies` on the document for anomaly flags (no dedicated writer API on the model). **Manual approve** requires pending status, a deliverable gateway artifact, no missing must field, and no unaccepted review findings (`hasUnacceptedReviewFindings()`: on a `human_confirmed` document only missing must fields count, otherwise same as `needsHumanReview()`), so a confirmed document with open `needs_review` or missing-should findings can be approved and dispatched (ADR 0005 amendment); duplicate and anomaly flags do not block a human sign-off after review is clear.
 
 | Config key | Default | Effect |
 | --- | --- | --- |
@@ -405,6 +405,7 @@ Scheduled scan for documents still `approval_status = pending` past configured t
 | `field_validations` | `json` | nullable | Per-field validation results |
 | `severity_releases` | `json` | nullable | Severity releases for missing **should** fields (`released_at`, `released_by_id`, `released_by`, `reason`); written only via `ReleaseSeverityFieldAction`; not in `$fillable` |
 | `processed_at` | `timestamp` | nullable | Set when validation passes |
+| `review_changed_at` | `timestamp` | nullable | Last reviewer change (`markReviewChanged()`); newer than `processed_at` means the artifact needs regeneration; not in `$fillable` |
 | `error_message` | `text` | nullable | Last pipeline error |
 | `created_at` | `timestamp` | NOT NULL | |
 | `updated_at` | `timestamp` | NOT NULL | |
@@ -510,14 +511,17 @@ Edit mode on the invoice and credit-note view pages (`ViewInvoice` / `ViewCredit
 
 ### Requirements
 
-Edit mode is available only while the document's approval status is `pending` and `moox/audit` auditing is available (a correction keeps the parsed value in the audit trail). Otherwise the header actions do not appear.
+Edit mode is available only while the document's approval status is `pending`, the pipeline is not running (`gateway_status` is neither `generating` nor `validating`; `DocumentEditGuard::canEdit()`) and `moox/audit` auditing is available (a correction keeps the parsed value in the audit trail). Otherwise the header actions do not appear. All reviewer acts (value correction, classification, recipient, attribution) also refuse changes while the pipeline runs.
 
 ### Edit and leave
 
 - **Edit** (`start_review_edit`) turns on edit mode. **Confirm** and **approve** are hidden while you edit.
 - Each row gets a pencil action (`editField`) that opens a slide-over on the start side, so the PDF preview stays visible. It saves exactly that row as a value correction. The note is optional.
 - Customer attribution changes through `editAttribution` inside the edit banner (`SetInvoiceAttributionAction`, `attribution_source = manual`).
-- **Finish editing** (`finish_review_edit`, with confirmation) leaves edit mode and runs `RematchAttributionAction` synchronously; a manual attribution is preserved. Regeneration, re-validation and the stale-artifact approval block on leave follow in [#48](https://github.com/mooxphp/e-billing/issues/48). Per-field saves never re-match.
+- **Finish editing** (`finish_review_edit`, with confirmation) leaves edit mode and runs `LeaveEditAction`. It always re-runs matching and field checks synchronously (manual attribution preserved), so fixed master data is picked up. If a reviewer changed anything since the last successful validation, it also sets `gateway_status = generating` and queues `GenerateArtifactJob`, which regenerates the e-invoice from the corrected rows and then validates it. Per-field saves never start this pipeline.
+- **Approve** is hidden while you edit. Outside edit mode it shows for every pending document (when approval is required) and is disabled with the reason as tooltip; the status banner repeats it. Reason codes (`DocumentApprovalGuard::blockReason()`): `not_pending`, `pipeline_running`, `artifact_failed`, `artifact_not_validated`, `must_field_missing`, `human_review_required`, `credit_note_negative_total` (checked in this order). Confirming the document accepts open review findings; a leave-edit rematch or an attribution change resets the confirmation. A document a reviewer changed is never auto-approved (`review_changed`).
+- The view shows `generating` / `validating` in the status banner and polls (`wire:poll.5s`) only while the pipeline runs. Hosts that override `filament/partials/invoice-status-banner.blade.php` must port the gateway and approval-block rows.
+
 Run the migration `add_review_changed_at_to_ebilling_documents_table` (publish or copy it): `review_changed_at` is stamped by the reviewer acts and compared with `processed_at` (`EbillingDocument::hasReviewChangesSinceArtifact()`). The stale-artifact approval block against the record files follows with [#86](https://github.com/mooxphp/e-billing/issues/86).
 
 The standalone `set_attribution` and `rematch` actions (view header and invoice list row action) and `InvoiceResource::getSetAttributionAction()` are removed, together with their translation keys.

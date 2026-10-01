@@ -643,15 +643,55 @@ class EbillingDocument extends BaseItemModel
         ?array $severityReleases,
         ?string $lineId = null,
     ): bool {
+        return self::priorityMapBlockingFields($fields, $validations, $severityReleases, $lineId) !== [];
+    }
+
+    /**
+     * @param  array<string, string>  $fields
+     * @param  array<string, mixed>  $validations
+     * @return list<string>
+     */
+    private static function priorityMapBlockingFields(
+        array $fields,
+        array $validations,
+        ?array $severityReleases,
+        ?string $lineId = null,
+    ): array {
+        $blocking = [];
+
         foreach ($fields as $field => $priority) {
             $status = self::readFieldStatusFromValidations($validations, $field);
 
             if (self::configuredFieldBlocksReview($status, $priority, $severityReleases, $field, $lineId)) {
-                return true;
+                $blocking[] = $field;
             }
         }
 
-        return false;
+        return $blocking;
+    }
+
+    /**
+     * The fields that make {@see needsHumanReview()} true, each named once however many lines it blocks,
+     * so a refused approval can say which fields to check.
+     *
+     * @return list<string>
+     */
+    public function humanReviewBlockingFields(): array
+    {
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps($this->profileDocumentType());
+        $validations = is_array($this->field_validations) ? $this->field_validations : [];
+        $severityReleases = is_array($this->severity_releases) ? $this->severity_releases : null;
+
+        $blocking = self::priorityMapBlockingFields($invoiceFields, $validations, $severityReleases);
+
+        foreach (self::readLineFieldValidationsFromArray($validations) as $lineId => $lineFieldValidations) {
+            $blocking = [
+                ...$blocking,
+                ...self::priorityMapBlockingFields($lineFields, $lineFieldValidations, $severityReleases, (string) $lineId),
+            ];
+        }
+
+        return array_values(array_unique($blocking));
     }
 
     public static function configuredFieldBlocksReview(
@@ -924,6 +964,23 @@ class EbillingDocument extends BaseItemModel
             is_array($this->severity_releases) ? $this->severity_releases : null,
             $this->profileDocumentType(),
         );
+    }
+
+    /**
+     * Whether open findings still hold up a human approval and its dispatch (ADR 0005 amendment). Confirming
+     * accepts `needs_review` findings and missing should fields; a missing must field blocks until it has a
+     * value. Auto-approve, queues and tabs keep the strict {@see needsHumanReview()}.
+     */
+    public function hasUnacceptedReviewFindings(): bool
+    {
+        if ($this->resolveReviewStatusEnum() !== InvoiceProcessingStatus::HumanConfirmed) {
+            return $this->needsHumanReview();
+        }
+
+        return self::missingMustFields(
+            is_array($this->field_validations) ? $this->field_validations : null,
+            $this->profileDocumentType(),
+        ) !== [];
     }
 
     /**

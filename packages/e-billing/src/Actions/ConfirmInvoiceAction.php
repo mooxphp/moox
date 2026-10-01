@@ -23,7 +23,8 @@ final class ConfirmInvoiceAction
      *
      * Hard-block (while db_validated): configured must fields that are missing.
      * needs_review and missing should findings do not refuse confirm — see ADR 0005.
-     * needsHumanReview() stays unchanged for queue / auto-approve / dispatch.
+     * needsHumanReview() stays unchanged for queue / auto-approve; confirming accepts those findings for
+     * manual approval and dispatch ({@see EbillingDocument::hasUnacceptedReviewFindings()}, ADR 0005 amendment).
      *
      * When other versions share the same number + document type, this invoice
      * becomes the current version; older versions remain stored with is_current=false.
