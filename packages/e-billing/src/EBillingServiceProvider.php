@@ -35,6 +35,7 @@ use Moox\EBilling\Approval\DocumentDispatchGuard;
 use Moox\EBilling\Approval\ImmediateReviewNotificationStrategy;
 use Moox\EBilling\Console\Commands\BackfillValidationScoresCommand;
 use Moox\EBilling\Console\Commands\FlushReviewNotificationBatchCommand;
+use Moox\EBilling\Console\Commands\ReparseDocumentsCommand;
 use Moox\EBilling\Console\Commands\ScanOverdueApprovalEscalationCommand;
 use Moox\EBilling\Contracts\DeliveryRecipientResolverInterface;
 use Moox\EBilling\Contracts\InvoiceParserInterface;
@@ -80,6 +81,7 @@ class EBillingServiceProvider extends MooxServiceProvider
             ->hasRoutes('web')
             ->hasCommands([
                 BackfillValidationScoresCommand::class,
+                ReparseDocumentsCommand::class,
                 FlushReviewNotificationBatchCommand::class,
                 ScanOverdueApprovalEscalationCommand::class,
             ])

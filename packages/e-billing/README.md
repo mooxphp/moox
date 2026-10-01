@@ -194,6 +194,35 @@ php artisan e-billing:scan-overdue-approval-escalation
 
 Schedule this in the host app — the package does not register a schedule. See [Approval escalation scan](#approval-escalation-scan).
 
+### Re-parse documents
+
+After a parser fix, re-run the configured parser on documents that nobody has touched yet:
+
+```bash
+php artisan e-billing:reparse {ids?*} {--kosit-failed} {--dry-run}
+```
+
+| Argument / option | Effect |
+| --- | --- |
+| `ids` | One or more e-billing document ids |
+| `--kosit-failed` | Selects documents whose latest KoSIT validation failed (combines with `ids`) |
+| `--dry-run` | Lists the selection (id, review status, gateway status, and whether it would be reparsed or refused with which reason) without changing anything |
+
+Without ids and without `--kosit-failed` the command does nothing. Start with `--dry-run`, then run it again without it.
+
+For each selected document the command re-parses the source PDF, soft-deletes and unlinks the draft invoice, resets `bill_data`, `field_validations` and `validation_score`, sets `review_status` to `parser_created` and `gateway_status` to `generating`, logs the activity `document_reparsed` (old and new net and line totals) and dispatches `GenerateArtifactJob`, which keeps the existing artifact paths. Artifact regeneration and KoSIT validation run on the queue; the new validation attaches to the same document and the earlier one stays as history.
+
+Mind the queue: a regenerated document that now validates cleanly is auto-approved like any other, and its dispatch job follows on the same queue. Draining the queue after a bulk reparse therefore also delivers those documents.
+
+A document is refused, never silently skipped, and the command prints the reason key:
+
+| Reason key | Document state |
+| --- | --- |
+| `human_confirmed` | `review_status` is `human_confirmed` |
+| `approval_started` | Any approval status is set |
+| `review_edited` | `review_changed_at` is set (a reviewer edited it) |
+| `delivered` | Delivery attempts exist |
+
 ### Severity gating (MoSCoW)
 
 Per-field priority under `field_validation` drives three distinct behaviours:

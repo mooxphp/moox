@@ -77,23 +77,11 @@ final class StoreBillDataJob implements ShouldQueue
 
         $this->setProgress(20);
 
-        $invoice = $eBilling->parseInvoiceFromPdf($document->sourceFullPath());
-
-        $declaredType = DocumentClassification::declaredFor($document);
-        if ($declaredType !== null) {
-            $parsedType = $invoice->documentTypeCode;
-            $invoice = DocumentClassification::applyDeclaredType($invoice, $declaredType);
-
-            if ($invoice->documentTypeCode !== $parsedType) {
-                DocumentClassification::recordActivity(
-                    $document,
-                    $parsedType,
-                    $invoice->documentTypeCode,
-                    DocumentClassification::signsDiffer($parsedType, $invoice->documentTypeCode),
-                    'parsing',
-                );
-            }
-        }
+        $invoice = DocumentClassification::applyDeclaredTypeOnParse(
+            $document,
+            $eBilling->parseInvoiceFromPdf($document->sourceFullPath()),
+            'parsing',
+        );
 
         $document->bill_data = $invoice->toArray();
         $document->save();

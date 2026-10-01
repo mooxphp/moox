@@ -154,6 +154,32 @@ final class DocumentClassification
     }
 
     /**
+     * Applies the document's declared type to freshly parsed data and logs a resulting reclassification.
+     */
+    public static function applyDeclaredTypeOnParse(EbillingDocument $document, InvoiceDto $parsed, string $origin): InvoiceDto
+    {
+        $declaredType = self::declaredFor($document);
+        if ($declaredType === null) {
+            return $parsed;
+        }
+
+        $parsedType = $parsed->documentTypeCode;
+        $applied = self::applyDeclaredType($parsed, $declaredType);
+
+        if ($applied->documentTypeCode !== $parsedType) {
+            self::recordActivity(
+                $document,
+                $parsedType,
+                $applied->documentTypeCode,
+                self::signsDiffer($parsedType, $applied->documentTypeCode),
+                $origin,
+            );
+        }
+
+        return $applied;
+    }
+
+    /**
      * Logs the classification as its own activity (never a value correction). Skipped without moox/audit.
      */
     public static function recordActivity(
