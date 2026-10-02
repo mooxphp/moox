@@ -9,7 +9,9 @@ use TCPDF;
 
 final class TcpdfCanvas implements PdfCanvas
 {
-    public function __construct(private TCPDF $tcpdf) {}
+    public function __construct(private TCPDF $tcpdf)
+    {
+    }
 
     public function width(): float
     {

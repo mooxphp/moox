@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Com\Tecnick\File\File;
 use Moox\Pdf\Contracts\PdfCanvas;
 use Moox\Pdf\Contracts\PdfDocument;
 use Moox\Pdf\Engines\TcpdfCanvas;
@@ -75,7 +76,7 @@ it('can read helvetica.json through tcpdfs realpath file allowlist', function ()
         }
     }
 
-    $file = new Com\Tecnick\File\File(allowedPaths: array_values(array_unique($paths)));
+    $file = new File(allowedPaths: array_values(array_unique($paths)));
     $helvetica = TcpdfEngine::fontPath().DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'helvetica.json';
 
     expect($file->getFileData($helvetica))
