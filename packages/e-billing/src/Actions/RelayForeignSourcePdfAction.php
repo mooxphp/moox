@@ -49,7 +49,7 @@ final class RelayForeignSourcePdfAction
 
     public static function isTerminal(DeliveryOutcome $outcome): bool
     {
-        if ($outcome->success) {
+        if ($outcome->success || $outcome->terminal) {
             return true;
         }
 
@@ -142,6 +142,7 @@ final class RelayForeignSourcePdfAction
             success: $result->accepted,
             failureReason: $result->accepted ? null : ($result->failureReason ?? 'send_not_accepted'),
             correlationId: $result->correlationId ?? $correlationId,
+            terminal: ! $result->accepted && $result->terminal,
         );
 
         $this->recordAttempts->execute($document, self::CHANNEL, [$outcome]);
