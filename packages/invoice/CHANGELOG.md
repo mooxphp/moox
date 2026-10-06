@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Nullable `deliveries` (json) on invoice lines for partial deliveries: list of `{date (Y-m-d), delivery_note, quantity}`. `InvoiceLineDraft::$deliveries` (default `[]`), persisted by `InvoiceBuilder` (`null` when empty), cast as array on the model. Migration stub `add_deliveries_to_invoice_lines_table`; hosts must publish/run it.
 - Audit registration with moox/audit: new `invoice.audit` config block (`enabled`, `models`; log name `invoice`), registered in `InvoiceServiceProvider::packageBooted()` when moox/audit is installed. Invoice lines and allowances/charges are now audited too; configured model subclasses (`models.*`) are audited in place of the package models. moox/audit is a composer `suggest`.
 - Nullable indexed `supplier_number` on invoices (EN 16931 BT-29 seller identifier). Flows through `InvoiceDraft` / `InvoiceBuilder` / model / create-table stub; migration stub `add_supplier_number_to_invoices_table` (hosts must publish/run).
 - Nullable `preceding_invoices` (json) on invoices for the EN 16931 preceding invoice reference (BG-3: list of `{number, date}`, BT-25/BT-26). `InvoiceDraft::$preceding_invoices` (default `[]`), persisted by `InvoiceBuilder`, cast as array on the model. Migration stub `add_preceding_invoices_to_invoices_table`; hosts must publish/run it.

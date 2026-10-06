@@ -86,6 +86,7 @@ $draft = new InvoiceDraft(
             line_total: 100.0,
             delivery_date: null,
             delivery_note_number: null,
+            deliveries: [], // list of ['date' => 'Y-m-d', 'delivery_note' => '...', 'quantity' => 1.0]
             order_number: null,
             order_date: null,
             delivery: null,
@@ -232,6 +233,7 @@ The `InvoiceLine` model (`Moox\Invoice\Models\InvoiceLine`) stores a single invo
 -   `delivery` (json, nullable) - Line consignee party (name + address); cast to `Party` via `DeliveryPartyCast`. VAT identifier, tax number, and contact are not stored. A stored consignee may lack `country_code`; BR-57 is enforced at emission.
 -   `delivery_date` (string, nullable) - Delivery date
 -   `delivery_note_number` (string, nullable) - Delivery note reference
+-   `deliveries` (json, nullable) - Partial deliveries of the line: list of `{date, delivery_note, quantity}` (`date` as `Y-m-d`); `null` when the line was delivered at once. Cast as `array`. Migration stub `add_deliveries_to_invoice_lines_table` (hosts must publish/run it).
 -   `order_number` (string, nullable) - Line order number
 -   `order_date` (string, nullable) - Line order date
 -   `created_at` (datetime) - Creation timestamp
