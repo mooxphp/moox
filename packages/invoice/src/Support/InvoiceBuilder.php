@@ -93,6 +93,7 @@ class InvoiceBuilder
         $line->line_total = (string) $lineDraft->line_total;
         $line->delivery_date = $lineDraft->delivery_date;
         $line->delivery_note_number = $lineDraft->delivery_note_number;
+        $line->deliveries = $lineDraft->deliveries !== [] ? $lineDraft->deliveries : null;
         $line->order_number = $lineDraft->order_number;
         $line->order_date = $lineDraft->order_date;
         $line->delivery = $lineDraft->delivery;

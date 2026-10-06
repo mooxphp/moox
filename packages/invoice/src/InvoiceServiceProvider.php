@@ -28,6 +28,7 @@ class InvoiceServiceProvider extends MooxServiceProvider
                 'add_vat_category_to_invoices_table',
                 'add_preceding_invoices_to_invoices_table',
                 'add_supplier_number_to_invoices_table',
+                'add_deliveries_to_invoice_lines_table',
             ])
             ->hasCommands();
 
