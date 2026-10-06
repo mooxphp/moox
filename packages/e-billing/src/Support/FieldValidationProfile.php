@@ -48,6 +48,17 @@ final class FieldValidationProfile
     }
 
     /**
+     * Header fields that count as present when every invoice line carries its own value
+     * (e.g. one order per line on an invoice that bills several orders).
+     *
+     * @return list<string>
+     */
+    public static function invoiceFieldsSatisfiedByLines(?string $documentType): array
+    {
+        return self::stringList(self::resolve('field_validation', 'fields_satisfied_by_lines', $documentType));
+    }
+
+    /**
      * @return list<string>
      */
     public static function contextualShould(?string $documentType, bool $forLines = false): array

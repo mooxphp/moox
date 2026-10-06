@@ -96,6 +96,7 @@ Published as `config/e-billing.php`.
 | `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length`, `name_legal_form_stop_words`, `buyer_address_roles` (billing + postal), `delivery_address_roles` (delivery first, then postal/billing fallback) |
 | `cross_checked` | Fields checked against master data, shared by the review workspace pickers and the divergence report: `strict` (`EBILLING_CROSS_CHECKED_STRICT`, default `false`) and `fields` (see [Cross-checked fields](#cross-checked-fields)) |
 | `field_validation` | MoSCoW priority rules for invoice and line fields. `credit_note_*` siblings (fields, line fields, contextual-should lists) apply to BT-3 `381` documents; a host that omits a `credit_note_*` key falls back to the `invoice_*` key (ADR 0009) |
+| `field_validation.invoice_fields_satisfied_by_lines` | Header fields (default `[]`) that count as present when every invoice line carries its own value, e.g. `order_number` / `order_date` on a collective invoice. Profile-scoped like the other keys: `credit_note_fields_satisfied_by_lines`, `corrected_invoice_fields_satisfied_by_lines` (a profile falls back to the invoice list unless it defines its own, which may be empty). See [Header fields satisfied by lines](#header-fields-satisfied-by-lines) |
 | `approval` | Dispatch approval gate: `required`, `auto_approve_enabled` |
 | `notification` | Review announce strategy: `immediate` / `batched`, batch key, window minutes, optional `recorder` class |
 | `escalation` | Overdue-approval scan: `day_counting`, `working_weekdays`, `exclude_dates`, ordered `levels` (`key` / `after` / `unit`); empty `levels` disables the feature |
@@ -112,7 +113,8 @@ Mailbox credentials, driver registration, and folder names belong to `moox/mail-
 # Optional — preferred UN/ECE piece unit code for line unit normalization (default: H87)
 EBILLING_PREFERRED_PIECE_UNIT_CODE=H87
 
-# Optional — emission language for BG-32 BT-160 names / CAE reason_text fallbacks (package default: en)
+# Optional — language of customer-readable XML text: BG-32 BT-160 names, CAE reason_text fallbacks,
+# BT-22 / BT-127 note labels (package default: en; not the app/UI locale)
 EBILLING_DOCUMENT_LOCALE=en
 ```
 
@@ -222,6 +224,20 @@ A document is refused, never silently skipped, and the command prints the reason
 | `approval_started` | Any approval status is set |
 | `review_edited` | `review_changed_at` is set (a reviewer edited it) |
 | `delivered` | Delivery attempts exist |
+
+### Header fields satisfied by lines
+
+A collective invoice may carry its order references per line instead of in the header. List such header fields in `field_validation.invoice_fields_satisfied_by_lines` (profile-scoped, see [Config keys](#config-keys)). An empty listed field then validates as `parsed` with `source: lines` when **every** invoice line carries its own value; each field is judged on its own. Otherwise the normal empty-field handling applies (a `must` field is `missing`). The review screen shows such a field as parsed, not missing.
+
+When the header names no order (BT-13) but lines carry orders, a BT-22 note lists the distinct line orders (for example `Purchase orders: 4711 (2026-09-01), 4712` in `en`, `Bestellungen: 4711 (01.09.2026), 4712` in `de`; the date format is `emission.date_format`). No BT-13 is emitted, because EN 16931 allows only one; line orders ride in BT-127.
+
+### Itemized document charges
+
+`Invoice::$documentCharges` (bill data key `document_charges`) lists charges as `{field, amount, reason}` for the itemizable charge fields `shipping_cost`, `packaging_cost`, `minimum_quantity_surcharge`, `freight_flat_rate`, `certificate_cost` and `customs_cost` (positive amounts). When a field has rows, they replace that field's summed scalar on emission: one BG-21 charge per row, with the row's reason as text (or the default label when empty) and the field's reason code (for example `CAE` for `certificate_cost`). A host parser can use this to name the delivery note a charge belongs to.
+
+`HeaderChargeResolver` matches a charge to its field when the reason text equals the label or starts with the label followed by a space (`Shipping delivery note 56793.26`), and adds up all matching charges for a charge field.
+
+In the review workspace, a charge field with several charges shows their sum and is not editable (reason `several_charges`), followed by one row per charge (edit key `charge:<id>`) that edits that charge's amount.
 
 ### Severity gating (MoSCoW)
 

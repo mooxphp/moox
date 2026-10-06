@@ -798,11 +798,27 @@ class InvoiceFieldValidator
     {
         $value = $this->getInvoiceFieldValue($invoice, $field);
 
-        if ($this->isInvoiceFieldValueEmpty($field, $value)) {
-            return $this->entryForEmptyField($field, $priority, false);
+        if (! $this->isInvoiceFieldValueEmpty($field, $value)) {
+            return ['status' => 'parsed'];
         }
 
-        return ['status' => 'parsed'];
+        if ($this->isSatisfiedByEveryLine($invoice, $field)) {
+            return ['status' => 'parsed', 'source' => 'lines'];
+        }
+
+        return $this->entryForEmptyField($field, $priority, false);
+    }
+
+    private function isSatisfiedByEveryLine(Invoice $invoice, string $field): bool
+    {
+        if (! in_array($field, FieldValidationProfile::invoiceFieldsSatisfiedByLines($this->profileDocumentType), true)
+            || $invoice->lines->isEmpty()) {
+            return false;
+        }
+
+        return $invoice->lines->every(
+            fn (InvoiceLine $line): bool => ! $this->isScalarEmpty($line->getAttribute($field)),
+        );
     }
 
     private function getInvoiceFieldValue(Invoice $invoice, string $field): mixed

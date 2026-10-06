@@ -58,13 +58,59 @@ final class HeaderChargeResolver
             return null;
         }
 
-        $charge = self::firstMatchingCharge($allowanceCharges, $spec, $field === 'discount_amount');
+        // A charge field may be itemized (e.g. Versand per delivery): its amount is the sum of its rows.
+        $charges = $field === 'discount_amount'
+            ? array_filter([self::firstMatchingCharge($allowanceCharges, $spec, true)])
+            : self::matchingCharges($allowanceCharges, $field);
 
-        if ($charge === null || $charge->amount === null || $charge->amount === '') {
+        if ($charges === []) {
             return null;
         }
 
-        return (float) $charge->amount;
+        return round(array_sum(array_map(
+            static fn (InvoiceAllowanceCharge $charge): float => (float) $charge->amount,
+            $charges,
+        )), 2);
+    }
+
+    /**
+     * The charges of a field charged more than once (e.g. Versand per delivery), which review shows and
+     * corrects one by one below their sum; empty when the field has one charge or none.
+     *
+     * @return list<InvoiceAllowanceCharge>
+     */
+    public static function itemizedCharges(iterable $allowanceCharges, string $field): array
+    {
+        if ($field === 'discount_percent') {
+            return [];
+        }
+
+        $charges = self::matchingCharges($allowanceCharges, $field);
+
+        return count($charges) > 1 ? $charges : [];
+    }
+
+    /**
+     * Every charge of the field, in order.
+     *
+     * @return list<InvoiceAllowanceCharge>
+     */
+    public static function matchingCharges(iterable $allowanceCharges, string $field): array
+    {
+        $spec = self::spec($field);
+
+        if ($spec === null) {
+            return [];
+        }
+
+        $matching = [];
+        foreach ($allowanceCharges as $charge) {
+            if ($charge instanceof InvoiceAllowanceCharge && self::matches($charge, $spec, $field === 'discount_amount')) {
+                $matching[] = $charge;
+            }
+        }
+
+        return $matching;
     }
 
     public static function hasDiscountPercentSignal(iterable $allowanceCharges): bool
@@ -110,7 +156,8 @@ final class HeaderChargeResolver
             $expected = self::normalizeString($spec['reason_text']);
             $actual = self::normalizeString($charge->reason_text);
 
-            if ($expected !== '' && strcasecmp($expected, $actual) === 0) {
+            // The label alone, or the label qualified by what the charge is for ("Versand delivery 56793.26").
+            if ($expected !== '' && (strcasecmp($expected, $actual) === 0 || stripos($actual, $expected.' ') === 0)) {
                 return true;
             }
         }

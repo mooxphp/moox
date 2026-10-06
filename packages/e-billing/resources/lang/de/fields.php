@@ -320,6 +320,7 @@ return [
         'unknown_key' => 'Nicht bearbeitbar: Das Dokument hat keinen solchen Wert.',
         'unknown_field' => 'In der Prüfung nicht bearbeitbar.',
         'no_charge_row' => 'Nicht bearbeitbar: Das Dokument hat keinen solchen Zu- oder Abschlag. Neue anlegen ist in der Prüfung nicht möglich.',
+        'several_charges' => 'Summe mehrerer Zuschläge: Korrigieren Sie die einzelnen Zuschläge darunter.',
         'document_level' => 'Hier nicht bearbeitbar: Wert gilt für das ganze Dokument – unter Beträge korrigieren.',
         'not_classifiable' => 'Nicht bearbeitbar: Nur die konfigurierten Typen Gutschrift und korrigierte Rechnung sind umstellbar.',
     ],

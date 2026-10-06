@@ -7,4 +7,13 @@ return [
         'gross_weight' => 'Gross weight',
         'material_test_certificate' => 'Material test certificate',
     ],
+    // PHP date format for dates inside customer-readable notes (stored dates are Y-m-d).
+    'date_format' => 'Y-m-d',
+    'notes' => [
+        'purchase_order' => 'Purchase order',
+        'purchase_orders' => 'Purchase orders',
+        'order_date' => 'Order date',
+        'despatch_advice' => 'Despatch advice',
+        'consignee' => 'Consignee',
+    ],
 ];

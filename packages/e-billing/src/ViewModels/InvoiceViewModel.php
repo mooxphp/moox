@@ -20,6 +20,7 @@ use Moox\EBilling\Support\PartyAddressFormatter;
 use Moox\EBilling\Support\PrecedingInvoiceReferences;
 use Moox\EBilling\Support\ReviewFieldCatalog;
 use Moox\Invoice\Models\Invoice;
+use Moox\Invoice\Models\InvoiceAllowanceCharge;
 use Moox\Invoice\Support\En16931\BankAccount;
 
 final class InvoiceViewModel
@@ -595,10 +596,33 @@ final class InvoiceViewModel
             );
         }, $fieldNames);
 
+        $fields = array_merge(...array_map(
+            fn (FieldViewData $field): array => [$field, ...$this->itemizedChargeRows($field)],
+            $fields,
+        ));
+
         return InvoiceUiPresentation::withoutHidden(
             $fields,
             InvoiceUiPresentation::hiddenInvoiceFields($this->documentType()),
         );
+    }
+
+    /**
+     * One row per charge below the sum row when a charge field is itemized (e.g. Versand per delivery).
+     *
+     * @return list<FieldViewData>
+     */
+    private function itemizedChargeRows(FieldViewData $sumRow): array
+    {
+        return array_map(fn (InvoiceAllowanceCharge $charge): FieldViewData => new FieldViewData(
+            field: $sumRow->field,
+            label: (string) $charge->reason_text,
+            btNumber: $sumRow->btNumber,
+            value: number_format((float) $charge->amount, 2, ',', '.'),
+            validation: $sumRow->validation,
+            hint: null,
+            editKey: ReviewFieldCatalog::chargeKey($charge),
+        ), HeaderChargeResolver::itemizedCharges($this->invoice->allowanceCharges, $sumRow->field));
     }
 
     /**
@@ -621,7 +645,9 @@ final class InvoiceViewModel
 
         if ($storedValidation !== null) {
             $storedStatus = $storedValidation['status'] ?? null;
-            if ($hasValue || ! in_array($storedStatus, ['parsed', 'validated', 'db_validated'], true)) {
+            // Empty header, present on every line (e.g. orders of a multi-order invoice).
+            $satisfiedByLines = ($storedValidation['source'] ?? null) === 'lines';
+            if ($hasValue || $satisfiedByLines || ! in_array($storedStatus, ['parsed', 'validated', 'db_validated'], true)) {
                 return $storedValidation;
             }
         }

@@ -319,6 +319,7 @@ return [
         'unknown_key' => 'Not editable: the document has no such value.',
         'unknown_field' => 'Not editable in review.',
         'no_charge_row' => 'Not editable: the document has no such charge or allowance. Adding one is not supported in review.',
+        'several_charges' => 'Sum of several charges: correct the single charges below.',
         'document_level' => 'Not editable here: this is a document-level value — correct it under Amounts.',
         'not_classifiable' => 'Not editable: only the configured credit note and corrected invoice types can be switched.',
     ],

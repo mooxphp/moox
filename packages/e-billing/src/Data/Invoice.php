@@ -78,9 +78,18 @@ class Invoice
 
         // Currency
         public string $currency = 'EUR',
+
+        /**
+         * Single printed charges (BG-21) where a field is charged more than once, e.g. Versand per delivery.
+         * When a field has rows, they replace its summed scalar above on emission.
+         *
+         * @var list<array{field: string, amount: float, reason: ?string}>
+         */
+        public array $documentCharges = [],
     ) {
         $this->customerVatId = VatIdNormalizer::normalize($this->customerVatId);
         $this->supplierVatId = VatIdNormalizer::normalize($this->supplierVatId);
+        $this->documentCharges = BillDataAllowanceChargeMapper::documentChargeRows($this->documentCharges);
     }
 
     public function forZugferd(): ZugferdInvoice
@@ -108,16 +117,22 @@ class Invoice
      */
     public function allowanceCharges(): array
     {
-        return BillDataAllowanceChargeMapper::fromHeaderScalars(
-            $this->shippingCost,
-            $this->packagingCost,
-            $this->minimumQuantitySurcharge,
-            $this->freightFlatRate,
-            $this->discountAmount,
-            $this->discountPercent,
-            $this->certificateCost,
-            $this->customsCost,
-        );
+        $itemized = array_column($this->documentCharges, 'field', 'field');
+        $scalar = fn (string $field, ?float $amount): ?float => isset($itemized[$field]) ? null : $amount;
+
+        return [
+            ...BillDataAllowanceChargeMapper::fromHeaderScalars(
+                $scalar('shipping_cost', $this->shippingCost),
+                $scalar('packaging_cost', $this->packagingCost),
+                $scalar('minimum_quantity_surcharge', $this->minimumQuantitySurcharge),
+                $scalar('freight_flat_rate', $this->freightFlatRate),
+                $this->discountAmount,
+                $this->discountPercent,
+                $scalar('certificate_cost', $this->certificateCost),
+                $scalar('customs_cost', $this->customsCost),
+            ),
+            ...BillDataAllowanceChargeMapper::fromDocumentChargeRows($this->documentCharges),
+        ];
     }
 
     /**
@@ -289,6 +304,7 @@ class Invoice
             notes: $notes,
             precedingInvoices: PrecedingInvoiceReferences::normalize($data['preceding_invoices'] ?? null),
             currency: is_string($data['currency'] ?? null) && $data['currency'] !== '' ? $data['currency'] : 'EUR',
+            documentCharges: is_array($data['document_charges'] ?? null) ? $data['document_charges'] : [],
         );
 
         $invoice->applyDefaultCustomerCountry();
@@ -394,6 +410,7 @@ class Invoice
             'lines' => array_map(fn (InvoiceLine $line) => $line->toArray(), $this->lines),
             'notes' => $this->notes,
             'preceding_invoices' => $this->precedingInvoices,
+            'document_charges' => $this->documentCharges,
         ];
     }
 
