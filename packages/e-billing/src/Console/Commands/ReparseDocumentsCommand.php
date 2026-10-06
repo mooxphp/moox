@@ -18,6 +18,8 @@ class ReparseDocumentsCommand extends Command
     protected $signature = 'e-billing:reparse
         {ids?* : E-billing document ids}
         {--kosit-failed : Select documents whose latest KoSIT validation failed}
+        {--order-missing : Select documents whose order number or order date validated as missing}
+        {--hold : Keep the reparsed documents from auto-approval until a person approves them}
         {--dry-run : List the selection without changing anything}';
 
     protected $description = 'Re-parse untouched e-billing documents from their source PDF and regenerate the artifact';
@@ -27,9 +29,10 @@ class ReparseDocumentsCommand extends Command
         /** @var list<string> $ids */
         $ids = $this->argument('ids');
         $kositFailed = (bool) $this->option('kosit-failed');
+        $orderMissing = (bool) $this->option('order-missing');
 
-        if ($ids === [] && ! $kositFailed) {
-            $this->warn('Nothing selected. Pass document ids or --kosit-failed.');
+        if ($ids === [] && ! $kositFailed && ! $orderMissing) {
+            $this->warn('Nothing selected. Pass document ids, --kosit-failed or --order-missing.');
 
             return self::SUCCESS;
         }
@@ -38,7 +41,10 @@ class ReparseDocumentsCommand extends Command
         $documents = EbillingDocument::query()
             ->when($ids !== [], fn ($query) => $query->whereKey($ids))
             ->when($kositFailed, fn ($query) => $query->whereLatestKositValidationPassed(false))
-            ->get();
+            ->get()
+            ->when($orderMissing, fn (Collection $documents) => $documents->filter(
+                fn (EbillingDocument $document): bool => self::hasMissingOrder($document),
+            )->values());
 
         $this->info("Selected {$documents->count()} document(s).");
 
@@ -60,7 +66,7 @@ class ReparseDocumentsCommand extends Command
 
         $refused = 0;
         foreach ($documents as $document) {
-            $outcome = $action->execute($document);
+            $outcome = $action->execute($document, (bool) $this->option('hold'));
 
             if ($outcome->reparsed) {
                 $this->line("Reparsed {$document->getKey()}: net {$outcome->oldNetTotal} → {$outcome->newNetTotal}, "
@@ -76,5 +82,18 @@ class ReparseDocumentsCommand extends Command
         $this->info(($documents->count() - $refused)." reparsed, {$refused} refused. Generation and KoSIT validation run on the queue.");
 
         return self::SUCCESS;
+    }
+
+    private static function hasMissingOrder(EbillingDocument $document): bool
+    {
+        $validations = is_array($document->field_validations) ? $document->field_validations : [];
+
+        foreach (['order_number', 'order_date'] as $field) {
+            if (($validations[$field]['status'] ?? null) === 'missing') {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

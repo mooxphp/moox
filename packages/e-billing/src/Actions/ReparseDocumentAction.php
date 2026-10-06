@@ -7,6 +7,7 @@ namespace Moox\EBilling\Actions;
 use Illuminate\Support\Facades\DB;
 use Moox\Audit\Services\MooxActivityLogger;
 use Moox\EBilling\Data\ReparseOutcome;
+use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Jobs\GenerateArtifactJob;
@@ -20,8 +21,9 @@ use Throwable;
  * reach documents already imported. Generation maps `bill_data` only while the document has no Invoice
  * (ADR 0013), so the draft Invoice is soft-deleted and unlinked first.
  *
- * Only an untouched machine draft qualifies: once a person reviewed, confirmed or approved it, or it was
- * sent, the stored Invoice is the record and a reparse would overwrite it.
+ * Only an untouched machine draft qualifies: once a person reviewed, confirmed, approved or rejected it,
+ * or it was sent, the stored Invoice is the record and a reparse would overwrite it. Pending approval
+ * alone does not count: it is set automatically when the artifact validates.
  */
 final class ReparseDocumentAction
 {
@@ -32,7 +34,10 @@ final class ReparseDocumentAction
     ) {
     }
 
-    public function execute(EbillingDocument $document): ReparseOutcome
+    /**
+     * @param  bool  $hold  keep the document from auto-approval ({@see EbillingDocument::holdForApproval()})
+     */
+    public function execute(EbillingDocument $document, bool $hold = false): ReparseOutcome
     {
         $refusal = $this->refusal($document);
         if ($refusal !== null) {
@@ -49,8 +54,12 @@ final class ReparseDocumentAction
         $oldNetTotal = $oldInvoice?->net_total;
         $oldLineTotal = $oldInvoice?->lines->sum(fn ($line): float => (float) $line->line_total);
 
-        DB::transaction(function () use ($document, $parsed): void {
+        DB::transaction(function () use ($document, $parsed, $hold): void {
             $document->invoice?->delete();
+
+            if ($hold) {
+                $document->holdForApproval();
+            }
 
             $document->forceFill([
                 'invoice_id' => null,
@@ -88,6 +97,14 @@ final class ReparseDocumentAction
         return number_format($value, 2, '.', '');
     }
 
+    private function approvalWasActedOn(EbillingDocument $document): bool
+    {
+        $status = $document->resolveApprovalStatusEnum();
+
+        return ($status !== null && $status !== DocumentApprovalStatus::Pending)
+            || $document->approval_actor_id !== null;
+    }
+
     /**
      * Reason key when the document must not be reparsed, null when it qualifies.
      */
@@ -95,7 +112,7 @@ final class ReparseDocumentAction
     {
         return match (true) {
             $document->review_status === InvoiceProcessingStatus::HumanConfirmed => 'human_confirmed',
-            $document->resolveApprovalStatusEnum() !== null => 'approval_started',
+            $this->approvalWasActedOn($document) => 'approval_decided',
             $document->review_changed_at !== null => 'review_edited',
             $document->deliveryAttempts()->exists() => 'delivered',
             default => null,

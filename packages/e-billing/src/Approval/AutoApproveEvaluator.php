@@ -62,6 +62,10 @@ final class AutoApproveEvaluator
             $failures[] = AutoApproveFailureReason::AnomalyFlagged;
         }
 
+        if ($document->isHeldForApproval()) {
+            $failures[] = AutoApproveFailureReason::HeldForApproval;
+        }
+
         return new AutoApproveResult($failures);
     }
 }

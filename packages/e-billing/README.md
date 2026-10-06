@@ -21,6 +21,7 @@ Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through a
 - Delivery-date carriage into generated artifacts: one unique date → document actual delivery (BT-72); several differing dates → per-line dates only (no document BT-72, no invoicing-period merge); intra-community invoices with multiple dates surface `delivery_date` as `needs_review` (BR-IC-11) instead of aggregating
 - Consignee party on invoice and line `delivery` (name + address): persisted even without a country; detail views show the name first (`PartyAddressFormatter`); field label Consignee (hint BG-13); adapters expose `shipTo*` / trade refs / `itemAttributes` / `itemClassifications`; `moox/zugferd` omits BG-15 when ship-to equals buyer (keep BT-72; VAT **K** still emits), may promote a shared line ship-to, else BT-127 — no tax registration or contact; BG-15 only when a country is present and the party is emitted
 - `LineItemAttributeMapper`: material, net/gross weight as kg text, unpriced certificate → BG-32 (BT-160 names from `e-billing::emission` + `document_locale`, package default `en`); customs tariff → BT-158 `HS`; certificate charges default UNCL 7161 `CAE`
+- Customer-readable XML text (BT-22 and BT-127 note labels, BG-32 names, reason texts) follows `e-billing.document_locale`, not the app locale; BT-127 labels come from `DocumentNoteLabels`, bound to `Moox\Zugferd\Contracts\ZugferdNoteLabels`
 - `InvoiceDocumentNotes` includes `order_date` as BT-22 free text (no OrderReference IssueDate / UBL-CR-018)
 
 <!--/features-->
@@ -196,21 +197,56 @@ php artisan e-billing:scan-overdue-approval-escalation
 
 Schedule this in the host app — the package does not register a schedule. See [Approval escalation scan](#approval-escalation-scan).
 
+### Re-validate documents
+
+After a validation or emission change (field rules, labels, charge handling), re-run field validation and regenerate the artifact from the **stored** invoice. Review corrections are kept:
+
+```bash
+php artisan e-billing:revalidate {ids*} {--in-review} {--hold} {--dry-run}
+```
+
+| Argument / option | Effect |
+| --- | --- |
+| `ids` | One or more e-billing document ids |
+| `--in-review` | Selects every document in the needs-human-review scope |
+| `--hold` | Holds the revalidated documents for approval (see [Hold for approval](#hold-for-approval)) |
+| `--dry-run` | Lists the selection and whether each document would be revalidated or refused, without changing anything |
+
+Each document takes the same path as leaving the review workspace: `review_status` is reset to `parser_created`, field validation runs again, `gateway_status` becomes `generating` and `GenerateArtifactJob` is queued. Each revalidation is logged as activity `document_revalidated` on the document (previous `review_status`, `held`). A document is refused with a reason key:
+
+| Reason key | Document state |
+| --- | --- |
+| `no_invoice` | No stored invoice to revalidate |
+| `human_confirmed` | `review_status` is `human_confirmed` |
+| `approval_decided` | Approved or rejected |
+| `pipeline_running` | Generating or validating |
+| `delivered` | Delivery attempts exist |
+
+Revalidate keeps what the invoice says. Use [re-parse](#re-parse-documents) when the parser changed and the invoice must be rebuilt from the source PDF.
+
+### Hold for approval
+
+`EbillingDocument::holdForApproval()` marks a document as held (`approval_flags.held`; it survives re-validation) and `isHeldForApproval()` reads the mark. `AutoApproveEvaluator` then fails with `AutoApproveFailureReason::HeldForApproval` (`held_for_approval`), so a person must approve it. `--hold` on `e-billing:revalidate` and `e-billing:reparse` sets it, which keeps regenerated documents from being auto-approved and dispatched when the queue drains.
+
+Recommended operator workflow: run with `--dry-run`, pick the ids, then run with `--hold`.
+
 ### Re-parse documents
 
 After a parser fix, re-run the configured parser on documents that nobody has touched yet:
 
 ```bash
-php artisan e-billing:reparse {ids?*} {--kosit-failed} {--dry-run}
+php artisan e-billing:reparse {ids?*} {--kosit-failed} {--order-missing} {--hold} {--dry-run}
 ```
 
 | Argument / option | Effect |
 | --- | --- |
 | `ids` | One or more e-billing document ids |
 | `--kosit-failed` | Selects documents whose latest KoSIT validation failed (combines with `ids`) |
+| `--order-missing` | Selects documents whose `order_number` or `order_date` validated as missing (combines with `ids`) |
+| `--hold` | Holds the reparsed documents for approval (see [Hold for approval](#hold-for-approval)) |
 | `--dry-run` | Lists the selection (id, review status, gateway status, and whether it would be reparsed or refused with which reason) without changing anything |
 
-Without ids and without `--kosit-failed` the command does nothing. Start with `--dry-run`, then run it again without it.
+Without ids and without `--kosit-failed` or `--order-missing` the command does nothing. Start with `--dry-run`, then run it again without it.
 
 For each selected document the command re-parses the source PDF, soft-deletes and unlinks the draft invoice, resets `bill_data`, `field_validations` and `validation_score`, sets `review_status` to `parser_created` and `gateway_status` to `generating`, logs the activity `document_reparsed` (old and new net and line totals) and dispatches `GenerateArtifactJob`, which keeps the existing artifact paths. Artifact regeneration and KoSIT validation run on the queue; the new validation attaches to the same document and the earlier one stays as history.
 
@@ -221,7 +257,7 @@ A document is refused, never silently skipped, and the command prints the reason
 | Reason key | Document state |
 | --- | --- |
 | `human_confirmed` | `review_status` is `human_confirmed` |
-| `approval_started` | Any approval status is set |
+| `approval_decided` | Approved or rejected, or a person acted on the approval (pending set automatically after validation does not count) |
 | `review_edited` | `review_changed_at` is set (a reviewer edited it) |
 | `delivered` | Delivery attempts exist |
 
