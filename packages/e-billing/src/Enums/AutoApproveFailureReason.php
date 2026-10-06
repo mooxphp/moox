@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Enums;
 
+use Moox\EBilling\Models\EbillingDocument;
+
 enum AutoApproveFailureReason: string
 {
     case GatewayNotValidated = 'gateway_not_validated';
@@ -21,4 +23,9 @@ enum AutoApproveFailureReason: string
     case ReviewChanged = 'review_changed';
 
     case ManualUploadRequiresHumanApproval = 'manual_upload_requires_human_approval';
+
+    /**
+     * An operator held the document for a person to approve ({@see EbillingDocument::holdForApproval()}).
+     */
+    case HeldForApproval = 'held_for_approval';
 }

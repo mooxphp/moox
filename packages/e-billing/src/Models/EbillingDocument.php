@@ -1029,6 +1029,25 @@ class EbillingDocument extends BaseItemModel
     }
 
     /**
+     * Keep the document from auto-approval until a person approves it, e.g. after an operator
+     * re-ran a parser or validation change on documents that were already imported.
+     */
+    public function holdForApproval(): void
+    {
+        $flags = is_array($this->approval_flags) ? $this->approval_flags : [];
+        $flags['held'] = ['held_at' => now()->toIso8601String()];
+
+        $this->approval_flags = $flags;
+    }
+
+    public function isHeldForApproval(): bool
+    {
+        $flags = is_array($this->approval_flags) ? $this->approval_flags : [];
+
+        return isset($flags['held']) && is_array($flags['held']);
+    }
+
+    /**
      * Sync approval_flags.duplicate from field validations (invoice number collision).
      * Preserves host-set anomalies.
      */
