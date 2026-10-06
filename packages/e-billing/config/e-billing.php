@@ -857,6 +857,21 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Header Fields Satisfied by Lines
+        |--------------------------------------------------------------------------
+        |
+        | An empty header field listed here validates as parsed (source 'lines')
+        | when every invoice line carries its own value — e.g. order_number /
+        | order_date on an invoice that bills several orders. Each field is judged
+        | on its own. Profiles (credit_note_*, corrected_invoice_*) fall back to
+        | this list unless they define their own, which may be empty.
+        |
+        */
+
+        'invoice_fields_satisfied_by_lines' => [],
+
+        /*
+        |--------------------------------------------------------------------------
         | Credit notes (ADR 0009)
         |--------------------------------------------------------------------------
         |

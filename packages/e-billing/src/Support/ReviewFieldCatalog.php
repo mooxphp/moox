@@ -102,6 +102,14 @@ final class ReviewFieldCatalog
         return "line:{$line->getKey()}:{$field}";
     }
 
+    /**
+     * One charge of an itemized document charge field (e.g. Versand per delivery).
+     */
+    public static function chargeKey(InvoiceAllowanceCharge $charge): string
+    {
+        return "charge:{$charge->getKey()}";
+    }
+
     public function resolve(Invoice $invoice, string $key): ReviewEditField
     {
         $parts = explode(':', $key, 3);
@@ -110,8 +118,22 @@ final class ReviewFieldCatalog
             'invoice' => $this->invoiceField($invoice, $key, $parts[1] ?? ''),
             'notes' => $this->valueField($invoice, $key, InvoiceFieldLabels::label('notes'), $invoice, ['notes.'.(int) ($parts[1] ?? 0) => 'textarea']),
             'line' => $this->lineField($invoice, $key, (string) ($parts[1] ?? ''), $parts[2] ?? ''),
+            'charge' => $this->chargeField($invoice, $key, (string) ($parts[1] ?? '')),
             default => $this->notEditable($key, $key, 'unknown_field'),
         };
+    }
+
+    private function chargeField(Invoice $invoice, string $key, string $chargeId): ReviewEditField
+    {
+        $charge = $invoice->allowanceCharges->first(
+            fn (InvoiceAllowanceCharge $charge): bool => (string) $charge->getKey() === $chargeId,
+        );
+
+        if (! $charge instanceof InvoiceAllowanceCharge) {
+            return $this->notEditable($key, $key, 'unknown_field');
+        }
+
+        return $this->valueField($invoice, $key, (string) $charge->reason_text, $charge, ['amount' => 'decimal']);
     }
 
     /**
@@ -152,6 +174,10 @@ final class ReviewFieldCatalog
         }
 
         if (array_key_exists($field, HeaderChargeResolver::FIELD_SPECS)) {
+            if (HeaderChargeResolver::itemizedCharges($invoice->allowanceCharges, $field) !== []) {
+                return $this->notEditable($key, $label, 'several_charges');
+            }
+
             $charge = $this->headerCharge($invoice, $field);
 
             return $charge === null

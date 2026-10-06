@@ -55,6 +55,7 @@ use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 use Moox\EBilling\Support\AllowedProfiles;
 use Moox\EBilling\Support\CustomerFormatPreferenceResolver;
+use Moox\EBilling\Support\DocumentNoteLabels;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\EBilling\Support\InvoiceRelationsConfig;
 use Moox\EBilling\Support\LetterheadSourcePdfPreparer;
@@ -67,6 +68,7 @@ use Moox\KositValidator\Models\KositValidation;
 use Moox\MailInbox\Events\InboxAttachmentProcessed;
 use Moox\MailOutbox\Models\MailSendLog;
 use Moox\VeraPdf\Models\VeraPdfValidation;
+use Moox\Zugferd\Contracts\ZugferdNoteLabels;
 use Spatie\LaravelPackageTools\Package;
 
 class EBillingServiceProvider extends MooxServiceProvider
@@ -114,6 +116,7 @@ class EBillingServiceProvider extends MooxServiceProvider
     {
         parent::packageRegistered();
 
+        $this->app->bind(ZugferdNoteLabels::class, DocumentNoteLabels::class);
         $this->app->singleton(InvoiceFieldValidator::class);
         $this->app->singleton(ConfirmInvoiceAction::class);
         $this->app->singleton(CreateManualUploadDocumentAction::class);
