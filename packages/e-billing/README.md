@@ -554,6 +554,7 @@ The invoice `delivery` party (name + address) is mapped onto `shipToName` / `shi
 When several dates differ, each line with a `delivery_date` is emitted on that line. EN 16931 / XRechnung (and other non-EXTENDED profiles) carry the date as a line billing period with start and end equal to that day; EXTENDED uses the line-level actual delivery date. The active ZUGFeRD profile selects which line carrier `ZugferdConverter` uses.
 
 **Partial deliveries.** A line delivered in several parts (`invoice_lines.deliveries`, list of `{date, delivery_note, quantity}`, normalized by `Support\PartialDeliveries::normalize()`) counts its partial dates as line dates: differing dates leave out the document BT-72, emit line dates, and are visible to the intra-community check. On the line, `moox/zugferd` writes a period (BG-26) from the earliest to the latest date and lists the parts in BT-127. Quantities in that note follow `document_locale` (`emission.decimal_separator`: `,` in `de`, `.` in `en`). Run the `moox/invoice` migration `add_deliveries_to_invoice_lines_table`; parsers pass the parts through `Data\InvoiceLine::$partialDeliveries` (array key `deliveries`).
+
 `InvoiceFieldValidator` flags `delivery_date` as `needs_review` when the invoice is an intra-community supply (seller and buyer EU VAT country prefixes differ) and several differing dates would require aggregating them into a single actual delivery date for BR-IC-11. Operators see a review hint in the Filament UI; the adapter does not merge dates silently.
 
 ## Changelog

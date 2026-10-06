@@ -12,6 +12,7 @@ use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\InvoiceResource;
+use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\FieldValidationProfile;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\InvoiceFieldLabels;
@@ -588,7 +589,9 @@ final class InvoiceViewModel
                 field: $name,
                 label: InvoiceFieldLabels::label($name),
                 btNumber: InvoiceFieldLabels::btNumber($name),
-                value: $this->formatValue($name),
+                value: ($validation['source'] ?? null) === 'lines'
+                    ? $this->valuesFromLines($name)
+                    : $this->formatValue($name),
                 validation: $validation,
                 hint: InvoiceFieldLabels::hint($name, $status, $validation),
                 url: $this->fieldUrl($name, $validation),
@@ -605,6 +608,32 @@ final class InvoiceViewModel
             $fields,
             InvoiceUiPresentation::hiddenInvoiceFields($this->documentType()),
         );
+    }
+
+    /**
+     * The distinct values the lines carry for a header field satisfied by them, one per row of text;
+     * delivery dates include the lines' partial deliveries.
+     */
+    private function valuesFromLines(string $field): ?string
+    {
+        $values = $field === 'delivery_date'
+            ? DeliveryDateTransmission::distinctDates(null, $this->invoice->lines)
+            : $this->invoice->lines
+                ->map(fn ($line): string => trim((string) $line->getAttribute($field)))
+                ->filter(fn (string $value): bool => $value !== '')
+                ->unique()
+                ->values()
+                ->all();
+
+        if (in_array($field, ['delivery_date', 'order_date'], true)) {
+            $values = array_map(static function (string $value): string {
+                $normalized = DeliveryDateTransmission::normalize($value);
+
+                return $normalized !== null ? Carbon::parse($normalized)->format('d.m.Y') : $value;
+            }, $values);
+        }
+
+        return $values === [] ? null : implode("\n", array_values(array_unique($values)));
     }
 
     /**
@@ -633,7 +662,7 @@ final class InvoiceViewModel
      * display as not_applicable ("empty and rightly so"), never must-missing or
      * db_validated on a blank Warenempfänger.
      *
-     * @return array{status: string}|null
+     * @return array{status: string, source?: string}|null
      */
     private function resolveDisplayValidation(string $field, mixed $rawValue, ?array $storedValidation): ?array
     {
