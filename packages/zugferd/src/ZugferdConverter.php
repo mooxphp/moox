@@ -14,7 +14,9 @@ use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdInvoice;
 use Moox\Zugferd\Contracts\ZugferdInvoiceLine;
+use Moox\Zugferd\Contracts\ZugferdNoteLabels;
 use Moox\Zugferd\Exceptions\IncompleteInvoiceException;
+use Moox\Zugferd\Support\EnglishNoteLabels;
 use Moox\Zugferd\Support\FlexibleDateParser;
 use Moox\Zugferd\Support\ShipToPartyEquality;
 use Symfony\Component\Process\Process;
@@ -36,6 +38,11 @@ class ZugferdConverter
         'EXTENDED' => ZugferdProfiles::PROFILE_EXTENDED,
         'XRECHNUNG' => ZugferdProfiles::PROFILE_XRECHNUNG_3,
     ];
+
+    public function __construct(
+        private readonly ZugferdNoteLabels $noteLabels = new EnglishNoteLabels,
+    ) {
+    }
 
     public function convert(ZugferdInvoice $invoice, string $profileKey): string
     {
@@ -588,18 +595,19 @@ class ZugferdConverter
         $headerOrder = $invoice->purchaseOrderReference !== null ? trim($invoice->purchaseOrderReference) : '';
         $lineOrderDoc = $line->orderDocumentReference !== null ? trim($line->orderDocumentReference) : '';
         if ($lineOrderDoc !== '' && $lineOrderDoc !== $headerOrder) {
-            $parts[] = 'Purchase order: '.$lineOrderDoc;
+            $parts[] = $this->noteLabels->purchaseOrder().': '.$lineOrderDoc;
         }
 
+        $headerOrderDate = $invoice->purchaseOrderDate !== null ? trim($invoice->purchaseOrderDate) : '';
         $lineOrderDate = $line->purchaseOrderDate !== null ? trim($line->purchaseOrderDate) : '';
-        if ($lineOrderDate !== '') {
-            $parts[] = 'Order date: '.$lineOrderDate;
+        if ($lineOrderDate !== '' && $lineOrderDate !== $headerOrderDate) {
+            $parts[] = $this->noteLabels->orderDate().': '.$this->noteLabels->date($lineOrderDate);
         }
 
         $commonDn = $this->commonLineDeliveryNoteNumber($invoice);
         $lineDn = $line->deliveryNoteNumber !== null ? trim($line->deliveryNoteNumber) : '';
         if ($lineDn !== '' && ($commonDn === null || $lineDn !== $commonDn)) {
-            $parts[] = 'Despatch advice: '.$lineDn;
+            $parts[] = $this->noteLabels->despatchAdvice().': '.$lineDn;
         }
 
         $note = trim(implode('; ', array_filter($parts)));
@@ -624,7 +632,7 @@ class ZugferdConverter
             }
         }
 
-        return 'Consignee: '.implode(', ', $chunks);
+        return $this->noteLabels->consignee().': '.implode(', ', $chunks);
     }
 
     private function emitLineAllowanceCharges(ZugferdDocumentBuilder $doc, ZugferdInvoiceLine $line): void

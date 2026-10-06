@@ -147,6 +147,7 @@ Class: `Moox\Zugferd\ZugferdConverter` (singleton in `ZugferdServiceProvider`).
 | `convert(ZugferdInvoice $invoice, string $profileKey): string` | XML string | Builds horstoeko document; required `$profileKey` selects how line `deliveryDate` is emitted (line period vs line actual delivery); `getContentSafely()` mitigates stream-resource warnings |
 | `convertToFile(ZugferdInvoice $invoice, string $profileKey, ?string $outputPath = null): string` | File path | Writes `{outputPath}/{invoiceNumber}.xml` |
 | `mergePdfWithXml(string $pdfPath, string $xml, ?string $documentTypeCode = null): string` | PDF binary | Optional qpdf decrypt → merge (unencrypted output); Title from `resolvePdfTitleTemplate($documentTypeCode)` |
+| `__construct(ZugferdNoteLabels $noteLabels = new EnglishNoteLabels)` | — | Optional BT-127 line-note label source; defaults to `Support\EnglishNoteLabels` |
 | `resolvePdfTitleTemplate(?string $documentTypeCode = null): string` | Title sprintf template | `pdf_title_templates[$code]` or `pdf_title_template` / `PDF_TITLE_TEMPLATE` |
 | `extractXmlFromPdf(string $absolutePdfPath): string` | XML string | Embedded XML from hybrid PDF |
 
@@ -193,6 +194,14 @@ File: `config/zugferd.php`
 | `pdf_title_templates` | — | `[]` | Optional map of UN/CEFACT document type code → Title template; selected when `mergePdfWithXml(..., $documentTypeCode)` is passed |
 
 `ZugferdConverter::resolvePdfTitleTemplate(?string $documentTypeCode)` picks the map entry or falls back to `pdf_title_template` / `PDF_TITLE_TEMPLATE`.
+
+### Note labels (BT-127)
+
+Line notes (purchase order, order date, despatch advice, consignee) carry a text label, and the order date is written in the note text. The converter takes both from `Moox\Zugferd\Contracts\ZugferdNoteLabels` (`date()` writes a Y-m-d date; the default returns it unchanged). The default, `Support\EnglishNoteLabels`, keeps the previous English strings and is bound with `bindIf` in `ZugferdServiceProvider`. Bind your own implementation to emit these labels in the invoice language:
+
+```php
+$this->app->bind(\Moox\Zugferd\Contracts\ZugferdNoteLabels::class, MyNoteLabels::class);
+```
 
 **Cross-package config:** `mail-inbox.zugferd.pdf_password` — read in `mergePdfWithXml()` only.
 
