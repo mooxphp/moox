@@ -10,6 +10,7 @@ use Moox\EBilling\Support\InvoiceDisplayNumberFormatter;
 use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\EBilling\Support\InvoiceUiPresentation;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
+use Moox\EBilling\Support\PartialDeliveries;
 use Moox\EBilling\Support\PartyAddressFormatter;
 use Moox\EBilling\Support\ReviewFieldCatalog;
 use Moox\Invoice\Models\InvoiceLine;
@@ -155,6 +156,11 @@ final class InvoiceLineViewModel
 
     private function formatValue(string $field): mixed
     {
+        $partialDeliveries = PartialDeliveries::normalize($this->line->deliveries ?? null);
+        if (in_array($field, ['delivery_date', 'delivery_note_number'], true) && count($partialDeliveries) > 1) {
+            return $this->formatPartialDeliveries($field, $partialDeliveries);
+        }
+
         $value = $this->resolveFieldValue($field);
 
         if ($value === null || $value === '') {
@@ -186,6 +192,26 @@ final class InvoiceLineViewModel
         }
 
         return is_scalar($value) ? $value : null;
+    }
+
+    /**
+     * One row per partial delivery: its date with the quantity, or its delivery note with the date.
+     *
+     * @param  list<array{date: ?string, delivery_note: ?string, quantity: ?float}>  $partialDeliveries
+     */
+    private function formatPartialDeliveries(string $field, array $partialDeliveries): string
+    {
+        return implode("\n", array_map(function (array $delivery) use ($field): string {
+            $date = $delivery['date'] !== null ? Carbon::parse($delivery['date'])->format('d.m.Y') : '—';
+
+            if ($field === 'delivery_note_number') {
+                return ($delivery['delivery_note'] ?? '—')." ({$date})";
+            }
+
+            return $delivery['quantity'] !== null
+                ? $date.' ('.InvoiceDisplayNumberFormatter::formatQuantity($delivery['quantity']).' '.$this->line->unit.')'
+                : $date;
+        }, $partialDeliveries));
     }
 
     private function resolveFieldValue(string $field): mixed

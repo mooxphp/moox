@@ -366,6 +366,7 @@ return [
     'line_item_position' => 'Position :position',
 
     // Field hints — missing
+    'hint_satisfied_by_lines' => 'Steht nicht im Kopf, sondern in jeder Position; hier die Werte der Positionen.',
     'hint_missing_invoice_number' => 'Rechnungsnummer konnte nicht aus dem Dokument gelesen werden.',
     'hint_missing_customer_number' => 'Kundennummer fehlt im Dokument.',
     'hint_missing_customer_name' => 'Kundenname konnte nicht erkannt werden.',

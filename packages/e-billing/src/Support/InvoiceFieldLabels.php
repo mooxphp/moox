@@ -217,10 +217,14 @@ final class InvoiceFieldLabels
     }
 
     /**
-     * @param  array{status?: string, matched_id?: string, reason?: string, difference?: string}|null  $validation
+     * @param  array{status?: string, source?: string, matched_id?: string, reason?: string, difference?: string}|null  $validation
      */
     public static function hint(string $field, string $status, ?array $validation = null): ?string
     {
+        if (($validation['source'] ?? null) === 'lines') {
+            return __('e-billing::fields.hint_satisfied_by_lines');
+        }
+
         if ($status === 'missing') {
             return match ($field) {
                 'invoice_number' => __('e-billing::fields.hint_missing_invoice_number'),

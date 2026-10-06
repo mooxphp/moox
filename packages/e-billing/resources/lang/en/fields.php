@@ -365,6 +365,7 @@ return [
     'line_item_position' => 'Line item :position',
 
     // Field hints — missing
+    'hint_satisfied_by_lines' => 'Not on the header but on every line; shown here are the lines\' values.',
     'hint_missing_invoice_number' => 'Invoice number could not be read from the document.',
     'hint_missing_customer_number' => 'Customer number missing in document.',
     'hint_missing_customer_name' => 'Customer name could not be recognized.',
