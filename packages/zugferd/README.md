@@ -120,7 +120,7 @@ Header, parties, totals, `lines`, `bankAccounts`, and `allowanceCharges`.
 
 ### `ZugferdInvoiceLine`
 
-`position`, `description`, `descriptionDetail`, `articleNumber`, `unitPrice`, `quantity`, `unit` / `unitCode`, `lineTotal`, `deliveryDate`, `shipToName` / `shipToAddress`, `purchaseOrderLineReference` (BT-132), `orderDocumentReference` (divergent PO document → BT-127), `deliveryNoteNumber`, `purchaseOrderDate` (line note only), `itemAttributes` (BG-32), `itemClassifications` (BT-158), `allowanceCharges`.
+`position`, `description`, `descriptionDetail`, `articleNumber`, `unitPrice`, `quantity`, `unit` / `unitCode`, `lineTotal`, `deliveryDate`, `shipToName` / `shipToAddress`, `purchaseOrderLineReference` (BT-132), `orderDocumentReference` (divergent PO document → BT-127), `deliveryNoteNumber`, `partialDeliveries` (`list<array{date, delivery_note, quantity}>`; empty for a line delivered at once), `purchaseOrderDate` (line note only), `itemAttributes` (BG-32), `itemClassifications` (BT-158), `allowanceCharges`.
 
 ### `ZugferdAddress`
 
@@ -197,11 +197,13 @@ File: `config/zugferd.php`
 
 ### Note labels (BT-127)
 
-Line notes (purchase order, order date, despatch advice, consignee) carry a text label, and the order date is written in the note text. The converter takes both from `Moox\Zugferd\Contracts\ZugferdNoteLabels` (`date()` writes a Y-m-d date; the default returns it unchanged). The default, `Support\EnglishNoteLabels`, keeps the previous English strings and is bound with `bindIf` in `ZugferdServiceProvider`. Bind your own implementation to emit these labels in the invoice language:
+Line notes (purchase order, order date, despatch advice, consignee) carry a text label, and the order date is written in the note text. The converter takes both from `Moox\Zugferd\Contracts\ZugferdNoteLabels` (`date()` writes a Y-m-d date and `quantity(float)` writes a quantity; the default returns the date unchanged and writes a quantity with up to three decimals, no trailing zeros, and `.` as separator). The default, `Support\EnglishNoteLabels`, keeps the previous English strings and is bound with `bindIf` in `ZugferdServiceProvider`. Bind your own implementation to emit these labels in the invoice language:
 
 ```php
 $this->app->bind(\Moox\Zugferd\Contracts\ZugferdNoteLabels::class, MyNoteLabels::class);
 ```
+
+**Partial deliveries.** A line with `partialDeliveries` gets a line period (BG-26) from the earliest to the latest date among the line `deliveryDate` and the partial dates. Its BT-127 note lists each part as `<despatch advice label>: <note> (<date>, <quantity> <unit>)`, joined by `; `, instead of the single despatch advice fragment. The header despatch advice (BT-16, common line delivery note) also considers the partial delivery notes, so it is omitted when they differ.
 
 **Cross-package config:** `mail-inbox.zugferd.pdf_password` — read in `mergePdfWithXml()` only.
 
