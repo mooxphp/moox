@@ -17,6 +17,11 @@ final class DocumentNoteLabels implements ZugferdNoteLabels
         return DocumentEmissionLabels::date($value);
     }
 
+    public function quantity(float $value): string
+    {
+        return DocumentEmissionLabels::quantity($value);
+    }
+
     public function purchaseOrder(): string
     {
         return DocumentEmissionLabels::note('purchase_order');

@@ -185,6 +185,7 @@ class ParsedInvoiceMapper
             line_total: $dto->lineTotal,
             delivery_date: $dto->deliveryDate,
             delivery_note_number: $dto->deliveryNoteNumber,
+            deliveries: $dto->partialDeliveries,
             order_number: $dto->orderNumber,
             order_date: $dto->orderDate,
             delivery: $dto->deliveryAddress?->toEn16931DeliveryParty(),

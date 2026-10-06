@@ -71,6 +71,17 @@ final class DocumentEmissionLabels
     }
 
     /**
+     * A quantity as written in a customer-readable note: up to three decimals, without trailing zeros,
+     * with the document locale's decimal separator (e.g. 2,5 for de).
+     */
+    public static function quantity(float $value): string
+    {
+        $separator = self::label('decimal_separator');
+
+        return rtrim(rtrim(number_format($value, 3, $separator, ''), '0'), $separator);
+    }
+
+    /**
      * Invoice field label (e-billing::fields) in the document locale, for BT-22 note prefixes.
      */
     public static function field(string $field): string
