@@ -15,6 +15,11 @@ interface ZugferdNoteLabels
      */
     public function date(string $value): string;
 
+    /**
+     * A quantity written for the note text (e.g. a partial delivery's quantity).
+     */
+    public function quantity(float $value): string;
+
     public function purchaseOrder(): string;
 
     public function orderDate(): string;

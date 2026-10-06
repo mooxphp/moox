@@ -502,17 +502,20 @@ class ZugferdConverter
     {
         $candidate = null;
         foreach ($invoice->lines as $line) {
-            $value = $line->deliveryNoteNumber !== null ? trim($line->deliveryNoteNumber) : '';
-            if ($value === '') {
-                continue;
-            }
-            if ($candidate === null) {
-                $candidate = $value;
+            $values = [$line->deliveryNoteNumber, ...array_column($line->partialDeliveries, 'delivery_note')];
+            foreach ($values as $value) {
+                $value = $value !== null ? trim($value) : '';
+                if ($value === '') {
+                    continue;
+                }
+                if ($candidate === null) {
+                    $candidate = $value;
 
-                continue;
-            }
-            if ($candidate !== $value) {
-                return null;
+                    continue;
+                }
+                if ($candidate !== $value) {
+                    return null;
+                }
             }
         }
 
@@ -606,7 +609,9 @@ class ZugferdConverter
 
         $commonDn = $this->commonLineDeliveryNoteNumber($invoice);
         $lineDn = $line->deliveryNoteNumber !== null ? trim($line->deliveryNoteNumber) : '';
-        if ($lineDn !== '' && ($commonDn === null || $lineDn !== $commonDn)) {
+        if ($line->partialDeliveries !== [] && $commonDn === null) {
+            $parts[] = $this->formatPartialDeliveriesNote($line);
+        } elseif ($lineDn !== '' && ($commonDn === null || $lineDn !== $commonDn)) {
             $parts[] = $this->noteLabels->despatchAdvice().': '.$lineDn;
         }
 
@@ -614,6 +619,22 @@ class ZugferdConverter
         if ($note !== '') {
             $doc->setDocumentPositionNote($note);
         }
+    }
+
+    /**
+     * "Despatch advice: 55667.26 (2026-09-22, 55 pcs); Despatch advice: 57532.26 (…)" for a line delivered in parts.
+     */
+    private function formatPartialDeliveriesNote(ZugferdInvoiceLine $line): string
+    {
+        return implode('; ', array_map(function (array $delivery) use ($line): string {
+            $details = array_filter([
+                $delivery['date'] !== null ? $this->noteLabels->date($delivery['date']) : null,
+                $delivery['quantity'] !== null ? trim($this->noteLabels->quantity($delivery['quantity']).' '.$line->unit) : null,
+            ]);
+            $text = trim($this->noteLabels->despatchAdvice().': '.($delivery['delivery_note'] ?? ''));
+
+            return $details !== [] ? $text.' ('.implode(', ', $details).')' : $text;
+        }, $line->partialDeliveries));
     }
 
     private function formatConsigneeNote(?string $name, ?ZugferdAddress $address): string
@@ -720,7 +741,7 @@ class ZugferdConverter
 
             $doc->addDocumentPositionTax($invoice->vatCategoryCode, 'VAT', $invoice->vatRate);
 
-            $this->setLineDeliveryDate($doc, $line->deliveryDate, $emitLineActualDelivery);
+            $this->setLineDeliveryDate($doc, $line, $emitLineActualDelivery);
             $this->emitLinePurchaseOrderLineReference($doc, $invoice, $line);
             $this->emitLineProductFacts($doc, $line);
             $this->emitLineShipToAndReferenceNotes($doc, $invoice, $line);
@@ -730,10 +751,10 @@ class ZugferdConverter
 
     private function setLineDeliveryDate(
         ZugferdDocumentBuilder $doc,
-        ?string $deliveryDate,
+        ZugferdInvoiceLine $line,
         bool $emitLineActualDelivery,
     ): void {
-        $parsed = FlexibleDateParser::parse($deliveryDate);
+        $parsed = FlexibleDateParser::parse($line->deliveryDate);
         if ($parsed === null) {
             return;
         }
@@ -744,7 +765,16 @@ class ZugferdConverter
             return;
         }
 
-        $doc->setDocumentPositionBillingPeriod($parsed, $parsed);
+        // A line delivered in parts: its period runs from the first to the last delivery.
+        $dates = array_filter([
+            $parsed,
+            ...array_map(
+                static fn (array $delivery): ?\DateTimeInterface => FlexibleDateParser::parse($delivery['date']),
+                $line->partialDeliveries,
+            ),
+        ]);
+
+        $doc->setDocumentPositionBillingPeriod(min($dates), max($dates));
     }
 
     // ─── Allowances & Charges (BG-20/BG-21) ─────────────────────

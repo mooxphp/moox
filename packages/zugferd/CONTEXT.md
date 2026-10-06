@@ -46,6 +46,8 @@ Glossary for structured e-invoice **emission** (`packages/zugferd`, `moox/zugfer
 
 - **Line delivery date** — a per-line date on the emission view. Non-EXTENDED profiles carry it as a line billing period with start and end equal to that day; EXTENDED carries line actual delivery. The **profile** selects the carrier. *Avoid:* deriving BG-14 from line dates.
 
+- **Partial delivery** — a line delivered in several parts, each with a date, delivery note and quantity (`partialDeliveries` on the line). The line period (BG-26) spans the earliest to the latest date and BT-127 lists the parts. *Avoid:* emitting one line per part; folding the dates into BG-14.
+
 ## Boundary
 
 - **In:** CII XML build from an emission view; PDF/A-3 merge with embedded XML; emission rules that must be identical for every adapter (duplicate ship-to, profile-keyed line dates, BT-23 defaults, required-field refusals).
