@@ -154,6 +154,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Extra auth models per panel (device tabs)
+    |--------------------------------------------------------------------------
+    |
+    | Admin device tabs are built from panels that register UserDevicePlugin,
+    | filtering by each panel's auth model. Add legacy or additional morph
+    | types here when needed.
+    |
+    */
+    'panel_user_types' => [],
+
+    /*
+    |--------------------------------------------------------------------------
     | Mail logo URL
     |--------------------------------------------------------------------------
     |

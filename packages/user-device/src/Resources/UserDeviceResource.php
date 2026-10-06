@@ -18,12 +18,14 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema as DbSchema;
+use Illuminate\Support\Str;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Core\Support\Resources\ScopedResourceContext;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ListPage;
+use Moox\UserDevice\Support\UserDevicePanel;
 use Override;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -133,15 +135,43 @@ class UserDeviceResource extends BaseItemResource
 
     public static function shouldShowTabsForUser(?object $user): bool
     {
-        if (! $user) {
-            return false;
+        return static::canManageDevicesAsAdmin($user);
+    }
+
+    /**
+     * Panel tabs for the admin devices list (one per UserDevicePlugin panel).
+     *
+     * @return array<string, array{label: string, icon: string, user_types: list<class-string>}>
+     */
+    public static function panelTabDefinitions(): array
+    {
+        $tabs = [];
+
+        foreach (UserDevicePanel::trackingPanelIds() as $panelId) {
+            $userTypes = UserDevicePanel::authModelsForPanel($panelId);
+
+            if ($userTypes === []) {
+                continue;
+            }
+
+            $tabs[$panelId] = [
+                'label' => Str::headline($panelId),
+                'icon' => static::iconForPanelTab($panelId),
+                'user_types' => $userTypes,
+            ];
         }
 
-        if (! static::permissionSystemAvailable()) {
-            return false;
-        }
+        return $tabs;
+    }
 
-        return static::isShieldAdmin($user);
+    protected static function iconForPanelTab(string $panelId): string
+    {
+        return match ($panelId) {
+            'admin' => 'heroicon-o-shield-check',
+            'portal' => 'heroicon-o-globe-alt',
+            'finance' => 'heroicon-o-banknotes',
+            default => 'gmdi-devices-o',
+        };
     }
 
     #[Override]

@@ -41,6 +41,71 @@ final class UserDevicePanel
         return is_array($panels) && in_array($panelId, $panels, true);
     }
 
+    /**
+     * Panel IDs that register UserDevicePlugin (tracking sources), sorted.
+     *
+     * @return list<string>
+     */
+    public static function trackingPanelIds(): array
+    {
+        if (! class_exists(Filament::class)) {
+            return [];
+        }
+
+        $ids = [];
+
+        foreach (Filament::getPanels() as $panel) {
+            if ($panel->hasPlugin('user-device')) {
+                $ids[] = $panel->getId();
+            }
+        }
+
+        sort($ids);
+
+        return $ids;
+    }
+
+    /**
+     * Auth model classes whose devices belong to this panel.
+     * Resolves the panel guard's provider model, plus optional extras from
+     * `user-device.panel_user_types.{panelId}`.
+     *
+     * @return list<class-string>
+     */
+    public static function authModelsForPanel(string $panelId): array
+    {
+        $models = [];
+
+        if (class_exists(Filament::class)) {
+            try {
+                $panel = Filament::getPanel($panelId);
+                $guard = $panel->getAuthGuard();
+                $provider = config("auth.guards.{$guard}.provider");
+                $model = is_string($provider)
+                    ? config("auth.providers.{$provider}.model")
+                    : null;
+
+                if (is_string($model) && $model !== '' && class_exists($model)) {
+                    $models[] = $model;
+                }
+            } catch (Throwable) {
+                // Panel may not exist in this app.
+            }
+        }
+
+        $extra = config("user-device.panel_user_types.{$panelId}", []);
+
+        if (is_array($extra)) {
+            foreach ($extra as $model) {
+                if (is_string($model) && $model !== '' && class_exists($model)) {
+                    $models[] = $model;
+                }
+            }
+        }
+
+        return array_values(array_unique($models));
+    }
+
     protected static function currentPanel(): ?Panel
     {
         if (! class_exists(Filament::class)) {
