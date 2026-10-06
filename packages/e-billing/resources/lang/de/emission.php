@@ -9,6 +9,7 @@ return [
     ],
     // PHP date format for dates inside customer-readable notes (stored dates are Y-m-d).
     'date_format' => 'd.m.Y',
+    'decimal_separator' => ',',
     'notes' => [
         'purchase_order' => 'Bestell-Nr.',
         'purchase_orders' => 'Bestellungen',
