@@ -156,22 +156,12 @@ class UserDeviceResource extends BaseItemResource
 
             $tabs[$panelId] = [
                 'label' => Str::headline($panelId),
-                'icon' => static::iconForPanelTab($panelId),
+                'icon' => UserDevicePanel::tabIconForPanel($panelId),
                 'user_types' => $userTypes,
             ];
         }
 
         return $tabs;
-    }
-
-    protected static function iconForPanelTab(string $panelId): string
-    {
-        return match ($panelId) {
-            'admin' => 'heroicon-o-shield-check',
-            'portal' => 'heroicon-o-globe-alt',
-            'finance' => 'heroicon-o-banknotes',
-            default => 'gmdi-devices-o',
-        };
     }
 
     #[Override]

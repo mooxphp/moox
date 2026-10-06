@@ -106,6 +106,21 @@ final class UserDevicePanel
         return array_values(array_unique($models));
     }
 
+    /**
+     * Icon for the admin devices tab of this panel.
+     * Set via `user-device.panel_tab_icons.{panelId}`; falls back to devices icon.
+     */
+    public static function tabIconForPanel(string $panelId): string
+    {
+        $fromConfig = config("user-device.panel_tab_icons.{$panelId}");
+
+        if (is_string($fromConfig) && $fromConfig !== '') {
+            return $fromConfig;
+        }
+
+        return 'gmdi-devices-o';
+    }
+
     protected static function currentPanel(): ?Panel
     {
         if (! class_exists(Filament::class)) {
