@@ -427,3 +427,67 @@ it('uses a subject_label_resolver when configured', function (): void {
 
     expect(ActivityEntryPresenter::subjectLabel($activity))->toBe('Custom subject label');
 });
+
+it('builds change rows from value_corrected activity properties', function (): void {
+    $activity = new Activity;
+    $activity->event = 'value_corrected';
+    $activity->properties = [
+        'action_type' => 'value_correction',
+        'field' => 'buyer.vat_id',
+        'previous_value' => 'DE111',
+        'corrected_value' => 'DE222',
+        'parsed_value' => 'DE000',
+        'note' => 'OCR misread',
+    ];
+    $activity->attribute_changes = null;
+
+    $rows = ActivityEntryPresenter::changeRows($activity->attribute_changes, $activity);
+
+    expect($rows)->toHaveCount(1)
+        ->and($rows[0]['field'])->toBe('Buyer Vat Id')
+        ->and($rows[0]['old'])->toBe('DE111')
+        ->and($rows[0]['new'])->toBe('DE222')
+        ->and($rows[0]['kind'])->toBe('changed')
+        ->and(ActivityEntryPresenter::changedFieldsSummary($activity->attribute_changes, activity: $activity))
+        ->toBe('Buyer Vat Id → DE222');
+});
+
+it('prefers attribute_changes over value_corrected properties when both exist', function (): void {
+    $activity = new Activity;
+    $activity->event = 'value_corrected';
+    $activity->properties = [
+        'field' => 'buyer.vat_id',
+        'previous_value' => 'DE111',
+        'corrected_value' => 'DE222',
+    ];
+    $activity->attribute_changes = [
+        'old' => ['title' => 'A'],
+        'attributes' => ['title' => 'B'],
+    ];
+
+    $rows = ActivityEntryPresenter::changeRows($activity->attribute_changes, $activity);
+
+    expect($rows)->toHaveCount(1)
+        ->and($rows[0]['field'])->toBe('Title')
+        ->and($rows[0]['new'])->toBe('B');
+});
+
+it('treats null previous_value on value_corrected as an added change', function (): void {
+    $activity = new Activity;
+    $activity->event = 'value_corrected';
+    $activity->properties = [
+        'field' => 'seller.contact.email',
+        'previous_value' => null,
+        'corrected_value' => 'a@example.com',
+    ];
+
+    $rows = ActivityEntryPresenter::changeRows(null, $activity);
+
+    expect($rows)->toHaveCount(1)
+        ->and($rows[0]['kind'])->toBe('added')
+        ->and($rows[0]['old'])->toBeNull()
+        ->and($rows[0]['new'])->toBe('a@example.com')
+        ->and(ActivityEntryPresenter::changedFieldsSummary(null, activity: $activity))
+        ->toBe('Seller Contact Email: a@example.com');
+});
+

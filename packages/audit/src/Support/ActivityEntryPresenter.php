@@ -124,45 +124,130 @@ final class ActivityEntryPresenter
             $changes = $changes->all();
         }
 
-        if (! is_array($changes)) {
+        $rows = [];
+
+        if (is_array($changes)) {
+            $modelConfig = self::modelConfigForActivity($activity);
+            $old = is_array($changes['old'] ?? null) ? $changes['old'] : [];
+            $attributes = is_array($changes['attributes'] ?? null) ? $changes['attributes'] : [];
+            $keys = array_unique([...array_keys($old), ...array_keys($attributes)]);
+
+            foreach ($keys as $key) {
+                $keyString = (string) $key;
+                $oldValue = $old[$key] ?? null;
+                $newValue = $attributes[$key] ?? null;
+
+                if ($oldValue == $newValue) {
+                    continue;
+                }
+
+                if ($oldValue !== null && $newValue !== null) {
+                    $kind = 'changed';
+                } elseif ($newValue !== null) {
+                    $kind = 'added';
+                } else {
+                    $kind = 'removed';
+                }
+
+                $oldPresented = self::presentAttributeValue($keyString, $oldValue, $modelConfig);
+                $newPresented = self::presentAttributeValue($keyString, $newValue, $modelConfig);
+
+                $rows[] = [
+                    'field' => self::fieldLabel($keyString, $modelConfig),
+                    'old' => $oldPresented['display'] ?? null,
+                    'new' => $newPresented['display'] ?? null,
+                    'kind' => $kind,
+                ];
+            }
+        }
+
+        if ($rows !== []) {
+            return $rows;
+        }
+
+        return self::changeRowsFromValueCorrection($activity);
+    }
+
+    /**
+     * Domain events such as e-billing `value_corrected` store the diff in properties
+     * (field / previous_value / corrected_value) instead of attribute_changes.
+     *
+     * @return list<array{field: string, old: ?string, new: ?string, kind: 'changed'|'added'|'removed'}>
+     */
+    private static function changeRowsFromValueCorrection(?Activity $activity): array
+    {
+        if ($activity === null) {
             return [];
         }
 
-        $modelConfig = self::modelConfigForActivity($activity);
-        $old = is_array($changes['old'] ?? null) ? $changes['old'] : [];
-        $attributes = is_array($changes['attributes'] ?? null) ? $changes['attributes'] : [];
-        $keys = array_unique([...array_keys($old), ...array_keys($attributes)]);
-        $rows = [];
+        $event = trim((string) ($activity->event ?: $activity->description ?: ''));
 
-        foreach ($keys as $key) {
-            $keyString = (string) $key;
-            $oldValue = $old[$key] ?? null;
-            $newValue = $attributes[$key] ?? null;
-
-            if ($oldValue == $newValue) {
-                continue;
-            }
-
-            if ($oldValue !== null && $newValue !== null) {
-                $kind = 'changed';
-            } elseif ($newValue !== null) {
-                $kind = 'added';
-            } else {
-                $kind = 'removed';
-            }
-
-            $oldPresented = self::presentAttributeValue($keyString, $oldValue, $modelConfig);
-            $newPresented = self::presentAttributeValue($keyString, $newValue, $modelConfig);
-
-            $rows[] = [
-                'field' => self::fieldLabel($keyString, $modelConfig),
-                'old' => $oldPresented['display'] ?? null,
-                'new' => $newPresented['display'] ?? null,
-                'kind' => $kind,
-            ];
+        if ($event !== 'value_corrected') {
+            return [];
         }
 
-        return $rows;
+        $properties = $activity->properties;
+
+        if ($properties instanceof Collection) {
+            $properties = $properties->all();
+        }
+
+        if (! is_array($properties)) {
+            return [];
+        }
+
+        $field = $properties['field'] ?? null;
+
+        if (! is_string($field) || $field === '') {
+            return [];
+        }
+
+        if (! array_key_exists('previous_value', $properties) && ! array_key_exists('corrected_value', $properties)) {
+            return [];
+        }
+
+        $oldValue = $properties['previous_value'] ?? null;
+        $newValue = $properties['corrected_value'] ?? null;
+
+        if ($oldValue == $newValue) {
+            return [];
+        }
+
+        if ($oldValue !== null && $newValue !== null) {
+            $kind = 'changed';
+        } elseif ($newValue !== null) {
+            $kind = 'added';
+        } else {
+            $kind = 'removed';
+        }
+
+        $modelConfig = self::modelConfigForActivity($activity);
+        $oldPresented = self::presentAttributeValue($field, $oldValue, $modelConfig);
+        $newPresented = self::presentAttributeValue($field, $newValue, $modelConfig);
+
+        return [[
+            'field' => self::valueCorrectionFieldLabel($field, $modelConfig),
+            'old' => $oldPresented['display'] ?? null,
+            'new' => $newPresented['display'] ?? null,
+            'kind' => $kind,
+        ]];
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $modelConfig
+     */
+    private static function valueCorrectionFieldLabel(string $field, ?array $modelConfig = null): string
+    {
+        $configured = self::resolveAttributeFieldLabel($field, $modelConfig);
+
+        if ($configured !== null) {
+            return $configured;
+        }
+
+        return Str::of($field)
+            ->replace(['_', '-', '.'], ' ')
+            ->headline()
+            ->toString();
     }
 
     /**

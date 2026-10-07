@@ -36,6 +36,7 @@ return [
     'event_updated' => 'Aktualisiert',
     'event_deleted' => 'Gelöscht',
     'event_restored' => 'Wiederhergestellt',
+    'event_value_corrected' => 'Wert korrigiert',
     'open_subject' => 'Datensatz öffnen',
     'attribute_changes_description' => 'Felder, die sich bei diesem Ereignis geändert haben.',
     'no_changes' => 'Keine Feldänderungen erfasst.',

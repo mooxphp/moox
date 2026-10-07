@@ -65,6 +65,8 @@ return [
 
     'event_restored' => 'Restored',
 
+    'event_value_corrected' => 'Value corrected',
+
     'open_subject' => 'Open record',
 
     'attribute_changes_description' => 'Fields that changed in this event.',
