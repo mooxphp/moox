@@ -9,6 +9,7 @@ use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -37,6 +38,8 @@ use Moox\EBilling\Actions\SetInvoiceAttributionAction;
 use Moox\EBilling\Actions\SetRecipientEmailAction;
 use Moox\EBilling\Approval\DocumentApprovalGuard;
 use Moox\EBilling\Approval\DocumentDispatchGuard;
+use Moox\EBilling\Contracts\DeliveryRecipientResolverInterface;
+use Moox\EBilling\Data\DeliveryRecipient;
 use Moox\EBilling\Data\SelectiveRedispatchPlan;
 use Moox\EBilling\Delivery\SelectiveRedispatchPlanner;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
@@ -46,6 +49,7 @@ use Moox\EBilling\Resources\InvoiceResource;
 use Moox\EBilling\Support\CrossCheckedFields;
 use Moox\EBilling\Support\DocumentClassificationLabels;
 use Moox\EBilling\Support\InvoiceFieldLabels;
+use Moox\EBilling\Support\RecipientOverride;
 use Moox\EBilling\Support\ReviewEditField;
 use Moox\EBilling\Support\ReviewFieldCatalog;
 use Moox\EBilling\ViewModels\InvoiceViewModel;
@@ -414,6 +418,9 @@ class ViewInvoice extends ViewRecord
                     }
 
                     $plan = $this->selectiveRedispatchPlan($document);
+                    $planner = app(SelectiveRedispatchPlanner::class);
+                    $resolvedAddresses = $this->resolvedMailRecipients($document);
+                    $overridesSelection = fn (Get $get): bool => $this->redispatchOverridesSelection($get('channels'));
 
                     return [
                         CheckboxList::make('channels')
@@ -423,13 +430,29 @@ class ViewInvoice extends ViewRecord
                             ->required()
                             ->minItems(1)
                             ->live(),
+                        TagsInput::make('recipient_override')
+                            ->label(__('e-billing::fields.redispatch_recipient_override'))
+                            ->placeholder(__('e-billing::fields.redispatch_recipient_override_placeholder'))
+                            ->helperText(__('e-billing::fields.redispatch_recipient_override_hint', [
+                                'recipients' => $resolvedAddresses === []
+                                    ? __('e-billing::fields.redispatch_override_no_resolved_recipient')
+                                    : implode(', ', $resolvedAddresses),
+                            ]))
+                            ->nestedRecursiveRules(['email'])
+                            ->visible($overridesSelection)
+                            ->live(),
                         Placeholder::make('redispatch_success_warning')
                             ->hiddenLabel()
                             ->content(fn (Get $get): HtmlString => new HtmlString(
                                 '<div class="text-sm text-warning-600 dark:text-warning-400">'
                                 .implode('<br>', array_map(
                                     static fn (string $line): string => e($line),
-                                    $this->redispatchWarningLines($plan, $this->selectedRedispatchChannels($get('channels'))),
+                                    $planner->warningLines(
+                                        $plan,
+                                        $this->selectedRedispatchChannels($get('channels')),
+                                        $overridesSelection($get) ? RecipientOverride::addresses($get('recipient_override')) : [],
+                                        $resolvedAddresses,
+                                    ),
                                 ))
                                 .'</div>'
                             ))
@@ -446,6 +469,9 @@ class ViewInvoice extends ViewRecord
                     app(QueueDocumentDeliveryAction::class)->execute(
                         $document->fresh() ?? $document,
                         $this->selectedRedispatchChannels($data['channels'] ?? []),
+                        $this->redispatchOverridesSelection($data['channels'] ?? [])
+                            ? (array) ($data['recipient_override'] ?? [])
+                            : null,
                     );
 
                     Notification::make()
@@ -724,20 +750,25 @@ class ViewInvoice extends ViewRecord
     }
 
     /**
-     * @param  list<string>  $selected
+     * Whether the selected channels include one that accepts a recipient override (ADR 0016).
+     */
+    private function redispatchOverridesSelection(mixed $channels): bool
+    {
+        return array_intersect(
+            $this->selectedRedispatchChannels($channels),
+            app(SelectiveRedispatchPlanner::class)->overridableChannelKeys(),
+        ) !== [];
+    }
+
+    /**
      * @return list<string>
      */
-    private function redispatchWarningLines(SelectiveRedispatchPlan $plan, array $selected): array
+    private function resolvedMailRecipients(EbillingDocument $document): array
     {
-        $lines = [];
-
-        foreach ($plan->warningKeys($selected) as $key) {
-            $lines[] = __('e-billing::fields.redispatch_success_warning_line', [
-                'channel' => $plan->labels[$key] ?? $key,
-            ]);
-        }
-
-        return $lines;
+        return array_values(array_unique(array_map(
+            static fn (DeliveryRecipient $recipient): string => $recipient->address,
+            app(DeliveryRecipientResolverInterface::class)->resolve($document),
+        )));
     }
 
     private function runHeaderAction(

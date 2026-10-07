@@ -460,7 +460,7 @@ return [
     'activity_escalation_level' => 'Escalation level',
     'action_redispatch_delivery' => 'Re-dispatch',
     'action_redispatch_delivery_modal_heading' => 'Re-dispatch document',
-    'action_redispatch_delivery_modal_description' => 'Choose which configured channels to queue again. Previous attempts are kept. Recipients are unchanged.',
+    'action_redispatch_delivery_modal_description' => 'Choose which configured channels to queue again. Previous attempts are kept. Mail goes to the usual recipients unless you enter a different recipient for this run.',
     'notification_redispatch_success_title' => 'Delivery queued',
     'notification_redispatch_success_body' => 'The document was queued for delivery.',
     'redispatch_channels' => 'Channels',
@@ -468,4 +468,9 @@ return [
     'delivery_channel_mail' => 'Mail',
     'delivery_channel_portal' => 'Portal',
     'redispatch_success_warning_line' => 'Channel :channel already succeeded — selecting it sends again.',
+    'redispatch_override_warning_line' => 'Channel :channel: will be sent to :override instead of :resolved.',
+    'redispatch_override_no_resolved_recipient' => 'no resolved recipient',
+    'redispatch_recipient_override' => 'Different recipient',
+    'redispatch_recipient_override_placeholder' => 'Add e-mail address',
+    'redispatch_recipient_override_hint' => 'Only for this run; master data stays unchanged. Leave empty to send to: :recipients',
 ];
