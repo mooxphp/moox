@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Moox\Audit\Models\Activity;
 use Moox\Audit\Resources\AuditResource;
@@ -75,11 +76,32 @@ class ActivitiesRelationManager extends RelationManager
                     ->toggleable(),
             ])
             ->defaultSort('created_at', 'desc')
-            ->recordUrl(fn (Activity $record): string => AuditResource::getUrl('view', ['record' => $record]))
+            ->recordUrl(fn (Activity $record): ?string => $this->auditViewUrl($record))
             ->emptyStateHeading(__('core::audit.activity_empty_heading'))
             ->emptyStateDescription(__('core::audit.activity_empty_description'))
             ->emptyStateIcon('heroicon-o-clipboard-document-list')
             ->paginated([10, 25, 50]);
+    }
+
+    /**
+     * AuditResource lives on the admin panel only. On other panels (finance,
+     * portal, …) skip the row link so the relation table still renders.
+     */
+    protected function auditViewUrl(Activity $record): ?string
+    {
+        $panelId = filament()->getCurrentPanel()?->getId();
+
+        if (! filled($panelId)) {
+            return null;
+        }
+
+        $routeName = 'filament.'.$panelId.'.resources.audits.view';
+
+        if (! Route::has($routeName)) {
+            return null;
+        }
+
+        return AuditResource::getUrl('view', ['record' => $record], panel: $panelId);
     }
 
     #[Override]

@@ -34,7 +34,12 @@ final class MooxActivityLogger
         }
 
         if (isset($options['properties']) && is_array($options['properties'])) {
-            $builder->withProperties($options['properties']);
+            $builder->withProperties(array_merge(
+                CauserResolver::impersonationProperties(),
+                $options['properties'],
+            ));
+        } elseif (($impersonation = CauserResolver::impersonationProperties()) !== []) {
+            $builder->withProperties($impersonation);
         }
 
         $causer = $options['causer'] ?? CauserResolver::resolve();
@@ -70,7 +75,10 @@ final class MooxActivityLogger
         }
 
         $changes = SensitiveAttributeGuard::maskChanges($changes);
-        $properties = self::buildProperties($subject, $config, $changes);
+        $properties = array_merge(
+            self::buildProperties($subject, $config, $changes),
+            CauserResolver::impersonationProperties(),
+        );
 
         $builder = activity($logName)
             ->event($event)

@@ -15,6 +15,7 @@ use Jenssegers\Agent\Agent;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Services\UserDeviceTracker;
 use Spatie\Permission\PermissionRegistrar;
+use STS\FilamentImpersonate\Facades\Impersonation;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -27,6 +28,10 @@ class EnsureTrustedDevice
         }
 
         if (! config('user-device.enforce_trust', true)) {
+            return $next($request);
+        }
+
+        if (class_exists(Impersonation::class) && Impersonation::isImpersonating()) {
             return $next($request);
         }
 
