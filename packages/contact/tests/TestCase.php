@@ -29,6 +29,7 @@ use Illuminate\Cookie\CookieServiceProvider;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Database\DatabaseServiceProvider;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Encryption\EncryptionServiceProvider;
 use Illuminate\Filesystem\FilesystemServiceProvider;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -37,6 +38,7 @@ use Illuminate\Pagination\PaginationServiceProvider;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Session\SessionServiceProvider;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\Translation\TranslationServiceProvider;
@@ -170,6 +172,17 @@ class TestCase extends Orchestra
         if (is_file($path)) {
             $instance = include $path;
             $instance->up();
+        }
+
+        foreach (['static_languages', 'static_countries'] as $table) {
+            if (Schema::hasTable($table)) {
+                continue;
+            }
+
+            Schema::create($table, function (Blueprint $blueprint): void {
+                $blueprint->id();
+                $blueprint->string('common_name');
+            });
         }
     }
 }
