@@ -21,6 +21,7 @@ final class InvoiceFieldLabels
             'customer_address' => __('e-billing::fields.customer_address'),
             'country' => __('e-billing::fields.country'),
             'customer_vat_id' => __('e-billing::fields.customer_vat_id'),
+            'customer_tax_number' => __('e-billing::fields.customer_tax_number'),
             'buyer_email' => __('e-billing::fields.buyer_email'),
             'customer_reference' => __('e-billing::fields.customer_reference'),
             'order_number' => __('e-billing::fields.order_number'),
@@ -223,6 +224,10 @@ final class InvoiceFieldLabels
     {
         if (($validation['source'] ?? null) === 'lines') {
             return __('e-billing::fields.hint_satisfied_by_lines');
+        }
+
+        if (($validation['source'] ?? null) === 'one_of') {
+            return __('e-billing::fields.hint_satisfied_by_alternative');
         }
 
         if ($status === 'missing') {

@@ -59,6 +59,27 @@ final class FieldValidationProfile
     }
 
     /**
+     * Groups of header fields of which one value is enough (e.g. buyer VAT id or tax number). When one
+     * member has a value, the empty members validate as not applicable; when none has, each keeps the
+     * finding its own priority gives it.
+     *
+     * @return list<list<string>>
+     */
+    public static function invoiceFieldsRequiredOneOf(?string $documentType): array
+    {
+        $groups = self::resolve('field_validation', 'fields_required_one_of', $documentType);
+
+        if (! is_array($groups)) {
+            return [];
+        }
+
+        return array_values(array_filter(
+            array_map(self::stringList(...), $groups),
+            static fn (array $group): bool => count($group) > 1,
+        ));
+    }
+
+    /**
      * @return list<string>
      */
     public static function contextualShould(?string $documentType, bool $forLines = false): array

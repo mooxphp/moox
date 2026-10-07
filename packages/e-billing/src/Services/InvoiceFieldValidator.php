@@ -95,6 +95,8 @@ class InvoiceFieldValidator
             );
         }
 
+        $invoiceValidations = $this->applyRequiredOneOfGroups($invoice, $invoiceValidations);
+
         $lineValidations = [];
         foreach ($invoice->lines as $line) {
             $lineValidations[(string) $line->getKey()] = $this->validateInvoiceLine(
@@ -809,6 +811,34 @@ class InvoiceFieldValidator
         return $this->entryForEmptyField($field, $priority, false);
     }
 
+    /**
+     * An empty member of a required-one-of group is not applicable once another member has a value.
+     *
+     * @param  array<string, array<string, mixed>>  $validations
+     * @return array<string, array<string, mixed>>
+     */
+    private function applyRequiredOneOfGroups(Invoice $invoice, array $validations): array
+    {
+        foreach (FieldValidationProfile::invoiceFieldsRequiredOneOf($this->profileDocumentType) as $group) {
+            $empty = array_filter(
+                $group,
+                fn (string $field): bool => $this->isInvoiceFieldValueEmpty($field, $this->getInvoiceFieldValue($invoice, $field)),
+            );
+
+            if (count($empty) === count($group)) {
+                continue;
+            }
+
+            foreach ($empty as $field) {
+                if (isset($validations[$field])) {
+                    $validations[$field] = ['status' => 'not_applicable', 'source' => 'one_of'];
+                }
+            }
+        }
+
+        return $validations;
+    }
+
     private function isSatisfiedByEveryLine(Invoice $invoice, string $field): bool
     {
         if (! in_array($field, FieldValidationProfile::invoiceFieldsSatisfiedByLines($this->profileDocumentType), true)
@@ -828,6 +858,7 @@ class InvoiceFieldValidator
         return match ($field) {
             'customer_name' => $invoice->buyer?->name,
             'customer_vat_id' => $invoice->buyer?->vat_id,
+            'customer_tax_number' => $invoice->buyer?->tax_number,
             'customer_address' => $invoice->buyer?->address,
             'country' => $invoice->buyer?->address?->country_code,
             'supplier_name' => $invoice->seller?->name,

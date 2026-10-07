@@ -16,6 +16,7 @@ return [
     'supplier_address' => 'Address',
     'country' => 'Country',
     'customer_vat_id' => 'VAT ID',
+    'customer_tax_number' => 'Tax number',
     'supplier_vat_id' => 'VAT ID',
     'customer_reference' => 'Customer reference',
     'order_number' => 'Order number',
@@ -366,6 +367,7 @@ return [
 
     // Field hints — missing
     'hint_satisfied_by_lines' => 'Not on the header but on every line; shown here are the lines\' values.',
+    'hint_satisfied_by_alternative' => 'Not needed: an equivalent field is present.',
     'hint_missing_invoice_number' => 'Invoice number could not be read from the document.',
     'hint_missing_customer_number' => 'Customer number missing in document.',
     'hint_missing_customer_name' => 'Customer name could not be recognized.',

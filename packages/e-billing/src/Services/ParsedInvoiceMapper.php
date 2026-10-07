@@ -215,7 +215,7 @@ class ParsedInvoiceMapper
         return $this->mapEn16931Party(
             name: $dto->customerName,
             vatId: $dto->customerVatId,
-            taxNumber: null,
+            taxNumber: $dto->customerTaxNumber,
             address: $dto->customerAddress,
             contact: null,
         );
