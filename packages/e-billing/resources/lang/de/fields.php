@@ -158,6 +158,7 @@ return [
     'banner_db_validated' => 'Automatisch vorgeprüft — Manuelle Bestätigung nötig',
     'banner_human_confirmed' => 'Manuell bestätigt — Warte auf finale Freigabe',
     'banner_validated' => '✓ Freigegeben',
+    'banner_held_for_approval' => 'Angehalten – wartet auf manuelle Freigabe (nach Neuverarbeitung)',
 
     // Tabs
     'tab_all' => 'Alle',
@@ -166,6 +167,8 @@ return [
     'tab_processing' => 'In Bearbeitung',
     'tab_needs_review' => 'Prüfung nötig',
     'tab_confirmed' => 'Bestätigt',
+    'tab_awaiting_approval' => 'Zur Freigabe',
+    'tab_sent' => 'Versendet',
     'tab_deleted' => 'Gelöscht',
     'tab_credit_notes' => 'Kaufmännische Gutschriften',
     'tab_corrected_invoices' => 'Rechnungskorrekturen',
@@ -234,6 +237,12 @@ return [
     // Approval gate
     'approval_status' => 'Freigabe',
     'approval_status_pending' => 'Freigabe ausstehend',
+    'dispatch_status' => 'Versandstatus',
+    'dispatch_status_sent' => 'Versendet',
+    'dispatch_status_delivery_failed' => 'Versand fehlgeschlagen',
+    'dispatch_status_held' => 'Angehalten',
+    'dispatch_status_awaiting_approval' => 'Wartet auf Freigabe',
+    'dispatch_status_rejected' => 'Abgelehnt',
     'approval_status_approved' => 'Zum Versand freigegeben',
     'approval_status_rejected' => 'Abgelehnt',
     'approval_reason' => 'Begründung',

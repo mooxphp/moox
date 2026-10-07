@@ -37,6 +37,7 @@ use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
 use Moox\EBilling\Actions\CreateManualUploadDocumentAction;
+use Moox\EBilling\Enums\DispatchStatus;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ListInvoices;
@@ -154,6 +155,7 @@ class InvoiceResource extends BaseItemResource
 
         return $query->with([
             'ebillingDocument',
+            'ebillingDocument.deliveryAttempts',
             'ebillingDocument.kositValidations' => fn ($query) => $query
                 ->orderByDesc('validated_at')
                 ->orderByDesc('id'),
@@ -367,6 +369,13 @@ class InvoiceResource extends BaseItemResource
                     return self::processingStatusColor($enum);
                 })
                 ->toggleable(),
+            TextColumn::make('dispatch_status')
+                ->label(__('e-billing::fields.dispatch_status'))
+                ->badge()
+                ->getStateUsing(fn (Invoice $record): ?DispatchStatus => DispatchStatus::forDocument($record->ebillingDocument))
+                ->formatStateUsing(fn (?DispatchStatus $state): string => $state?->label() ?? '—')
+                ->color(fn (?DispatchStatus $state): string => $state?->color() ?? 'gray')
+                ->toggleable(),
             TextColumn::make('created_at')
                 ->label(__('e-billing::fields.created_at'))
                 ->dateTime('d.m.Y H:i')
@@ -381,6 +390,18 @@ class InvoiceResource extends BaseItemResource
     private static function invoiceListTableFilters(): array
     {
         return [
+            SelectFilter::make('dispatch_status')
+                ->label(__('e-billing::fields.dispatch_status'))
+                ->options(collect(DispatchStatus::cases())
+                    ->mapWithKeys(fn (DispatchStatus $case): array => [$case->value => $case->label()])
+                    ->all())
+                ->query(function (Builder $query, array $data): Builder {
+                    $status = DispatchStatus::tryFrom((string) ($data['value'] ?? ''));
+
+                    return $status === null
+                        ? $query
+                        : $query->whereHas('ebillingDocument', fn ($documentQuery): Builder => $status->constrain($documentQuery));
+                }),
             SelectFilter::make('review_status')
                 ->label(__('e-billing::fields.status'))
                 ->options([
@@ -629,8 +650,23 @@ class InvoiceResource extends BaseItemResource
                 $isDeletedTab = true;
             }
 
-            if (in_array($condition['field'], ['review_status', 'gateway_status'], true)) {
+            if (in_array($condition['field'], ['review_status', 'gateway_status', 'approval_status', 'delivered'], true)) {
                 $isAllTab = false;
+            }
+
+            if ($condition['field'] === 'approval_status' && $condition['operator'] === 'in') {
+                $query->whereHas(
+                    'ebillingDocument',
+                    fn ($documentQuery) => $documentQuery->whereIn('approval_status', (array) $value),
+                );
+
+                continue;
+            }
+
+            if ($condition['field'] === 'delivered') {
+                $query->whereHas('ebillingDocument', fn ($documentQuery) => DispatchStatus::Sent->constrain($documentQuery));
+
+                continue;
             }
 
             if ($condition['field'] === 'review_status' && $condition['operator'] === 'in') {
