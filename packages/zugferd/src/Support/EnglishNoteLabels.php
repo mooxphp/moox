@@ -13,6 +13,11 @@ final class EnglishNoteLabels implements ZugferdNoteLabels
         return $value;
     }
 
+    public function quantity(float $value): string
+    {
+        return rtrim(rtrim(number_format($value, 3, '.', ''), '0'), '.');
+    }
+
     public function purchaseOrder(): string
     {
         return 'Purchase order';
