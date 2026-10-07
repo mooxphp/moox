@@ -461,7 +461,7 @@ return [
     'activity_escalation_level' => 'Eskalationsstufe',
     'action_redispatch_delivery' => 'Erneut zustellen',
     'action_redispatch_delivery_modal_heading' => 'Dokument erneut zustellen',
-    'action_redispatch_delivery_modal_description' => 'Wählen Sie, welche konfigurierten Kanäle erneut eingereiht werden sollen. Vorherige Versuche bleiben erhalten. Empfänger bleiben unverändert.',
+    'action_redispatch_delivery_modal_description' => 'Wählen Sie, welche konfigurierten Kanäle erneut eingereiht werden sollen. Vorherige Versuche bleiben erhalten. E-Mails gehen an die üblichen Empfänger, außer Sie geben für diesen Durchlauf einen abweichenden Empfänger an.',
     'notification_redispatch_success_title' => 'Zustellung eingereiht',
     'notification_redispatch_success_body' => 'Das Dokument wurde zur Zustellung eingereiht.',
     'redispatch_channels' => 'Kanäle',
@@ -469,4 +469,9 @@ return [
     'delivery_channel_mail' => 'E-Mail',
     'delivery_channel_portal' => 'Portal',
     'redispatch_success_warning_line' => 'Kanal :channel war bereits erfolgreich — erneute Auswahl stellt erneut zu.',
+    'redispatch_override_warning_line' => 'Kanal :channel: wird an :override statt an :resolved gesendet.',
+    'redispatch_override_no_resolved_recipient' => 'keinen ermittelten Empfänger',
+    'redispatch_recipient_override' => 'Abweichender Empfänger',
+    'redispatch_recipient_override_placeholder' => 'E-Mail-Adresse hinzufügen',
+    'redispatch_recipient_override_hint' => 'Nur für diesen Durchlauf; Stammdaten bleiben unverändert. Leer lassen, um zu senden an: :recipients',
 ];
