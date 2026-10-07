@@ -29,8 +29,6 @@ use Illuminate\Cookie\CookieServiceProvider;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Database\DatabaseServiceProvider;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Encryption\EncryptionServiceProvider;
 use Illuminate\Filesystem\FilesystemServiceProvider;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -39,7 +37,6 @@ use Illuminate\Pagination\PaginationServiceProvider;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Session\SessionServiceProvider;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\Translation\TranslationServiceProvider;
@@ -48,10 +45,8 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\View\ViewServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Moox\Contact\ContactServiceProvider;
-use Moox\Contact\Models\Contact;
 use Moox\Contact\Plugins\ContactPlugin;
 use Moox\Core\CoreServiceProvider;
-use Moox\DevTools\Models\TestUser;
 use Orchestra\Testbench\Attributes\WithMigration;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Pest\Livewire\InteractsWithLivewire;
@@ -84,7 +79,6 @@ class TestCase extends Orchestra
 
     protected function defineDatabaseMigrations(): void
     {
-        $this->loadDependencyMigrations();
         $this->loadPackageMigrations();
     }
 
@@ -94,16 +88,6 @@ class TestCase extends Orchestra
         $app['config']->set('database.default', 'testing');
         $app['config']->set('session.driver', 'array');
         $app['config']->set('session.lottery', [100, 100]);
-        $app['config']->set('company.taxonomies', []);
-        $app['config']->set('company.readonly', false);
-        $app['config']->set('auth.guards.contact', [
-            'driver' => 'session',
-            'provider' => 'contacts',
-        ]);
-        $app['config']->set('auth.providers.contacts', [
-            'driver' => 'eloquent',
-            'model' => Contact::class,
-        ]);
 
         $viewErrorBag = new ViewErrorBag;
         $viewErrorBag->put('default', new MessageBag);
@@ -179,43 +163,6 @@ class TestCase extends Orchestra
         ];
     }
 
-    protected function loadDependencyMigrations(): void
-    {
-        // users/session tables come from #[WithMigration('laravel', …)] and #[WithMigration('session')]
-
-        if (! Schema::hasTable('static_languages')) {
-            (new class extends Migration
-            {
-                public function up(): void
-                {
-                    Schema::create('static_languages', function (Blueprint $table): void {
-                        $table->id();
-                        $table->string('alpha2', 2);
-                        $table->string('common_name');
-                        $table->timestamps();
-                    });
-                }
-            })->up();
-        }
-
-        if (! Schema::hasTable('localizations')) {
-            (new class extends Migration
-            {
-                public function up(): void
-                {
-                    Schema::create('localizations', function (Blueprint $table): void {
-                        $table->id();
-                        $table->foreignId('language_id')->constrained('static_languages')->cascadeOnDelete();
-                        $table->string('title');
-                        $table->string('slug')->unique();
-                        $table->string('locale_variant');
-                        $table->timestamps();
-                    });
-                }
-            })->up();
-        }
-    }
-
     protected function loadPackageMigrations(): void
     {
         $path = dirname(__DIR__).'/database/migrations/create_contacts_table.php.stub';
@@ -224,29 +171,5 @@ class TestCase extends Orchestra
             $instance = include $path;
             $instance->up();
         }
-    }
-
-    protected function createTestUser(): TestUser
-    {
-        return TestUser::query()->create([
-            'name' => 'Test User',
-            'email' => 'test-'.uniqid().'@example.com',
-            'password' => bcrypt('password'),
-        ]);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    protected function sampleCompanyAttributes(): array
-    {
-        return [
-            'status' => 'draft',
-            'name' => 'Muster GmbH',
-            'display_name' => 'Muster GmbH',
-            'company_type' => 'customer',
-            'default_currency_code' => 'EUR',
-            'is_active' => true,
-        ];
     }
 }

@@ -20,54 +20,56 @@ beforeEach(function (): void {
     ]));
 });
 
-it('can render the company list page', function (): void {
+it('can render the contact list page', function (): void {
     livewire(ListContacts::class)->assertSuccessful();
 });
 
 it('can render table columns for contacts', function (): void {
     livewire(ListContacts::class)
+        ->assertTableColumnExists('name_1')
         ->assertTableColumnExists('display_name')
-        ->assertTableColumnExists('contact_type')
-        ->assertTableColumnExists('status');
+        ->assertTableColumnExists('is_active');
 });
 
 it('create form contains expected contact fields', function (): void {
     livewire(CreateContact::class)
         ->assertFormExists('form')
-        ->assertFormFieldExists('first_name', 'form')
-        ->assertFormFieldExists('last_name', 'form')
-        ->assertFormFieldExists('contact_type', 'form');
+        ->assertFormFieldExists('name_1', 'form')
+        ->assertFormFieldExists('name_2', 'form')
+        ->assertFormFieldExists('external_reference', 'form');
 });
 
 it('can create a contact via filament', function (): void {
     livewire(CreateContact::class)
         ->fillForm([
-            'first_name' => 'Max',
-            'last_name' => 'Mustermann',
-            'display_name' => 'Max Mustermann',
-            'status' => 'draft',
-            'contact_type' => 'external',
-            'gender' => 'unknown',
+            'name_1' => 'Muster GmbH',
+            'name_2' => 'Nord',
+            'is_active' => true,
         ], 'form')
         ->call('create')
         ->assertHasNoFormErrors();
 
-    expect(Contact::query()->where('display_name', 'Max Mustermann')->exists())->toBeTrue();
+    $contact = Contact::query()->where('name_1', 'Muster GmbH')->first();
+
+    expect($contact)->not->toBeNull()
+        ->and($contact->display_name)->toBe('Muster GmbH Nord')
+        ->and($contact->created_by_id)->toBeInt();
 });
 
 it('can edit an existing contact via filament', function (): void {
     $contact = Contact::factory()->create([
-        'display_name' => 'Max Mustermann',
-        'status' => 'draft',
-        'contact_type' => 'external',
+        'name_1' => 'Muster GmbH',
+        'name_2' => null,
+        'name_3' => null,
     ]);
 
     livewire(EditContact::class, ['record' => $contact->getKey()])
         ->fillForm([
-            'display_name' => 'New Name',
+            'name_1' => 'Neue GmbH',
         ], 'form')
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($contact->fresh()->display_name)->toBe('New Name');
+    expect($contact->fresh()?->name_1)->toBe('Neue GmbH')
+        ->and($contact->fresh()?->display_name)->toBe('Neue GmbH');
 });

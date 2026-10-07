@@ -4,97 +4,61 @@ declare(strict_types=1);
 
 namespace Moox\Contact\Models;
 
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Models\Contracts\HasName;
-use Filament\Panel;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Foundation\Auth\Access\Authorizable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Laravel\Sanctum\HasApiTokens;
 use Moox\Contact\Database\Factories\ContactFactory;
-use Moox\Core\Entities\Items\Record\BaseRecordModel;
-use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
-use Moox\Data\Models\StaticLanguage;
 
-/**
- * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany<Model, $this> companies()
- * @method \Illuminate\Database\Eloquent\Relations\MorphToMany<Model, $this> addresses()
- * @method \Illuminate\Database\Eloquent\Relations\MorphToMany<Model, $this> address()
- */
-class Contact extends BaseRecordModel implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, FilamentUser, HasName
+class Contact extends Model
 {
     /** @use HasFactory<ContactFactory> */
-    use Authenticatable;
-
-    use Authorizable;
-    use CanResetPassword;
-    use HasApiTokens;
     use HasFactory;
-    use HasModelTaxonomy;
-    use HasUuids;
-    use Notifiable;
+
+    use SoftDeletes;
 
     protected $table = 'contacts';
 
-    protected $keyType = 'string';
-
-    public $incrementing = false;
-
+    /**
+     * @var list<string>
+     */
     protected $fillable = [
-        'status',
-        'gender',
-        'salutation_code',
-        'academic_title',
-        'first_name',
-        'last_name',
-        'display_name',
-        'job_title',
-        'email',
-        'username',
-        'email_verified_at',
-        'password',
-        'phone',
-        'mobile',
-        'language_id',
-        'contact_type',
+        'is_active',
+        'name_1',
+        'name_2',
+        'name_3',
         'note',
         'external_reference',
-        'is_active',
-        'data',
-        // Needed so transform field_map can persist soft-deletes via mass assignment.
+        'external_info',
+        'external_status',
+        'language_id',
+        'country_id',
+        'organization_type_id',
+        'legal_form_id',
+        'data_json',
+        'created_by_id',
+        'created_by_type',
+        'updated_by_id',
+        'updated_by_type',
+        'archived_at',
+        'archived_by_id',
+        'archived_by_type',
         'deleted_at',
+        'deleted_by_id',
+        'deleted_by_type',
+        'restored_at',
+        'restored_by_id',
+        'restored_by_type',
     ];
 
-    protected $hidden = [
-        'password',
-        'remember_token',
+    /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'is_active' => true,
+        'data_json' => '{}',
     ];
-
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'data' => 'array',
-            'language_id' => 'integer',
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_active' => 'boolean',
-        ];
-    }
-
-    public static function getResourceName(): string
-    {
-        return 'contact';
-    }
 
     public static function newFactory(): ContactFactory
     {
@@ -102,68 +66,70 @@ class Contact extends BaseRecordModel implements AuthenticatableContract, Author
     }
 
     /**
-     * @return BelongsTo<StaticLanguage, $this>
+     * @return array<string, string>
      */
-    public function language(): BelongsTo
+    protected function casts(): array
     {
-        return $this->belongsTo(StaticLanguage::class, 'language_id');
-    }
-
-    public function displayLabel(): string
-    {
-        $displayName = trim((string) ($this->display_name ?? ''));
-        if ($displayName !== '' && ! Str::isUuid($displayName)) {
-            return $displayName;
-        }
-
-        $name = trim(implode(' ', array_filter([$this->first_name, $this->last_name])));
-
-        if ($name !== '') {
-            return $name;
-        }
-
-        if (filled($this->email)) {
-            return (string) $this->email;
-        }
-
-        $username = trim((string) ($this->username ?? ''));
-        if ($username !== '' && ! Str::isUuid($username)) {
-            return $username;
-        }
-
-        return '';
-    }
-
-    public function canAuthenticate(): bool
-    {
-        return filled($this->username) && filled($this->getAuthPassword());
-    }
-
-    public function canAccessPanel(Panel $panel): bool
-    {
-        if (! $this->canAuthenticate() || ! $this->is_active) {
-            return false;
-        }
-
-        // Contacts authenticate for portal panels, not the admin panel.
-        return $panel->getId() !== 'admin';
-    }
-
-    public function getFilamentName(): string
-    {
-        return $this->displayLabel();
+        return [
+            'is_active' => 'boolean',
+            'data_json' => 'array',
+            'language_id' => 'integer',
+            'country_id' => 'integer',
+            'organization_type_id' => 'integer',
+            'legal_form_id' => 'integer',
+            'created_by_id' => 'integer',
+            'updated_by_id' => 'integer',
+            'archived_by_id' => 'integer',
+            'deleted_by_id' => 'integer',
+            'restored_by_id' => 'integer',
+            'archived_at' => 'datetime',
+            'restored_at' => 'datetime',
+        ];
     }
 
     protected static function booted(): void
     {
-        static::saving(function (Contact $contact): void {
-            if ($contact->display_name === null || $contact->display_name === '') {
-                $generated = trim(implode(' ', array_filter([$contact->first_name, $contact->last_name])));
+        static::creating(function (Contact $contact): void {
+            if (! filled($contact->ulid)) {
+                $contact->ulid = (string) Str::ulid();
+            }
 
-                if ($generated !== '') {
-                    $contact->display_name = $generated;
+            if (! filled($contact->uuid)) {
+                $contact->uuid = (string) Str::uuid();
+            }
+
+            $user = Auth::user();
+
+            if ($contact->created_by_id === null && $user !== null) {
+                $contact->created_by_id = (int) $user->getAuthIdentifier();
+                $contact->created_by_type = $user::class;
+            }
+
+            if ($contact->updated_by_id === null) {
+                $contact->updated_by_id = $contact->created_by_id;
+                $contact->updated_by_type = $contact->created_by_type;
+            }
+        });
+
+        static::updating(function (Contact $contact): void {
+            foreach (['ulid', 'uuid', 'created_at', 'created_by_id', 'created_by_type'] as $attribute) {
+                if ($contact->isDirty($attribute)) {
+                    $contact->setAttribute($attribute, $contact->getOriginal($attribute));
                 }
             }
+
+            $user = Auth::user();
+
+            if ($user !== null) {
+                $contact->updated_by_id = (int) $user->getAuthIdentifier();
+                $contact->updated_by_type = $user::class;
+            }
+        });
+
+        static::saved(function (Contact $contact): void {
+            $displayName = $contact->newQuery()->whereKey($contact->getKey())->value('display_name');
+            $contact->display_name = is_string($displayName) ? $displayName : null;
+            $contact->syncOriginalAttribute('display_name');
         });
     }
 }

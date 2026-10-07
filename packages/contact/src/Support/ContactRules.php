@@ -4,35 +4,51 @@ declare(strict_types=1);
 
 namespace Moox\Contact\Support;
 
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
+
 final class ContactRules
 {
-    /** @return array<string, list<string>> */
+    /**
+     * @return array<string, list<string|ValidationRule>>
+     */
     public static function rules(): array
     {
         return [
-            'status' => ['required', 'string', 'max:30', 'in:'.implode(',', config('contact.statuses', ['draft']))],
-            'gender' => ['required', 'string', 'max:20', 'in:'.implode(',', config('contact.genders', ['unknown']))],
-            'salutation_code' => ['nullable', 'string', 'max:30'],
-            'academic_title' => ['nullable', 'string', 'max:80'],
-            'first_name' => ['nullable', 'string', 'max:80'],
-            'last_name' => ['nullable', 'string', 'max:80'],
-            'display_name' => ['nullable', 'string', 'max:160'],
-            'job_title' => ['nullable', 'string', 'max:120'],
-            'email' => ['nullable', 'string', 'max:120', 'email'],
-            'username' => ['nullable', 'string', 'max:120'],
-            'password' => ['nullable', 'string', 'min:8'],
-            'phone' => ['nullable', 'string', 'max:30'],
-            'mobile' => ['nullable', 'string', 'max:30'],
-            'language_id' => ['nullable', 'integer', 'exists:static_languages,id'],
-            'contact_type' => ['required', 'string', 'max:30', 'in:'.implode(',', config('contact.contact_types', ['external']))],
-            'note' => ['nullable', 'string'],
-            'external_reference' => ['nullable', 'string', 'max:100'],
             'is_active' => ['boolean'],
-            'data' => ['nullable', 'array'],
+            'name_1' => ['required', 'string', 'max:255'],
+            'name_2' => ['nullable', 'string', 'max:255'],
+            'name_3' => ['nullable', 'string', 'max:255'],
+            'note' => ['nullable', 'string'],
+            'external_reference' => ['nullable', 'string', 'max:255'],
+            'external_info' => ['nullable', 'string', 'max:255'],
+            'external_status' => ['nullable', 'string', 'max:255'],
+            'language_id' => ['nullable', 'integer'],
+            'country_id' => ['nullable', 'integer'],
+            'organization_type_id' => ['nullable', 'integer'],
+            'legal_form_id' => ['nullable', 'integer'],
+            'data_json' => [
+                'nullable',
+                new class implements ValidationRule
+                {
+                    public function validate(string $attribute, mixed $value, Closure $fail): void
+                    {
+                        if ($value === null || $value === '' || is_array($value)) {
+                            return;
+                        }
+
+                        if (! is_string($value) || ! json_validate($value)) {
+                            $fail(__('contact::fields.data_json_invalid'));
+                        }
+                    }
+                },
+            ],
         ];
     }
 
-    /** @return list<string> */
+    /**
+     * @return list<string|ValidationRule>
+     */
     public static function for(string $field): array
     {
         return self::rules()[$field] ?? [];

@@ -19,57 +19,31 @@ class ContactFactory extends Factory
      */
     public function definition(): array
     {
-        $firstName = fake()->firstName();
-        $lastName = fake()->lastName();
-
         return [
-            'status' => fake()->randomElement(config('contact.statuses', ['draft', 'active'])),
-            'gender' => fake()->randomElement(config('contact.genders', ['unknown'])),
-            'salutation_code' => fake()->optional()->randomElement(['mr', 'mrs', 'ms', 'mx', 'none']),
-            'first_name' => $firstName,
-            'last_name' => $lastName,
-            'display_name' => trim($firstName.' '.$lastName),
-            'academic_title' => fake()->optional(0.1)->randomElement(['Dr.', 'Prof.']),
-            'job_title' => fake()->optional(0.6)->jobTitle(),
-            'note' => fake()->optional(0.2)->sentence(),
-            'external_reference' => fake()->optional(0.3)->bothify('EXT-####'),
-            'phone' => fake()->optional(0.7)->phoneNumber(),
-            'mobile' => fake()->optional(0.7)->phoneNumber(),
-            'email' => fake()->optional(0.8)->safeEmail(),
-            'username' => null,
-            'email_verified_at' => null,
-            'password' => null,
-            'contact_type' => fake()->randomElement(config('contact.contact_types', ['external'])),
-            'language_id' => null,
             'is_active' => true,
-            'data' => null,
+            'name_1' => fake()->company(),
+            'name_2' => fake()->optional()->company(),
+            'name_3' => fake()->optional()->lastName(),
+            'note' => fake()->optional()->sentence(),
+            'external_reference' => fake()->optional()->bothify('EXT-####'),
+            'external_info' => fake()->optional()->sentence(),
+            'external_status' => null,
+            'language_id' => null,
+            'country_id' => null,
+            'organization_type_id' => null,
+            'legal_form_id' => null,
+            'data_json' => [],
+            'created_by_id' => 1,
+            'created_by_type' => 'factory',
+            'updated_by_id' => 1,
+            'updated_by_type' => 'factory',
         ];
-    }
-
-    public function draft(): static
-    {
-        return $this->state(fn (): array => [
-            'status' => 'draft',
-        ]);
     }
 
     public function inactive(): static
     {
         return $this->state(fn (): array => [
             'is_active' => false,
-            'status' => 'inactive',
-        ]);
-    }
-
-    public function authenticatable(string $password = 'password'): static
-    {
-        return $this->state(fn (): array => [
-            'status' => 'active',
-            'is_active' => true,
-            'email' => fake()->unique()->safeEmail(),
-            'username' => fake()->unique()->userName(),
-            'email_verified_at' => now(),
-            'password' => $password,
         ]);
     }
 }
