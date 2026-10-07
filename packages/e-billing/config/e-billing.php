@@ -1342,10 +1342,19 @@ return [
     | only creates EbillingDocuments for those Scopes. Other PDF attachments are marked
     | Skipped (still visible in the inbox UI). null or [] = all Scopes (backwards compatible).
     |
+    | Intake cutoff: when invoice_date_from is set (Y-m-d), a mail-sourced document whose
+    | parsed invoice date (BT-2) lies before that day is not converted. It ends as
+    | IgnoredBeforeCutoff and the inbox message is settled Ignored. The cutoff day itself is
+    | processed; a missing or unparseable invoice date is never ignored; manual uploads are
+    | exempt. before_cutoff_disposition: ignore (default) | forward (Source-PDF relay to
+    | inbox To before settling, same as the foreign disposition). Empty = off.
+    |
     */
 
     'intake' => [
         'scopes' => null,
+        'invoice_date_from' => env('EBILLING_INTAKE_INVOICE_DATE_FROM'),
+        'before_cutoff_disposition' => env('EBILLING_INTAKE_BEFORE_CUTOFF_DISPOSITION', 'ignore'),
     ],
 
     /*
@@ -1570,6 +1579,7 @@ return [
                         'validation_failed',
                         'validator_error',
                         'ignored_foreign',
+                        'ignored_before_cutoff',
                         'ignored_identical_duplicate',
                     ],
                     'review_status' => [
