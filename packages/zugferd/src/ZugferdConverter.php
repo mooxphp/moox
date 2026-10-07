@@ -349,6 +349,9 @@ class ZugferdConverter
 
         if ($invoice->customerVatId) {
             $doc->addDocumentBuyerTaxRegistration('VA', $invoice->customerVatId);
+        } elseif ($invoice->customerTaxNumber) {
+            // No EN 16931 term for the buyer's tax number; the CII schema allows FC on the buyer and KoSIT ignores it.
+            $doc->addDocumentBuyerTaxRegistration('FC', $invoice->customerTaxNumber);
         }
 
         $doc->setDocumentBuyerCommunication('EM', $invoice->customerNumber ?: 'N/A');
