@@ -28,6 +28,9 @@ interface ZugferdInvoice
 
     public ?string $customerVatId { get; }
 
+    /** Buyer's national tax number; no EN 16931 term, written as buyer FC registration when there is no VAT id. */
+    public ?string $customerTaxNumber { get; }
+
     public string $supplierName { get; }
 
     public ?ZugferdAddress $supplierAddress { get; }
