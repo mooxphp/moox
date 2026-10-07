@@ -1,6 +1,6 @@
 {
     "name": "moox/contact",
-    "description": "Contact is a Moox Entity for ERP-style person records linked to companies and addresses via pivots.",
+    "description": "Contact records.",
     "keywords": [
         "Moox",
         "Laravel",
@@ -20,10 +20,7 @@
         }
     ],
     "require": {
-        "laravel/sanctum": "^4.0",
-        "moox/core": "dev-main",
-        "moox/data": "dev-main",
-        "moox/company": "dev-main"
+        "moox/core": "dev-main"
     },
     "autoload": {
         "psr-4": {
@@ -55,7 +52,7 @@
     },
     "scripts": {
         "test": [
-            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/Unit tests/Feature"
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/Feature"
         ],
         "test:arch": [
             "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/ArchTest.php"

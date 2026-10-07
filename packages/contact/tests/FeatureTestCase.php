@@ -9,12 +9,4 @@ use Pest\Livewire\InteractsWithLivewire;
 abstract class FeatureTestCase extends TestCase
 {
     use InteractsWithLivewire;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        config()->set('company.taxonomies', []);
-        config()->set('company.readonly', false);
-    }
 }
