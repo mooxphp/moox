@@ -109,6 +109,7 @@ return [
     'gateway_status_validation_failed' => 'Validation failed',
     'gateway_status_validator_error' => 'Validator error',
     'gateway_status_ignored_foreign' => 'Ignored (foreign)',
+    'gateway_status_ignored_before_cutoff' => 'Ignored (before cutoff)',
     'gateway_status_ignored_identical_duplicate' => 'Ignored (identical file)',
 
     // Validation badges

@@ -15,7 +15,7 @@ use Moox\MailInbox\Models\InboxAttachment;
 use Moox\MailInbox\Models\InboxMessage;
 
 /**
- * Source-PDF relay for foreign invoices (ADR 0006).
+ * Source-PDF relay for foreign invoices (ADR 0006) and for invoices dated before the intake cutoff.
  * Not e-invoice delivery — no approval, no Artifact.
  */
 final class RelayForeignSourcePdfAction

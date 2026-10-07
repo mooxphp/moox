@@ -36,7 +36,7 @@ The pipeline then runs in order:
 | --- | --- | --- |
 | 1 | `ProcessInboxAttachmentListener` | Creates or finds an `EbillingDocument` for the attachment and dispatches `StoreBillDataJob`. Honours optional `e-billing.intake.scopes` allowlist (non-listed Scopes → attachment Skipped). |
 | 2 | `StoreBillDataJob` | Reads parsed `bill_data` on the document (populated upstream by the host parser) and dispatches `FilterForeignInvoiceJob`. |
-| 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign invoices. Foreign disposition (`e-billing.foreign.disposition`): `ignore` (default) settles as `Ignored` / `IgnoredForeign`; `forward` runs Source-PDF relay to inbox To then settles the same way (ADR 0006). Domestic invoices advance to artifact generation. |
+| 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign invoices. Foreign disposition (`e-billing.foreign.disposition`): `ignore` (default) settles as `Ignored` / `IgnoredForeign`; `forward` runs Source-PDF relay to inbox To then settles the same way (ADR 0006). Domestic invoices advance to artifact generation, unless the **intake cutoff** (`e-billing.intake.invoice_date_from`, `Y-m-d`) applies: a mail-sourced invoice whose parsed invoice date (BT-2) lies before that day settles as `Ignored` / `IgnoredBeforeCutoff`, after a Source-PDF relay when `e-billing.intake.before_cutoff_disposition` is `forward` (default `ignore`). The cutoff day is processed; a missing or unparseable invoice date, foreign invoices and manual uploads are not affected. An invalid date value throws. |
 | 4 | `GenerateArtifactJob` | Maps `bill_data` to a persisted `Invoice` once (only when the document has none yet; later runs use the existing Invoice rows), generates the format-specific artifact (XML only or hybrid PDF with embedded XML), runs field validation, and dispatches `ValidateArtifactJob`. |
 | 5 | `ValidateArtifactJob` | Runs KoSIT validation on the XML that will be delivered (loose XML or XML extracted from the hybrid PDF). For hybrid formats, also runs veraPDF PDF/A-3 validation. A hybrid passes only when both succeed; if veraPDF is missing the document is retained and flagged, never `Validated`. On pass, stores a SHA-256 hash of the deliverable. |
 
@@ -133,6 +133,8 @@ EBILLING_DOCUMENT_LOCALE=en
 | `EBILLING_DELIVERY_ENABLED` | `delivery.enabled` | `false` | No |
 | `EBILLING_DELIVERY_MAILER` | `delivery.mailer` | `null` | No |
 | `EBILLING_FOREIGN_DISPOSITION` | `foreign.disposition` | `ignore` | No |
+| `EBILLING_INTAKE_INVOICE_DATE_FROM` | `intake.invoice_date_from` | `null` (off) | No |
+| `EBILLING_INTAKE_BEFORE_CUTOFF_DISPOSITION` | `intake.before_cutoff_disposition` | `ignore` | No |
 | `EBILLING_DELIVERY_RECIPIENTS_MAIL_SOURCE` | `delivery.recipients.mail_source` | `inbox_to` | No |
 | `EBILLING_DELIVERY_RECIPIENTS_MANUAL_UPLOAD` | `delivery.recipients.manual_upload` | `none` | No |
 

@@ -16,6 +16,7 @@ use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\ForeignDisposition;
 use Moox\EBilling\Enums\InvoiceOriginRule;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\IntakeCutoff;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
 use Moox\MailInbox\Enums\SettlementOutcome;
@@ -28,7 +29,8 @@ use Throwable;
 /**
  * After PDF parsing, classifies domestic vs. foreign invoice; foreign invoices are settled as
  * Ignored on the inbox driver and marked {@see EBillingAttachmentProcessingStatus::IgnoredForeign}
- * without persisting an e-billing {@see Invoice} record.
+ * without persisting an e-billing {@see Invoice} record. Domestic mail-sourced invoices dated before
+ * the {@see IntakeCutoff} take the same path as {@see EBillingAttachmentProcessingStatus::IgnoredBeforeCutoff}.
  */
 final class FilterForeignInvoiceJob implements ShouldQueue
 {
@@ -98,7 +100,10 @@ final class FilterForeignInvoiceJob implements ShouldQueue
             return;
         }
 
-        if ($document->gateway_status === EBillingAttachmentProcessingStatus::IgnoredForeign) {
+        if (in_array($document->gateway_status, [
+            EBillingAttachmentProcessingStatus::IgnoredForeign,
+            EBillingAttachmentProcessingStatus::IgnoredBeforeCutoff,
+        ], true)) {
             $this->setProgress(100);
 
             return;
@@ -161,19 +166,70 @@ final class FilterForeignInvoiceJob implements ShouldQueue
 
         $this->setProgress(40);
 
+        $cutoff = IntakeCutoff::fromConfig();
+
         $classification = $this->classifyInvoiceOrigin($billData);
-        if (! $classification['is_foreign']) {
-            $this->dispatchGenerateArtifact($document);
+        if ($classification['is_foreign']) {
+            $this->setProgress(60);
+
+            $country = $classification['country'];
+            $matchedRule = $classification['matched_rule']->value;
+            $disposition = ForeignDisposition::fromConfig();
+
+            $this->settleIgnored($drivers, $document, $attachment, $message, $disposition, EBillingAttachmentProcessingStatus::IgnoredForeign, [
+                'country' => $country,
+                'matched_rule' => $matchedRule,
+            ]);
+
+            Log::info(
+                'Foreign invoice '.$disposition->value.': attachment=#'.$attachment->id.' country='
+                    .($country ?? 'null')
+                    .' matched_rule='.$matchedRule
+            );
+
             $this->setProgress(100);
 
             return;
         }
 
-        $this->setProgress(60);
+        $cutoffReason = $cutoff?->ignoredReason($billData);
+        if ($cutoff !== null && $cutoffReason !== null) {
+            $this->setProgress(60);
 
-        $country = $classification['country'];
-        $matchedRule = $classification['matched_rule']->value;
+            $disposition = $cutoff->disposition();
 
+            $this->settleIgnored($drivers, $document, $attachment, $message, $disposition, EBillingAttachmentProcessingStatus::IgnoredBeforeCutoff, $cutoffReason);
+
+            Log::info(
+                'Invoice before intake cutoff '.$disposition->value.': attachment=#'.$attachment->id
+                    .' invoice_date='.$cutoffReason['invoice_date']
+                    .' invoice_date_from='.$cutoffReason['invoice_date_from']
+            );
+
+            $this->setProgress(100);
+
+            return;
+        }
+
+        $this->dispatchGenerateArtifact($document);
+        $this->setProgress(100);
+    }
+
+    /**
+     * Relay the source PDF when the disposition asks for it, settle the inbox message as Ignored,
+     * and end the document in the given ignored gateway status without an Invoice or Artifact.
+     *
+     * @param  array<string, mixed>  $reason
+     */
+    private function settleIgnored(
+        InboxDriverManager $drivers,
+        EbillingDocument $document,
+        InboxAttachment $attachment,
+        InboxMessage $message,
+        ForeignDisposition $disposition,
+        EBillingAttachmentProcessingStatus $status,
+        array $reason,
+    ): void {
         $externalId = $message->external_id;
         if ($externalId === null || $externalId === '') {
             throw new RuntimeException(
@@ -181,7 +237,6 @@ final class FilterForeignInvoiceJob implements ShouldQueue
             );
         }
 
-        $disposition = ForeignDisposition::fromConfig();
         if ($disposition === ForeignDisposition::Forward) {
             $outcome = app(RelayForeignSourcePdfAction::class)->execute($document);
             if (! RelayForeignSourcePdfAction::isTerminal($outcome)) {
@@ -195,32 +250,19 @@ final class FilterForeignInvoiceJob implements ShouldQueue
         $drivers->mailbox((string) ($message->scope ?? 'default'))
             ->settle($externalId, SettlementOutcome::Ignored);
 
-        DB::transaction(function () use ($attachment, $document, $country, $matchedRule): void {
-            $ignoredReason = [
-                'country' => $country,
-                'matched_rule' => $matchedRule,
+        DB::transaction(function () use ($attachment, $document, $status, $reason): void {
+            $document->ignored_reason = [
+                ...$reason,
                 'classified_at' => now()->utc()->toIso8601String(),
             ];
-
-            if ($document !== null) {
-                $document->ignored_reason = $ignoredReason;
-                $document->gateway_status = EBillingAttachmentProcessingStatus::IgnoredForeign;
-                $document->save();
-            }
+            $document->gateway_status = $status;
+            $document->save();
 
             $attachment->error_message = null;
             $attachment->markAsSkipped();
         });
 
-        Log::info(
-            'Foreign invoice '.$disposition->value.': attachment=#'.$attachment->id.' country='
-                .($country ?? 'null')
-                .' matched_rule='.$matchedRule
-        );
-
         $this->maybeMarkInboxMessageProcessedIfAllPdfAttachmentsTerminal($message->fresh());
-
-        $this->setProgress(100);
     }
 
     /**
