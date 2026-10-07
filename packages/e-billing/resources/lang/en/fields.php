@@ -158,6 +158,7 @@ return [
     'banner_db_validated' => 'Automatically pre-reviewed — manual confirmation needed',
     'banner_human_confirmed' => 'Manually confirmed — awaiting final approval',
     'banner_validated' => '✓ Approved',
+    'banner_held_for_approval' => 'Held – waits for a manual approval (after re-processing)',
 
     // Tabs
     'tab_all' => 'All',
@@ -166,6 +167,8 @@ return [
     'tab_processing' => 'Processing',
     'tab_needs_review' => 'Review needed',
     'tab_confirmed' => 'Confirmed',
+    'tab_awaiting_approval' => 'Awaiting approval',
+    'tab_sent' => 'Sent',
     'tab_deleted' => 'Deleted',
     'tab_credit_notes' => 'Credit notes',
     'tab_corrected_invoices' => 'Corrected invoices',
@@ -233,6 +236,12 @@ return [
     // Approval gate
     'approval_status' => 'Approval',
     'approval_status_pending' => 'Awaiting approval',
+    'dispatch_status' => 'Dispatch status',
+    'dispatch_status_sent' => 'Sent',
+    'dispatch_status_delivery_failed' => 'Delivery failed',
+    'dispatch_status_held' => 'Held',
+    'dispatch_status_awaiting_approval' => 'Awaiting approval',
+    'dispatch_status_rejected' => 'Rejected',
     'approval_status_approved' => 'Approved for dispatch',
     'approval_status_rejected' => 'Rejected',
     'approval_reason' => 'Reason',
