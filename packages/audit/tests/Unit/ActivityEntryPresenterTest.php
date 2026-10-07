@@ -490,4 +490,3 @@ it('treats null previous_value on value_corrected as an added change', function 
         ->and(ActivityEntryPresenter::changedFieldsSummary(null, activity: $activity))
         ->toBe('Seller Contact Email: a@example.com');
 });
-
