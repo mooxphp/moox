@@ -7,15 +7,19 @@ namespace Moox\Contact\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use Moox\Contact\Database\Factories\ContactFactory;
+use Moox\Core\Traits\Relations\HasRelations;
+use Moox\Support\Audit\HasAudit;
+use Moox\Support\Identity\HasIdentifier;
 
 class Contact extends Model
 {
     /** @use HasFactory<ContactFactory> */
-    use HasFactory;
+    use HasAudit;
 
+    use HasFactory;
+    use HasIdentifier;
+    use HasRelations;
     use SoftDeletes;
 
     protected $table = 'contacts';
@@ -65,6 +69,11 @@ class Contact extends Model
         return ContactFactory::new();
     }
 
+    public static function getResourceName(): string
+    {
+        return 'contact';
+    }
+
     /**
      * @return array<string, string>
      */
@@ -89,43 +98,6 @@ class Contact extends Model
 
     protected static function booted(): void
     {
-        static::creating(function (Contact $contact): void {
-            if (! filled($contact->ulid)) {
-                $contact->ulid = (string) Str::ulid();
-            }
-
-            if (! filled($contact->uuid)) {
-                $contact->uuid = (string) Str::uuid();
-            }
-
-            $user = Auth::user();
-
-            if ($contact->created_by_id === null && $user !== null) {
-                $contact->created_by_id = (int) $user->getAuthIdentifier();
-                $contact->created_by_type = $user::class;
-            }
-
-            if ($contact->updated_by_id === null) {
-                $contact->updated_by_id = $contact->created_by_id;
-                $contact->updated_by_type = $contact->created_by_type;
-            }
-        });
-
-        static::updating(function (Contact $contact): void {
-            foreach (['ulid', 'uuid', 'created_at', 'created_by_id', 'created_by_type'] as $attribute) {
-                if ($contact->isDirty($attribute)) {
-                    $contact->setAttribute($attribute, $contact->getOriginal($attribute));
-                }
-            }
-
-            $user = Auth::user();
-
-            if ($user !== null) {
-                $contact->updated_by_id = (int) $user->getAuthIdentifier();
-                $contact->updated_by_type = $user::class;
-            }
-        });
-
         static::saved(function (Contact $contact): void {
             $displayName = $contact->newQuery()->whereKey($contact->getKey())->value('display_name');
             $contact->display_name = is_string($displayName) ? $displayName : null;
