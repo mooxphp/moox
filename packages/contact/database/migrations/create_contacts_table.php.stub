@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -11,37 +12,55 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('contacts', function (Blueprint $table): void {
-            $table->uuid('id')->primary();
-            $table->string('status', 30)->default('draft')->index();
-            $table->boolean('is_active')->default(true)->index();
+            $driver = Schema::getConnection()->getDriverName();
+            $displayName = match ($driver) {
+                'sqlite', 'pgsql' => "trim(name_1 || ' ' || coalesce(name_2 || ' ', '') || coalesce(name_3, ''))",
+                default => "trim(concat(name_1, ' ', ifnull(concat(name_2, ' '), ''), ifnull(name_3, '')))",
+            };
 
-            $table->string('gender', 20)->default('unknown')->index();
-            $table->string('salutation_code', 30)->nullable()->index();
-            $table->string('academic_title', 80)->nullable();
+            $table->id();
+            $table->ulid('ulid')->unique();
+            $table->uuid('uuid')->unique();
 
-            $table->string('first_name', 80)->nullable();
-            $table->string('last_name', 80)->nullable();
-            $table->string('display_name', 160)->nullable()->index();
-            $table->string('job_title', 120)->nullable();
+            $table->boolean('is_active')->default(true);
 
-            $table->string('email', 120)->nullable()->index();
-            $table->string('username', 120)->nullable()->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password')->nullable();
-            $table->rememberToken();
-            $table->string('phone', 30)->nullable();
-            $table->string('mobile', 30)->nullable();
+            $table->string('name_1');
+            $table->string('name_2')->nullable();
+            $table->string('name_3')->nullable();
+            // Length is unset in the concept. string() keeps the framework default.
+            $table->string('display_name')->storedAs($displayName);
 
-            $table->foreignId('language_id')->nullable()->constrained('static_languages')->nullOnDelete();
-
-            $table->string('contact_type', 30)->default('external')->index();
             $table->text('note')->nullable();
 
-            $table->string('external_reference', 100)->nullable()->index();
-            $table->json('data')->nullable();
+            $table->string('external_reference')->nullable();
+            $table->string('external_info')->nullable();
+            // Allowed enum values are unset in the concept, so this cannot be a native ENUM yet.
+            $table->string('external_status')->nullable();
 
-            $table->softDeletes();
-            $table->timestamps();
+            $table->unsignedBigInteger('language_id')->nullable();
+            $table->unsignedBigInteger('country_id')->nullable();
+            $table->unsignedBigInteger('organization_type_id')->nullable();
+            $table->unsignedBigInteger('legal_form_id')->nullable();
+
+            $table->json('data_json')->default(new Expression("('{}')"));
+
+            $table->timestamp('created_at');
+            $table->unsignedBigInteger('created_by_id');
+            $table->string('created_by_type');
+            $table->timestamp('updated_at');
+            $table->unsignedBigInteger('updated_by_id');
+            $table->string('updated_by_type');
+
+            $table->timestamp('archived_at')->nullable();
+            $table->unsignedBigInteger('archived_by_id')->nullable();
+            $table->string('archived_by_type')->nullable();
+
+            $table->timestamp('deleted_at')->nullable();
+            $table->unsignedBigInteger('deleted_by_id')->nullable();
+            $table->string('deleted_by_type')->nullable();
+            $table->timestamp('restored_at')->nullable();
+            $table->unsignedBigInteger('restored_by_id')->nullable();
+            $table->string('restored_by_type')->nullable();
         });
     }
 

@@ -7,7 +7,6 @@ namespace Moox\Contact\Plugins;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Moox\Contact\Resources\ContactResource;
-use Moox\Core\Support\Resources\ChildResourceRegistrar;
 
 class ContactPlugin implements Plugin
 {
@@ -18,12 +17,9 @@ class ContactPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        ChildResourceRegistrar::registerFromParentDefinition(
-            $panel,
+        $panel->resources([
             ContactResource::class,
-            'contact',
-            config('contact.resources.contact', []),
-        );
+        ]);
     }
 
     public function boot(Panel $panel): void
