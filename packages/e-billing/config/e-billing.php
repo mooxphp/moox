@@ -409,6 +409,38 @@ return [
                     ],
                 ],
             ],
+            'awaiting_approval' => [
+                'label' => 'trans//e-billing::fields.tab_awaiting_approval',
+                'icon' => 'gmdi-pending-actions',
+                'query' => [
+                    [
+                        'field' => 'approval_status',
+                        'operator' => 'in',
+                        'value' => ['pending'],
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'sent' => [
+                'label' => 'trans//e-billing::fields.tab_sent',
+                'icon' => 'gmdi-send',
+                'query' => [
+                    [
+                        'field' => 'delivered',
+                        'operator' => '=',
+                        'value' => true,
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
             'deleted' => [
                 'label' => 'trans//e-billing::fields.tab_deleted',
                 'icon' => 'gmdi-delete',
@@ -521,6 +553,38 @@ return [
                         'field' => 'review_status',
                         'operator' => 'in',
                         'value' => ['human_confirmed', 'validated'],
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'awaiting_approval' => [
+                'label' => 'trans//e-billing::fields.tab_awaiting_approval',
+                'icon' => 'gmdi-pending-actions',
+                'query' => [
+                    [
+                        'field' => 'approval_status',
+                        'operator' => 'in',
+                        'value' => ['pending'],
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'sent' => [
+                'label' => 'trans//e-billing::fields.tab_sent',
+                'icon' => 'gmdi-send',
+                'query' => [
+                    [
+                        'field' => 'delivered',
+                        'operator' => '=',
+                        'value' => true,
                     ],
                     [
                         'field' => 'deleted_at',
@@ -752,6 +816,7 @@ return [
             'customer_address' => 'must',    // BG-8
             'country' => 'could',    // BT-55
             'customer_vat_id' => 'should',  // BT-48
+            'customer_tax_number' => 'could',  // no EN 16931 term; buyer FC registration
             // Delivery recipient (not EN 16931): reviewer-set buyer.contact.email, else inbox To when mail-sourced.
             'buyer_email' => 'must',
 
