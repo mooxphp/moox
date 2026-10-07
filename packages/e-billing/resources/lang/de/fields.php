@@ -16,6 +16,7 @@ return [
     'supplier_address' => 'Adresse',
     'country' => 'Land',
     'customer_vat_id' => 'USt-IdNr.',
+    'customer_tax_number' => 'Steuernummer',
     'supplier_vat_id' => 'USt-IdNr.',
     'customer_reference' => 'Kundenreferenz',
     'order_number' => 'Bestellnummer',
@@ -367,6 +368,7 @@ return [
 
     // Field hints — missing
     'hint_satisfied_by_lines' => 'Steht nicht im Kopf, sondern in jeder Position; hier die Werte der Positionen.',
+    'hint_satisfied_by_alternative' => 'Nicht nötig: ein gleichwertiges Feld ist angegeben.',
     'hint_missing_invoice_number' => 'Rechnungsnummer konnte nicht aus dem Dokument gelesen werden.',
     'hint_missing_customer_number' => 'Kundennummer fehlt im Dokument.',
     'hint_missing_customer_name' => 'Kundenname konnte nicht erkannt werden.',

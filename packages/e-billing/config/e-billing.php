@@ -872,6 +872,21 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Header Fields Required One Of
+        |--------------------------------------------------------------------------
+        |
+        | Groups of header fields of which one value is enough, e.g.
+        | [['customer_vat_id', 'customer_tax_number']]. Once one member has a
+        | value, the empty members validate as not_applicable (source 'one_of');
+        | with none, each keeps the finding of its own priority. Profiles fall
+        | back to this list unless they define their own (ADR 0015).
+        |
+        */
+
+        'invoice_fields_required_one_of' => [],
+
+        /*
+        |--------------------------------------------------------------------------
         | Credit notes (ADR 0009)
         |--------------------------------------------------------------------------
         |
@@ -900,6 +915,7 @@ return [
             'customer_address' => 'must',    // BG-8
             'country' => 'could',    // BT-55
             'customer_vat_id' => 'should',  // BT-48
+            'customer_tax_number' => 'could',  // no EN 16931 term; buyer FC registration
             // Delivery recipient (not EN 16931): reviewer-set buyer.contact.email, else inbox To when mail-sourced.
             'buyer_email' => 'must',
 
@@ -1022,6 +1038,7 @@ return [
             'customer_address' => 'must',    // BG-8
             'country' => 'could',    // BT-55
             'customer_vat_id' => 'should',  // BT-48
+            'customer_tax_number' => 'could',  // no EN 16931 term; buyer FC registration
             // Delivery recipient (not EN 16931): reviewer-set buyer.contact.email, else inbox To when mail-sourced.
             'buyer_email' => 'must',
 
@@ -1180,6 +1197,7 @@ return [
             'customer_number' => ['record' => 'customer', 'attribute' => 'customer_number'],
             'customer_name' => ['record' => 'company', 'attribute' => 'name'],
             'customer_vat_id' => ['record' => 'company', 'attribute' => 'vat_number'],
+            'customer_tax_number' => ['record' => 'company', 'attribute' => 'tax_number'],
             'customer_address' => ['record' => 'company', 'addresses' => 'buyer'],
             'delivery_address' => ['record' => 'company', 'addresses' => 'delivery'],
         ],

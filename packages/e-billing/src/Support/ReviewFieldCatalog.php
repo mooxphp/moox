@@ -49,6 +49,7 @@ final class ReviewFieldCatalog
         'customer_number' => ['customer_number' => 'text'],
         'customer_name' => ['buyer.name' => 'text'],
         'customer_vat_id' => ['buyer.vat_id' => 'text'],
+        'customer_tax_number' => ['buyer.tax_number' => 'text'],
         'delivery_date' => ['delivery_date' => 'date'],
         'delivery_terms' => ['delivery_terms' => 'textarea'],
         'shipping_method' => ['shipping_method' => 'text'],

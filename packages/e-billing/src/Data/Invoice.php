@@ -26,6 +26,8 @@ class Invoice
         public string $customerName = '',
         public ?Address $customerAddress = null,
         public ?string $customerVatId = null,
+        /** Buyer's national tax number as printed; no EN 16931 term, emitted as buyer FC registration. */
+        public ?string $customerTaxNumber = null,
         public ?string $customerReference = null,
 
         public ?string $orderNumber = null,
@@ -167,6 +169,7 @@ class Invoice
             customerName: $customerName,
             customerAddress: $customerAddress,
             customerVatId: $data['customer_vat_id'] ?? null,
+            customerTaxNumber: $data['customer_tax_number'] ?? null,
             customerReference: $data['customer_reference'] ?? null,
 
             // Supplier snapshot from config
@@ -263,6 +266,7 @@ class Invoice
             customerName: $customerName,
             customerAddress: $customerAddress,
             customerVatId: isset($data['customer_vat_id']) && is_string($data['customer_vat_id']) ? $data['customer_vat_id'] : null,
+            customerTaxNumber: isset($data['customer_tax_number']) && is_string($data['customer_tax_number']) ? $data['customer_tax_number'] : null,
             customerReference: isset($data['customer_reference']) && is_string($data['customer_reference']) ? $data['customer_reference'] : null,
             orderNumber: isset($data['order_number']) && is_string($data['order_number']) ? $data['order_number'] : null,
             orderDate: isset($data['order_date']) && is_string($data['order_date']) ? $data['order_date'] : null,
@@ -370,6 +374,7 @@ class Invoice
             'customer_address' => $this->customerAddress?->toArray(),
             'billing_country' => $this->customerAddress?->country,
             'customer_vat_id' => $this->customerVatId,
+            'customer_tax_number' => $this->customerTaxNumber,
             'customer_reference' => $this->customerReference,
 
             'order_number' => $this->orderNumber,

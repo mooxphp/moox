@@ -75,6 +75,10 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
         get => $this->model->buyer?->vat_id;
     }
 
+    public ?string $customerTaxNumber {
+        get => $this->model->buyer?->tax_number;
+    }
+
     public string $supplierName {
         get => $this->model->seller?->name ?? '';
     }

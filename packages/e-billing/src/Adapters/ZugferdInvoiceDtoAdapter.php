@@ -43,6 +43,8 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
 
     public ?string $customerVatId;
 
+    public ?string $customerTaxNumber;
+
     public string $supplierName;
 
     public ?ZugferdAddress $supplierAddress;
@@ -113,6 +115,7 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
         $this->customerName = $invoice->customerName;
         $this->customerAddress = $invoice->customerAddress;
         $this->customerVatId = $invoice->customerVatId;
+        $this->customerTaxNumber = $invoice->customerTaxNumber;
         $this->supplierName = $invoice->supplierName;
         $this->supplierAddress = $invoice->supplierAddress;
         $this->supplierPhone = $invoice->supplierPhone;

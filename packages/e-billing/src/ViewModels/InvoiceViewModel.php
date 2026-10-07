@@ -65,7 +65,7 @@ final class InvoiceViewModel
                 'subtitle' => 'BG-7',
                 'fields' => $this->buildFields([
                     'customer_number', 'customer_name',
-                    'customer_vat_id', 'customer_address', 'buyer_email',
+                    'customer_vat_id', 'customer_tax_number', 'customer_address', 'buyer_email',
                 ]),
             ],
             'delivery' => [
@@ -236,6 +236,13 @@ final class InvoiceViewModel
             return [
                 'color' => $approval === DocumentApprovalStatus::Approved ? 'green' : 'red',
                 'text' => ($approval === DocumentApprovalStatus::Approved ? '✓ ' : '').$approval->label(),
+            ];
+        }
+
+        if ($approval === DocumentApprovalStatus::Pending && $this->document?->isHeldForApproval()) {
+            return [
+                'color' => 'yellow',
+                'text' => __('e-billing::fields.banner_held_for_approval'),
             ];
         }
 
@@ -482,6 +489,7 @@ final class InvoiceViewModel
             'buyer_email' => $this->document?->recipientEmail(),
             'customer_name' => $this->invoice->buyer?->name,
             'customer_vat_id' => $this->invoice->buyer?->vat_id,
+            'customer_tax_number' => $this->invoice->buyer?->tax_number,
             'customer_address' => PartyAddressFormatter::format($this->invoice->buyer),
             'country' => $this->invoice->buyer?->address?->country_code,
             'supplier_name' => $this->invoice->seller?->name,
