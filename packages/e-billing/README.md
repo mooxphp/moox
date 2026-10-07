@@ -88,7 +88,7 @@ Published as `config/e-billing.php`.
 | Key | Controls |
 | --- | --- |
 | `resources` | Filament resource registration (`invoices` → `InvoiceResource`) |
-| `tabs` | List-page tab filters (`all`, `needs_review`, `confirmed`, `deleted`) |
+| `tabs` | List-page tab filters (`all`, `needs_review`, `confirmed`, `awaiting_approval`, `sent`, `deleted`); the pseudo fields `approval_status` and `delivered` filter on the e-billing document |
 | `default` | Single default when the preference port returns null: `format` (FormatRegistry key, default `zugferd`) + `profile` (hybrid library profile, default `EN16931`, must be in `allowed_profiles`). XRechnung ignores `profile` and always uses `XRECHNUNG` |
 | `allowed_profiles` | Hybrid profiles a recipient preference may request for `zugferd` / `factur-x` (default `['EN16931']`). XRechnung never takes a preference profile |
 | `zugferd` | ZUGFeRD filesystem disk (`storage_disk`, `storage_root`). Hybrid profiles come from `default.profile`, not `moox/zugferd` config |
@@ -229,6 +229,10 @@ Revalidate keeps what the invoice says. Use [re-parse](#re-parse-documents) when
 `EbillingDocument::holdForApproval()` marks a document as held (`approval_flags.held`; it survives re-validation) and `isHeldForApproval()` reads the mark. `AutoApproveEvaluator` then fails with `AutoApproveFailureReason::HeldForApproval` (`held_for_approval`), so a person must approve it. `--hold` on `e-billing:revalidate` and `e-billing:reparse` sets it, which keeps regenerated documents from being auto-approved and dispatched when the queue drains.
 
 Recommended operator workflow: run with `--dry-run`, pick the ids, then run with `--hold`.
+
+### Dispatch status
+
+The invoice list shows a **Dispatch status** column (`DispatchStatus`, derived, never stored): `sent` (at least one successful delivery attempt), `delivery_failed` (attempts, none successful), `held` (pending approval and held), `awaiting_approval` (pending, not held), `rejected`, or `—` while the document is not ready to send. A select filter offers the same states (`DispatchStatus::constrain()`). Two list tabs use it: **Awaiting approval** (`approval_status` in `pending`, held documents included) and **Sent** (`delivered`). The detail page's status banner says when a pending document is held.
 
 ### Re-parse documents
 
