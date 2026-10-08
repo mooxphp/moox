@@ -133,10 +133,6 @@ class ContactResource extends Resource
         $translation = static::featureTranslation();
 
         return [
-            TextInput::make('organization_type_id')
-                ->label(FeatureFields::label($translation, 'organization_type_id'))
-                ->numeric()
-                ->rules(static::featureRules('organization_type_id')),
             TextInput::make('legal_form_id')
                 ->label(FeatureFields::label($translation, 'legal_form_id'))
                 ->numeric()
