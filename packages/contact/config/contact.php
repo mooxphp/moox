@@ -16,5 +16,12 @@ return [
             'foreign_key' => 'country_id',
             'title_attribute' => 'common_name',
         ],
+        'organizationType' => [
+            'kind' => 'belongs_to',
+            'presentation' => 'hidden',
+            'model' => 'Moox\\Organization\\Models\\OrganizationType',
+            'foreign_key' => 'organization_type_id',
+            'title_attribute' => 'title',
+        ],
     ],
 ];
