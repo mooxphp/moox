@@ -125,21 +125,6 @@ class ContactResource extends Resource
             ->columns(2);
     }
 
-    /**
-     * @return list<TextInput>
-     */
-    protected static function additionalRelationFields(): array
-    {
-        $translation = static::featureTranslation();
-
-        return [
-            TextInput::make('legal_form_id')
-                ->label(FeatureFields::label($translation, 'legal_form_id'))
-                ->numeric()
-                ->rules(static::featureRules('legal_form_id')),
-        ];
-    }
-
     protected static function featureTranslation(): string
     {
         return 'contact::fields';
