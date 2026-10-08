@@ -7,6 +7,7 @@ namespace Moox\Support\Relation;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Support\Filament\FeatureFields;
 
@@ -77,12 +78,34 @@ trait HasRelationForm
                 ->rules(static::featureRules($column));
         }
 
-        return Select::make($column)
+        $isTranslated = is_a($model, 'Astrotomic\\Translatable\\Contracts\\Translatable', true);
+
+        $field = Select::make($column)
             ->label(FeatureFields::label($translation, $column))
-            ->relationship($relation, $titleAttribute)
-            ->searchable()
+            ->relationship(
+                $relation,
+                $titleAttribute,
+                $isTranslated
+                    ? function (Builder $query, ?string $search) use ($titleAttribute): Builder {
+                        if (filled($search)) {
+                            $query->whereTranslationLike($titleAttribute, '%'.$search.'%');
+                        }
+
+                        return $query->orderByTranslation($titleAttribute);
+                    }
+                : null,
+            )
+            ->searchable($isTranslated ? [] : true)
             ->preload()
             ->rules(static::featureRules($column));
+
+        if ($isTranslated) {
+            $field->getOptionLabelFromRecordUsing(
+                fn (Model $record): string => (string) ($record->getAttribute($titleAttribute) ?? $record->getKey())
+            );
+        }
+
+        return $field;
     }
 
     protected static function featureResourceName(): string
