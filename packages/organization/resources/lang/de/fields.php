@@ -12,6 +12,8 @@ return [
     'locale' => 'Locale',
     'title' => 'Titel',
     'slug' => 'Slug',
+    'relation' => 'Relation',
+    'country_id' => 'Land',
     'audit' => 'Audit',
     'soft_delete' => 'SoftDelete',
     'created_at' => 'Erstellt am',
