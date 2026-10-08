@@ -6,6 +6,7 @@ namespace Moox\UserDevice\Support;
 
 use Filament\Facades\Filament;
 use Filament\Panel;
+use STS\FilamentImpersonate\Facades\Impersonation;
 use Throwable;
 
 final class UserDevicePanel
@@ -17,6 +18,10 @@ final class UserDevicePanel
     public static function isActive(?Panel $panel = null): bool
     {
         if (! config('user-device.enabled', false)) {
+            return false;
+        }
+
+        if (self::isImpersonating()) {
             return false;
         }
 
@@ -119,6 +124,19 @@ final class UserDevicePanel
         }
 
         return 'gmdi-devices-o';
+    }
+
+    protected static function isImpersonating(): bool
+    {
+        if (! class_exists(Impersonation::class)) {
+            return false;
+        }
+
+        try {
+            return (bool) Impersonation::isImpersonating();
+        } catch (Throwable) {
+            return false;
+        }
     }
 
     protected static function currentPanel(): ?Panel

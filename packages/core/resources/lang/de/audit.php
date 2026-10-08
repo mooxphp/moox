@@ -37,6 +37,8 @@ return [
     'event_deleted' => 'Gelöscht',
     'event_restored' => 'Wiederhergestellt',
     'event_value_corrected' => 'Wert korrigiert',
+    'event_impersonation_enter' => 'Impersonation gestartet',
+    'event_impersonation_leave' => 'Impersonation beendet',
     'open_subject' => 'Datensatz öffnen',
     'attribute_changes_description' => 'Felder, die sich bei diesem Ereignis geändert haben.',
     'no_changes' => 'Keine Feldänderungen erfasst.',

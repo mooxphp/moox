@@ -67,6 +67,10 @@ return [
 
     'event_value_corrected' => 'Value corrected',
 
+    'event_impersonation_enter' => 'Started impersonation',
+
+    'event_impersonation_leave' => 'Stopped impersonation',
+
     'open_subject' => 'Open record',
 
     'attribute_changes_description' => 'Fields that changed in this event.',
