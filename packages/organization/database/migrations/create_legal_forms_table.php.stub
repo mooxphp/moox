@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('legal_forms', function (Blueprint $table): void {
+            $table->id();
+            $table->ulid('ulid')->unique();
+            $table->uuid('uuid')->unique();
+
+            $table->boolean('is_active')->default(true);
+
+            $table->string('title');
+            $table->string('slug')->unique();
+
+            $table->unsignedBigInteger('country_id')->nullable();
+
+            $table->timestamp('created_at');
+            $table->unsignedBigInteger('created_by_id');
+            $table->string('created_by_type');
+            $table->timestamp('updated_at');
+            $table->unsignedBigInteger('updated_by_id');
+            $table->string('updated_by_type');
+
+            $table->timestamp('deleted_at')->nullable();
+            $table->unsignedBigInteger('deleted_by_id')->nullable();
+            $table->string('deleted_by_type')->nullable();
+            $table->timestamp('restored_at')->nullable();
+            $table->unsignedBigInteger('restored_by_id')->nullable();
+            $table->string('restored_by_type')->nullable();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('legal_forms');
+    }
+};
