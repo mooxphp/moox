@@ -12,12 +12,13 @@ return [
     | Master switch
     |--------------------------------------------------------------------------
     |
+    | Defaults to false — opt in per environment via MOOX_IMPERSONATE_ENABLED.
     | When false, impersonation is disabled everywhere (UI and canImpersonate /
     | canBeImpersonated checks that call ImpersonateAction::isEnabled()).
     |
     */
 
-    'enabled' => env('MOOX_IMPERSONATE_ENABLED', true),
+    'enabled' => env('MOOX_IMPERSONATE_ENABLED', false),
 
     /*
     |--------------------------------------------------------------------------

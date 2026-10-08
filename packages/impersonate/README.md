@@ -60,11 +60,17 @@ Targets need `canBeImpersonated(): bool` on the model; admins need `canImpersona
 
 ### Config
 
+Defaults to **off**. Opt in per environment:
+
 ```env
 MOOX_IMPERSONATE_ENABLED=true
 MOOX_IMPERSONATE_TARGETS=finance,portal
 MOOX_IMPERSONATE_AUDIT=true
 ```
+
+### User-device trust while impersonating
+
+When `moox/user-device` is installed, trusted-device enforcement and device tracking are **skipped while impersonating**. That is intentional for support: the admin already passed admin auth and must not need the customer’s trusted device. Enter/leave still go to the audit log (when audit is enabled). Do not treat this as a missing control — document it in your security review if needed.
 
 ## Changelog
 
