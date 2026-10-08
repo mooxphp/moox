@@ -18,7 +18,7 @@ Contact records. One `contacts` table, an Eloquent model, and a Filament resourc
 ],
 ```
 
-`kind` `belongs_to` builds the Eloquent relation. `presentation` `hidden` keeps it off a relation-manager tab. `title_attribute` is the select label. `organization_type_id` and `legal_form_id` are not in this config yet; the resource still shows them as numeric fields on the relation section.
+`kind` `belongs_to` builds the Eloquent relation. `presentation` `hidden` keeps it off a relation-manager tab. `title_attribute` is the select label. `organizationType` and `legalForm` use `title` on the related record.
 
 ## Model
 
