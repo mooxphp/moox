@@ -10,6 +10,7 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
@@ -68,15 +69,28 @@ class ContactResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            static::identitySection(),
-            static::activeSection(),
-            static::domainSection(),
-            static::externalSection(),
-            static::relationSection(),
-            static::dataSection(),
-            static::auditSection(),
-            static::archiveSection(),
-            static::softDeleteSection(),
+            Grid::make()
+                ->schema([
+                    Grid::make(1)
+                        ->schema([
+                            static::activeSection(),
+                            static::domainSection(),
+                            static::externalSection(),
+                            static::dataSection(),
+                        ])
+                        ->columnSpan(2),
+                    Grid::make(1)
+                        ->schema([
+                            static::relationSection()->columns(1),
+                            static::identitySection()->columns(1),
+                            static::auditSection()->columns(1),
+                            static::archiveSection()->columns(1),
+                            static::softDeleteSection()->columns(1),
+                        ])
+                        ->columnSpan(1),
+                ])
+                ->columns(3)
+                ->columnSpanFull(),
         ]);
     }
 
