@@ -13,11 +13,12 @@ class OrganizationServiceProvider extends MooxServiceProvider
     {
         $package
             ->name('organization')
-            ->hasConfigFile()
+            ->hasConfigFile(['organization', 'legal-form'])
             ->hasTranslations()
             ->hasMigrations([
                 'create_organization_types_table',
                 'create_organization_type_translations_table',
+                'create_legal_forms_table',
             ]);
     }
 }

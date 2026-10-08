@@ -6,6 +6,7 @@ namespace Moox\Organization\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Moox\Organization\Resources\LegalFormResource;
 use Moox\Organization\Resources\OrganizationTypeResource;
 
 class OrganizationPlugin implements Plugin
@@ -19,6 +20,7 @@ class OrganizationPlugin implements Plugin
     {
         $panel->resources([
             OrganizationTypeResource::class,
+            LegalFormResource::class,
         ]);
     }
 
