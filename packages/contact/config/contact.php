@@ -23,5 +23,12 @@ return [
             'foreign_key' => 'organization_type_id',
             'title_attribute' => 'title',
         ],
+        'legalForm' => [
+            'kind' => 'belongs_to',
+            'presentation' => 'hidden',
+            'model' => 'Moox\\Organization\\Models\\LegalForm',
+            'foreign_key' => 'legal_form_id',
+            'title_attribute' => 'title',
+        ],
     ],
 ];
