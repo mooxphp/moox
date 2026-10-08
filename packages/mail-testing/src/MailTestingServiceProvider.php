@@ -32,7 +32,6 @@ class MailTestingServiceProvider extends MooxServiceProvider
                 '01_create_mail_testing_runs_table',
                 '02_create_mail_testing_messages_table',
             ])
-            ->runsMigrations()
             ->hasCommands([
                 RenderMailTestingCommand::class,
             ]);
