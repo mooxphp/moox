@@ -5,6 +5,7 @@
  */
 return [
     'C62' => 'One (piece)',
+    'LS' => 'Lump sum',
     'MTR' => 'Metre',
     'KGM' => 'Kilogram',
     'GRM' => 'Gram',

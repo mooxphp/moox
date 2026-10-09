@@ -5,6 +5,7 @@
  */
 return [
     'C62' => 'Jeden (kus)',
+    'LS' => 'Paušál',
     'MTR' => 'Metr',
     'KGM' => 'Kilogram',
     'GRM' => 'Gram',
