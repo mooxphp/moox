@@ -183,6 +183,7 @@ class ParsedInvoiceMapper
             customs_tariff_number: $dto->customsTariffNumber,
             unit_price: $dto->unitPrice,
             line_total: $dto->lineTotal,
+            is_non_goods: $dto->isNonGoods,
             delivery_date: $dto->deliveryDate,
             delivery_note_number: $dto->deliveryNoteNumber,
             deliveries: $dto->partialDeliveries,

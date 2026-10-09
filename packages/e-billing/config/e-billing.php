@@ -952,6 +952,20 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Non-goods Lines (ADR 0017)
+        |--------------------------------------------------------------------------
+        |
+        | Goods-identity line fields (article number, material, weight, …) that are
+        | not_applicable when empty on a line marked as a non-goods line
+        | (`is_non_goods`). One list for all document types. Every other line field
+        | keeps its profile priority; an unmarked line is validated as usual.
+        |
+        */
+
+        'non_goods_line_fields_not_applicable' => [],
+
+        /*
+        |--------------------------------------------------------------------------
         | Credit notes (ADR 0009)
         |--------------------------------------------------------------------------
         |

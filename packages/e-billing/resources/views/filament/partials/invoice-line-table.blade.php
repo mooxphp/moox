@@ -14,7 +14,7 @@
             class="cursor-pointer list-none px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 [&::-webkit-details-marker]:hidden [&::marker]:hidden">
             @include('e-billing::filament.partials.invoice-details-summary', [
                 'title' => __('e-billing::fields.line_item_position', ['position' => $lineVm->position() ?? '—']),
-                'subtitle' => null,
+                'subtitle' => $lineVm->subtitle(),
                 'issueCount' => $lineState['issue_count'],
                 'issueLabel' => $lineState['issue_label'],
             ])

@@ -375,6 +375,7 @@ return [
     'empty_no_field_data' => 'Keine Felddaten verfügbar.',
     'empty_no_line_items' => 'Keine Positionen vorhanden.',
     'line_item_position' => 'Position :position',
+    'non_goods_line' => 'Kein Warenposten',
 
     // Field hints — missing
     'hint_satisfied_by_lines' => 'Steht nicht im Kopf, sondern in jeder Position; hier die Werte der Positionen.',

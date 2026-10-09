@@ -58,6 +58,7 @@ class InvoiceLine implements ZugferdInvoiceLine
         public ?string $purchaseOrderLineReference = null,
         /** @var list<array{date: ?string, delivery_note: ?string, quantity: ?float}> */
         public array $partialDeliveries = [],
+        public bool $isNonGoods = false,
     ) {
         $this->partialDeliveries = PartialDeliveries::normalize($this->partialDeliveries);
 
@@ -132,6 +133,7 @@ class InvoiceLine implements ZugferdInvoiceLine
                 ? $data['purchase_order_line_reference']
                 : null,
             partialDeliveries: PartialDeliveries::normalize($data['deliveries'] ?? null),
+            isNonGoods: ($data['is_non_goods'] ?? false) === true,
         );
     }
 
@@ -162,6 +164,7 @@ class InvoiceLine implements ZugferdInvoiceLine
             'delivery_address' => $this->deliveryAddress?->toArray(),
             'purchase_order_line_reference' => $this->purchaseOrderLineReference,
             'deliveries' => $this->partialDeliveries,
+            'is_non_goods' => $this->isNonGoods,
         ];
     }
 }
