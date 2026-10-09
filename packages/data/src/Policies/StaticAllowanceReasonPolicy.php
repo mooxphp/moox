@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Data\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Data\Models\StaticAllowanceReason;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class StaticAllowanceReasonPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:StaticAllowanceReason');
@@ -71,5 +71,4 @@ class StaticAllowanceReasonPolicy
     {
         return $authUser->can('Reorder:StaticAllowanceReason');
     }
-
 }

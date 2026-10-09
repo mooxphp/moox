@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Staff\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Staff\Models\Staff;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class StaffPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:Staff');
@@ -71,5 +71,4 @@ class StaffPolicy
     {
         return $authUser->can('Reorder:Staff');
     }
-
 }

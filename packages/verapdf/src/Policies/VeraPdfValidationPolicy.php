@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\VeraPdf\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\VeraPdf\Models\VeraPdfValidation;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class VeraPdfValidationPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:VeraPdfValidation');
@@ -71,5 +71,4 @@ class VeraPdfValidationPolicy
     {
         return $authUser->can('Reorder:VeraPdfValidation');
     }
-
 }

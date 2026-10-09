@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Audit\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Audit\Models\Activity;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ActivityPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:Activity');
@@ -71,5 +71,4 @@ class ActivityPolicy
     {
         return $authUser->can('Reorder:Activity');
     }
-
 }

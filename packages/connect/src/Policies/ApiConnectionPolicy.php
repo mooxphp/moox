@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Connect\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Connect\Models\ApiConnection;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ApiConnectionPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:ApiConnection');
@@ -71,5 +71,4 @@ class ApiConnectionPolicy
     {
         return $authUser->can('Reorder:ApiConnection');
     }
-
 }

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Media\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Media\Models\Media;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class MediaPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:Media');
@@ -71,5 +71,4 @@ class MediaPolicy
     {
         return $authUser->can('Reorder:Media');
     }
-
 }

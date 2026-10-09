@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Category\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Category\Models\Category;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class CategoryPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:Category');
@@ -71,5 +71,4 @@ class CategoryPolicy
     {
         return $authUser->can('Reorder:Category');
     }
-
 }

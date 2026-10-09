@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Data\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Data\Models\StaticTimezone;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class StaticTimezonePolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:StaticTimezone');
@@ -71,5 +71,4 @@ class StaticTimezonePolicy
     {
         return $authUser->can('Reorder:StaticTimezone');
     }
-
 }

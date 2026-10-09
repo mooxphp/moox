@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Address\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Address\Models\Address;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AddressPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:Address');
@@ -71,5 +71,4 @@ class AddressPolicy
     {
         return $authUser->can('Reorder:Address');
     }
-
 }

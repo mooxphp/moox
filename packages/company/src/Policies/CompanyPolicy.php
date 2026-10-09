@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Company\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Company\Models\Company;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class CompanyPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:Company');
@@ -71,5 +71,4 @@ class CompanyPolicy
     {
         return $authUser->can('Reorder:Company');
     }
-
 }

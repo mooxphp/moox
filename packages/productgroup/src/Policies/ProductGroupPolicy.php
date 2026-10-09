@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\ProductGroup\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\ProductGroup\Models\ProductGroup;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ProductGroupPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:ProductGroup');
@@ -71,5 +71,4 @@ class ProductGroupPolicy
     {
         return $authUser->can('Reorder:ProductGroup');
     }
-
 }

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Localization\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Localization\Models\Localization;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LocalizationPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:Localization');
@@ -71,5 +71,4 @@ class LocalizationPolicy
     {
         return $authUser->can('Reorder:Localization');
     }
-
 }

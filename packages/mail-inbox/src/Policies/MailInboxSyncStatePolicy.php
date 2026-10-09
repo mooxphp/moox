@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\MailInbox\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\MailInbox\Models\MailInboxSyncState;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class MailInboxSyncStatePolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:MailInboxSyncState');
@@ -71,5 +71,4 @@ class MailInboxSyncStatePolicy
     {
         return $authUser->can('Reorder:MailInboxSyncState');
     }
-
 }

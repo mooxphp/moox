@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Builder\Models\FieldGroup;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class FieldGroupPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:FieldGroup');
@@ -71,5 +71,4 @@ class FieldGroupPolicy
     {
         return $authUser->can('Reorder:FieldGroup');
     }
-
 }

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Transform\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Transform\Models\TransformDefinition;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TransformDefinitionPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:TransformDefinition');
@@ -71,5 +71,4 @@ class TransformDefinitionPolicy
     {
         return $authUser->can('Reorder:TransformDefinition');
     }
-
 }

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Prompts\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Prompts\Models\CommandExecution;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class CommandExecutionPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:CommandExecution');
@@ -71,5 +71,4 @@ class CommandExecutionPolicy
     {
         return $authUser->can('Reorder:CommandExecution');
     }
-
 }

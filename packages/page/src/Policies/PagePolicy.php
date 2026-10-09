@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Page\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Page\Models\Page;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PagePolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:Page');
@@ -71,5 +71,4 @@ class PagePolicy
     {
         return $authUser->can('Reorder:Page');
     }
-
 }

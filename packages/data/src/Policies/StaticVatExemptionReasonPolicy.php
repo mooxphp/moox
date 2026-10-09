@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Data\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Data\Models\StaticVatExemptionReason;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class StaticVatExemptionReasonPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:StaticVatExemptionReason');
@@ -71,5 +71,4 @@ class StaticVatExemptionReasonPolicy
     {
         return $authUser->can('Reorder:StaticVatExemptionReason');
     }
-
 }

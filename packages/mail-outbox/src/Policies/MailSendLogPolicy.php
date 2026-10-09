@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\MailOutbox\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\MailOutbox\Models\MailSendLog;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class MailSendLogPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:MailSendLog');
@@ -71,5 +71,4 @@ class MailSendLogPolicy
     {
         return $authUser->can('Reorder:MailSendLog');
     }
-
 }

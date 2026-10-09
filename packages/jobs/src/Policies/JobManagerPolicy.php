@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Jobs\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\Jobs\Models\JobManager;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class JobManagerPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:JobManager');
@@ -71,5 +71,4 @@ class JobManagerPolicy
     {
         return $authUser->can('Reorder:JobManager');
     }
-
 }

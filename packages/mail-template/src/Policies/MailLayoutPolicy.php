@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\MailTemplate\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\MailTemplate\Models\MailLayout;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class MailLayoutPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:MailLayout');
@@ -71,5 +71,4 @@ class MailLayoutPolicy
     {
         return $authUser->can('Reorder:MailLayout');
     }
-
 }

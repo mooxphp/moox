@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\LoginLink\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\LoginLink\Models\LoginLink;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LoginLinkPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:LoginLink');
@@ -71,5 +71,4 @@ class LoginLinkPolicy
     {
         return $authUser->can('Reorder:LoginLink');
     }
-
 }

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\MailInbox\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\MailInbox\Models\InboxMessage;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class InboxMessagePolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:InboxMessage');
@@ -71,5 +71,4 @@ class InboxMessagePolicy
     {
         return $authUser->can('Reorder:InboxMessage');
     }
-
 }
