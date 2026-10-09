@@ -114,6 +114,8 @@ function minimalZugferdInvoice(
 
         public ?string $customerVatId = null;
 
+        public ?string $customerTaxNumber = null;
+
         public string $supplierName = 'Seller GmbH';
 
         public ?string $supplierPhone = null;
@@ -158,7 +160,7 @@ function minimalZugferdInvoice(
         /** @var list<ZugferdBankAccount> */
         public array $bankAccounts;
 
-        /** @var list<string> */
+        /** @var list<string|array{text: string, subject_code?: ?string}> DocumentNote of ZugferdInvoice */
         public array $documentNotes = [];
 
         /** @var list<array{number: string, date: ?string}> */

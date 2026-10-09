@@ -18,6 +18,7 @@ use Moox\Zugferd\Contracts\ZugferdNoteLabels;
 use Moox\Zugferd\Exceptions\IncompleteInvoiceException;
 use Moox\Zugferd\Support\EnglishNoteLabels;
 use Moox\Zugferd\Support\FlexibleDateParser;
+use Moox\Zugferd\Support\NoteSubjectCodes;
 use Moox\Zugferd\Support\ShipToPartyEquality;
 use Symfony\Component\Process\Process;
 
@@ -257,7 +258,19 @@ class ZugferdConverter
     private function setDocumentNotes(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
     {
         foreach ($invoice->documentNotes as $note) {
-            $doc->addDocumentNote($note);
+            if (is_string($note)) {
+                $doc->addDocumentNote($note);
+
+                continue;
+            }
+
+            $subjectCode = $note['subject_code'] ?? null;
+
+            if ($subjectCode !== null && ! NoteSubjectCodes::isValid($subjectCode)) {
+                throw new InvalidArgumentException("Note subject code [{$subjectCode}] is not in UNTDID 4451.");
+            }
+
+            $doc->addDocumentNote($note['text'], null, $subjectCode);
         }
     }
 
