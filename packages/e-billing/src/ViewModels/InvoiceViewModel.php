@@ -213,16 +213,9 @@ final class InvoiceViewModel
      */
     private function parsedNoteTexts(): array
     {
-        $notes = $this->invoice->notes ?? [];
+        $texts = array_map(fn (array $note): string => $note['text'], $this->invoice->notes ?? []);
 
-        if (! is_array($notes)) {
-            return [];
-        }
-
-        return array_filter(
-            $notes,
-            fn (mixed $note): bool => is_string($note) && trim($note) !== '',
-        );
+        return array_filter($texts, fn (string $text): bool => trim($text) !== '');
     }
 
     /**

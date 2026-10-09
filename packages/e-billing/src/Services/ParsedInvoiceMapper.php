@@ -10,6 +10,7 @@ use Moox\EBilling\Data\Address;
 use Moox\EBilling\Data\Invoice as InvoiceDto;
 use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
 use Moox\EBilling\Events\InvoiceCreated;
+use Moox\EBilling\Exceptions\UnresolvedCodelistLabelException;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\ConfiguredEn16931CodeResolver;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
@@ -23,7 +24,12 @@ use Moox\Invoice\Support\InvoiceBuilder;
 use Moox\Invoice\Support\InvoiceDraft;
 use Moox\Invoice\Support\InvoiceLineDraft;
 use Moox\Invoice\Support\InvoiceModels;
+use Moox\Invoice\Support\InvoiceNotes;
+use Moox\Zugferd\Support\NoteSubjectCodes;
 
+/**
+ * @phpstan-import-type InvoiceNote from InvoiceNotes
+ */
 class ParsedInvoiceMapper
 {
     public function __construct(
@@ -125,9 +131,28 @@ class ParsedInvoiceMapper
                 $dto->lines,
             ),
             headerCharges: $this->buildHeaderChargeDraftsFromDto($dto),
-            notes: $dto->notes,
+            notes: $this->notesWithKnownSubjectCodes($dto->notes),
             preceding_invoices: $dto->precedingInvoices,
         );
+    }
+
+    /**
+     * @param  list<string|InvoiceNote>  $notes
+     * @return list<InvoiceNote>
+     *
+     * @throws UnresolvedCodelistLabelException when a subject code is outside UNTDID 4451
+     */
+    private function notesWithKnownSubjectCodes(array $notes): array
+    {
+        $normalized = InvoiceNotes::normalize($notes);
+
+        foreach ($normalized as $note) {
+            if ($note['subject_code'] !== null && ! NoteSubjectCodes::isValid($note['subject_code'])) {
+                throw new UnresolvedCodelistLabelException('note_subject_code', $note['subject_code']);
+            }
+        }
+
+        return $normalized;
     }
 
     /**

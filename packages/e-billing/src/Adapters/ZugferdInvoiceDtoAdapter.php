@@ -18,6 +18,8 @@ use Moox\Zugferd\Contracts\ZugferdInvoiceLine;
 
 /**
  * Flat {@see ZugferdInvoice} view of parsed bill_data; public field count mirrors the contract.
+ *
+ * @phpstan-import-type DocumentNote from ZugferdInvoice
  */
 final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
 {
@@ -96,7 +98,7 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
     /** @var list<ZugferdBankAccount> */
     public array $bankAccounts;
 
-    /** @var list<string> */
+    /** @var list<DocumentNote> */
     public array $documentNotes;
 
     /** @var list<array{number: string, date: ?string}> */

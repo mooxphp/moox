@@ -632,6 +632,8 @@ The standalone `set_attribution` and `rematch` actions (view header and invoice 
 
 ### Which rows can be edited
 
+Notes are `{text, subject_code}` objects (BT-22 text, optional BT-21 code from UNTDID 4451). A parsed code outside that list is refused with `UnresolvedCodelistLabelException` (codelist `note_subject_code`). Correcting a note edits `notes.N.text` and keeps its code; reviewers cannot choose a code yet. Run the moox/invoice migration `convert_invoice_notes_to_objects`.
+
 Every row resolves through `ReviewFieldCatalog` (row keys `invoice:{field}`, `notes:{index}`, `line:{lineId}:{field}`) to either an edit or a visible, translated reason (`e-billing::fields.review_not_editable.*`):
 
 | Reason key | Meaning |
