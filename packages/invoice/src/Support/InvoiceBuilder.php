@@ -91,6 +91,7 @@ class InvoiceBuilder
         $line->customs_tariff_number = $lineDraft->customs_tariff_number;
         $line->unit_price = (string) $lineDraft->unit_price;
         $line->line_total = (string) $lineDraft->line_total;
+        $line->is_non_goods = $lineDraft->is_non_goods;
         $line->delivery_date = $lineDraft->delivery_date;
         $line->delivery_note_number = $lineDraft->delivery_note_number;
         $line->deliveries = $lineDraft->deliveries !== [] ? $lineDraft->deliveries : null;
