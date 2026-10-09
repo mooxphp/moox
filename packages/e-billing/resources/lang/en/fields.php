@@ -374,6 +374,7 @@ return [
     'empty_no_field_data' => 'No field data available.',
     'empty_no_line_items' => 'No line items.',
     'line_item_position' => 'Line item :position',
+    'non_goods_line' => 'Non-goods line',
 
     // Field hints — missing
     'hint_satisfied_by_lines' => 'Not on the header but on every line; shown here are the lines\' values.',

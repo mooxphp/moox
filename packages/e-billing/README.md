@@ -98,6 +98,7 @@ Published as `config/e-billing.php`.
 | `cross_checked` | Fields checked against master data, shared by the review workspace pickers and the divergence report: `strict` (`EBILLING_CROSS_CHECKED_STRICT`, default `false`) and `fields` (see [Cross-checked fields](#cross-checked-fields)) |
 | `field_validation` | MoSCoW priority rules for invoice and line fields. `credit_note_*` siblings (fields, line fields, contextual-should lists) apply to BT-3 `381` documents; a host that omits a `credit_note_*` key falls back to the `invoice_*` key (ADR 0009) |
 | `field_validation.invoice_fields_satisfied_by_lines` | Header fields (default `[]`) that count as present when every invoice line carries its own value, e.g. `order_number` / `order_date` on a collective invoice. Profile-scoped like the other keys: `credit_note_fields_satisfied_by_lines`, `corrected_invoice_fields_satisfied_by_lines` (a profile falls back to the invoice list unless it defines its own, which may be empty). See [Header fields satisfied by lines](#header-fields-satisfied-by-lines) |
+| `field_validation.non_goods_line_fields_not_applicable` | Line fields (default `[]`, one list for all document types) that are `not_applicable` instead of `missing` when empty on a line marked `is_non_goods`. See [Non-goods lines](#non-goods-lines) |
 | `approval` | Dispatch approval gate: `required`, `auto_approve_enabled` |
 | `notification` | Review announce strategy: `immediate` / `batched`, batch key, window minutes, optional `recorder` class |
 | `escalation` | Overdue-approval scan: `day_counting`, `working_weekdays`, `exclude_dates`, ordered `levels` (`key` / `after` / `unit`); empty `levels` disables the feature |
@@ -272,6 +273,12 @@ A document is refused, never silently skipped, and the command prints the reason
 A collective invoice may carry its order references per line instead of in the header. List such header fields in `field_validation.invoice_fields_satisfied_by_lines` (profile-scoped, see [Config keys](#config-keys)). An empty listed field then validates as `parsed` with `source: lines` when **every** invoice line carries its own value; each field is judged on its own. Otherwise the normal empty-field handling applies (a `must` field is `missing`). The review screen shows such a field as parsed, not missing.
 
 When the header names no order (BT-13) but lines carry orders, a BT-22 note lists the distinct line orders (for example `Purchase orders: 4711 (2026-09-01), 4712` in `en`, `Bestellungen: 4711 (01.09.2026), 4712` in `de`; the date format is `emission.date_format`). No BT-13 is emitted, because EN 16931 allows only one; line orders ride in BT-127.
+
+### Non-goods lines
+
+Some credit documents carry no goods positions, only a refunded charge or a lump sum with a reason. Mark such a line with `is_non_goods` (payload line key `is_non_goods`, bool; `Data\InvoiceLine::$isNonGoods`); `ParsedInvoiceMapper` stores it on the invoice line (requires the `moox/invoice` migration `add_is_non_goods_to_invoice_lines_table`). The flag is set by the parser, never derived. For a lump-sum line use unit code `LS` (moox/data); it is not a piece unit, so the piece-unit rewrite leaves it alone.
+
+List the goods-identity fields in `field_validation.non_goods_line_fields_not_applicable`. On a marked line, a listed field that would be `missing` becomes `not_applicable`; a listed field with a value stays `parsed`; unlisted fields keep their profile priority. Unmarked lines are validated as before. The review screen shows "Non-goods line" (`Kein Warenposten` in `de`) as the line subtitle. See [ADR 0017](docs/adr/0017-non-goods-lines-are-marked-not-derived.md).
 
 ### Itemized document charges
 

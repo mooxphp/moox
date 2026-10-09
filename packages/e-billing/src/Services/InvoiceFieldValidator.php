@@ -922,7 +922,7 @@ class InvoiceFieldValidator
         ?Customer $matchedCustomer,
         ?Company $matchedCompany,
     ): array {
-        return match ($field) {
+        $validation = match ($field) {
             'delivery_address' => $this->validateDeliveryAddressField(
                 $priority,
                 $line->delivery,
@@ -937,6 +937,13 @@ class InvoiceFieldValidator
             'material_test_certificate_price' => $this->validateLineMaterialTestCertificatePriceField($line, $priority),
             default => $this->validateGenericInvoiceLineField($line, $field, $priority),
         };
+
+        if ($validation['status'] === 'missing'
+            && FieldValidationProfile::isNotApplicableOnNonGoodsLine($line->is_non_goods === true, $field)) {
+            return ['status' => 'not_applicable'];
+        }
+
+        return $validation;
     }
 
     /**
