@@ -19,6 +19,7 @@ use Moox\Invoice\Support\InvoiceModels;
  * @property Party|null $delivery
  * @property string|null $unit_code
  * @property list<array{date: ?string, delivery_note: ?string, quantity: ?float}>|null $deliveries Partial deliveries
+ * @property bool $is_non_goods Bills or credits an amount, not an article; set explicitly, never derived
  */
 class InvoiceLine extends BaseItemModel
 {
@@ -44,6 +45,7 @@ class InvoiceLine extends BaseItemModel
         'customs_tariff_number',
         'unit_price',
         'line_total',
+        'is_non_goods',
         'delivery',
         'delivery_date',
         'delivery_note_number',
@@ -63,6 +65,7 @@ class InvoiceLine extends BaseItemModel
             'quantity' => 'decimal:3',
             'unit_price' => 'decimal:2',
             'line_total' => 'decimal:2',
+            'is_non_goods' => 'boolean',
             'position' => 'integer',
         ];
     }

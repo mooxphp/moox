@@ -84,6 +84,7 @@ $draft = new InvoiceDraft(
             customs_tariff_number: null,
             unit_price: 100.0,
             line_total: 100.0,
+            is_non_goods: false, // true for a line that bills or credits an amount, not an article
             delivery_date: null,
             delivery_note_number: null,
             deliveries: [], // list of ['date' => 'Y-m-d', 'delivery_note' => '...', 'quantity' => 1.0]
@@ -230,6 +231,7 @@ The `InvoiceLine` model (`Moox\Invoice\Models\InvoiceLine`) stores a single invo
 -   `customs_tariff_number` (string, nullable) - Customs tariff number
 -   `unit_price` (decimal 12,2, default: `0`) - Net unit price
 -   `line_total` (decimal 12,2, default: `0`) - Net line total
+-   `is_non_goods` (boolean, default: `false`) - Line bills or credits an amount, not an article (for example refunded packaging or a lump sum). Set explicitly, never derived. Migration stub `add_is_non_goods_to_invoice_lines_table` (hosts must publish/run it).
 -   `delivery` (json, nullable) - Line consignee party (name + address); cast to `Party` via `DeliveryPartyCast`. VAT identifier, tax number, and contact are not stored. A stored consignee may lack `country_code`; BR-57 is enforced at emission.
 -   `delivery_date` (string, nullable) - Delivery date
 -   `delivery_note_number` (string, nullable) - Delivery note reference

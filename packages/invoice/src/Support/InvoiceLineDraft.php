@@ -13,6 +13,7 @@ readonly class InvoiceLineDraft
      * @param  array<string, mixed>  $extra  Host extension attributes; each key must be fillable
      *                                       on the configured line model or persistence fails.
      * @param  list<array{date: ?string, delivery_note: ?string, quantity: ?float}>  $deliveries  Partial deliveries; empty when delivered at once.
+     * @param  bool  $is_non_goods  The line bills or credits an amount, not an article.
      */
     public function __construct(
         public int $position,
@@ -33,6 +34,7 @@ readonly class InvoiceLineDraft
         public array $extra = [],
         public ?string $unit_code = null,
         public array $deliveries = [],
+        public bool $is_non_goods = false,
     ) {
     }
 }
