@@ -8,10 +8,14 @@ use Moox\EBilling\Adapters\ZugferdInvoiceDtoAdapter;
 use Moox\EBilling\Support\BillDataAllowanceChargeMapper;
 use Moox\EBilling\Support\PrecedingInvoiceReferences;
 use Moox\EBilling\Support\VatIdNormalizer;
+use Moox\Invoice\Support\InvoiceNotes;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdBankAccount;
 use Moox\Zugferd\Contracts\ZugferdInvoice;
 
+/**
+ * @phpstan-import-type InvoiceNote from InvoiceNotes
+ */
 class Invoice
 {
     public function __construct(
@@ -72,7 +76,7 @@ class Invoice
         /** @var InvoiceLine[] */
         public array $lines = [],
 
-        /** @var array<int, string> */
+        /** @var list<string|InvoiceNote> BT-22 notes, optionally with a BT-21 subject code */
         public array $notes = [],
 
         /** @var list<array{number: string, date: ?string}> BG-3: BT-25 number, BT-26 date (Y-m-d) */
@@ -241,7 +245,7 @@ class Invoice
         $notes = [];
         if (isset($data['notes']) && is_array($data['notes'])) {
             foreach ($data['notes'] as $n) {
-                if (is_string($n)) {
+                if (is_string($n) || (is_array($n) && is_string($n['text'] ?? null))) {
                     $notes[] = $n;
                 }
             }

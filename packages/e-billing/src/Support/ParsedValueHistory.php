@@ -73,6 +73,10 @@ final class ParsedValueHistory
         return $parsed;
     }
 
+    /**
+     * The value the parser produced, from the row's `created` snapshot. A note recorded before notes carried
+     * a subject code is a plain string in that snapshot; its `notes.N.text` is that string.
+     */
     public static function parsedValue(Model $target, string $attribute): mixed
     {
         /** @var class-string<Activity> $activityModel */
@@ -92,6 +96,14 @@ final class ParsedValueHistory
             throw new InvalidArgumentException(
                 "No parsed value recorded for {$attribute} on ".class_basename($target)." #{$target->getKey()}.",
             );
+        }
+
+        if (preg_match('/^notes\.(\d+)\.text$/', $attribute, $match) === 1) {
+            $note = Arr::get($attributes, 'notes.'.$match[1]);
+
+            if (is_string($note)) {
+                return $note;
+            }
         }
 
         return Arr::get($attributes, $attribute);

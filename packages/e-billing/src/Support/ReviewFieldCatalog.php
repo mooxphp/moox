@@ -117,7 +117,7 @@ final class ReviewFieldCatalog
 
         return match ($parts[0]) {
             'invoice' => $this->invoiceField($invoice, $key, $parts[1] ?? ''),
-            'notes' => $this->valueField($invoice, $key, InvoiceFieldLabels::label('notes'), $invoice, ['notes.'.(int) ($parts[1] ?? 0) => 'textarea']),
+            'notes' => $this->valueField($invoice, $key, InvoiceFieldLabels::label('notes'), $invoice, ['notes.'.(int) ($parts[1] ?? 0).'.text' => 'textarea']),
             'line' => $this->lineField($invoice, $key, (string) ($parts[1] ?? ''), $parts[2] ?? ''),
             'charge' => $this->chargeField($invoice, $key, (string) ($parts[1] ?? '')),
             default => $this->notEditable($key, $key, 'unknown_field'),

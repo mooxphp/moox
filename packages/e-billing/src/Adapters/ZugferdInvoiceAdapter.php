@@ -18,6 +18,9 @@ use Moox\Zugferd\Contracts\ZugferdInvoice;
 use Moox\Zugferd\Contracts\ZugferdInvoiceLine;
 use Moox\Zugferd\Data\AllowanceCharge;
 
+/**
+ * @phpstan-import-type DocumentNote from ZugferdInvoice
+ */
 final class ZugferdInvoiceAdapter implements ZugferdInvoice
 {
     public function __construct(
@@ -259,7 +262,7 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
         }
     }
 
-    /** @var list<string> */
+    /** @var list<DocumentNote> */
     public array $documentNotes {
         get => InvoiceDocumentNotes::fromInvoice($this->model);
     }
