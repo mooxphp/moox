@@ -71,7 +71,9 @@ final class InvoiceNotes
         $code = is_array($note) ? ($note['subject_code'] ?? null) : null;
 
         if ($code !== null && ! is_string($code)) {
-            throw new InvalidArgumentException('A note subject code must be a string, '.get_debug_type($code).' given.');
+            throw new InvalidArgumentException(
+                'A note subject code must be a string, '.get_debug_type($code).' given.',
+            );
         }
 
         $code = $code !== null ? trim($code) : '';
