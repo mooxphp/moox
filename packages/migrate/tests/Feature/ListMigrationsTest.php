@@ -7,22 +7,27 @@ use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
+use Moox\Migrate\Jobs\RunMigrationsJob;
 use Moox\Migrate\Models\Migration;
 use Moox\Migrate\Resources\MigrationResource;
 use Moox\Migrate\Resources\MigrationResource\Pages\ListMigrations;
+use Moox\Migrate\Support\MigrateRunStatus;
 use Moox\Migrate\Support\MigrationInventory;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
     Filament::setCurrentPanel(Filament::getPanel('admin'));
+    MigrateRunStatus::clear();
 
     $this->actingAs(User::factory()->create([
         'email' => 'dev@heco.de',
     ]));
 });
+
 
 function migrateUiTempMigration(string $name, string $upBody = ''): string
 {
@@ -129,6 +134,29 @@ it('requires confirmation before migrating', function (): void {
         ->assertActionExists('migrate', fn (Action $action): bool => $action->isConfirmationRequired());
 });
 
+it('disables migrate when nothing is pending', function (): void {
+    Livewire::test(ListMigrations::class)
+        ->assertActionDisabled('migrate');
+});
+
+it('dispatches a migrate job from the header action', function (): void {
+    Queue::fake();
+
+    $path = migrateUiTempMigration('2099_01_01_000000_migrate_ui_queue_dispatch', '        // pending only');
+
+    try {
+        Livewire::test(ListMigrations::class)
+            ->callAction('migrate')
+            ->assertNotified(__('migrate::migrate.migrate_queued'));
+
+        Queue::assertPushed(RunMigrationsJob::class);
+    } finally {
+        if (is_file($path)) {
+            unlink($path);
+        }
+    }
+});
+
 it('shows pending migrations on the page, in the modal, and as a badge', function (): void {
     $name = '2099_01_01_000000_migrate_ui_pending_visible';
     $before = (int) MigrationResource::getNavigationBadge();
@@ -173,9 +201,17 @@ it('runs artisan migrate from the header action and refreshes the table', functi
         ->andReturn(0);
     Artisan::shouldReceive('output')->andReturn("INFO  Running migrations.\n");
 
-    Livewire::test(ListMigrations::class)
-        ->callAction('migrate')
-        ->assertNotified(__('migrate::migrate.migrate_done'));
+    $path = migrateUiTempMigration('2099_01_01_000000_migrate_ui_sync_notify', '        // pending only');
+
+    try {
+        Livewire::test(ListMigrations::class)
+            ->callAction('migrate')
+            ->assertNotified(__('migrate::migrate.migrate_done'));
+    } finally {
+        if (is_file($path)) {
+            unlink($path);
+        }
+    }
 });
 
 it('applies a pending migration when the header action runs', function (): void {
@@ -203,3 +239,4 @@ it('applies a pending migration when the header action runs', function (): void 
         }
     }
 });
+

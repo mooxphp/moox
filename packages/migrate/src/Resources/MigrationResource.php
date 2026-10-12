@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Migrate\Models\Migration;
 use Moox\Migrate\Resources\MigrationResource\Pages\ListMigrations;
+use Moox\Migrate\Support\MigrateRunStatus;
 use Moox\Migrate\Support\MigrationInventory;
 use Override;
 
@@ -101,6 +102,7 @@ class MigrationResource extends BaseItemResource
             ])
             ->recordActions([])
             ->toolbarActions([])
+            ->poll(fn (): ?string => MigrateRunStatus::isActive() ? '2s' : null)
             ->deferFilters(false);
     }
 

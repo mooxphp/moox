@@ -60,4 +60,19 @@ return [
     |
     */
     'navigation_group' => 'trans//core::core.system',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit logging
+    |--------------------------------------------------------------------------
+    |
+    | When moox/audit is installed, each migrate run is written as an activity
+    | log entry (user, outcome, exit code, pending count). Disable to skip.
+    |
+    */
+    'audit' => [
+        'enabled' => env('MOOX_MIGRATE_AUDIT', true),
+        'log_name' => env('MOOX_MIGRATE_AUDIT_LOG', 'migrate'),
+    ],
 ];
+

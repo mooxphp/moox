@@ -9,9 +9,11 @@ Simple moox Entity for Laravel's existing `migrations` table. Lists applied migr
 - Filterable by batch
 - Pending files listed above the table, in the confirm modal, and as a navigation badge
 - No create, view, edit, or delete
-- Header action **Migrate** with confirmation modal
+- Header action **Migrate** with confirmation modal (disabled when nothing is pending)
+- Migrate runs as a queue job; the UI shows busy / done / failed and polls while active
 - Artisan output is truncated in the UI; the full log stays in the application log
 - Concurrent runs are blocked with a cache lock
+- Optional audit logging via `moox/audit` (`MooxActivityLogger`, soft dependency)
 
 ## Requirements
 

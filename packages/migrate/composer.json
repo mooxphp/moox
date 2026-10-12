@@ -22,7 +22,8 @@
         "moox/core": "dev-main"
     },
     "require-dev": {
-        "moox/devtools": "dev-main"
+        "moox/devtools": "dev-main",
+        "moox/audit": "dev-main"
     },
     "autoload": {
         "psr-4": {
