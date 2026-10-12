@@ -36,17 +36,17 @@ final class InvoiceUiPresentation
     /**
      * @return list<string>
      */
-    public static function hiddenInvoiceFields(): array
+    public static function hiddenInvoiceFields(?string $documentType = null): array
     {
-        return self::stringList(config('e-billing.invoice_ui.invoice_fields_hidden', []));
+        return FieldValidationProfile::hiddenFields($documentType);
     }
 
     /**
      * @return list<string>
      */
-    public static function hiddenLineFields(): array
+    public static function hiddenLineFields(?string $documentType = null): array
     {
-        return self::stringList(config('e-billing.invoice_ui.invoice_line_fields_hidden', []));
+        return FieldValidationProfile::hiddenLineFields($documentType);
     }
 
     public static function groupDefaultOpen(string $group): bool
@@ -59,12 +59,16 @@ final class InvoiceUiPresentation
      * @param  'invoice'|'line'  $map
      * @return array{open: bool, issue_count: int, issue_label: ?string}
      */
-    public static function collapsibleState(array $visible, bool $defaultOpen, string $map = 'invoice'): array
-    {
+    public static function collapsibleState(
+        array $visible,
+        bool $defaultOpen,
+        string $map = 'invoice',
+        ?string $documentType = null,
+    ): array {
         $issueCount = 0;
 
         foreach ($visible as $field) {
-            if (self::priority($field->field, $map) === 'must'
+            if (FieldValidationProfile::priority($field->field, $documentType, $map === 'line') === 'must'
                 && in_array($field->status(), self::BLOCKING_STATUSES, true)) {
                 $issueCount++;
             }
@@ -77,39 +81,5 @@ final class InvoiceUiPresentation
                 ? trans_choice('e-billing::fields.group_must_issues', $issueCount, ['count' => $issueCount])
                 : null,
         ];
-    }
-
-    /**
-     * @param  'invoice'|'line'  $map
-     */
-    private static function priority(string $field, string $map): string
-    {
-        $configKey = $map === 'line'
-            ? 'e-billing.field_validation.invoice_line_fields'
-            : 'e-billing.field_validation.invoice_fields';
-
-        $fields = config($configKey, []);
-        $priority = is_array($fields) ? ($fields[$field] ?? null) : null;
-
-        return is_string($priority) && $priority !== '' ? $priority : 'could';
-    }
-
-    /**
-     * @return list<string>
-     */
-    private static function stringList(mixed $value): array
-    {
-        if (! is_array($value)) {
-            return [];
-        }
-
-        $out = [];
-        foreach ($value as $item) {
-            if (is_string($item) && $item !== '') {
-                $out[] = $item;
-            }
-        }
-
-        return $out;
     }
 }

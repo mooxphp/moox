@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace Moox\EBilling\Services;
 
 use Illuminate\Support\Facades\DB;
+use LogicException;
 use Moox\EBilling\Data\Address;
 use Moox\EBilling\Data\Invoice as InvoiceDto;
 use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
-use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceCreated;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\ConfiguredEn16931CodeResolver;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\Invoice\Models\Invoice;
-use Moox\Invoice\Models\InvoiceLine;
 use Moox\Invoice\Support\ChargeDraft;
-use Moox\Invoice\Support\En16931\Address as En16931Address;
 use Moox\Invoice\Support\En16931\BankAccount as En16931BankAccount;
 use Moox\Invoice\Support\En16931\Contact;
 use Moox\Invoice\Support\En16931\Party;
@@ -24,7 +22,7 @@ use Moox\Invoice\Support\En16931\PaymentMeans;
 use Moox\Invoice\Support\InvoiceBuilder;
 use Moox\Invoice\Support\InvoiceDraft;
 use Moox\Invoice\Support\InvoiceLineDraft;
-use RuntimeException;
+use Moox\Invoice\Support\InvoiceModels;
 
 class ParsedInvoiceMapper
 {
@@ -45,38 +43,22 @@ class ParsedInvoiceMapper
         return $this->codeResolver ?? app(ConfiguredEn16931CodeResolver::class);
     }
 
-    // Extend Invoice in your host app if needed
+    /**
+     * Maps the parsed payload into the case's Invoice exactly once (ADR 0013). Afterwards the
+     * Invoice rows are the working model; there is no re-parse, so existing rows are never rebuilt.
+     *
+     * @throws LogicException when the document already has its Invoice
+     */
     public function createFromDto(InvoiceDto $dto, EbillingDocument $document): Invoice
     {
-        // Extend Invoice in your host app if needed
-        $invoice = DB::transaction(function () use ($dto, $document): Invoice {
-            $existingInvoice = $this->findExistingInvoiceForDocument($document);
+        $existingInvoice = $this->findExistingInvoiceForDocument($document);
+        if ($existingInvoice !== null) {
+            throw new LogicException(
+                "Document #{$document->getKey()} already has Invoice #{$existingInvoice->getKey()}; the parsed payload is mapped only once."
+            );
+        }
 
-            if ($existingInvoice !== null) {
-                $reviewStatus = $document->review_status;
-                $isReviewed = $reviewStatus === InvoiceProcessingStatus::HumanConfirmed
-                    || $reviewStatus === InvoiceProcessingStatus::Validated;
-                if ($isReviewed) {
-                    throw new RuntimeException(
-                        "Cannot re-create Invoice #{$existingInvoice->id} for document #{$document->getKey()}: "
-                        ."document review status is '{$reviewStatus->value}'. "
-                        .'Manual intervention required.'
-                    );
-                }
-
-                // Extend InvoiceLine in your host app if needed
-                $existingInvoice->lines()->each(function (InvoiceLine $line): void {
-                    $line->allowanceCharges()->delete();
-                    $line->delete();
-                });
-                $existingInvoice->allowanceCharges()->delete();
-                $existingInvoice->delete();
-            }
-
-            $draft = $this->buildDraftFromDto($dto);
-
-            return $this->invoiceBuilder->build($draft);
-        });
+        $invoice = DB::transaction(fn (): Invoice => $this->invoiceBuilder->build($this->buildDraftFromDto($dto)));
 
         $this->linkDocumentToInvoice($document, $invoice);
 
@@ -90,6 +72,7 @@ class ParsedInvoiceMapper
     {
         $document->invoice_id = $invoice->id;
         $document->save();
+        $document->setRelation('invoice', $invoice);
     }
 
     private function findExistingInvoiceForDocument(EbillingDocument $document): ?Invoice
@@ -98,7 +81,8 @@ class ParsedInvoiceMapper
             return null;
         }
 
-        return Invoice::query()->find($document->invoice_id);
+        // A soft-deleted Invoice still counts: re-mapping would silently replace it.
+        return InvoiceModels::invoice()::query()->withTrashed()->find($document->invoice_id);
     }
 
     private function buildDraftFromDto(InvoiceDto $dto): InvoiceDraft
@@ -113,6 +97,9 @@ class ParsedInvoiceMapper
             due_date: $dto->dueDate,
             currency: $dto->currency,
             customer_number: $dto->customerNumber !== '' ? $dto->customerNumber : null,
+            supplier_number: $dto->supplierNumber !== null && $dto->supplierNumber !== ''
+                ? $dto->supplierNumber
+                : null,
             customer_reference: $dto->customerReference,
             order_number: $dto->orderNumber,
             order_date: $dto->orderDate,
@@ -139,6 +126,7 @@ class ParsedInvoiceMapper
             ),
             headerCharges: $this->buildHeaderChargeDraftsFromDto($dto),
             notes: $dto->notes,
+            preceding_invoices: $dto->precedingInvoices,
         );
     }
 
@@ -197,6 +185,7 @@ class ParsedInvoiceMapper
             line_total: $dto->lineTotal,
             delivery_date: $dto->deliveryDate,
             delivery_note_number: $dto->deliveryNoteNumber,
+            deliveries: $dto->partialDeliveries,
             order_number: $dto->orderNumber,
             order_date: $dto->orderDate,
             delivery: $dto->deliveryAddress?->toEn16931DeliveryParty(),
@@ -226,7 +215,7 @@ class ParsedInvoiceMapper
         return $this->mapEn16931Party(
             name: $dto->customerName,
             vatId: $dto->customerVatId,
-            taxNumber: null,
+            taxNumber: $dto->customerTaxNumber,
             address: $dto->customerAddress,
             contact: null,
         );
@@ -280,7 +269,7 @@ class ParsedInvoiceMapper
             return null;
         }
 
-        $en16931Address = $this->mapEn16931Address($address);
+        $en16931Address = $address?->toEn16931Address();
         if ($en16931Address === null) {
             return null;
         }
@@ -291,40 +280,6 @@ class ParsedInvoiceMapper
             tax_number: $taxNumber,
             address: $en16931Address,
             contact: $contact,
-        );
-    }
-
-    private function mapEn16931Address(?Address $address): ?En16931Address
-    {
-        if ($address === null) {
-            return null;
-        }
-
-        $countryCode = $address->country !== null ? strtoupper(trim($address->country)) : '';
-        if ($countryCode === '') {
-            return null;
-        }
-
-        $line1 = trim((string) ($address->street ?? ''));
-        if ($line1 === '' && $address->company !== null) {
-            $line1 = trim($address->company);
-        }
-
-        $line2 = $address->addressLine2;
-        if ($address->addressLine3 !== null && trim($address->addressLine3) !== '') {
-            $line3 = trim($address->addressLine3);
-            $line2 = $line2 !== null && trim($line2) !== ''
-                ? trim($line2)."\n".$line3
-                : $line3;
-        }
-
-        return new En16931Address(
-            line1: $line1,
-            line2: $line2 !== null && trim($line2) !== '' ? trim($line2) : null,
-            city: trim((string) ($address->city ?? '')),
-            postal_code: trim((string) ($address->zip ?? '')),
-            subdivision: null,
-            country_code: $countryCode,
         );
     }
 

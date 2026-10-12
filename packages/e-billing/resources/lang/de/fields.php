@@ -16,6 +16,7 @@ return [
     'supplier_address' => 'Adresse',
     'country' => 'Land',
     'customer_vat_id' => 'USt-IdNr.',
+    'customer_tax_number' => 'Steuernummer',
     'supplier_vat_id' => 'USt-IdNr.',
     'customer_reference' => 'Kundenreferenz',
     'order_number' => 'Bestellnummer',
@@ -41,6 +42,9 @@ return [
     'shipping_cost' => 'Versandkosten',
     'minimum_quantity_surcharge' => 'Mindermengenzuschlag',
     'freight_flat_rate' => 'Frachtkostenpauschale',
+    'certificate_cost' => 'Attestkosten',
+    'customs_cost' => 'Zollkosten',
+    'totals_reconciliation' => 'Summenabgleich',
     'packaging_cost' => 'Verpackungskosten',
     'notes' => 'Bemerkungen',
     'position' => 'Position',
@@ -74,6 +78,8 @@ return [
     'seller_bank_name' => 'Bank Lieferant',
     'buyer_address' => 'Empfängeradresse',
     'buyer_tax_id' => 'USt-IdNr. Empfänger',
+    'preceding_invoice_number' => 'Bezugsrechnung',
+    'preceding_invoice_date' => 'Datum Bezugsrechnung',
     'buyer_email' => 'Empfänger-E-Mail',
     'tax_number' => 'Steuernummer',
     'supplier' => 'Lieferant',
@@ -103,6 +109,7 @@ return [
     'gateway_status_validation_failed' => 'Validierung fehlgeschlagen',
     'gateway_status_validator_error' => 'Validator-Fehler',
     'gateway_status_ignored_foreign' => 'Ignoriert (Ausland)',
+    'gateway_status_ignored_before_cutoff' => 'Ignoriert (vor Stichtag)',
     'gateway_status_ignored_identical_duplicate' => 'Ignoriert (identische Datei)',
 
     // Validation badges
@@ -152,6 +159,7 @@ return [
     'banner_db_validated' => 'Automatisch vorgeprüft — Manuelle Bestätigung nötig',
     'banner_human_confirmed' => 'Manuell bestätigt — Warte auf finale Freigabe',
     'banner_validated' => '✓ Freigegeben',
+    'banner_held_for_approval' => 'Angehalten – wartet auf manuelle Freigabe (nach Neuverarbeitung)',
 
     // Tabs
     'tab_all' => 'Alle',
@@ -160,7 +168,51 @@ return [
     'tab_processing' => 'In Bearbeitung',
     'tab_needs_review' => 'Prüfung nötig',
     'tab_confirmed' => 'Bestätigt',
+    'tab_awaiting_approval' => 'Zur Freigabe',
+    'tab_sent' => 'Versendet',
     'tab_deleted' => 'Gelöscht',
+    'tab_credit_notes' => 'Kaufmännische Gutschriften',
+    'tab_corrected_invoices' => 'Rechnungskorrekturen',
+
+    // Document classification (ADR 0011): label, "when to choose" hint, upload instruction (rule + examples).
+    // Hosts override via lang/vendor/e-billing; example lists merge by index, so keep the same length.
+    'document_classification' => [
+        '381' => [
+            'label' => 'Kaufmännische Gutschrift (381)',
+            'hint' => 'Wählen, wenn die ursprüngliche Rechnung korrekt war und sich der geschuldete Betrag danach '
+                .'aus einem eigenständigen Grund geändert hat – z. B. Bonus, Rabatt oder Rücksendung. '
+                .'Beträge werden positiv ausgewiesen. Nicht gemeint ist die Gutschrift, die der '
+                .'Leistungsempfänger selbst ausstellt (§ 14 Abs. 2 Satz 2 UStG).',
+            'rule' => 'Die ursprüngliche Rechnung war korrekt. Der geschuldete Betrag hat sich danach '
+                .'aus einem eigenständigen kaufmännischen Grund geändert. '
+                .'Ein Bezug auf die Ursprungsrechnung ist nicht nötig.',
+            'examples' => [
+                'Jahresrückvergütung oder Bonus für ein erreichtes Umsatzvolumen',
+                'Nachträglicher Rabatt, Preisnachlass oder Skonto',
+                'Rücksendung (Retoure) ordnungsgemäß gelieferter und berechneter Ware',
+            ],
+        ],
+        '384' => [
+            'label' => 'Rechnungskorrektur (384)',
+            'hint' => 'Wählen, wenn eine bereits gestellte Rechnung fehlerhaft war oder storniert wird – '
+                .'z. B. falsche Menge, falscher Preis oder vollständiger Storno. Die ursprüngliche '
+                .'Rechnung muss mit Nummer und Datum angegeben sein (§ 31 Abs. 5 UStDV). Wird die '
+                .'Korrektur als Gutschrift des Differenzbetrags ausgestellt, sind die Beträge negativ.',
+            'rule' => 'Die ursprüngliche Rechnung war fehlerhaft oder wird storniert. '
+                .'Die Ursprungsrechnung muss mit Nummer und Datum angegeben sein.',
+            'examples' => [
+                'Falsche Menge oder falscher Preis wurde berechnet',
+                'Falsche oder fehlende Pflichtangabe auf der Rechnung',
+                'Stornorechnung: vollständige Stornierung einer bereits übermittelten Rechnung',
+            ],
+        ],
+    ],
+    'document_classification_help' => [
+        'title' => 'Welchen Belegtyp wähle ich?',
+        'placeholder' => 'Belegtyp wählen',
+        'helper' => 'Pflichtangabe. Entscheidend ist, ob die ursprüngliche Rechnung fehlerhaft war – '
+            .'nicht, ob das Dokument „Gutschrift“ heißt.',
+    ],
 
     // Filters
     'filter_needs_review' => 'Prüfung nötig',
@@ -186,6 +238,12 @@ return [
     // Approval gate
     'approval_status' => 'Freigabe',
     'approval_status_pending' => 'Freigabe ausstehend',
+    'dispatch_status' => 'Versandstatus',
+    'dispatch_status_sent' => 'Versendet',
+    'dispatch_status_delivery_failed' => 'Versand fehlgeschlagen',
+    'dispatch_status_held' => 'Angehalten',
+    'dispatch_status_awaiting_approval' => 'Wartet auf Freigabe',
+    'dispatch_status_rejected' => 'Abgelehnt',
     'approval_status_approved' => 'Zum Versand freigegeben',
     'approval_status_rejected' => 'Abgelehnt',
     'approval_reason' => 'Begründung',
@@ -218,15 +276,65 @@ return [
     'document_version' => 'Version',
     'document_version_label' => 'v:version',
     'document_version_current' => 'Aktuell',
-    'action_set_attribution' => 'Kunde zuordnen',
-    'action_set_attribution_modal_heading' => 'Kunde zuordnen',
-    'action_set_attribution_modal_description' => 'Wählen Sie den Kunden, dem dieses Dokument zugeordnet ist. War die Rechnung bereits bestätigt oder validiert, wird diese Bestätigung aufgehoben und muss erneut erfolgen.',
-    'action_set_attribution_submit' => 'Zuordnung speichern',
-    'action_rematch' => 'Felder neu bewerten',
-    'action_rematch_modal_heading' => 'Felder erneut bewerten',
-    'action_rematch_modal_description' => 'Setzt dieses Dokument in den Zustand vor der Bestätigung zurück und bewertet die Felder neu. Eine manuell gesetzte Kunden-Zuordnung wird nicht überschrieben.',
-    'action_rematch_submit' => 'Ja, neu bewerten',
     'field_customer' => 'Kunde',
+
+    // Prüf-Arbeitsbereich (ADR 0004)
+    'action_start_review_edit' => 'Bearbeiten',
+    'action_finish_review_edit' => 'Bearbeitung beenden',
+    'action_finish_review_edit_modal_heading' => 'Bearbeitung beenden?',
+    'action_finish_review_edit_modal_description' => 'Kundenzuordnung und Feldprüfung laufen erneut. Wurde etwas geändert, wird die E-Rechnung außerdem neu erzeugt und neu validiert. Ein manuell zugeordneter Kunde bleibt erhalten. War das Dokument bereits bestätigt, muss es erneut bestätigt werden. Freigeben ist möglich, sobald die Validierung bestanden ist.',
+    'action_finish_review_edit_submit' => 'Beenden und neu prüfen',
+    'review_mode_title' => 'Bearbeitung',
+    'review_mode_hint' => 'Werte so korrigieren, wie sie im Ursprungsdokument stehen. Jedes Feld wird einzeln gespeichert; die Prüfung läuft beim Beenden erneut.',
+    'review_no_customer' => 'Nicht zugeordnet',
+    'review_change_customer' => 'Kunde ändern',
+    'review_change_customer_description' => 'Wählen Sie den Kunden, dem dieses Dokument zugeordnet ist. Die Stammdaten-Vorschläge folgen dem neuen Kunden; Werte auf dem Dokument bleiben erhalten.',
+    'review_edit_field' => 'Feld bearbeiten',
+    'review_edit_description' => 'Geben Sie ein, was im Ursprungsdokument steht. Der Wert wird nur auf diesem Dokument geändert, nie in den Stammdaten.',
+    'review_edit_submit' => 'Feld speichern',
+    'review_note' => 'Notiz',
+    'review_note_hint' => 'Optional, z. B. warum der Parser falsch gelesen hat.',
+    'review_master_data_hint' => 'Vorschläge stammen aus den Stammdaten des zugeordneten Kunden. Ein Wert außerhalb der Liste ist ebenfalls möglich.',
+    'review_master_data_none' => 'Der zugeordnete Kunde hat für dieses Feld keinen Stammdatenwert.',
+    'review_master_data_address' => 'Adresse aus Stammdaten',
+    'review_master_data_address_hint' => 'Füllt die Felder unten mit einer Adresse des zugeordneten Kunden.',
+    'review_master_data_address_strict_hint' => 'Wählen Sie eine Adresse des zugeordneten Kunden. Leer lassen, um die Adresse zu leeren.',
+    'review_recipient_inbox_hint' => 'Leer lassen, um an die Postfach-Adresse :email zuzustellen.',
+    'review_not_in_master_data' => 'Nicht in den Stammdaten des zugeordneten Kunden – bitte prüfen.',
+    'review_corrected_parsed' => 'Korrigiert. Ausgelesener Wert: :value',
+    'review_parsed_empty' => '(leer)',
+    'review_input' => [
+        'name' => 'Name',
+        'line1' => 'Straße',
+        'line2' => 'Adresszusatz',
+        'postal_code' => 'PLZ',
+        'city' => 'Ort',
+        'subdivision' => 'Region',
+        'country_code' => 'Ländercode',
+        'iban' => 'IBAN',
+        'bic' => 'BIC',
+        'bank_name' => 'Bank',
+    ],
+    'approval_blocked_prefix' => 'Freigabe noch nicht möglich:',
+    'approval_blocked' => [
+        'pipeline_running' => 'Die E-Rechnung wird neu erzeugt und validiert.',
+        'artifact_failed' => 'Erzeugen oder Validieren der E-Rechnung ist fehlgeschlagen. Dokument korrigieren und die Bearbeitung beenden, um es erneut zu versuchen.',
+        'artifact_not_validated' => 'Die E-Rechnung ist noch nicht validiert.',
+        'human_review_required' => 'Diese Felder korrigieren oder das Dokument bestätigen:',
+        'credit_note_negative_total' => 'Die Gutschrift hat einen negativen Gesamtbetrag.',
+        'must_field_missing' => 'Diese Pflichtfelder fehlen:',
+    ],
+    'review_fields_to_check' => 'Zu prüfende Felder:',
+    'review_not_editable' => [
+        'not_configured' => 'Nicht bearbeitbar: Das Feld gehört nicht zu den konfigurierten korrigierbaren Feldern.',
+        'not_audited' => 'Nicht bearbeitbar: Das Feld wird nicht im Audit-Log erfasst, der ausgelesene Wert ließe sich nicht erhalten.',
+        'unknown_key' => 'Nicht bearbeitbar: Das Dokument hat keinen solchen Wert.',
+        'unknown_field' => 'In der Prüfung nicht bearbeitbar.',
+        'no_charge_row' => 'Nicht bearbeitbar: Das Dokument hat keinen solchen Zu- oder Abschlag. Neue anlegen ist in der Prüfung nicht möglich.',
+        'several_charges' => 'Summe mehrerer Zuschläge: Korrigieren Sie die einzelnen Zuschläge darunter.',
+        'document_level' => 'Hier nicht bearbeitbar: Wert gilt für das ganze Dokument – unter Beträge korrigieren.',
+        'not_classifiable' => 'Nicht bearbeitbar: Nur die konfigurierten Typen Gutschrift und korrigierte Rechnung sind umstellbar.',
+    ],
 
     // Notifications
     'notification_confirmed_title' => 'Rechnung bestätigt',
@@ -237,10 +345,15 @@ return [
     'notification_confirm_failed_missing_must_body' => 'Bestätigung nicht möglich — Pflichtfelder fehlen: :fields.',
     'notification_attribution_updated_title' => 'Zuordnung aktualisiert',
     'notification_attribution_updated_body' => 'Die Dokument-Zuordnung wurde als manuell gespeichert.',
-    'notification_rematch_success_title' => 'Felder neu bewertet',
-    'notification_rematch_success_body' => 'Das Dokument wurde zurückgesetzt und die Felder neu bewertet.',
-    'notification_rematch_failed_title' => 'Neubewertung fehlgeschlagen',
-    'notification_rematch_failed_body' => 'Die Felder konnten für dieses Dokument nicht neu bewertet werden.',
+    'notification_review_finished_title' => 'Bearbeitung beendet',
+    'notification_review_finished_body' => 'Kundenzuordnung und Feldprüfung sind erneut gelaufen. Die E-Rechnung wird neu erzeugt und validiert; der Status steht auf dieser Seite.',
+    'notification_review_finished_unchanged_body' => 'Kundenzuordnung und Feldprüfung sind erneut gelaufen. Es wurde nichts geändert, die E-Rechnung wurde daher nicht neu erzeugt.',
+    'notification_review_finish_failed_title' => 'Neuprüfung nicht gestartet',
+    'notification_review_finish_failed_body' => 'Zuordnung, Neuerzeugung und Validierung konnten für dieses Dokument nicht gestartet werden.',
+    'notification_review_saved_title' => 'Feld gespeichert',
+    'notification_review_unchanged_title' => 'Keine Änderung',
+    'notification_review_save_failed_title' => 'Feld nicht gespeichert',
+    'notification_review_save_failed_body' => 'Der Wert konnte nicht gespeichert werden.',
     'action_manual_upload' => 'PDF hochladen',
     'action_manual_upload_modal_description' => 'Das PDF wird übernommen, ausgewertet und als E-Rechnung aufbereitet.',
     'action_manual_upload_submit' => 'Hochladen',
@@ -264,6 +377,8 @@ return [
     'line_item_position' => 'Position :position',
 
     // Field hints — missing
+    'hint_satisfied_by_lines' => 'Steht nicht im Kopf, sondern in jeder Position; hier die Werte der Positionen.',
+    'hint_satisfied_by_alternative' => 'Nicht nötig: ein gleichwertiges Feld ist angegeben.',
     'hint_missing_invoice_number' => 'Rechnungsnummer konnte nicht aus dem Dokument gelesen werden.',
     'hint_missing_customer_number' => 'Kundennummer fehlt im Dokument.',
     'hint_missing_customer_name' => 'Kundenname konnte nicht erkannt werden.',
@@ -277,7 +392,7 @@ return [
     'hint_missing_freight_flat_rate' => 'Frachtkostenpauschale fehlt im Dokument.',
     'hint_missing_quantity' => 'Menge fehlt in dieser Position.',
     'hint_missing_description' => 'Positionsbeschreibung fehlt.',
-    'hint_missing_buyer_email' => 'Keine E-Mail-Adresse (An) in der Posteingangsnachricht.',
+    'hint_missing_buyer_email' => 'Keine Empfänger-E-Mail (in der Prüfung setzen, oder Posteingang An bei Mail).',
     'hint_missing_default' => 'Dieses Pflichtfeld fehlt im Dokument.',
 
     // Field hints — needs review
@@ -294,11 +409,19 @@ return [
     'hint_review_freight_flat_rate' => 'Frachtkostenpauschale sollte manuell überprüft werden.',
     'hint_review_delivery_date' => 'Mehrere Lieferdaten erfüllen die Regel zur tatsächlichen Lieferung '
         .'bei innergemeinschaftlicher Lieferung nicht, ohne sie zu einem Zeitraum zusammenzuziehen.',
+    'hint_review_totals_reconciliation' => 'Positionen und Zu-/Abschläge ergeben nicht den Nettobetrag '
+        .'(Differenz :difference €). Positionsbeträge und Zuschläge mit dem PDF abgleichen.',
     'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits und muss geprüft werden.',
+    'hint_review_declared_document_type' => 'Beim Hochladen wurde ein anderer Belegtyp gewählt, '
+        .'als das Dokument trägt – bitte prüfen.',
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 
     // Field hints — informational (no validation status)
-    'hint_info_buyer_email' => 'Aus Posteingang (An) — nicht mit Stammdaten abgeglichen.',
+    'hint_info_buyer_email' => 'Empfänger für die Zustellung — nicht mit Stammdaten abgeglichen.',
+    'hint_warning_preceding_invoice_not_found' => 'Bezugsrechnung nicht im System gefunden — bitte prüfen '
+        .'(blockiert nicht).',
+    'hint_warning_preceding_invoice_date_mismatch' => 'Datum weicht von der gespeicherten Bezugsrechnung ab — '
+        .'bitte prüfen (blockiert nicht).',
 
     'section_kosit_validations' => 'KoSIT-Validierungen',
     'kosit_validations_empty' => 'Noch keine KoSIT-Validierungen.',
@@ -338,7 +461,7 @@ return [
     'activity_escalation_level' => 'Eskalationsstufe',
     'action_redispatch_delivery' => 'Erneut zustellen',
     'action_redispatch_delivery_modal_heading' => 'Dokument erneut zustellen',
-    'action_redispatch_delivery_modal_description' => 'Wählen Sie, welche konfigurierten Kanäle erneut eingereiht werden sollen. Vorherige Versuche bleiben erhalten. Empfänger bleiben unverändert.',
+    'action_redispatch_delivery_modal_description' => 'Wählen Sie, welche konfigurierten Kanäle erneut eingereiht werden sollen. Vorherige Versuche bleiben erhalten. E-Mails gehen an die üblichen Empfänger, außer Sie geben für diesen Durchlauf einen abweichenden Empfänger an.',
     'notification_redispatch_success_title' => 'Zustellung eingereiht',
     'notification_redispatch_success_body' => 'Das Dokument wurde zur Zustellung eingereiht.',
     'redispatch_channels' => 'Kanäle',
@@ -346,4 +469,9 @@ return [
     'delivery_channel_mail' => 'E-Mail',
     'delivery_channel_portal' => 'Portal',
     'redispatch_success_warning_line' => 'Kanal :channel war bereits erfolgreich — erneute Auswahl stellt erneut zu.',
+    'redispatch_override_warning_line' => 'Kanal :channel: wird an :override statt an :resolved gesendet.',
+    'redispatch_override_no_resolved_recipient' => 'keinen ermittelten Empfänger',
+    'redispatch_recipient_override' => 'Abweichender Empfänger',
+    'redispatch_recipient_override_placeholder' => 'E-Mail-Adresse hinzufügen',
+    'redispatch_recipient_override_hint' => 'Nur für diesen Durchlauf; Stammdaten bleiben unverändert. Leer lassen, um zu senden an: :recipients',
 ];

@@ -121,6 +121,20 @@ Seeded on install:
 - `login-link.user_models`: allowed user models (must include the model used by your panel auth guard provider).
 - `login-link.mail_template.enabled`: use `moox/mail-template` when that package is installed (default true).
 - `login-link.mail_logo_url`: optional logo on the HTML chrome mail when no MailTemplate row is used.
+- `login-link.mail.enabled`: when false, links are still issued but no mail is sent. Default true. Hosts that must not emit mail default this off (`LOGIN_LINK_MAIL_ENABLED`).
+- `login-link.mail.mailer`: Laravel mailer name (`LOGIN_LINK_MAILER`). Empty uses the application default. Envelope From is the process `mail_from` when set.
+
+### Outbound mail
+
+The host names the mailer. In the heco app that name is `invoice-outbound`, shared with invoice delivery and user-device.
+
+| Mode | Env | What you see |
+| --- | --- | --- |
+| Test | `MAIL_OUTBOX_TEST_MODE=true` and `MAIL_OUTBOX_TEST_MODE_REDIRECT_TO` (optional `MAIL_OUTBOX_TEST_MODE_REDIRECT_NAME`) | Mailer stays the configured one. The recipient is rewritten to the sandbox address. |
+| Live | `MAIL_OUTBOX_TEST_MODE=false` | Mailer stays the configured one. The real recipient address is used. |
+| Fake live, local | `LOGIN_LINK_MAILER=smtp`, `MAIL_HOST=127.0.0.1`, `MAIL_PORT=2525`, test mode off | The real address is visible locally. The mail does not leave the machine. |
+
+`LOGIN_LINK_MAIL_ENABLED=false` still issues the link and sends nothing.
 
 ## Security notes
 

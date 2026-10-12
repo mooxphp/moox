@@ -19,6 +19,7 @@ return [
     'mail_label_system' => 'System',
     'mail_label_ip' => 'IP-Adresse',
     'mail_label_location' => 'Ort',
+    'mail_location_unknown' => 'Nicht ermittelbar',
     'mail_if_it_was_you' => 'Wenn du das selbst warst, kannst du diese E‑Mail ignorieren.',
     'mail_if_it_was_not_you' => 'Wenn du das nicht warst:',
     'mail_step_review_devices' => 'prüfe deine Geräte‑Liste',
@@ -29,8 +30,8 @@ return [
     'mail_outro_secure_account' => 'Wenn das nicht du warst, sichere bitte dein Benutzerkonto.',
 
     // Enforcement
-    'device_blocked_title' => 'Geräte-Bestätigung erforderlich',
-    'device_blocked_body' => 'Bitte bestätige dieses Gerät über den Link aus der E‑Mail, die wir dir gesendet haben.',
+    'device_blocked_title' => 'Neues Gerät erkannt',
+    'device_blocked_body' => 'Dieses Gerät ist noch nicht bestätigt. Wir haben dir eine E‑Mail geschickt. Bitte öffne den Bestätigungslink darin, danach kannst du dich anmelden.',
 
     // Devices
     'device_trusted' => 'Vertraut',

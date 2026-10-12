@@ -86,6 +86,7 @@ $draft = new InvoiceDraft(
             line_total: 100.0,
             delivery_date: null,
             delivery_note_number: null,
+            deliveries: [], // list of ['date' => 'Y-m-d', 'delivery_note' => '...', 'quantity' => 1.0]
             order_number: null,
             order_date: null,
             delivery: null,
@@ -184,6 +185,7 @@ The `Invoice` model (`Moox\Invoice\Models\Invoice`) stores the invoice header. I
 -   `due_date` (string, nullable) - Payment due date
 -   `currency` (string, default: `EUR`) - ISO 4217 currency code
 -   `customer_number` (string, nullable, indexed) - Buyer identifier assigned by the seller (EN 16931 **BT-46**); stored verbatim from the document
+-   `supplier_number` (string, nullable, indexed) - Seller identifier (EN 16931 **BT-29**, printed Lieferanten-Nr.); stored verbatim from the document
 -   `customer_reference` (string, nullable) - Reference the buyer asked to see on the document (EN 16931 **BT-10**); distinct from `customer_number`
 -   `order_number` (string, nullable) - Associated order number
 -   `order_date` (string, nullable) - Associated order date
@@ -191,6 +193,7 @@ The `Invoice` model (`Moox\Invoice\Models\Invoice`) stores the invoice header. I
 -   `payment_terms` (text, nullable) - Payment terms free text (EN 16931 **BT-20**)
 -   `shipping_method` (string, nullable) - Shipping / delivery method as shown on the document
 -   `delivery_terms` (string, nullable) - Delivery terms / freight bearer (e.g. ex works; free text; serialized as note in e-billing / ZUGFeRD layer; not payment terms)
+-   `preceding_invoices` (json, nullable) - Preceding invoice references (EN 16931 **BG-3**: list of `{number, date}`, BT-25/BT-26)
 -   `seller` (json, nullable) - Seller party snapshot; cast to `Party` via `PartyCast`
 -   `buyer` (json, nullable) - Buyer party snapshot; cast to `Party` via `PartyCast`
 -   `delivery` (json, nullable) - Consignee party (name + address); cast to `Party` via `DeliveryPartyCast`. VAT identifier, tax number, and contact are not stored. A stored consignee may lack `country_code`; BR-57 is enforced at emission.
@@ -230,6 +233,7 @@ The `InvoiceLine` model (`Moox\Invoice\Models\InvoiceLine`) stores a single invo
 -   `delivery` (json, nullable) - Line consignee party (name + address); cast to `Party` via `DeliveryPartyCast`. VAT identifier, tax number, and contact are not stored. A stored consignee may lack `country_code`; BR-57 is enforced at emission.
 -   `delivery_date` (string, nullable) - Delivery date
 -   `delivery_note_number` (string, nullable) - Delivery note reference
+-   `deliveries` (json, nullable) - Partial deliveries of the line: list of `{date, delivery_note, quantity}` (`date` as `Y-m-d`); `null` when the line was delivered at once. Cast as `array`. Migration stub `add_deliveries_to_invoice_lines_table` (hosts must publish/run it).
 -   `order_number` (string, nullable) - Line order number
 -   `order_date` (string, nullable) - Line order date
 -   `created_at` (datetime) - Creation timestamp
@@ -276,6 +280,17 @@ Published config: `config/invoice.php`.
 | `models.invoice_allowance_charge` | `Moox\Invoice\Models\InvoiceAllowanceCharge` |
 
 Override these entries to swap in custom model implementations; `InvoiceModels` and `InvoiceBuilder` resolve classes from this map.
+
+### Audit
+
+moox/audit is optional (a composer `suggest`). When it is installed, `InvoiceServiceProvider` registers the invoice, its lines and its allowances and charges with it at boot, using log name `invoice`. Invoice lines and allowances/charges are audited too.
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `audit.enabled` | `true` | Register the models with moox/audit. Auditing is also off when moox/audit's own `audit.enabled` is `false`. |
+| `audit.models` | Invoice, InvoiceLine, InvoiceAllowanceCharge | Per package model: `log_name` and the audited `attributes`. |
+
+The keys of `audit.models` are the package models; when `models.*` points to a subclass, the subclass is audited in its place. Override per model in the host's `config/audit.php`.
 
 ## Changelog
 

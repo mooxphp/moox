@@ -7,18 +7,18 @@ date: 2026-09-22
 
 ## Context
 
-Approved documents run every FQCN in `e-billing.delivery.channels` (today typically mail + portal). *Erneut zustellen* (`redispatch_delivery` on ViewInvoice) re-queues that same full set. Operators often need only one channel again (failed mail, bounce recovery) and must not silently re-push a channel that already succeeded. Host/root ADR 0003 (outgoing invoice delivery) still says customer delivery is both channels for the **initial** path; that must not be read as forcing full-set redispatch forever.
+Approved documents run every FQCN in `e-billing.delivery.channels` (today typically mail + portal). *Re-dispatch* (`redispatch_delivery` on ViewInvoice) re-queues that same full set. Operators often need only one channel again (failed mail, bounce recovery) and must not silently re-push a channel that already succeeded. Host/root ADR 0003 (outgoing invoice delivery) still says customer delivery is both channels for the **initial** path; that must not be read as forcing full-set redispatch forever.
 
 ## Decision
 
-**Selective redispatch** is the operator *Erneut zustellen* path only:
+**Selective redispatch** is the operator *Re-dispatch* path only:
 
 - First post-approval dispatch still runs **all** configured channels (unchanged).
 - The redispatch modal lists **configured** channels only (not orphan historical keys).
 - Default selection: channels whose **latest attempt wave** **failed**, or that **never ran**; successful channels unchecked. A wave is every attempt row for that channel sharing the latest `created_at` (mail may write several recipients in one `deliver()` call).
 - At least one channel required; empty confirm is invalid.
 - Selecting a previously successful channel is allowed; the UI **warns** for every such selected channel (consistent across mail, portal, and future channels). Previous attempts are kept; each run records new attempt rows.
-- **Channels only** — no recipient override in this modal (resolver / master data stay the source of truth).
+- ~~**Channels only** — no recipient override in this modal (resolver / master data stay the source of truth).~~ Superseded by ADR 0016 (optional one-off recipient override for the mail channel).
 - Each option shows a read-only last-attempt hint (status, when, and mail recipient when known).
 - Lives in `moox/e-billing` (generic ViewInvoice); hosts only register channel FQCNs.
 

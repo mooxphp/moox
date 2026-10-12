@@ -6,6 +6,7 @@ namespace Moox\EBilling\Data;
 
 use Moox\EBilling\Adapters\ZugferdInvoiceDtoAdapter;
 use Moox\EBilling\Support\BillDataAllowanceChargeMapper;
+use Moox\EBilling\Support\PrecedingInvoiceReferences;
 use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdBankAccount;
@@ -25,6 +26,8 @@ class Invoice
         public string $customerName = '',
         public ?Address $customerAddress = null,
         public ?string $customerVatId = null,
+        /** Buyer's national tax number as printed; no EN 16931 term, emitted as buyer FC registration. */
+        public ?string $customerTaxNumber = null,
         public ?string $customerReference = null,
 
         public ?string $orderNumber = null,
@@ -62,6 +65,8 @@ class Invoice
         public ?float $minimumQuantitySurcharge = null,
         public ?float $freightFlatRate = null,
         public ?float $packagingCost = null,
+        public ?float $certificateCost = null,
+        public ?float $customsCost = null,
         public ?string $shippingMethod = null,
 
         /** @var InvoiceLine[] */
@@ -70,11 +75,23 @@ class Invoice
         /** @var array<int, string> */
         public array $notes = [],
 
+        /** @var list<array{number: string, date: ?string}> BG-3: BT-25 number, BT-26 date (Y-m-d) */
+        public array $precedingInvoices = [],
+
         // Currency
         public string $currency = 'EUR',
+
+        /**
+         * Single printed charges (BG-21) where a field is charged more than once, e.g. Versand per delivery.
+         * When a field has rows, they replace its summed scalar above on emission.
+         *
+         * @var list<array{field: string, amount: float, reason: ?string}>
+         */
+        public array $documentCharges = [],
     ) {
         $this->customerVatId = VatIdNormalizer::normalize($this->customerVatId);
         $this->supplierVatId = VatIdNormalizer::normalize($this->supplierVatId);
+        $this->documentCharges = BillDataAllowanceChargeMapper::documentChargeRows($this->documentCharges);
     }
 
     public function forZugferd(): ZugferdInvoice
@@ -102,14 +119,22 @@ class Invoice
      */
     public function allowanceCharges(): array
     {
-        return BillDataAllowanceChargeMapper::fromHeaderScalars(
-            $this->shippingCost,
-            $this->packagingCost,
-            $this->minimumQuantitySurcharge,
-            $this->freightFlatRate,
-            $this->discountAmount,
-            $this->discountPercent,
-        );
+        $itemized = array_column($this->documentCharges, 'field', 'field');
+        $scalar = fn (string $field, ?float $amount): ?float => isset($itemized[$field]) ? null : $amount;
+
+        return [
+            ...BillDataAllowanceChargeMapper::fromHeaderScalars(
+                $scalar('shipping_cost', $this->shippingCost),
+                $scalar('packaging_cost', $this->packagingCost),
+                $scalar('minimum_quantity_surcharge', $this->minimumQuantitySurcharge),
+                $scalar('freight_flat_rate', $this->freightFlatRate),
+                $this->discountAmount,
+                $this->discountPercent,
+                $scalar('certificate_cost', $this->certificateCost),
+                $scalar('customs_cost', $this->customsCost),
+            ),
+            ...BillDataAllowanceChargeMapper::fromDocumentChargeRows($this->documentCharges),
+        ];
     }
 
     /**
@@ -144,6 +169,7 @@ class Invoice
             customerName: $customerName,
             customerAddress: $customerAddress,
             customerVatId: $data['customer_vat_id'] ?? null,
+            customerTaxNumber: $data['customer_tax_number'] ?? null,
             customerReference: $data['customer_reference'] ?? null,
 
             // Supplier snapshot from config
@@ -240,6 +266,7 @@ class Invoice
             customerName: $customerName,
             customerAddress: $customerAddress,
             customerVatId: isset($data['customer_vat_id']) && is_string($data['customer_vat_id']) ? $data['customer_vat_id'] : null,
+            customerTaxNumber: isset($data['customer_tax_number']) && is_string($data['customer_tax_number']) ? $data['customer_tax_number'] : null,
             customerReference: isset($data['customer_reference']) && is_string($data['customer_reference']) ? $data['customer_reference'] : null,
             orderNumber: isset($data['order_number']) && is_string($data['order_number']) ? $data['order_number'] : null,
             orderDate: isset($data['order_date']) && is_string($data['order_date']) ? $data['order_date'] : null,
@@ -274,10 +301,14 @@ class Invoice
             minimumQuantitySurcharge: isset($data['minimum_quantity_surcharge']) && is_numeric($data['minimum_quantity_surcharge']) ? (float) $data['minimum_quantity_surcharge'] : null,
             freightFlatRate: isset($data['freight_flat_rate']) && is_numeric($data['freight_flat_rate']) ? (float) $data['freight_flat_rate'] : null,
             packagingCost: isset($data['packaging_cost']) && is_numeric($data['packaging_cost']) ? (float) $data['packaging_cost'] : null,
+            certificateCost: isset($data['certificate_cost']) && is_numeric($data['certificate_cost']) ? (float) $data['certificate_cost'] : null,
+            customsCost: isset($data['customs_cost']) && is_numeric($data['customs_cost']) ? (float) $data['customs_cost'] : null,
             shippingMethod: isset($data['shipping_method']) && is_string($data['shipping_method']) ? $data['shipping_method'] : null,
             lines: $lines,
             notes: $notes,
+            precedingInvoices: PrecedingInvoiceReferences::normalize($data['preceding_invoices'] ?? null),
             currency: is_string($data['currency'] ?? null) && $data['currency'] !== '' ? $data['currency'] : 'EUR',
+            documentCharges: is_array($data['document_charges'] ?? null) ? $data['document_charges'] : [],
         );
 
         $invoice->applyDefaultCustomerCountry();
@@ -343,6 +374,7 @@ class Invoice
             'customer_address' => $this->customerAddress?->toArray(),
             'billing_country' => $this->customerAddress?->country,
             'customer_vat_id' => $this->customerVatId,
+            'customer_tax_number' => $this->customerTaxNumber,
             'customer_reference' => $this->customerReference,
 
             'order_number' => $this->orderNumber,
@@ -375,11 +407,15 @@ class Invoice
             'minimum_quantity_surcharge' => $this->minimumQuantitySurcharge,
             'freight_flat_rate' => $this->freightFlatRate,
             'packaging_cost' => $this->packagingCost,
+            'certificate_cost' => $this->certificateCost,
+            'customs_cost' => $this->customsCost,
             'shipping_method' => $this->shippingMethod,
             'currency' => $this->currency,
 
             'lines' => array_map(fn (InvoiceLine $line) => $line->toArray(), $this->lines),
             'notes' => $this->notes,
+            'preceding_invoices' => $this->precedingInvoices,
+            'document_charges' => $this->documentCharges,
         ];
     }
 

@@ -16,6 +16,7 @@ return [
     'supplier_address' => 'Address',
     'country' => 'Country',
     'customer_vat_id' => 'VAT ID',
+    'customer_tax_number' => 'Tax number',
     'supplier_vat_id' => 'VAT ID',
     'customer_reference' => 'Customer reference',
     'order_number' => 'Order number',
@@ -41,6 +42,9 @@ return [
     'shipping_cost' => 'Shipping cost',
     'minimum_quantity_surcharge' => 'Minimum quantity surcharge',
     'freight_flat_rate' => 'Freight flat rate',
+    'certificate_cost' => 'Certificate cost',
+    'customs_cost' => 'Customs cost',
+    'totals_reconciliation' => 'Totals reconciliation',
     'packaging_cost' => 'Packaging cost',
     'notes' => 'Notes',
     'position' => 'Line item',
@@ -74,6 +78,8 @@ return [
     'seller_bank_name' => 'Supplier bank',
     'buyer_address' => 'Recipient address',
     'buyer_tax_id' => 'Recipient VAT ID',
+    'preceding_invoice_number' => 'Preceding invoice',
+    'preceding_invoice_date' => 'Preceding invoice date',
     'buyer_email' => 'Recipient email',
     'tax_number' => 'Tax number',
     'supplier' => 'Supplier',
@@ -103,6 +109,7 @@ return [
     'gateway_status_validation_failed' => 'Validation failed',
     'gateway_status_validator_error' => 'Validator error',
     'gateway_status_ignored_foreign' => 'Ignored (foreign)',
+    'gateway_status_ignored_before_cutoff' => 'Ignored (before cutoff)',
     'gateway_status_ignored_identical_duplicate' => 'Ignored (identical file)',
 
     // Validation badges
@@ -152,6 +159,7 @@ return [
     'banner_db_validated' => 'Automatically pre-reviewed — manual confirmation needed',
     'banner_human_confirmed' => 'Manually confirmed — awaiting final approval',
     'banner_validated' => '✓ Approved',
+    'banner_held_for_approval' => 'Held – waits for a manual approval (after re-processing)',
 
     // Tabs
     'tab_all' => 'All',
@@ -160,7 +168,50 @@ return [
     'tab_processing' => 'Processing',
     'tab_needs_review' => 'Review needed',
     'tab_confirmed' => 'Confirmed',
+    'tab_awaiting_approval' => 'Awaiting approval',
+    'tab_sent' => 'Sent',
     'tab_deleted' => 'Deleted',
+    'tab_credit_notes' => 'Credit notes',
+    'tab_corrected_invoices' => 'Corrected invoices',
+
+    // Document classification (ADR 0011): label, "when to choose" hint, upload instruction (rule + examples).
+    // Hosts override via lang/vendor/e-billing; example lists merge by index, so keep the same length.
+    'document_classification' => [
+        '381' => [
+            'label' => 'Credit note (381)',
+            'hint' => 'Choose when the original invoice was correct and the amount owed changed afterwards '
+                .'for an independent reason – for example a bonus, a discount or a return. '
+                .'Amounts are stated as positive values. Not meant: self-billing, where the buyer '
+                .'issues the document.',
+            'rule' => 'The original invoice was correct. The amount owed changed afterwards '
+                .'for an independent commercial reason. No reference to the original invoice is needed.',
+            'examples' => [
+                'Year-end rebate or bonus for a reached sales volume',
+                'Subsequent discount, price reduction or cash discount',
+                'Return of goods that were delivered and invoiced correctly',
+            ],
+        ],
+        '384' => [
+            'label' => 'Corrected invoice (384)',
+            'hint' => 'Choose when an invoice already issued was wrong or is cancelled – for example a '
+                .'wrong quantity, a wrong price or a full cancellation. The original invoice must '
+                .'be referenced by number and date. When the correction is issued as a credit of '
+                .'the difference, the amounts are negative.',
+            'rule' => 'The original invoice was wrong or is cancelled. '
+                .'The original invoice must be referenced by number and date.',
+            'examples' => [
+                'A wrong quantity or price was invoiced',
+                'A mandatory invoice detail was wrong or missing',
+                'Cancellation invoice: full cancellation of an invoice already sent',
+            ],
+        ],
+    ],
+    'document_classification_help' => [
+        'title' => 'Which document type do I choose?',
+        'placeholder' => 'Choose a document type',
+        'helper' => 'Required. What matters is whether the original invoice was wrong – '
+            .'not whether the document is called a credit note.',
+    ],
 
     // Filters
     'filter_needs_review' => 'Review needed',
@@ -186,6 +237,12 @@ return [
     // Approval gate
     'approval_status' => 'Approval',
     'approval_status_pending' => 'Awaiting approval',
+    'dispatch_status' => 'Dispatch status',
+    'dispatch_status_sent' => 'Sent',
+    'dispatch_status_delivery_failed' => 'Delivery failed',
+    'dispatch_status_held' => 'Held',
+    'dispatch_status_awaiting_approval' => 'Awaiting approval',
+    'dispatch_status_rejected' => 'Rejected',
     'approval_status_approved' => 'Approved for dispatch',
     'approval_status_rejected' => 'Rejected',
     'approval_reason' => 'Reason',
@@ -218,15 +275,65 @@ return [
     'document_version' => 'Version',
     'document_version_label' => 'v:version',
     'document_version_current' => 'Current',
-    'action_set_attribution' => 'Set attribution',
-    'action_set_attribution_modal_heading' => 'Set customer attribution',
-    'action_set_attribution_modal_description' => 'Choose the customer this document belongs to. If the invoice was already confirmed or validated, that attestation is cleared and must be repeated.',
-    'action_set_attribution_submit' => 'Save attribution',
-    'action_rematch' => 'Re-evaluate fields',
-    'action_rematch_modal_heading' => 'Re-evaluate fields',
-    'action_rematch_modal_description' => 'Reset this document to the pre-confirmation state and re-evaluate its fields. A manually set customer attribution will not be overwritten.',
-    'action_rematch_submit' => 'Yes, re-evaluate',
     'field_customer' => 'Customer',
+
+    // Review workspace (ADR 0004)
+    'action_start_review_edit' => 'Edit',
+    'action_finish_review_edit' => 'Finish editing',
+    'action_finish_review_edit_modal_heading' => 'Finish editing?',
+    'action_finish_review_edit_modal_description' => 'The customer match and the field checks run again. If you changed anything, the e-invoice is also regenerated and validated again. A manually set customer is kept. If the document was already confirmed, it must be confirmed again. Approval is possible once validation has passed.',
+    'action_finish_review_edit_submit' => 'Finish and re-check',
+    'review_mode_title' => 'Editing',
+    'review_mode_hint' => 'Correct values to what the source document says. Each field is saved on its own; the checks run again when you finish editing.',
+    'review_no_customer' => 'Not assigned',
+    'review_change_customer' => 'Change customer',
+    'review_change_customer_description' => 'Choose the customer this document belongs to. The master-data suggestions follow the new customer; values already on the document are kept.',
+    'review_edit_field' => 'Edit field',
+    'review_edit_description' => 'Enter what the source document says. The value is changed on this document only, never in master data.',
+    'review_edit_submit' => 'Save field',
+    'review_note' => 'Note',
+    'review_note_hint' => 'Optional, e.g. why the parser got it wrong.',
+    'review_master_data_hint' => 'Suggestions come from the master data of the assigned customer. You can also enter a value that is not in the list.',
+    'review_master_data_none' => 'The assigned customer has no master-data value for this field.',
+    'review_master_data_address' => 'Address from master data',
+    'review_master_data_address_hint' => 'Fills the fields below with an address of the assigned customer.',
+    'review_master_data_address_strict_hint' => 'Choose an address of the assigned customer. Leave empty to clear the address.',
+    'review_recipient_inbox_hint' => 'Leave empty to deliver to the inbox address :email.',
+    'review_not_in_master_data' => 'Not in the master data of the assigned customer — please check.',
+    'review_corrected_parsed' => 'Corrected. Parsed value: :value',
+    'review_parsed_empty' => '(empty)',
+    'review_input' => [
+        'name' => 'Name',
+        'line1' => 'Street',
+        'line2' => 'Address line 2',
+        'postal_code' => 'Postal code',
+        'city' => 'City',
+        'subdivision' => 'Region',
+        'country_code' => 'Country code',
+        'iban' => 'IBAN',
+        'bic' => 'BIC',
+        'bank_name' => 'Bank',
+    ],
+    'approval_blocked_prefix' => 'Approval not possible yet:',
+    'approval_blocked' => [
+        'pipeline_running' => 'The e-invoice is being regenerated and validated.',
+        'artifact_failed' => 'Generating or validating the e-invoice failed. Correct the document and finish editing to try again.',
+        'artifact_not_validated' => 'The e-invoice has not been validated yet.',
+        'human_review_required' => 'Correct these fields or confirm the document:',
+        'credit_note_negative_total' => 'The credit note has a negative total.',
+        'must_field_missing' => 'These required fields are missing:',
+    ],
+    'review_fields_to_check' => 'Fields to review:',
+    'review_not_editable' => [
+        'not_configured' => 'Not editable: this field is not in the configured correctable set.',
+        'not_audited' => 'Not editable: this field is not recorded in the audit log, so its parsed value could not be kept.',
+        'unknown_key' => 'Not editable: the document has no such value.',
+        'unknown_field' => 'Not editable in review.',
+        'no_charge_row' => 'Not editable: the document has no such charge or allowance. Adding one is not supported in review.',
+        'several_charges' => 'Sum of several charges: correct the single charges below.',
+        'document_level' => 'Not editable here: this is a document-level value — correct it under Amounts.',
+        'not_classifiable' => 'Not editable: only the configured credit note and corrected invoice types can be switched.',
+    ],
 
     // Notifications
     'notification_confirmed_title' => 'Invoice confirmed',
@@ -237,10 +344,15 @@ return [
     'notification_confirm_failed_missing_must_body' => 'Confirmation is not possible because required fields are missing: :fields.',
     'notification_attribution_updated_title' => 'Attribution updated',
     'notification_attribution_updated_body' => 'The document attribution was saved as a manual match.',
-    'notification_rematch_success_title' => 'Fields re-evaluated',
-    'notification_rematch_success_body' => 'The document was reset and its fields were re-evaluated.',
-    'notification_rematch_failed_title' => 'Re-evaluation failed',
-    'notification_rematch_failed_body' => 'Fields could not be re-evaluated for this document.',
+    'notification_review_finished_title' => 'Editing finished',
+    'notification_review_finished_body' => 'The customer match and the field checks ran again. The e-invoice is being regenerated and validated; the status is shown on this page.',
+    'notification_review_finished_unchanged_body' => 'The customer match and the field checks ran again. Nothing was changed, so the e-invoice was not regenerated.',
+    'notification_review_finish_failed_title' => 'Re-check not started',
+    'notification_review_finish_failed_body' => 'Matching, regeneration and validation could not be started for this document.',
+    'notification_review_saved_title' => 'Field saved',
+    'notification_review_unchanged_title' => 'No change',
+    'notification_review_save_failed_title' => 'Field not saved',
+    'notification_review_save_failed_body' => 'The value could not be saved.',
     'action_manual_upload' => 'Upload PDF',
     'action_manual_upload_modal_description' => 'The PDF will be taken in, parsed, and prepared as an e-invoice.',
     'action_manual_upload_submit' => 'Upload',
@@ -264,6 +376,8 @@ return [
     'line_item_position' => 'Line item :position',
 
     // Field hints — missing
+    'hint_satisfied_by_lines' => 'Not on the header but on every line; shown here are the lines\' values.',
+    'hint_satisfied_by_alternative' => 'Not needed: an equivalent field is present.',
     'hint_missing_invoice_number' => 'Invoice number could not be read from the document.',
     'hint_missing_customer_number' => 'Customer number missing in document.',
     'hint_missing_customer_name' => 'Customer name could not be recognized.',
@@ -277,7 +391,7 @@ return [
     'hint_missing_freight_flat_rate' => 'Freight flat rate missing in document.',
     'hint_missing_quantity' => 'Quantity missing on this line item.',
     'hint_missing_description' => 'Line description missing.',
-    'hint_missing_buyer_email' => 'No inbox To email on the sourcing message.',
+    'hint_missing_buyer_email' => 'No delivery recipient email (set one in review, or inbox To when mail-sourced).',
     'hint_missing_default' => 'This required field is missing in the document.',
 
     // Field hints — needs review
@@ -294,11 +408,19 @@ return [
     'hint_review_freight_flat_rate' => 'Freight flat rate should be reviewed manually.',
     'hint_review_delivery_date' => 'Several delivery dates cannot satisfy the intra-community '
         .'actual delivery date rule without aggregating them into a period.',
+    'hint_review_totals_reconciliation' => 'Lines, charges and allowances do not add up to the net total '
+        .'(difference €:difference). Compare line amounts and charges with the PDF.',
     'hint_review_duplicate_invoice_number' => 'This document number already exists and needs review.',
+    'hint_review_declared_document_type' => 'A different document type was chosen at upload than the document carries '
+        .'– please check.',
     'hint_review_default' => 'This field should be reviewed manually.',
 
     // Field hints — informational (no validation status)
-    'hint_info_buyer_email' => 'From inbox To — not checked against master data.',
+    'hint_info_buyer_email' => 'Delivery recipient — not checked against master data.',
+    'hint_warning_preceding_invoice_not_found' => 'Preceding invoice not found in the system — please check '
+        .'(does not block).',
+    'hint_warning_preceding_invoice_date_mismatch' => 'Date differs from the stored preceding invoice — '
+        .'please check (does not block).',
 
     'section_kosit_validations' => 'KoSIT validations',
     'kosit_validations_empty' => 'No KoSIT validations yet.',
@@ -338,7 +460,7 @@ return [
     'activity_escalation_level' => 'Escalation level',
     'action_redispatch_delivery' => 'Re-dispatch',
     'action_redispatch_delivery_modal_heading' => 'Re-dispatch document',
-    'action_redispatch_delivery_modal_description' => 'Choose which configured channels to queue again. Previous attempts are kept. Recipients are unchanged.',
+    'action_redispatch_delivery_modal_description' => 'Choose which configured channels to queue again. Previous attempts are kept. Mail goes to the usual recipients unless you enter a different recipient for this run.',
     'notification_redispatch_success_title' => 'Delivery queued',
     'notification_redispatch_success_body' => 'The document was queued for delivery.',
     'redispatch_channels' => 'Channels',
@@ -346,4 +468,9 @@ return [
     'delivery_channel_mail' => 'Mail',
     'delivery_channel_portal' => 'Portal',
     'redispatch_success_warning_line' => 'Channel :channel already succeeded — selecting it sends again.',
+    'redispatch_override_warning_line' => 'Channel :channel: will be sent to :override instead of :resolved.',
+    'redispatch_override_no_resolved_recipient' => 'no resolved recipient',
+    'redispatch_recipient_override' => 'Different recipient',
+    'redispatch_recipient_override_placeholder' => 'Add e-mail address',
+    'redispatch_recipient_override_hint' => 'Only for this run; master data stays unchanged. Leave empty to send to: :recipients',
 ];

@@ -12,6 +12,7 @@ readonly class InvoiceLineDraft
      * @param  list<ChargeDraft>  $charges
      * @param  array<string, mixed>  $extra  Host extension attributes; each key must be fillable
      *                                       on the configured line model or persistence fails.
+     * @param  list<array{date: ?string, delivery_note: ?string, quantity: ?float}>  $deliveries  Partial deliveries; empty when delivered at once.
      */
     public function __construct(
         public int $position,
@@ -31,6 +32,7 @@ readonly class InvoiceLineDraft
         public array $charges = [],
         public array $extra = [],
         public ?string $unit_code = null,
+        public array $deliveries = [],
     ) {
     }
 }

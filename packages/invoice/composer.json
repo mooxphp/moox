@@ -20,6 +20,9 @@
     "require": {
         "moox/core": "dev-main"
     },
+    "suggest": {
+        "moox/audit": "Audits invoices, lines, and allowances and charges (config key invoice.audit)"
+    },
     "autoload": {
         "psr-4": {
             "Moox\\Invoice\\": "src",

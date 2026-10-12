@@ -12,6 +12,8 @@ readonly class InvoiceDraft
     /**
      * @param  list<InvoiceLineDraft>  $lines
      * @param  list<ChargeDraft>  $headerCharges
+     * @param  list<string>  $notes
+     * @param  list<array{number: string, date: ?string}>  $preceding_invoices  BG-3: BT-25 number, BT-26 date (Y-m-d)
      */
     public function __construct(
         public string $invoice_number,
@@ -20,6 +22,7 @@ readonly class InvoiceDraft
         public ?string $due_date,
         public string $currency,
         public ?string $customer_number,
+        public ?string $supplier_number,
         public ?string $customer_reference,
         public ?string $order_number,
         public ?string $order_date,
@@ -39,6 +42,7 @@ readonly class InvoiceDraft
         public array $lines,
         public array $headerCharges,
         public array $notes = [],
+        public array $preceding_invoices = [],
     ) {
     }
 }

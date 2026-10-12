@@ -37,6 +37,7 @@ class InvoiceBuilder
         $invoice->due_date = $draft->due_date;
         $invoice->currency = $draft->currency;
         $invoice->customer_number = $draft->customer_number;
+        $invoice->supplier_number = $draft->supplier_number;
         $invoice->customer_reference = $draft->customer_reference;
         $invoice->order_number = $draft->order_number;
         $invoice->order_date = $draft->order_date;
@@ -45,6 +46,7 @@ class InvoiceBuilder
         $invoice->shipping_method = $draft->shipping_method;
         $invoice->delivery_terms = $draft->delivery_terms;
         $invoice->notes = $draft->notes !== [] ? $draft->notes : null;
+        $invoice->preceding_invoices = $draft->preceding_invoices !== [] ? $draft->preceding_invoices : null;
         $invoice->seller = $draft->seller;
         $invoice->buyer = $draft->buyer;
         $invoice->delivery = $draft->delivery;
@@ -91,6 +93,7 @@ class InvoiceBuilder
         $line->line_total = (string) $lineDraft->line_total;
         $line->delivery_date = $lineDraft->delivery_date;
         $line->delivery_note_number = $lineDraft->delivery_note_number;
+        $line->deliveries = $lineDraft->deliveries !== [] ? $lineDraft->deliveries : null;
         $line->order_number = $lineDraft->order_number;
         $line->order_date = $lineDraft->order_date;
         $line->delivery = $lineDraft->delivery;

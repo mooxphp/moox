@@ -11,6 +11,7 @@ final readonly class DeliveryOutcome
         public bool $success,
         public ?string $failureReason = null,
         public ?string $correlationId = null,
+        public bool $terminal = false,
     ) {
     }
 }

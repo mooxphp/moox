@@ -15,7 +15,7 @@ use Moox\MailInbox\Models\InboxAttachment;
 use Moox\MailInbox\Models\InboxMessage;
 
 /**
- * Source-PDF relay for foreign invoices (ADR 0006).
+ * Source-PDF relay for foreign invoices (ADR 0006) and for invoices dated before the intake cutoff.
  * Not e-invoice delivery — no approval, no Artifact.
  */
 final class RelayForeignSourcePdfAction
@@ -49,7 +49,7 @@ final class RelayForeignSourcePdfAction
 
     public static function isTerminal(DeliveryOutcome $outcome): bool
     {
-        if ($outcome->success) {
+        if ($outcome->success || $outcome->terminal) {
             return true;
         }
 
@@ -142,6 +142,7 @@ final class RelayForeignSourcePdfAction
             success: $result->accepted,
             failureReason: $result->accepted ? null : ($result->failureReason ?? 'send_not_accepted'),
             correlationId: $result->correlationId ?? $correlationId,
+            terminal: ! $result->accepted && $result->terminal,
         );
 
         $this->recordAttempts->execute($document, self::CHANNEL, [$outcome]);

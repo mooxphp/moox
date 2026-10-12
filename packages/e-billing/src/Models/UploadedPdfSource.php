@@ -28,6 +28,11 @@ class UploadedPdfSource extends Model
         'original_filename',
         'scope',
         'requires_letterhead_overlay',
+        // Declared document type (BT-3) chosen at upload (ADR 0011 addendum); null = the parser decides.
+        'document_type',
+        'recipient_email',
+        'uploader_user_id',
+        'recipient_email_applied_at',
     ];
 
     /**
@@ -37,6 +42,7 @@ class UploadedPdfSource extends Model
     {
         return [
             'requires_letterhead_overlay' => 'boolean',
+            'recipient_email_applied_at' => 'datetime',
         ];
     }
 

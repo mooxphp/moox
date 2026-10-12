@@ -7,7 +7,10 @@ namespace Moox\EBilling\Actions;
 use InvalidArgumentException;
 use Moox\EBilling\Approval\DocumentDispatchGuard;
 use Moox\EBilling\Contracts\DeliveryChannelInterface;
+use Moox\EBilling\Contracts\RecipientOverridableDeliveryChannel;
+use Moox\EBilling\Data\DeliveryRecipient;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\RecipientOverride;
 
 final class DispatchDocumentAction
 {
@@ -22,8 +25,10 @@ final class DispatchDocumentAction
      * When delivery is disabled, asserts the gate then returns without writing records.
      *
      * @param  array<int, mixed>|null  $channelKeys  null = every configured channel; non-empty subset otherwise
+     * @param  array<int, mixed>|null  $recipientOverride  selective redispatch only: replaces the resolved
+     *                                                     recipients of channels that accept an override (ADR 0016)
      */
-    public function execute(EbillingDocument $document, ?array $channelKeys = null): void
+    public function execute(EbillingDocument $document, ?array $channelKeys = null, ?array $recipientOverride = null): void
     {
         $this->dispatchGuard->assertDispatchable($document);
 
@@ -35,10 +40,21 @@ final class DispatchDocumentAction
             throw new InvalidArgumentException('At least one delivery channel key is required.');
         }
 
+        $override = RecipientOverride::normalize($recipientOverride);
+
+        if ($override !== null && $channelKeys === null) {
+            throw new InvalidArgumentException('A recipient override requires an explicit channel selection.');
+        }
+
         $selected = $this->resolveSelectedChannels($this->instantiateChannels(), $channelKeys);
 
         foreach ($selected as $channel) {
-            $outcomes = $channel->deliver($document);
+            $outcomes = $override !== null && $channel instanceof RecipientOverridableDeliveryChannel
+                ? $channel->deliverTo($document, array_map(
+                    static fn (string $address): DeliveryRecipient => new DeliveryRecipient($address),
+                    $override,
+                ))
+                : $channel->deliver($document);
             $this->recordAttempts->execute($document, $channel->key(), $outcomes);
         }
     }

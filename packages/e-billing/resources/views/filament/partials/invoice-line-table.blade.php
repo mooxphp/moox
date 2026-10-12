@@ -3,7 +3,7 @@
 @endphp
 @forelse($lines as $lineVm)
     @php
-        $fields = $lineVm->relevantFields();
+        $fields = $lineVm->relevantFields($editing ?? false);
         $lineState = $lineVm->collapsibleState($fields);
     @endphp
     @if($fields !== [])

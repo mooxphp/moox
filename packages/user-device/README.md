@@ -27,6 +27,10 @@ Curious what the install command does? See manual installation below.
 | `enabled=true`, `enforce_trust=true` (default) | Track + hard-block + trust mail until confirmed |
 | `enabled=true`, `enforce_trust=false` | **Track only** — no login gate, no trust mail; new devices marked trusted |
 
+### Outbound mail
+
+The trust mail uses `USER_DEVICE_MAILER` when set, otherwise the application default mailer. `USER_DEVICE_MAIL_ENABLED=false` still records the device and sends nothing.
+
 ### User flow (secure mode: `enforce_trust=true`)
 
 1. **User logs in**
@@ -34,12 +38,12 @@ Curious what the install command does? See manual installation below.
    - If the record is **new**, the user receives an email with a **signed “Trust this device” link**.
 
 2. **Device is untrusted (`whitelisted = false`)**
-   - The user is **hard-blocked** in Filament: any attempt to navigate away will be redirected back to the devices page with a single notification.
-   - The user must click the **email trust link** to continue.
+   - Panel access is blocked: the user is logged out and returned to the **login screen** with a toast (check email / confirm device).
+   - The user must click the **email trust link** before they can sign in.
 
 3. **Trusting a device**
    - The signed link marks the device as `whitelisted = true`.
-   - After that, the user can use Filament normally.
+   - After that, the user can sign in and use Filament normally.
 
 4. **Admin actions**
    - If Filament Shield / Spatie Permission is available, **super_admin** can:
@@ -49,7 +53,7 @@ Curious what the install command does? See manual installation below.
 ### Track-only mode (`enforce_trust=false`)
 
 - Devices are still created/updated on login and linked to the session.
-- No hard-block middleware and no new-device email.
+- No hard-block middleware; new-device email is still sent (notify-only, without trust CTA).
 - New devices are stored as trusted (`whitelisted=true`).
 
 ### What the package ships
@@ -82,17 +86,19 @@ Curious what the install command does? See manual installation below.
 
 ### Configuration (config/user-device.php)
 
-- `enabled` (bool): device tracking on login + session sync (default: false, env: `USER_DEVICE_ENABLED`)
-- `enforce_trust` (bool): hard-block + trust mail for new devices (default: true, env: `USER_DEVICE_ENFORCE_TRUST`)
+- `enabled` (bool): device tracking on login + session sync (default: false, env: `USER_DEVICE_ENABLED`). When false: no resource, no middleware.
+- `enforce_trust` (bool): hard-block + trust CTA in mail (default: true, env: `USER_DEVICE_ENFORCE_TRUST`). New-device mail is sent whenever tracking is enabled.
 - `trust_link_expires_minutes` (int): signed trust link expiry
 - `scope_to_authenticated_user` (bool): always scope resource to the current user
 - `allow_all_devices_without_shield` (bool): allow viewing all devices if Shield is not installed
+- `resource_panels` (array): panel IDs that get the devices resource when enabled (default: `['admin']`)
 - `mail_logo_url` (string): logo URL or public path for the email
 
 ### Notes
 
 - For track and/or trust, load `UserDevicePlugin::make()` on the Filament panel.
 - Example track-only: `USER_DEVICE_ENABLED=true` + `USER_DEVICE_ENFORCE_TRUST=false`.
+- Production off: `USER_DEVICE_ENABLED=false` — nothing active, no devices menu.
 
 <!--/whatdoes-->
 

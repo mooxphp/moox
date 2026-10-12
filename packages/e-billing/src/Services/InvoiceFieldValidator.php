@@ -14,9 +14,12 @@ use Moox\EBilling\Support\AttributionCorroborator;
 use Moox\EBilling\Support\CompanyNameMatcher;
 use Moox\EBilling\Support\CustomerMatcher;
 use Moox\EBilling\Support\DeliveryDateTransmission;
+use Moox\EBilling\Support\DocumentClassification;
+use Moox\EBilling\Support\FieldValidationProfile;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\InvoiceNumberDuplicateChecker;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
+use Moox\EBilling\Support\PrecedingInvoiceReferences;
 use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceLine;
@@ -26,6 +29,9 @@ use RuntimeException;
 
 class InvoiceFieldValidator
 {
+    /** BT-3 of the invoice being validated; selects the MoSCoW profile (ADR 0009). */
+    private ?string $profileDocumentType = null;
+
     /**
      * Populate field_validations on the document (invoice-level + lines sub-structure),
      * attribute the document to a {@see Customer} via buyer identifier when present,
@@ -39,15 +45,9 @@ class InvoiceFieldValidator
 
         $invoice = $this->resolveInvoice($document);
 
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
-
-        if (! is_array($invoiceFields)) {
-            $invoiceFields = [];
-        }
-        if (! is_array($lineFields)) {
-            $lineFields = [];
-        }
+        $this->profileDocumentType = $invoice->document_type;
+        $invoiceFields = FieldValidationProfile::invoiceFields($this->profileDocumentType);
+        $lineFields = FieldValidationProfile::lineFields($this->profileDocumentType);
 
         $invoice->loadMissing(['allowanceCharges', 'lines.allowanceCharges']);
 
@@ -83,9 +83,6 @@ class InvoiceFieldValidator
 
         $invoiceValidations = [];
         foreach ($invoiceFields as $field => $priority) {
-            if (! is_string($field) || ! is_string($priority)) {
-                continue;
-            }
             $invoiceValidations[$field] = $this->validateInvoiceField(
                 $invoice,
                 $field,
@@ -97,6 +94,8 @@ class InvoiceFieldValidator
                 $document,
             );
         }
+
+        $invoiceValidations = $this->applyRequiredOneOfGroups($invoice, $invoiceValidations);
 
         $lineValidations = [];
         foreach ($invoice->lines as $line) {
@@ -154,15 +153,9 @@ class InvoiceFieldValidator
 
     private function applyReviewStatusFromFieldValidations(EbillingDocument $document): void
     {
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
-
-        if (! is_array($invoiceFields)) {
-            $invoiceFields = [];
-        }
-        if (! is_array($lineFields)) {
-            $lineFields = [];
-        }
+        $documentType = $document->profileDocumentType();
+        $invoiceFields = FieldValidationProfile::invoiceFields($documentType);
+        $lineFields = FieldValidationProfile::lineFields($documentType);
 
         if ($this->allMustAndShouldFieldsAreClean($document, $invoiceFields, $lineFields)) {
             $document->transitionTo(InvoiceProcessingStatus::Validated);
@@ -280,6 +273,7 @@ class InvoiceFieldValidator
     ): array {
         return match ($field) {
             'invoice_number' => $this->validateInvoiceNumberField($invoice, $priority),
+            'document_type' => $this->validateDocumentTypeField($invoice, $priority, $document),
             'customer_number' => $this->validateCustomerNumberField(
                 $invoice,
                 $priority,
@@ -322,10 +316,91 @@ class InvoiceFieldValidator
                 false,
             ),
             'shipping_cost', 'packaging_cost', 'minimum_quantity_surcharge', 'freight_flat_rate',
+            'certificate_cost', 'customs_cost',
             'discount_amount', 'discount_percent' => $this->validateHeaderChargeField($invoice, $field, $priority),
             'delivery_date' => $this->validateDeliveryDateField($invoice, $priority),
+            'totals_reconciliation' => $this->validateTotalsReconciliationField($invoice),
+            'preceding_invoice_number' => $this->validatePrecedingInvoiceNumberField($invoice, $priority),
             default => $this->validateGenericInvoiceField($invoice, $field, $priority),
         };
+    }
+
+    /**
+     * BT-3 against the type the uploader declared (ADR 0011 addendum): a parsed type the declaration could
+     * not replace, e.g. an invoice (380) uploaded as a corrected invoice, is a review case, never overwritten.
+     *
+     * @return array{status: string, reason?: string}
+     */
+    private function validateDocumentTypeField(Invoice $invoice, string $priority, ?EbillingDocument $document): array
+    {
+        $generic = $this->validateGenericInvoiceField($invoice, 'document_type', $priority);
+        $declared = $document instanceof EbillingDocument ? DocumentClassification::declaredFor($document) : null;
+
+        if ($declared !== null && ($generic['status'] ?? null) === 'parsed' && $declared !== $invoice->document_type) {
+            return ['status' => 'needs_review', 'reason' => 'declared_document_type_mismatch'];
+        }
+
+        return $generic;
+    }
+
+    /**
+     * BT-25: looks the referenced invoice up among stored documents (separators ignored).
+     * Not finding it, or finding a different BT-26 date, is a warning (`reason`), never a blocking status:
+     * invoices older than the system are legitimately unknown (ADR 0009 addendum).
+     *
+     * @return array{status: string, reason?: string, matched_id?: string}
+     */
+    private function validatePrecedingInvoiceNumberField(Invoice $invoice, string $priority): array
+    {
+        $generic = $this->validateGenericInvoiceField($invoice, 'preceding_invoice_number', $priority);
+
+        if (($generic['status'] ?? null) !== 'parsed') {
+            return $generic;
+        }
+
+        $reference = PrecedingInvoiceReferences::first($invoice->preceding_invoices);
+        if ($reference === null) {
+            return $generic;
+        }
+
+        $original = $this->findPrecedingInvoice($invoice, $reference['number']);
+
+        if (! $original instanceof Invoice) {
+            return ['status' => 'parsed', 'reason' => 'preceding_invoice_not_found'];
+        }
+
+        $originalDate = substr((string) $original->invoice_date, 0, 10);
+
+        if ($reference['date'] !== null && $originalDate !== $reference['date']) {
+            return [
+                'status' => 'parsed',
+                'reason' => 'preceding_invoice_date_mismatch',
+                'matched_id' => (string) $original->getKey(),
+            ];
+        }
+
+        return ['status' => 'parsed', 'matched_id' => (string) $original->getKey()];
+    }
+
+    private function findPrecedingInvoice(Invoice $invoice, string $number): ?Invoice
+    {
+        $comparable = PrecedingInvoiceReferences::comparableNumber($number);
+        $digits = preg_replace('/\D/', '', $number);
+
+        if ($comparable === '' || $digits === null || $digits === '') {
+            return null;
+        }
+
+        // Narrow in SQL on the digit run, then compare separator-insensitively in PHP.
+        return $invoice->newQuery()
+            ->whereKeyNot($invoice->getKey())
+            ->whereNotIn('document_type', FieldValidationProfile::profiledDocumentTypes())
+            ->where('invoice_number', 'like', '%'.substr($digits, 0, 5).'%')
+            ->orderByDesc('is_current')
+            ->get()
+            ->first(fn (Invoice $candidate): bool => PrecedingInvoiceReferences::comparableNumber(
+                (string) $candidate->invoice_number,
+            ) === $comparable);
     }
 
     /**
@@ -522,26 +597,22 @@ class InvoiceFieldValidator
     }
 
     /**
-     * @return array{status: string, source?: string, matched_id?: string}
-     */
-
-    /**
-     * Inbox To address for mail-sourced documents (delivery recipient).
-     * Manual uploads / non-mail sources are not_applicable.
+     * Delivery recipient: reviewer-set address, else mail-sourced inbox To. Empty → MoSCoW
+     * (must/should missing, could not_applicable) — including manual uploads.
      *
      * @return array{status: string, source?: string, matched_id?: string}
      */
     private function validateBuyerEmailField(?EbillingDocument $document, string $priority): array
     {
-        if ($document === null || $document->inboxAttachment() === null) {
-            return ['status' => 'not_applicable'];
+        if ($document?->documentRecipientEmail() !== null) {
+            return ['status' => 'parsed'];
         }
 
-        if ($document->inboxToEmail() === null) {
-            return $this->entryForEmptyField('buyer_email', $priority, false);
+        if ($document?->inboxAttachment() !== null && $document->inboxToEmail() !== null) {
+            return ['status' => 'parsed'];
         }
 
-        return ['status' => 'parsed'];
+        return $this->entryForEmptyField('buyer_email', $priority, false);
     }
 
     private function validateCustomerAddressField(
@@ -671,6 +742,40 @@ class InvoiceFieldValidator
     }
 
     /**
+     * BT-109 must equal Σ BT-131 + document charges − document allowances (BR-CO-13), where BT-131 is the
+     * line total plus line charges minus line allowances. A gap above one cent means the parsed amounts
+     * cannot reproduce the printed net total; confirming cannot accept it
+     * ({@see EbillingDocument::missingMustFields()}). Like the ZUGFeRD converter, non-positive
+     * allowance/charge amounts are not emitted and therefore not counted.
+     *
+     * @return array{status: string, reason?: string, difference?: string}
+     */
+    private function validateTotalsReconciliationField(Invoice $invoice): array
+    {
+        $cents = static fn (mixed $amount): int => (int) round((float) $amount * 100);
+        $signed = static fn (iterable $charges): int => collect($charges)
+            ->filter(fn ($charge): bool => (float) $charge->amount > 0)
+            ->sum(fn ($charge): int => ($charge->is_charge ? 1 : -1) * $cents($charge->amount));
+
+        $calculated = $signed($invoice->allowanceCharges);
+        foreach ($invoice->lines as $line) {
+            $calculated += $cents($line->line_total) + $signed($line->allowanceCharges);
+        }
+
+        $difference = $cents($invoice->net_total) - $calculated;
+
+        if (abs($difference) <= 1) {
+            return ['status' => 'parsed'];
+        }
+
+        return [
+            'status' => 'needs_review',
+            'reason' => 'totals_mismatch',
+            'difference' => number_format($difference / 100, 2, '.', ''),
+        ];
+    }
+
+    /**
      * @return array{status: string, source?: string, matched_id?: string}
      */
     /**
@@ -695,18 +800,65 @@ class InvoiceFieldValidator
     {
         $value = $this->getInvoiceFieldValue($invoice, $field);
 
-        if ($this->isInvoiceFieldValueEmpty($field, $value)) {
-            return $this->entryForEmptyField($field, $priority, false);
+        if (! $this->isInvoiceFieldValueEmpty($field, $value)) {
+            return ['status' => 'parsed'];
         }
 
-        return ['status' => 'parsed'];
+        if ($this->isSatisfiedByEveryLine($invoice, $field)) {
+            return ['status' => 'parsed', 'source' => 'lines'];
+        }
+
+        return $this->entryForEmptyField($field, $priority, false);
+    }
+
+    /**
+     * An empty member of a required-one-of group is not applicable once another member has a value.
+     *
+     * @param  array<string, array<string, mixed>>  $validations
+     * @return array<string, array<string, mixed>>
+     */
+    private function applyRequiredOneOfGroups(Invoice $invoice, array $validations): array
+    {
+        foreach (FieldValidationProfile::invoiceFieldsRequiredOneOf($this->profileDocumentType) as $group) {
+            $empty = array_filter(
+                $group,
+                fn (string $field): bool => $this->isInvoiceFieldValueEmpty($field, $this->getInvoiceFieldValue($invoice, $field)),
+            );
+
+            if (count($empty) === count($group)) {
+                continue;
+            }
+
+            foreach ($empty as $field) {
+                if (isset($validations[$field])) {
+                    $validations[$field] = ['status' => 'not_applicable', 'source' => 'one_of'];
+                }
+            }
+        }
+
+        return $validations;
+    }
+
+    private function isSatisfiedByEveryLine(Invoice $invoice, string $field): bool
+    {
+        if (! in_array($field, FieldValidationProfile::invoiceFieldsSatisfiedByLines($this->profileDocumentType), true)
+            || $invoice->lines->isEmpty()) {
+            return false;
+        }
+
+        return $invoice->lines->every(
+            fn (InvoiceLine $line): bool => ! $this->isScalarEmpty($line->getAttribute($field)),
+        );
     }
 
     private function getInvoiceFieldValue(Invoice $invoice, string $field): mixed
     {
+        $precedingReference = PrecedingInvoiceReferences::first($invoice->preceding_invoices);
+
         return match ($field) {
             'customer_name' => $invoice->buyer?->name,
             'customer_vat_id' => $invoice->buyer?->vat_id,
+            'customer_tax_number' => $invoice->buyer?->tax_number,
             'customer_address' => $invoice->buyer?->address,
             'country' => $invoice->buyer?->address?->country_code,
             'supplier_name' => $invoice->seller?->name,
@@ -720,6 +872,8 @@ class InvoiceFieldValidator
             'payment_means' => $invoice->payment_means?->payment_means_code,
             'vat_category' => $invoice->vat_category,
             'delivery_address' => $invoice->delivery,
+            'preceding_invoice_number' => $precedingReference['number'] ?? null,
+            'preceding_invoice_date' => $precedingReference['date'] ?? null,
             default => $invoice->getAttribute($field),
         };
     }
@@ -848,14 +1002,9 @@ class InvoiceFieldValidator
             return ['status' => 'missing'];
         }
 
-        $key = $isInvoiceLine ? 'invoice_line_contextual_should' : 'invoice_contextual_should';
-        $list = config("e-billing.field_validation.{$key}", []);
+        $contextualShould = FieldValidationProfile::contextualShould($this->profileDocumentType, $isInvoiceLine);
 
-        if (! is_array($list)) {
-            return ['status' => 'not_applicable'];
-        }
-
-        if (in_array($field, $list, true)) {
+        if (in_array($field, $contextualShould, true)) {
             return ['status' => 'missing'];
         }
 

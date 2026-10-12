@@ -18,6 +18,7 @@ use Moox\Invoice\Support\InvoiceModels;
 /**
  * @property Party|null $delivery
  * @property string|null $unit_code
+ * @property list<array{date: ?string, delivery_note: ?string, quantity: ?float}>|null $deliveries Partial deliveries
  */
 class InvoiceLine extends BaseItemModel
 {
@@ -46,6 +47,7 @@ class InvoiceLine extends BaseItemModel
         'delivery',
         'delivery_date',
         'delivery_note_number',
+        'deliveries',
         'order_number',
         'order_date',
     ];
@@ -57,6 +59,7 @@ class InvoiceLine extends BaseItemModel
     {
         return [
             'delivery' => DeliveryPartyCast::class,
+            'deliveries' => 'array',
             'quantity' => 'decimal:3',
             'unit_price' => 'decimal:2',
             'line_total' => 'decimal:2',

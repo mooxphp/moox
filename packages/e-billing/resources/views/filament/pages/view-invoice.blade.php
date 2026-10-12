@@ -1,5 +1,23 @@
 <x-filament-panels::page>
-    @include('e-billing::filament.partials.invoice-status-banner', ['viewModel' => $this->invoiceViewModel])
+    @php
+        $page = $this;
+        $workspace = $this->reviewWorkspace;
+        $editing = $this->reviewEditing;
+    @endphp
+
+    {{-- Leave-edit queues regeneration and re-validation: poll until the pipeline has finished. --}}
+    @if($this->invoiceViewModel->isPipelineRunning())
+        <div wire:poll.5s></div>
+    @endif
+
+    @include('e-billing::filament.partials.invoice-status-banner', [
+        'viewModel' => $this->invoiceViewModel,
+        'showApprovalBlock' => ! $editing,
+    ])
+
+    @if($editing)
+        @include('e-billing::filament.partials.invoice-review-edit-banner')
+    @endif
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div class="flex flex-col gap-6 overflow-y-auto lg:max-h-[calc(100vh-12rem)]">

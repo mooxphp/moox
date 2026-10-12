@@ -34,10 +34,12 @@ final class DispatchDocumentJob implements ShouldQueue
 
     /**
      * @param  list<string>|null  $channelKeys  null = every configured channel
+     * @param  list<string>|null  $recipientOverride  null = resolved recipients (ADR 0016)
      */
     public function __construct(
         public string $documentId,
         public ?array $channelKeys = null,
+        public ?array $recipientOverride = null,
     ) {
     }
 
@@ -57,7 +59,7 @@ final class DispatchDocumentJob implements ShouldQueue
         }
 
         $this->setProgress(20);
-        $action->execute($document, $this->channelKeys);
+        $action->execute($document, $this->channelKeys, $this->recipientOverride);
         $this->setProgress(100);
     }
 
@@ -66,6 +68,7 @@ final class DispatchDocumentJob implements ShouldQueue
         Log::error('[EBilling] DispatchDocumentJob failed', [
             'document_id' => $this->documentId,
             'channel_keys' => $this->channelKeys,
+            'recipient_override' => $this->recipientOverride,
             'exception' => $exception,
         ]);
     }

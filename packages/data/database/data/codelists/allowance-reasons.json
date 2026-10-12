@@ -1,10 +1,10 @@
 {
     "_source": "UNCL 5189 (UN/CEFACT) — allowance reason codes",
-    "_todo": "verify/complete against official UNCL 5189",
+    "_verified": "complete against the EN 16931 code lists v17.0 (the 19-code UNCL 5189 subset allowed by BR-CL-19)",
     "codes": [
         {"code": "41", "common_name": "Bonus for works ahead of schedule"},
         {"code": "42", "common_name": "Other bonus"},
-        {"code": "60", "common_name": "Manufacturer's consumer discount"},
+        {"code": "60", "common_name": "Manufacturer’s consumer discount"},
         {"code": "62", "common_name": "Due to military status"},
         {"code": "63", "common_name": "Due to work accident"},
         {"code": "64", "common_name": "Special agreement"},

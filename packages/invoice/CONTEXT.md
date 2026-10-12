@@ -53,8 +53,23 @@ document wording, no host model names. Keep lean.
   cannot be tolerated at generation time — it is a blocking finding before it. Where several codes
   share a label in one language, the preferred code is configuration, not a constant keyed on a word
   in that language.
+- **Credit note** — a document with type code 381 (BT-3). The type code carries the direction (money back
+  to the buyer); its quantities and amounts are therefore **positive**. *Avoid:* negative amounts on a 381:
+  they cancel the direction and read as a debit, and schema validation does not catch it.
+- **Corrected invoice** — a document with type code 384 (BT-3) that corrects or cancels an earlier invoice,
+  which it references (BG-3), because that invoice was wrong or is cancelled. It is either a full restatement
+  of the corrected invoice (positive amounts) or a correction issued as a credit, a delta (negative amounts,
+  so a cancellation is negative). *Avoid:* treating it as a credit note: a credit note credits a later change
+  of the amount owed without correcting a specific invoice, and stays positive.
+- **Preceding invoice reference** — BG-3: an earlier invoice that this document corrects or credits,
+  as its number (BT-25) and optional issue date (BT-26). A document may carry several. The buyer matches
+  it against the referenced invoice's BT-1, so any difference in spelling between the two is a matching risk.
+  Optional for credit notes (381). *Avoid:* treating it as the document's own number; parking it in a note.
 - **Buyer identifier** — BT-46. The debtor identity of the document. Distinct from **buyer reference**
   (BT-10); the two are separate terms and must not be conflated.
+- **Seller identifier** (**supplier number**) — BT-29. The seller's identifier as printed on the
+  document (e.g. Lieferanten-Nr.). Distinct from **buyer identifier** and from purchasing master-data
+  supplier numbers. Persisted on `invoices.supplier_number`. *Avoid:* conflating with VAT ID (BT-31).
 - **Payment terms** — BT-20, free text as printed on the document. A term, not a structured discount:
   no early-payment arithmetic is modelled here.
 - **Shipping method** — how the goods travelled. No BT number in EN 16931; ZUGFeRD `EXTENDED`
@@ -79,3 +94,7 @@ and its own migration. If a term needs an industry to explain it, it is not an E
 The test is the *term*, not the presence of a BT number: shipping method and delivery terms have no
 BT number and still belong here, because commerce at large needs them. A material designation needs a
 steel trade to explain it, and does not.
+
+Likewise **processing concerns** stay out: which master-data debtor an invoice was matched to (only
+the printed buyer identifier BT-46 lives here), dispatch approval, generated artifacts and their hashes.
+They belong to the consumer that processes invoices and attach from there.

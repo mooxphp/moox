@@ -21,6 +21,7 @@ final class InvoiceFieldLabels
             'customer_address' => __('e-billing::fields.customer_address'),
             'country' => __('e-billing::fields.country'),
             'customer_vat_id' => __('e-billing::fields.customer_vat_id'),
+            'customer_tax_number' => __('e-billing::fields.customer_tax_number'),
             'buyer_email' => __('e-billing::fields.buyer_email'),
             'customer_reference' => __('e-billing::fields.customer_reference'),
             'order_number' => __('e-billing::fields.order_number'),
@@ -49,6 +50,9 @@ final class InvoiceFieldLabels
             'shipping_cost' => __('e-billing::fields.shipping_cost'),
             'minimum_quantity_surcharge' => __('e-billing::fields.minimum_quantity_surcharge'),
             'freight_flat_rate' => __('e-billing::fields.freight_flat_rate'),
+            'certificate_cost' => __('e-billing::fields.certificate_cost'),
+            'totals_reconciliation' => __('e-billing::fields.totals_reconciliation'),
+            'customs_cost' => __('e-billing::fields.customs_cost'),
             'packaging_cost' => __('e-billing::fields.packaging_cost'),
             'notes' => __('e-billing::fields.notes'),
             'position' => __('e-billing::fields.position'),
@@ -82,6 +86,8 @@ final class InvoiceFieldLabels
             'seller_bank_name' => __('e-billing::fields.seller_bank_name'),
             'buyer_address' => __('e-billing::fields.buyer_address'),
             'buyer_tax_id' => __('e-billing::fields.buyer_tax_id'),
+            'preceding_invoice_number' => __('e-billing::fields.preceding_invoice_number'),
+            'preceding_invoice_date' => __('e-billing::fields.preceding_invoice_date'),
             default => Str::headline(str_replace('_', ' ', $fieldName)),
         };
     }
@@ -158,6 +164,8 @@ final class InvoiceFieldLabels
             'currency' => 'BT-5',
             'due_date' => 'BT-9',
             'customer_reference' => 'BT-10',
+            'preceding_invoice_number' => 'BG-3 / BT-25',
+            'preceding_invoice_date' => 'BG-3 / BT-26',
             'customer_number' => 'BT-46',
             'order_number' => 'BT-13',
             'payment_terms' => 'BT-20',
@@ -170,6 +178,7 @@ final class InvoiceFieldLabels
             'payment_means' => 'BT-81',
             'vat_category' => 'BT-118',
             'supplier_name' => 'BT-27',
+            'supplier_number' => 'BT-29',
             'supplier_vat_id' => 'BT-31',
             'supplier_tax_number' => 'BT-32',
             'supplier_address' => 'BG-5',
@@ -188,6 +197,9 @@ final class InvoiceFieldLabels
             'shipping_cost' => 'BG-21 / BT-99',
             'minimum_quantity_surcharge' => 'BG-21 / BT-99',
             'freight_flat_rate' => 'BG-21 / BT-99',
+            'certificate_cost' => 'BG-21 / BT-99',
+            'customs_cost' => 'BG-21 / BT-99',
+            'totals_reconciliation' => 'BR-CO-13',
             'packaging_cost' => 'BG-21 / BT-99',
             'vat_rate' => 'BT-119',
             'position' => 'BT-126',
@@ -206,10 +218,18 @@ final class InvoiceFieldLabels
     }
 
     /**
-     * @param  array{status?: string, matched_id?: string, reason?: string}|null  $validation
+     * @param  array{status?: string, source?: string, matched_id?: string, reason?: string, difference?: string}|null  $validation
      */
     public static function hint(string $field, string $status, ?array $validation = null): ?string
     {
+        if (($validation['source'] ?? null) === 'lines') {
+            return __('e-billing::fields.hint_satisfied_by_lines');
+        }
+
+        if (($validation['source'] ?? null) === 'one_of') {
+            return __('e-billing::fields.hint_satisfied_by_alternative');
+        }
+
         if ($status === 'missing') {
             return match ($field) {
                 'invoice_number' => __('e-billing::fields.hint_missing_invoice_number'),
@@ -244,6 +264,12 @@ final class InvoiceFieldLabels
                 'minimum_quantity_surcharge' => __('e-billing::fields.hint_review_minimum_quantity_surcharge'),
                 'freight_flat_rate' => __('e-billing::fields.hint_review_freight_flat_rate'),
                 'delivery_date' => __('e-billing::fields.hint_review_delivery_date'),
+                'totals_reconciliation' => __('e-billing::fields.hint_review_totals_reconciliation', [
+                    'difference' => (string) ($validation['difference'] ?? ''),
+                ]),
+                'document_type' => ($validation['reason'] ?? null) === 'declared_document_type_mismatch'
+                    ? __('e-billing::fields.hint_review_declared_document_type')
+                    : __('e-billing::fields.hint_review_default'),
                 'invoice_number' => ($validation['reason'] ?? null) === 'duplicate_invoice_number'
                     ? __('e-billing::fields.hint_review_duplicate_invoice_number')
                     : __('e-billing::fields.hint_review_default'),
@@ -254,6 +280,17 @@ final class InvoiceFieldLabels
         // Display-only inbox To — no master-data corroboration yet (deferred).
         if ($field === 'buyer_email') {
             return __('e-billing::fields.hint_info_buyer_email');
+        }
+
+        // Preceding invoice lookup warns without blocking (ADR 0009 addendum).
+        if ($field === 'preceding_invoice_number') {
+            return match ($validation['reason'] ?? null) {
+                'preceding_invoice_not_found' => __('e-billing::fields.hint_warning_preceding_invoice_not_found'),
+                'preceding_invoice_date_mismatch' => __(
+                    'e-billing::fields.hint_warning_preceding_invoice_date_mismatch',
+                ),
+                default => null,
+            };
         }
 
         return null;

@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Moox\LoginLink\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Mail\Factory;
+use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\SentMessage;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\URL;
 use Moox\LoginLink\Models\LoginLink;
@@ -15,7 +18,7 @@ use Moox\LoginLink\Support\LinkProcessContext;
 
 /**
  * Sends the signed URL. When moox/mail-template is installed, the process
- * template_key is looked up as a MailTemplate slug (no composer dependency).
+ * template_key is looked up as a MailTemplate key (no composer dependency).
  * Otherwise the packaged HTML demo view is used.
  */
 class ProcessLinkMail extends Mailable implements ShouldQueue
@@ -46,11 +49,31 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
 
         $mailable = $this->subject($mailSubject)->html($this->renderBody($this->viewData($url, $expiresMinutes, $subjectModel)));
 
+        $this->applyEnvelopeFrom($mailable);
+
+        return $mailable;
+    }
+
+    /**
+     * Queued jobs re-check the gate so a link issued while mail was enabled
+     * does not leave the server after LOGIN_LINK_MAIL_ENABLED is turned off.
+     *
+     * @param  Factory|Mailer  $mailer
+     */
+    public function send($mailer): ?SentMessage
+    {
+        if (! (bool) config('login-link.mail.enabled', true)) {
+            return null;
+        }
+
+        return parent::send($mailer);
+    }
+
+    private function applyEnvelopeFrom(self $mailable): void
+    {
         if (filled($this->process?->mail_from)) {
             $mailable->from((string) $this->process->mail_from);
         }
-
-        return $mailable;
     }
 
     /**
@@ -123,9 +146,7 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
                 return URL::temporarySignedRoute(
                     'login-link.public.consume',
                     now()->addMinutes($expiresMinutes),
-                    [
-                        'loginLink' => $this->loginLink->getKey(),
-                    ],
+                    $this->signedRouteParameters(),
                 );
             } catch (\Throwable) {
                 return url('/');
@@ -139,13 +160,35 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
             return URL::temporarySignedRoute(
                 $routeName,
                 now()->addMinutes($expiresMinutes),
-                [
-                    'loginLink' => $this->loginLink->getKey(),
-                ],
+                $this->signedRouteParameters(),
             );
         } catch (\Throwable) {
             return url('/'.$panelId.'/login');
         }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function signedRouteParameters(): array
+    {
+        $parameters = [
+            'loginLink' => $this->loginLink->getKey(),
+        ];
+
+        $payload = $this->loginLink->payload;
+
+        if (! is_array($payload)) {
+            return $parameters;
+        }
+
+        $hash = $payload['h'] ?? null;
+
+        if (is_string($hash) && $hash !== '') {
+            $parameters['h'] = $hash;
+        }
+
+        return $parameters;
     }
 
     private function resolveLogoUrl(): ?string

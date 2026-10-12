@@ -207,11 +207,11 @@ return [
     |
     | DocumentTypeCodeResolver only accepts these codes. Anything else throws
     | UnresolvedCodelistLabelException (routes to needs-review). Defaults cover
-    | commercial invoice (380) and credit note (381).
+    | commercial invoice (380), credit note (381) and corrected invoice (384).
     |
     */
 
-    'allowed_document_type_codes' => ['380', '381'],
+    'allowed_document_type_codes' => ['380', '381', '384'],
 
     /*
     |--------------------------------------------------------------------------
@@ -249,6 +249,19 @@ return [
     */
 
     'document_locale' => env('EBILLING_DOCUMENT_LOCALE', 'en'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Credit note payment terms (BT-20)
+    |--------------------------------------------------------------------------
+    |
+    | BR-CO-25: a positive amount due (BT-115) needs BT-9 or BT-20. Credit
+    | notes (381) carry positive amounts and usually print neither, so this
+    | text is emitted as BT-20 when both are empty. null = no fallback.
+    |
+    */
+
+    'credit_note_payment_terms' => null,
 
     'preferred_piece_unit_code' => env('EBILLING_PREFERRED_PIECE_UNIT_CODE', 'H87'),
 
@@ -304,7 +317,7 @@ return [
             'navigation_icon' => 'heroicon-o-receipt-refund',
             'navigation_sort' => 2,
             'navigation_count_badge' => true,
-            'document_types' => ['381'],
+            'document_types' => ['381', '384'],
             'soft_delete_tab_key' => 'deleted',
             'resource' => CreditNoteResource::class,
             'manual_upload' => [
@@ -312,6 +325,9 @@ return [
                 'label' => 'Upload credit note',
                 'scope' => 'credit-notes',
                 'requires_letterhead_overlay' => true,
+                // Codes the uploader chooses from (required, no preselection). One code = fixed, [] = the
+                // parser decides. Must be document_types, document_classification types and allowed codes.
+                'document_types' => ['381', '384'],
             ],
         ],
     ],
@@ -385,6 +401,190 @@ return [
                         'field' => 'review_status',
                         'operator' => 'in',
                         'value' => ['human_confirmed', 'validated'],
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'awaiting_approval' => [
+                'label' => 'trans//e-billing::fields.tab_awaiting_approval',
+                'icon' => 'gmdi-pending-actions',
+                'query' => [
+                    [
+                        'field' => 'approval_status',
+                        'operator' => 'in',
+                        'value' => ['pending'],
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'sent' => [
+                'label' => 'trans//e-billing::fields.tab_sent',
+                'icon' => 'gmdi-send',
+                'query' => [
+                    [
+                        'field' => 'delivered',
+                        'operator' => '=',
+                        'value' => true,
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'deleted' => [
+                'label' => 'trans//e-billing::fields.tab_deleted',
+                'icon' => 'gmdi-delete',
+                'query' => [
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '!=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+        ],
+        'credit_notes' => [
+            'all' => [
+                'label' => 'trans//e-billing::fields.tab_all',
+                'icon' => 'gmdi-filter-list',
+                'query' => [
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'credit_notes' => [
+                'label' => 'trans//e-billing::fields.tab_credit_notes',
+                'icon' => 'gmdi-receipt',
+                'query' => [
+                    [
+                        'field' => 'document_type',
+                        'operator' => 'in',
+                        'value' => ['381'],
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'corrected_invoices' => [
+                'label' => 'trans//e-billing::fields.tab_corrected_invoices',
+                'icon' => 'gmdi-edit-note',
+                'query' => [
+                    [
+                        'field' => 'document_type',
+                        'operator' => 'in',
+                        'value' => ['384'],
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'gateway_failed' => [
+                'label' => 'trans//e-billing::fields.tab_gateway_failed',
+                'icon' => 'gmdi-error',
+                'query' => [
+                    [
+                        'field' => 'gateway_status',
+                        'operator' => 'in',
+                        'value' => ['generation_failed', 'validation_failed', 'validator_error'],
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'processing' => [
+                'label' => 'trans//e-billing::fields.tab_processing',
+                'icon' => 'gmdi-hourglass-empty',
+                'query' => [
+                    [
+                        'field' => 'gateway_status',
+                        'operator' => 'in',
+                        'value' => ['generating', 'validating'],
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'needs_review' => [
+                'label' => 'trans//e-billing::fields.tab_needs_review',
+                'icon' => 'gmdi-warning',
+                'query' => [
+                    [
+                        'field' => 'review_status',
+                        'operator' => 'in',
+                        'value' => ['parser_created', 'db_validated'],
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'confirmed' => [
+                'label' => 'trans//e-billing::fields.tab_confirmed',
+                'icon' => 'gmdi-check-circle',
+                'query' => [
+                    [
+                        'field' => 'review_status',
+                        'operator' => 'in',
+                        'value' => ['human_confirmed', 'validated'],
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'awaiting_approval' => [
+                'label' => 'trans//e-billing::fields.tab_awaiting_approval',
+                'icon' => 'gmdi-pending-actions',
+                'query' => [
+                    [
+                        'field' => 'approval_status',
+                        'operator' => 'in',
+                        'value' => ['pending'],
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'sent' => [
+                'label' => 'trans//e-billing::fields.tab_sent',
+                'icon' => 'gmdi-send',
+                'query' => [
+                    [
+                        'field' => 'delivered',
+                        'operator' => '=',
+                        'value' => true,
                     ],
                     [
                         'field' => 'deleted_at',
@@ -585,6 +785,23 @@ return [
         |
         */
 
+        /*
+        |--------------------------------------------------------------------------
+        | Profile per document type (ADR 0009)
+        |--------------------------------------------------------------------------
+        |
+        | document_type (BT-3) => key prefix. A mapped type is validated against
+        | the {prefix}_fields / {prefix}_line_fields / contextual lists below and
+        | the invoice_ui.{prefix}_*_hidden denylists; a missing key falls back to
+        | the invoice_* key. Unmapped types use the invoice_* maps.
+        |
+        */
+
+        'document_type_profiles' => [
+            '381' => 'credit_note',        // Credit note
+            '384' => 'corrected_invoice',  // Corrected invoice
+        ],
+
         'invoice_fields' => [
             // Document identification — MUST
             'invoice_number' => 'must',    // BT-1
@@ -599,7 +816,8 @@ return [
             'customer_address' => 'must',    // BG-8
             'country' => 'could',    // BT-55
             'customer_vat_id' => 'should',  // BT-48
-            // Inbox To (mail-sourced only; not EN 16931). Empty blocks delivery via inbox_to.
+            'customer_tax_number' => 'could',  // no EN 16931 term; buyer FC registration
+            // Delivery recipient (not EN 16931): reviewer-set buyer.contact.email, else inbox To when mail-sourced.
             'buyer_email' => 'must',
 
             // Buyer reference
@@ -613,6 +831,7 @@ return [
 
             // Seller — MUST (own company data, from system settings later)
             'supplier_name' => 'must',    // BT-27
+            'supplier_number' => 'could', // BT-29
             'supplier_vat_id' => 'must',    // BT-31
             'supplier_tax_number' => 'should', // BT-32
             'supplier_address' => 'must',    // BG-5
@@ -631,6 +850,7 @@ return [
 
             // Amounts — MUST
             'net_total' => 'must',    // BT-109
+            'totals_reconciliation' => 'must',  // BR-CO-13: Σ BT-131 + charges − allowances = BT-109
             'vat_rate' => 'must',    // BT-119
             'vat_amount' => 'must',    // BT-110
             'gross_total' => 'must',    // BT-112
@@ -641,6 +861,8 @@ return [
             'shipping_cost' => 'could',  // BG-21 / BT-99
             'minimum_quantity_surcharge' => 'could',  // BG-21 / BT-99
             'freight_flat_rate' => 'could',  // BG-21 / BT-99
+            'certificate_cost' => 'could',  // BG-21 / BT-99
+            'customs_cost' => 'could',  // BG-21 / BT-99
             'packaging_cost' => 'could',  // BG-21 / BT-99
         ],
 
@@ -697,6 +919,353 @@ return [
             'material',
             'delivery_date',
         ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Header Fields Satisfied by Lines
+        |--------------------------------------------------------------------------
+        |
+        | An empty header field listed here validates as parsed (source 'lines')
+        | when every invoice line carries its own value — e.g. order_number /
+        | order_date on an invoice that bills several orders. Each field is judged
+        | on its own. Profiles (credit_note_*, corrected_invoice_*) fall back to
+        | this list unless they define their own, which may be empty.
+        |
+        */
+
+        'invoice_fields_satisfied_by_lines' => [],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Header Fields Required One Of
+        |--------------------------------------------------------------------------
+        |
+        | Groups of header fields of which one value is enough, e.g.
+        | [['customer_vat_id', 'customer_tax_number']]. Once one member has a
+        | value, the empty members validate as not_applicable (source 'one_of');
+        | with none, each keeps the finding of its own priority. Profiles fall
+        | back to this list unless they define their own (ADR 0015).
+        |
+        */
+
+        'invoice_fields_required_one_of' => [],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Credit notes (ADR 0009)
+        |--------------------------------------------------------------------------
+        |
+        | Documents with document_type 381 are validated against the credit_note_*
+        | maps below instead of the invoice_* maps. Package default: same as the
+        | invoice maps, plus the preceding invoice reference (BG-3). A host that
+        | omits a credit_note_* key falls back to the matching invoice_* key.
+        |
+        */
+
+        'credit_note_fields' => [
+            // Document identification — MUST
+            'invoice_number' => 'must',    // BT-1
+            'invoice_date' => 'must',    // BT-2
+            'document_type' => 'must',    // BT-3
+            'due_date' => 'should',  // BT-9
+            'currency' => 'must',    // BT-5
+
+            // Preceding invoice reference
+            'preceding_invoice_number' => 'could', // BG-3 / BT-25
+            'preceding_invoice_date' => 'could',   // BG-3 / BT-26
+
+            // Buyer — MUST (core identification)
+            'customer_number' => 'must',    // BT-46
+            'customer_name' => 'must',    // BT-44
+            'customer_address' => 'must',    // BG-8
+            'country' => 'could',    // BT-55
+            'customer_vat_id' => 'should',  // BT-48
+            'customer_tax_number' => 'could',  // no EN 16931 term; buyer FC registration
+            // Delivery recipient (not EN 16931): reviewer-set buyer.contact.email, else inbox To when mail-sourced.
+            'buyer_email' => 'must',
+
+            // Buyer reference
+            'customer_reference' => 'could', // BT-10
+            'order_number' => 'should',  // BT-13
+            'order_date' => 'could',   // [GAP] no EN 16931 BT; not BT-13
+
+            // Delivery
+            'delivery_address' => 'must',    // BG-15
+            'delivery_date' => 'should',  // BT-72 (header ActualDeliverySupplyChainEvent)
+
+            // Seller — MUST (own company data, from system settings later)
+            'supplier_name' => 'must',    // BT-27
+            'supplier_number' => 'could', // BT-29
+            'supplier_vat_id' => 'must',    // BT-31
+            'supplier_tax_number' => 'should', // BT-32
+            'supplier_address' => 'must',    // BG-5
+            'supplier_bank_accounts' => 'should', // BG-16 / BG-17 (BT-84 IBAN)
+            'supplier_email' => 'should', // BT-34 / BT-43
+            'supplier_phone' => 'should', // BT-42
+            'payment_means' => 'must', // BT-81
+            'vat_category' => 'must', // BT-118
+
+            // Agent & terms
+            'agent' => 'could',  // BT-41
+            'payment_terms' => 'should',  // BT-20
+            'delivery_terms' => 'could',  // BT-22 (invoice note)
+            'shipping_method' => 'could',  // BT-22 (invoice note)
+            'notes' => 'could',  // BT-22 (parser free-text notes)
+
+            // Amounts — MUST
+            'net_total' => 'must',    // BT-109
+            'totals_reconciliation' => 'must',  // BR-CO-13: Σ BT-131 + charges − allowances = BT-109
+            'vat_rate' => 'must',    // BT-119
+            'vat_amount' => 'must',    // BT-110
+            'gross_total' => 'must',    // BT-112
+
+            // Optional amounts
+            'discount_percent' => 'could',  // BG-20 / BT-94
+            'discount_amount' => 'could',  // BG-20 / BT-92
+            'shipping_cost' => 'could',  // BG-21 / BT-99
+            'minimum_quantity_surcharge' => 'could',  // BG-21 / BT-99
+            'freight_flat_rate' => 'could',  // BG-21 / BT-99
+            'certificate_cost' => 'could',  // BG-21 / BT-99
+            'customs_cost' => 'could',  // BG-21 / BT-99
+            'packaging_cost' => 'could',  // BG-21 / BT-99
+        ],
+
+        'credit_note_line_fields' => [
+            'position' => 'must',  // BT-126
+            'description' => 'must',    // BT-153
+            'quantity' => 'must',    // BT-129
+            'unit' => 'must',    // BT-130
+            'unit_price' => 'must',    // BT-146
+            'line_total' => 'must',    // BT-131
+            'vat_category' => 'must', // BT-151 (inherits header stamp)
+
+            'article_number' => 'should',  // BT-155
+            'material' => 'should',  // BG-32 / BT-160–161 (host-specific)
+            'customs_tariff_number' => 'could', // BT-158
+
+            'description_detail' => 'could',  // BT-154
+            'material_test_certificate' => 'could',  // BG-32 / BT-160–161
+            'material_test_certificate_price' => 'could',  // BG-28 line charge
+            'weight_kg_total' => 'could',
+            'weight_kg_net' => 'could',
+            'surcharge_amount' => 'could',
+            'surcharge_description' => 'could',
+            'delivery_date' => 'should',  // BG-26 / BT-134 (BillingSpecifiedPeriod in XML)
+            'delivery_note_number' => 'could', // BT-16
+            'order_number' => 'could',   // BT-132 (item-level override)
+            'order_date' => 'could',  // [GAP] no EN 16931 BT; not BT-13
+            'delivery_address' => 'could',
+        ],
+
+        'credit_note_contextual_should' => [
+            'customer_vat_id',
+            'payment_terms',
+            'supplier_tax_number',
+            'supplier_bank_accounts',
+            'supplier_email',
+            'supplier_phone',
+            'delivery_date',
+        ],
+
+        'credit_note_line_contextual_should' => [
+            'article_number',
+            'material',
+            'delivery_date',
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Corrected invoices (ADR 0009, ADR 0011)
+        |--------------------------------------------------------------------------
+        |
+        | Documents with document_type 384 correct or cancel an earlier invoice and
+        | should reference it (BG-3). Payment terms stay optional: a reducing
+        | correction has a negative amount due, and an increasing one without BT-9
+        | or BT-20 is rejected by BR-CO-25 at artifact validation anyway.
+        |
+        */
+
+        'corrected_invoice_fields' => [
+            // Document identification — MUST
+            'invoice_number' => 'must',    // BT-1
+            'invoice_date' => 'must',    // BT-2
+            'document_type' => 'must',    // BT-3
+            'due_date' => 'could',  // BT-9
+            'currency' => 'must',    // BT-5
+
+            // Preceding invoice reference (the corrected invoice)
+            'preceding_invoice_number' => 'should', // BG-3 / BT-25
+            'preceding_invoice_date' => 'should',   // BG-3 / BT-26
+
+            // Buyer — MUST (core identification)
+            'customer_number' => 'must',    // BT-46
+            'customer_name' => 'must',    // BT-44
+            'customer_address' => 'must',    // BG-8
+            'country' => 'could',    // BT-55
+            'customer_vat_id' => 'should',  // BT-48
+            'customer_tax_number' => 'could',  // no EN 16931 term; buyer FC registration
+            // Delivery recipient (not EN 16931): reviewer-set buyer.contact.email, else inbox To when mail-sourced.
+            'buyer_email' => 'must',
+
+            // Buyer reference
+            'customer_reference' => 'could', // BT-10
+            'order_number' => 'should',  // BT-13
+            'order_date' => 'could',   // [GAP] no EN 16931 BT; not BT-13
+
+            // Delivery
+            'delivery_address' => 'must',    // BG-15
+            'delivery_date' => 'should',  // BT-72 (header ActualDeliverySupplyChainEvent)
+
+            // Seller — MUST (own company data, from system settings later)
+            'supplier_name' => 'must',    // BT-27
+            'supplier_number' => 'could', // BT-29
+            'supplier_vat_id' => 'must',    // BT-31
+            'supplier_tax_number' => 'should', // BT-32
+            'supplier_address' => 'must',    // BG-5
+            'supplier_bank_accounts' => 'should', // BG-16 / BG-17 (BT-84 IBAN)
+            'supplier_email' => 'should', // BT-34 / BT-43
+            'supplier_phone' => 'should', // BT-42
+            'payment_means' => 'must', // BT-81
+            'vat_category' => 'must', // BT-118
+
+            // Agent & terms
+            'agent' => 'could',  // BT-41
+            'payment_terms' => 'could',  // BT-20
+            'delivery_terms' => 'could',  // BT-22 (invoice note)
+            'shipping_method' => 'could',  // BT-22 (invoice note)
+            'notes' => 'could',  // BT-22 (parser free-text notes)
+
+            // Amounts — MUST
+            'net_total' => 'must',    // BT-109
+            'totals_reconciliation' => 'must',  // BR-CO-13: Σ BT-131 + charges − allowances = BT-109
+            'vat_rate' => 'must',    // BT-119
+            'vat_amount' => 'must',    // BT-110
+            'gross_total' => 'must',    // BT-112
+
+            // Optional amounts
+            'discount_percent' => 'could',  // BG-20 / BT-94
+            'discount_amount' => 'could',  // BG-20 / BT-92
+            'shipping_cost' => 'could',  // BG-21 / BT-99
+            'minimum_quantity_surcharge' => 'could',  // BG-21 / BT-99
+            'freight_flat_rate' => 'could',  // BG-21 / BT-99
+            'certificate_cost' => 'could',  // BG-21 / BT-99
+            'customs_cost' => 'could',  // BG-21 / BT-99
+            'packaging_cost' => 'could',  // BG-21 / BT-99
+        ],
+
+        'corrected_invoice_line_fields' => [
+            'position' => 'must',  // BT-126
+            'description' => 'must',    // BT-153
+            'quantity' => 'must',    // BT-129
+            'unit' => 'must',    // BT-130
+            'unit_price' => 'must',    // BT-146
+            'line_total' => 'must',    // BT-131
+            'vat_category' => 'must', // BT-151 (inherits header stamp)
+
+            'article_number' => 'should',  // BT-155
+            'material' => 'should',  // BG-32 / BT-160–161 (host-specific)
+            'customs_tariff_number' => 'could', // BT-158
+
+            'description_detail' => 'could',  // BT-154
+            'material_test_certificate' => 'could',  // BG-32 / BT-160–161
+            'material_test_certificate_price' => 'could',  // BG-28 line charge
+            'weight_kg_total' => 'could',
+            'weight_kg_net' => 'could',
+            'surcharge_amount' => 'could',
+            'surcharge_description' => 'could',
+            'delivery_date' => 'should',  // BG-26 / BT-134 (BillingSpecifiedPeriod in XML)
+            'delivery_note_number' => 'could', // BT-16
+            'order_number' => 'could',   // BT-132 (item-level override)
+            'order_date' => 'could',  // [GAP] no EN 16931 BT; not BT-13
+            'delivery_address' => 'could',
+        ],
+
+        'corrected_invoice_contextual_should' => [
+            'customer_vat_id',
+            'supplier_tax_number',
+            'supplier_bank_accounts',
+            'supplier_email',
+            'supplier_phone',
+            'delivery_date',
+            'preceding_invoice_number',
+            'preceding_invoice_date',
+        ],
+
+        'corrected_invoice_line_contextual_should' => [
+            'article_number',
+            'material',
+            'delivery_date',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Document classification (ADR 0011)
+    |--------------------------------------------------------------------------
+    |
+    | Document types a reviewer or uploader chooses between before approval,
+    | with the sign their amounts carry: a credit note (381) states the credit
+    | with positive amounts; a corrected invoice (384) issued as a credit (the
+    | delta) carries negative amounts. A host that issues corrected invoices as
+    | full, positive restatements sets '384' => 'positive'. Switching between
+    | different signs negates all document and line amounts. The choice is
+    | audited as a `document_classified` activity, never a value correction.
+    | These types also count as one type for duplicate detection.
+    |
+    */
+
+    'document_classification' => [
+        'types' => [
+            '381' => 'positive',
+            '384' => 'negative',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Value correction (mooxphp/e-billing#45)
+    |--------------------------------------------------------------------------
+    |
+    | Fields a reviewer may correct to what the source document says, before
+    | approval. Patterns match the normalised field: `buyer.vat_id`,
+    | `lines.quantity`, `allowance_charges.amount`,
+    | `lines.allowance_charges.amount`; `*` is a wildcard. Only attributes
+    | audited by moox/audit can be corrected, since the parsed value is read
+    | from the audit history. Default: every audited field.
+    |
+    */
+
+    'value_correction' => [
+        'fields' => ['*'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cross-checked fields (mooxphp/e-billing#46 / #47, ADR 0004)
+    |--------------------------------------------------------------------------
+    |
+    | The one catalogue of fields checked against master data: the review
+    | workspace offers these as pickers scoped to the attributed customer, and
+    | the divergence report (#46) derives from the same mapping. Each field
+    | names the matched record (`customer` or `company`) and either an
+    | `attribute` of it or its `addresses` filtered by the corroboration
+    | roles (`buyer` or `delivery`). Review never writes master data.
+    |
+    | strict: false = picker plus free text on the document (default);
+    | true = select-only for these fields.
+    |
+    */
+
+    'cross_checked' => [
+        'strict' => (bool) env('EBILLING_CROSS_CHECKED_STRICT', false),
+        'fields' => [
+            'customer_number' => ['record' => 'customer', 'attribute' => 'customer_number'],
+            'customer_name' => ['record' => 'company', 'attribute' => 'name'],
+            'customer_vat_id' => ['record' => 'company', 'attribute' => 'vat_number'],
+            'customer_tax_number' => ['record' => 'company', 'attribute' => 'tax_number'],
+            'customer_address' => ['record' => 'company', 'addresses' => 'buyer'],
+            'delivery_address' => ['record' => 'company', 'addresses' => 'delivery'],
+        ],
     ],
 
     /*
@@ -713,6 +1282,8 @@ return [
     'approval' => [
         'required' => (bool) env('EBILLING_APPROVAL_REQUIRED', true),
         'auto_approve_enabled' => (bool) env('EBILLING_APPROVAL_AUTO_APPROVE', true),
+        // When true, manually uploaded PDFs stay pending until a human approves (auto-approve only).
+        'manual_upload_requires_human_approval' => (bool) env('EBILLING_APPROVAL_MANUAL_UPLOAD_REQUIRES_HUMAN', false),
     ],
 
     /*
@@ -726,8 +1297,17 @@ return [
     */
 
     'invoice_ui' => [
-        'invoice_fields_hidden' => [],
+        'invoice_fields_hidden' => [
+            // Preceding invoice reference (BG-3) is credit-note only (ADR 0009).
+            'preceding_invoice_number',
+            'preceding_invoice_date',
+        ],
         'invoice_line_fields_hidden' => [],
+        // Profiles from field_validation.document_type_profiles; fall back to invoice_* when omitted (ADR 0009).
+        'credit_note_fields_hidden' => [],
+        'credit_note_line_fields_hidden' => [],
+        'corrected_invoice_fields_hidden' => [],
+        'corrected_invoice_line_fields_hidden' => [],
         'field_groups' => [
             'document' => ['default_open' => true],
             'supplier' => ['default_open' => true],
@@ -762,10 +1342,19 @@ return [
     | only creates EbillingDocuments for those Scopes. Other PDF attachments are marked
     | Skipped (still visible in the inbox UI). null or [] = all Scopes (backwards compatible).
     |
+    | Intake cutoff: when invoice_date_from is set (Y-m-d), a mail-sourced document whose
+    | parsed invoice date (BT-2) lies before that day is not converted. It ends as
+    | IgnoredBeforeCutoff and the inbox message is settled Ignored. The cutoff day itself is
+    | processed; a missing or unparseable invoice date is never ignored; manual uploads are
+    | exempt. before_cutoff_disposition: ignore (default) | forward (Source-PDF relay to
+    | inbox To before settling, same as the foreign disposition). Empty = off.
+    |
     */
 
     'intake' => [
         'scopes' => null,
+        'invoice_date_from' => env('EBILLING_INTAKE_INVOICE_DATE_FROM'),
+        'before_cutoff_disposition' => env('EBILLING_INTAKE_BEFORE_CUTOFF_DISPOSITION', 'ignore'),
     ],
 
     /*
@@ -963,7 +1552,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | Registered with moox/audit when installed. Override in config/audit.php.
-    | Tracks the structured invoice and the gateway document (pipeline state).
+    | Tracks the gateway document (pipeline state). The invoice, its lines and
+    | its allowances and charges are registered by moox/invoice (`invoice.audit`);
+    | e-billing only adds its labels to the invoice.
     |
     */
 
@@ -971,32 +1562,8 @@ return [
         'enabled' => true,
         'models' => [
             Invoice::class => [
-                'log_name' => 'e-billing',
                 'subject_label_resolver' => InvoiceActivitySubjectLabel::class,
                 'attribute_label_resolver' => EbillingActivityAttributeLabels::class,
-                'attributes' => [
-                    'invoice_number',
-                    'invoice_date',
-                    'document_type',
-                    'due_date',
-                    'currency',
-                    'customer_number',
-                    'customer_reference',
-                    'order_number',
-                    'order_date',
-                    'delivery_date',
-                    'payment_terms',
-                    'shipping_method',
-                    'delivery_terms',
-                    'seller',
-                    'buyer',
-                    'delivery',
-                    'payment_means',
-                    'net_total',
-                    'vat_rate',
-                    'vat_amount',
-                    'gross_total',
-                ],
             ],
             EbillingDocument::class => [
                 'log_name' => 'e-billing',
@@ -1012,6 +1579,7 @@ return [
                         'validation_failed',
                         'validator_error',
                         'ignored_foreign',
+                        'ignored_before_cutoff',
                         'ignored_identical_duplicate',
                     ],
                     'review_status' => [

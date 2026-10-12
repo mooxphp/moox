@@ -1,0 +1,62 @@
+{
+    "name": "moox/impersonate",
+    "description": "Filament user impersonation for Moox, with optional audit logging",
+    "keywords": [
+        "Laravel",
+        "Filament",
+        "Filament plugin",
+        "Laravel package",
+        "impersonate",
+        "audit"
+    ],
+    "homepage": "https://moox.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main",
+        "stechstudio/filament-impersonate": "^5.6"
+    },
+    "require-dev": {
+        "moox/devtools": "dev-main",
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^4.7",
+        "moox/audit": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Impersonate\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Impersonate\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Impersonate\\ImpersonateServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "dev"
+        }
+    },
+    "scripts": {
+        "test": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/Unit"
+        ]
+    },
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

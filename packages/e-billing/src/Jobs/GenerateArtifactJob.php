@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use LogicException;
+use Moox\EBilling\Actions\ApplyUploadedRecipientEmailAction;
 use Moox\EBilling\Actions\DiscardIdenticalContentDuplicateAction;
 use Moox\EBilling\Adapters\ZugferdInvoiceAdapter;
 use Moox\EBilling\Contracts\PdfaNormalizerInterface;
@@ -32,6 +33,7 @@ use Moox\EBilling\Support\EBillingArtifactNaming;
 use Moox\EBilling\Support\EBillingFormatResolver;
 use Moox\EBilling\Support\InvoiceNumberDuplicateChecker;
 use Moox\EBilling\Support\SourceContentHasher;
+use Moox\Invoice\Models\Invoice;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
 use Throwable;
@@ -70,6 +72,7 @@ class GenerateArtifactJob implements ShouldQueue
         InvoiceNumberDuplicateChecker $duplicateChecker,
         DocumentTypeCodeResolver $documentTypeCodeResolver,
         DiscardIdenticalContentDuplicateAction $discardIdenticalContentDuplicate,
+        ApplyUploadedRecipientEmailAction $applyUploadedRecipientEmail,
     ): void {
         $this->setProgress(0);
 
@@ -127,36 +130,54 @@ class GenerateArtifactJob implements ShouldQueue
         $this->setProgress(25);
 
         $sourceHash = $sourceContentHasher->ensureOnDocument($document->fresh() ?? $document);
-        $dto = InvoiceDto::fromArray($billData);
 
-        $documentType = null;
-        try {
-            $documentType = $documentTypeCodeResolver->resolveFromCodeOrLabel(
-                $dto->documentTypeCode,
-                $dto->documentType,
-            );
-        } catch (Throwable) {
+        // The payload is read only until the case has its Invoice (ADR 0013); later runs generate from its rows.
+        $invoice = $document->invoice;
+        $mappedBillData = null;
+        if ($invoice === null) {
+            $dto = InvoiceDto::fromArray($billData);
             $documentType = null;
-        }
-
-        if (is_string($sourceHash) && $sourceHash !== '' && is_string($documentType) && $documentType !== '') {
-            $identical = $duplicateChecker->findIdenticalContentDuplicate(
-                invoiceNumber: (string) $dto->invoiceNumber,
-                documentType: $documentType,
-                sourceContentHash: $sourceHash,
-                exceptDocumentId: (string) $document->getKey(),
-                sellerVatId: $dto->supplierVatId,
-            );
-
-            if ($identical !== null) {
-                $discardIdenticalContentDuplicate->execute($document->fresh() ?? $document, $identical);
-                $this->setProgress(100);
-
-                return;
+            try {
+                $documentType = $documentTypeCodeResolver->resolveFromCodeOrLabel(
+                    $dto->documentTypeCode,
+                    $dto->documentType,
+                );
+            } catch (Throwable) {
+                $documentType = null;
             }
+
+            if (is_string($sourceHash) && $sourceHash !== '' && is_string($documentType) && $documentType !== '') {
+                $identical = $duplicateChecker->findIdenticalContentDuplicate(
+                    invoiceNumber: (string) $dto->invoiceNumber,
+                    documentType: $documentType,
+                    sourceContentHash: $sourceHash,
+                    exceptDocumentId: (string) $document->getKey(),
+                    sellerVatId: $dto->supplierVatId,
+                );
+
+                if ($identical !== null) {
+                    $discardIdenticalContentDuplicate->execute($document->fresh() ?? $document, $identical);
+                    $this->setProgress(100);
+
+                    return;
+                }
+            }
+
+            $invoice = $parsedInvoiceMapper->createFromDto($dto, $document);
+            $mappedBillData = $dto->toArray();
         }
 
-        $invoice = $parsedInvoiceMapper->createFromDto($dto, $document);
+        $document = $document->fresh(['source', 'invoice']) ?? $document;
+        $applyUploadedRecipientEmail->execute($document);
+        $invoice = $document->fresh(['invoice'])->invoice ?? $document->invoice;
+
+        if (! $invoice instanceof Invoice) {
+            throw new LogicException(
+                "Ebilling document [{$document->getKey()}] has no invoice after mapping; cannot generate artifact."
+            );
+        }
+
+        $documentType = $invoice->document_type;
 
         $this->setProgress(40);
 
@@ -237,15 +258,15 @@ class GenerateArtifactJob implements ShouldQueue
 
         $this->setProgress(80);
 
-        $billDataArray = $dto->toArray();
-
         $document->format = $formatId;
         $document->profile = $effective->profile;
         $document->storage_disk = $diskName;
         $document->xml_storage_path = $relativeXmlPath;
         $document->pdf_storage_path = $relativePdfPath;
         $document->copy_pdf_storage_path = $relativeCopyPdfPath;
-        $document->bill_data = $billDataArray;
+        if ($mappedBillData !== null) {
+            $document->bill_data = $mappedBillData;
+        }
         $document->artifact_content_hash = null;
         $document->gateway_status = EBillingAttachmentProcessingStatus::Validating;
         $document->save();

@@ -5,14 +5,23 @@ declare(strict_types=1);
 namespace Moox\EBilling\ViewModels;
 
 use Carbon\Carbon;
+use Moox\EBilling\Approval\DocumentApprovalGuard;
+use Moox\EBilling\Approval\DocumentEditGuard;
+use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Resources\InvoiceResource;
+use Moox\EBilling\Support\DeliveryDateTransmission;
+use Moox\EBilling\Support\FieldValidationProfile;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\EBilling\Support\InvoiceUiPresentation;
 use Moox\EBilling\Support\PartyAddressFormatter;
+use Moox\EBilling\Support\PrecedingInvoiceReferences;
+use Moox\EBilling\Support\ReviewFieldCatalog;
 use Moox\Invoice\Models\Invoice;
+use Moox\Invoice\Models\InvoiceAllowanceCharge;
 use Moox\Invoice\Support\En16931\BankAccount;
 
 final class InvoiceViewModel
@@ -38,6 +47,7 @@ final class InvoiceViewModel
                 'subtitle' => '',
                 'fields' => $this->buildFields([
                     'invoice_number', 'invoice_date', 'document_type',
+                    'preceding_invoice_number', 'preceding_invoice_date',
                     'due_date', 'currency', 'order_number', 'order_date',
                     'customer_reference', 'payment_terms', 'material_test_certificate',
                 ]),
@@ -46,7 +56,7 @@ final class InvoiceViewModel
                 'title' => __('e-billing::fields.section_seller_supplier'),
                 'subtitle' => 'BG-4',
                 'fields' => $this->buildFields([
-                    'supplier_name', 'supplier_vat_id', 'supplier_tax_number',
+                    'supplier_name', 'supplier_number', 'supplier_vat_id', 'supplier_tax_number',
                     'supplier_address', 'supplier_bank_accounts', 'supplier_email', 'supplier_phone', 'payment_means', 'agent',
                 ]),
             ],
@@ -55,7 +65,7 @@ final class InvoiceViewModel
                 'subtitle' => 'BG-7',
                 'fields' => $this->buildFields([
                     'customer_number', 'customer_name',
-                    'customer_vat_id', 'customer_address', 'buyer_email',
+                    'customer_vat_id', 'customer_tax_number', 'customer_address', 'buyer_email',
                 ]),
             ],
             'delivery' => [
@@ -69,9 +79,10 @@ final class InvoiceViewModel
                 'title' => __('e-billing::fields.section_amounts'),
                 'subtitle' => 'BG-21 / BG-22',
                 'fields' => $this->buildFields([
-                    'net_total', 'vat_category', 'vat_rate', 'vat_amount', 'gross_total',
+                    'net_total', 'totals_reconciliation', 'vat_category', 'vat_rate', 'vat_amount', 'gross_total',
                     'discount_percent', 'discount_amount',
                     'shipping_cost', 'freight_flat_rate', 'packaging_cost', 'minimum_quantity_surcharge',
+                    'certificate_cost', 'customs_cost',
                 ]),
             ],
         ];
@@ -86,6 +97,7 @@ final class InvoiceViewModel
                 $group['fields'],
                 InvoiceUiPresentation::groupDefaultOpen($key),
                 'invoice',
+                $this->documentType(),
             );
 
             $out[$key] = [
@@ -115,7 +127,7 @@ final class InvoiceViewModel
                     ? $lineValidationsRoot[$lineKey]
                     : [];
 
-                return new InvoiceLineViewModel($line, $validations);
+                return new InvoiceLineViewModel($line, $validations, $this->documentType());
             })
             ->all();
     }
@@ -123,13 +135,15 @@ final class InvoiceViewModel
     /**
      * Fields carried as invoice notes (BG-1 / BT-22) when emitted to XRechnung/ZUGFeRD.
      *
+     * @param  bool  $includeEmpty  also empty fields, so the review workspace can fill them
      * @return list<FieldViewData>
      */
-    public function noteFields(): array
+    public function noteFields(bool $includeEmpty = false): array
     {
         $fields = array_values(array_filter(
             $this->buildFields(['delivery_terms', 'shipping_method']),
-            fn (FieldViewData $field): bool => ($field->value !== null && $field->value !== '')
+            fn (FieldViewData $field): bool => $includeEmpty
+                || ($field->value !== null && $field->value !== '')
                 || in_array($field->status(), ['missing', 'needs_review'], true),
         ));
 
@@ -141,9 +155,9 @@ final class InvoiceViewModel
      *
      * @return array{title: string, subtitle: string, fields: list<FieldViewData>, open: bool, issue_count: int, issue_label: ?string}|null
      */
-    public function notesGroup(): ?array
+    public function notesGroup(bool $includeEmpty = false): ?array
     {
-        $fields = $this->noteFields();
+        $fields = $this->noteFields($includeEmpty);
         if ($fields === []) {
             return null;
         }
@@ -152,6 +166,7 @@ final class InvoiceViewModel
             $fields,
             InvoiceUiPresentation::groupDefaultOpen('notes'),
             'invoice',
+            $this->documentType(),
         );
 
         return [
@@ -173,7 +188,7 @@ final class InvoiceViewModel
         $storedValidation = is_array($validations['notes'] ?? null) ? $validations['notes'] : null;
         $fields = [];
 
-        foreach ($this->parsedNoteTexts() as $note) {
+        foreach ($this->parsedNoteTexts() as $index => $note) {
             $validation = $this->resolveDisplayValidation('notes', $note, $storedValidation);
             $status = is_array($validation) && isset($validation['status']) && is_string($validation['status'])
                 ? $validation['status']
@@ -186,6 +201,7 @@ final class InvoiceViewModel
                 value: $note,
                 validation: $validation,
                 hint: InvoiceFieldLabels::hint('notes', $status, $validation),
+                editKey: ReviewFieldCatalog::noteKey($index),
             );
         }
 
@@ -193,7 +209,7 @@ final class InvoiceViewModel
     }
 
     /**
-     * @return list<string>
+     * @return array<int, string> keyed by the note's index on the invoice
      */
     private function parsedNoteTexts(): array
     {
@@ -203,10 +219,10 @@ final class InvoiceViewModel
             return [];
         }
 
-        return array_values(array_filter(
+        return array_filter(
             $notes,
             fn (mixed $note): bool => is_string($note) && trim($note) !== '',
-        ));
+        );
     }
 
     /**
@@ -214,6 +230,22 @@ final class InvoiceViewModel
      */
     public function statusBanner(): array
     {
+        // The approval decision supersedes the review stage, e.g. "confirmed, waiting for approval".
+        $approval = $this->document?->resolveApprovalStatusEnum();
+        if ($approval === DocumentApprovalStatus::Approved || $approval === DocumentApprovalStatus::Rejected) {
+            return [
+                'color' => $approval === DocumentApprovalStatus::Approved ? 'green' : 'red',
+                'text' => ($approval === DocumentApprovalStatus::Approved ? '✓ ' : '').$approval->label(),
+            ];
+        }
+
+        if ($approval === DocumentApprovalStatus::Pending && $this->document?->isHeldForApproval()) {
+            return [
+                'color' => 'yellow',
+                'text' => __('e-billing::fields.banner_held_for_approval'),
+            ];
+        }
+
         $status = $this->document?->review_status;
         if (! $status instanceof InvoiceProcessingStatus) {
             $raw = $this->document?->getAttributes()['review_status'] ?? null;
@@ -255,13 +287,93 @@ final class InvoiceViewModel
     public function gatewayStatusBanner(): ?array
     {
         $status = $this->document?->gateway_status;
-        if (! $status instanceof EBillingAttachmentProcessingStatus || ! $status->isFailure()) {
+        if (! $status instanceof EBillingAttachmentProcessingStatus) {
+            return null;
+        }
+
+        if ($this->isPipelineRunning()) {
+            return [
+                'color' => 'blue',
+                'text' => $status->label(),
+            ];
+        }
+
+        if (! $status->isFailure()) {
             return null;
         }
 
         return [
             'color' => 'red',
             'text' => $status->label(),
+        ];
+    }
+
+    /**
+     * Generation or validation is queued or running, e.g. after leave-edit; the page polls until it ends.
+     */
+    public function isPipelineRunning(): bool
+    {
+        return $this->document instanceof EbillingDocument
+            && app(DocumentEditGuard::class)->isPipelineRunning($this->document);
+    }
+
+    /**
+     * Why a pending document cannot be approved yet (ADR 0004), on one line for the disabled approve action's tooltip.
+     */
+    public function approvalBlockReason(): ?string
+    {
+        $block = $this->approvalBlock();
+        if ($block === null) {
+            return null;
+        }
+
+        return $block['fields'] === [] ? $block['message'] : $block['message'].' '.implode(', ', $block['fields']);
+    }
+
+    /**
+     * Fields that still need review, shown while editing even once confirming has accepted them for approval.
+     *
+     * @return list<string> field labels
+     */
+    public function reviewFieldLabels(): array
+    {
+        return $this->document instanceof EbillingDocument
+            ? array_map(InvoiceFieldLabels::label(...), $this->document->humanReviewBlockingFields())
+            : [];
+    }
+
+    /**
+     * Why a pending document cannot be approved yet, for the status banner: the message, and for field-based
+     * reasons the labels of the fields to check, listed one per line.
+     *
+     * @return array{message: string, fields: list<string>}|null
+     */
+    public function approvalBlock(): ?array
+    {
+        $document = $this->document;
+        if (! $document instanceof EbillingDocument
+            || ! (bool) config('e-billing.approval.required', true)
+            || $document->resolveApprovalStatusEnum() !== DocumentApprovalStatus::Pending) {
+            return null;
+        }
+
+        $reason = app(DocumentApprovalGuard::class)->blockReason($document);
+        if ($reason === null) {
+            return null;
+        }
+
+        $fields = match ($reason) {
+            DocumentApprovalGuard::BLOCK_HUMAN_REVIEW_REQUIRED => $document->humanReviewBlockingFields(),
+            DocumentApprovalGuard::BLOCK_MUST_FIELD_MISSING => EbillingDocument::missingMustFields(
+                is_array($document->field_validations) ? $document->field_validations : null,
+                $document->profileDocumentType(),
+            ),
+            default => [],
+        };
+
+        return [
+            'message' => __('e-billing::fields.approval_blocked.'.$reason),
+            'fields' => array_map(InvoiceFieldLabels::label(...), $fields),
         ];
     }
 
@@ -334,6 +446,7 @@ final class InvoiceViewModel
         if (in_array($field, [
             'net_total', 'vat_amount', 'gross_total', 'discount_amount',
             'shipping_cost', 'freight_flat_rate', 'packaging_cost', 'minimum_quantity_surcharge',
+            'certificate_cost', 'customs_cost', 'totals_reconciliation',
         ], true) && is_numeric($value)) {
             return number_format((float) $value, 2, ',', '.');
         }
@@ -346,7 +459,13 @@ final class InvoiceViewModel
             return number_format((float) $value, 2, ',', '.').' %';
         }
 
-        if (in_array($field, ['invoice_date', 'due_date', 'order_date', 'delivery_date'], true)
+        if (in_array($field, [
+            'invoice_date',
+            'due_date',
+            'order_date',
+            'delivery_date',
+            'preceding_invoice_date',
+        ], true)
             && is_string($value) && $value !== '') {
             try {
                 return Carbon::parse($value)->format('d.m.Y');
@@ -364,10 +483,13 @@ final class InvoiceViewModel
             return HeaderChargeResolver::resolveAmount($this->invoice->allowanceCharges, $field);
         }
 
+        $precedingReference = PrecedingInvoiceReferences::first($this->invoice->preceding_invoices);
+
         return match ($field) {
-            'buyer_email' => $this->document?->inboxToEmail(),
+            'buyer_email' => $this->document?->recipientEmail(),
             'customer_name' => $this->invoice->buyer?->name,
             'customer_vat_id' => $this->invoice->buyer?->vat_id,
+            'customer_tax_number' => $this->invoice->buyer?->tax_number,
             'customer_address' => PartyAddressFormatter::format($this->invoice->buyer),
             'country' => $this->invoice->buyer?->address?->country_code,
             'supplier_name' => $this->invoice->seller?->name,
@@ -382,8 +504,49 @@ final class InvoiceViewModel
             'vat_category' => $this->invoice->vat_category,
             // Keep empty when no distinct consignee (ADR 0020 / 0014).
             'delivery_address' => PartyAddressFormatter::format($this->invoice->delivery),
+            'preceding_invoice_number' => $precedingReference['number'] ?? null,
+            'preceding_invoice_date' => $precedingReference['date'] ?? null,
+            // Difference to the printed net total; only known once the document has been validated.
+            'totals_reconciliation' => $this->totalsReconciliationDifference(),
             default => $this->invoice->getAttribute($field),
         };
+    }
+
+    private function totalsReconciliationDifference(): ?string
+    {
+        $validations = $this->document?->field_validations;
+        $entry = is_array($validations) ? ($validations['totals_reconciliation'] ?? null) : null;
+
+        if (! is_array($entry)) {
+            return null;
+        }
+
+        $difference = $entry['difference'] ?? null;
+
+        return is_string($difference) ? $difference : '0.00';
+    }
+
+    private function documentType(): ?string
+    {
+        $type = $this->invoice->document_type;
+
+        return $type !== '' ? $type : null;
+    }
+
+    /**
+     * Link to the stored invoice a preceding-invoice reference resolved to (ADR 0009 addendum).
+     *
+     * @param  array<string, mixed>|null  $validation
+     */
+    private function fieldUrl(string $field, ?array $validation): ?string
+    {
+        $matchedId = $validation['matched_id'] ?? null;
+
+        if ($field !== 'preceding_invoice_number' || ! is_string($matchedId) || $matchedId === '') {
+            return null;
+        }
+
+        return InvoiceResource::getUrl('view', ['record' => $matchedId]);
     }
 
     /**
@@ -434,16 +597,69 @@ final class InvoiceViewModel
                 field: $name,
                 label: InvoiceFieldLabels::label($name),
                 btNumber: InvoiceFieldLabels::btNumber($name),
-                value: $this->formatValue($name),
+                value: ($validation['source'] ?? null) === 'lines'
+                    ? $this->valuesFromLines($name)
+                    : $this->formatValue($name),
                 validation: $validation,
                 hint: InvoiceFieldLabels::hint($name, $status, $validation),
+                url: $this->fieldUrl($name, $validation),
+                editKey: ReviewFieldCatalog::invoiceKey($name),
             );
         }, $fieldNames);
 
+        $fields = array_merge(...array_map(
+            fn (FieldViewData $field): array => [$field, ...$this->itemizedChargeRows($field)],
+            $fields,
+        ));
+
         return InvoiceUiPresentation::withoutHidden(
             $fields,
-            InvoiceUiPresentation::hiddenInvoiceFields(),
+            InvoiceUiPresentation::hiddenInvoiceFields($this->documentType()),
         );
+    }
+
+    /**
+     * The distinct values the lines carry for a header field satisfied by them, one per row of text;
+     * delivery dates include the lines' partial deliveries.
+     */
+    private function valuesFromLines(string $field): ?string
+    {
+        $values = $field === 'delivery_date'
+            ? DeliveryDateTransmission::distinctDates(null, $this->invoice->lines)
+            : $this->invoice->lines
+                ->map(fn ($line): string => trim((string) $line->getAttribute($field)))
+                ->filter(fn (string $value): bool => $value !== '')
+                ->unique()
+                ->values()
+                ->all();
+
+        if (in_array($field, ['delivery_date', 'order_date'], true)) {
+            $values = array_map(static function (string $value): string {
+                $normalized = DeliveryDateTransmission::normalize($value);
+
+                return $normalized !== null ? Carbon::parse($normalized)->format('d.m.Y') : $value;
+            }, $values);
+        }
+
+        return $values === [] ? null : implode("\n", array_values(array_unique($values)));
+    }
+
+    /**
+     * One row per charge below the sum row when a charge field is itemized (e.g. Versand per delivery).
+     *
+     * @return list<FieldViewData>
+     */
+    private function itemizedChargeRows(FieldViewData $sumRow): array
+    {
+        return array_map(fn (InvoiceAllowanceCharge $charge): FieldViewData => new FieldViewData(
+            field: $sumRow->field,
+            label: (string) $charge->reason_text,
+            btNumber: $sumRow->btNumber,
+            value: number_format((float) $charge->amount, 2, ',', '.'),
+            validation: $sumRow->validation,
+            hint: null,
+            editKey: ReviewFieldCatalog::chargeKey($charge),
+        ), HeaderChargeResolver::itemizedCharges($this->invoice->allowanceCharges, $sumRow->field));
     }
 
     /**
@@ -454,7 +670,7 @@ final class InvoiceViewModel
      * display as not_applicable ("empty and rightly so"), never must-missing or
      * db_validated on a blank Warenempfänger.
      *
-     * @return array{status: string}|null
+     * @return array{status: string, source?: string}|null
      */
     private function resolveDisplayValidation(string $field, mixed $rawValue, ?array $storedValidation): ?array
     {
@@ -466,7 +682,9 @@ final class InvoiceViewModel
 
         if ($storedValidation !== null) {
             $storedStatus = $storedValidation['status'] ?? null;
-            if ($hasValue || ! in_array($storedStatus, ['parsed', 'validated', 'db_validated'], true)) {
+            // Empty header, present on every line (e.g. orders of a multi-order invoice).
+            $satisfiedByLines = ($storedValidation['source'] ?? null) === 'lines';
+            if ($hasValue || $satisfiedByLines || ! in_array($storedStatus, ['parsed', 'validated', 'db_validated'], true)) {
                 return $storedValidation;
             }
         }
@@ -480,10 +698,7 @@ final class InvoiceViewModel
             return ['status' => 'missing'];
         }
 
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        $priority = is_array($invoiceFields) && is_string($invoiceFields[$field] ?? null)
-            ? $invoiceFields[$field]
-            : 'could';
+        $priority = FieldValidationProfile::priority($field, $this->documentType());
 
         if ($priority === 'could') {
             return ['status' => 'not_applicable'];
@@ -493,10 +708,8 @@ final class InvoiceViewModel
             return ['status' => 'missing'];
         }
 
-        $contextual = config('e-billing.field_validation.invoice_contextual_should', []);
-
         return [
-            'status' => is_array($contextual) && in_array($field, $contextual, true)
+            'status' => in_array($field, FieldValidationProfile::contextualShould($this->documentType()), true)
                 ? 'missing'
                 : 'not_applicable',
         ];

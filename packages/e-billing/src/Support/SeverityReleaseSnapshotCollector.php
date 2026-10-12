@@ -16,38 +16,36 @@ final class SeverityReleaseSnapshotCollector
         $releases = is_array($document->severity_releases) ? $document->severity_releases : [];
         $forwarded = [];
 
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        if (is_array($invoiceFields)) {
-            foreach ($invoiceFields as $field => $priority) {
-                if (! is_string($field) || $priority !== 'should') {
-                    continue;
-                }
-
-                $entry = EbillingDocument::readSeverityReleaseEntry($releases, $field);
-                if (! EbillingDocument::severityReleaseEntryIsValid($entry)) {
-                    continue;
-                }
-
-                $forwarded[] = new ForwardedSeverityRelease(
-                    field: $field,
-                    lineId: null,
-                    reason: (string) ($entry['reason'] ?? ''),
-                    releasedById: $entry['released_by_id'] ?? null,
-                    releasedAt: (string) ($entry['released_at'] ?? ''),
-                );
+        $documentType = $document->profileDocumentType();
+        foreach (FieldValidationProfile::invoiceFields($documentType) as $field => $priority) {
+            if ($priority !== 'should') {
+                continue;
             }
+
+            $entry = EbillingDocument::readSeverityReleaseEntry($releases, $field);
+            if (! EbillingDocument::severityReleaseEntryIsValid($entry)) {
+                continue;
+            }
+
+            $forwarded[] = new ForwardedSeverityRelease(
+                field: $field,
+                lineId: null,
+                reason: (string) ($entry['reason'] ?? ''),
+                releasedById: $entry['released_by_id'] ?? null,
+                releasedAt: (string) ($entry['released_at'] ?? ''),
+            );
         }
 
-        $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
+        $lineFields = FieldValidationProfile::lineFields($documentType);
         $lines = is_array($releases['lines'] ?? null) ? $releases['lines'] : [];
 
         foreach ($lines as $lineId => $lineReleases) {
-            if (! is_string($lineId) || ! is_array($lineReleases) || ! is_array($lineFields)) {
+            if (! is_string($lineId) || ! is_array($lineReleases)) {
                 continue;
             }
 
             foreach ($lineFields as $field => $priority) {
-                if (! is_string($field) || $priority !== 'should') {
+                if ($priority !== 'should') {
                     continue;
                 }
 

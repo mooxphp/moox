@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace Moox\UserDevice\Http\Middleware;
 
 use Closure;
-use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Jenssegers\Agent\Agent;
 use Moox\UserDevice\Models\UserDevice;
-use Moox\UserDevice\Resources\UserDeviceResource;
+use Moox\UserDevice\Services\UserDeviceTracker;
 use Spatie\Permission\PermissionRegistrar;
+use STS\FilamentImpersonate\Facades\Impersonation;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 class EnsureTrustedDevice
 {
@@ -28,70 +31,17 @@ class EnsureTrustedDevice
             return $next($request);
         }
 
+        if (class_exists(Impersonation::class) && Impersonation::isImpersonating()) {
+            return $next($request);
+        }
+
         $user = filament()->auth()->user() ?? Auth::user();
 
-        if (! $user) {
+        if (! $user instanceof Authenticatable) {
             return $next($request);
         }
 
         if ($this->isShieldAdmin($user)) {
-            return $next($request);
-        }
-
-        $path = '/'.ltrim((string) $request->path(), '/');
-
-        // Always allow navigating to device management (otherwise users get stuck).
-        if ($this->isUserDeviceResourceRequest($path)) {
-            return $next($request);
-        }
-
-        $sessionId = session()->getId();
-
-        if (blank($sessionId)) {
-            return $next($request);
-        }
-
-        $deviceId = session()->get('user_device_id');
-
-        if (blank($deviceId) && Schema::hasTable('sessions') && Schema::hasColumn('sessions', 'device_id')) {
-            $deviceId = DB::table('sessions')->where('id', $sessionId)->value('device_id');
-        }
-
-        // Fallback: resolve device by user+ip (covers session-regeneration edge cases).
-        if (blank($deviceId)) {
-            $userId = Auth::id();
-            if (blank($userId)) {
-                return $next($request);
-            }
-
-            $deviceId = UserDevice::query()
-                ->where('user_id', $userId)
-                ->where('user_type', $user::class)
-                ->where('ip_address', $request->ip())
-                ->latest('updated_at')
-                ->value('id');
-
-            if (filled($deviceId)) {
-                session()->put('user_device_id', (int) $deviceId);
-
-                if (Schema::hasTable('sessions') && Schema::hasColumn('sessions', 'device_id')) {
-                    DB::table('sessions')->where('id', $sessionId)->update(['device_id' => (int) $deviceId]);
-                }
-            }
-        }
-
-        if (blank($deviceId)) {
-            return $next($request);
-        }
-
-        $device = UserDevice::query()->find((int) $deviceId);
-
-        // If we can't resolve the device record, don't lock users out.
-        if (! $device) {
-            return $next($request);
-        }
-
-        if ($device->whitelisted) {
             return $next($request);
         }
 
@@ -100,41 +50,81 @@ class EnsureTrustedDevice
             return $next($request);
         }
 
-        // Hard block: while untrusted, the user can only access the devices page + trust link.
+        $device = $this->resolveDevice($request, $user);
+
+        if ($device === null || ! $device->whitelisted) {
+            return $this->blockUntrusted();
+        }
+
+        return $next($request);
+    }
+
+    private function resolveDevice(Request $request, Authenticatable $user): ?UserDevice
+    {
+        $sessionId = session()->getId();
+        $deviceId = session()->get('user_device_id');
+
+        if (blank($deviceId) && filled($sessionId) && Schema::hasTable('sessions') && Schema::hasColumn('sessions', 'device_id')) {
+            $deviceId = DB::table('sessions')->where('id', $sessionId)->value('device_id');
+        }
+
+        // Fallback: resolve device by user+ip (covers session-regeneration edge cases).
+        // Use the Filament-authenticated user id — Auth::id() is the wrong guard on portal.
+        if (blank($deviceId)) {
+            $userId = $user->getAuthIdentifier();
+
+            if (filled($userId)) {
+                $deviceId = UserDevice::query()
+                    ->where('user_id', $userId)
+                    ->where('user_type', $user::class)
+                    ->where('ip_address', $request->ip())
+                    ->latest('updated_at')
+                    ->value('id');
+            }
+        }
+
+        // Last resort: track/create for this request. Never fail-open under enforce_trust —
+        // production behind a proxy often loses session device_id and sees a different IP
+        // than the login request, which previously skipped the gate entirely.
+        if (blank($deviceId)) {
+            app(UserDeviceTracker::class)->addUserDevice($request, $user, app(Agent::class));
+            $deviceId = session()->get('user_device_id');
+        }
+
+        if (blank($deviceId)) {
+            return null;
+        }
+
+        $deviceId = (int) $deviceId;
+        session()->put('user_device_id', $deviceId);
+
+        if (filled($sessionId) && Schema::hasTable('sessions') && Schema::hasColumn('sessions', 'device_id')) {
+            DB::table('sessions')->where('id', $sessionId)->update(['device_id' => $deviceId]);
+        }
+
+        return UserDevice::query()->find($deviceId);
+    }
+
+    private function blockUntrusted(): Response
+    {
         Notification::make()
             ->title(__('user-device::translations.device_blocked_title'))
             ->body(__('user-device::translations.device_blocked_body'))
             ->danger()
             ->send();
 
-        $panelId = filament()->getCurrentPanel()?->getId();
+        filament()->auth()->logout();
 
-        $devicesUrl = filled($panelId)
-            ? UserDeviceResource::getUrl('index', panel: $panelId)
-            : UserDeviceResource::getUrl('index');
-
-        return redirect()->to($devicesUrl);
+        return redirect()->to($this->loginUrl());
     }
 
-    private function isUserDeviceResourceRequest(string $path): bool
+    private function loginUrl(): string
     {
-        if (! class_exists(Filament::class)) {
-            return false;
+        try {
+            return (string) (filament()->getLoginUrl() ?? '/');
+        } catch (Throwable) {
+            return '/';
         }
-
-        foreach (Filament::getPanels() as $panel) {
-            try {
-                $devicesIndexPath = parse_url(UserDeviceResource::getUrl('index', panel: $panel->getId()), PHP_URL_PATH);
-
-                if (is_string($devicesIndexPath) && $devicesIndexPath !== '' && str_starts_with($path, $devicesIndexPath)) {
-                    return true;
-                }
-            } catch (\Throwable) {
-                // ignore panels where the resource is not registered
-            }
-        }
-
-        return false;
     }
 
     private function isShieldAdmin(object $user): bool

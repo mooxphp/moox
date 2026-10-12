@@ -7,14 +7,17 @@ namespace Moox\EBilling\Delivery;
 use Moox\EBilling\Contracts\DeliveryChannelInterface;
 use Moox\EBilling\Contracts\DeliveryRecipientResolverInterface;
 use Moox\EBilling\Contracts\InvoiceMailSenderInterface;
+use Moox\EBilling\Contracts\RecipientOverridableDeliveryChannel;
 use Moox\EBilling\Data\DeliveryOutcome;
+use Moox\EBilling\Data\DeliveryRecipient;
 use Moox\EBilling\Models\EbillingDocument;
 
 /**
  * Orchestrator channel: resolve recipients, call the host mail sender, map outcomes.
  * Not a transport — register only via config('e-billing.delivery.channels').
+ * Accepts a recipient override on selective redispatch (ADR 0016).
  */
-final class MailDeliveryChannel implements DeliveryChannelInterface
+final class MailDeliveryChannel implements DeliveryChannelInterface, RecipientOverridableDeliveryChannel
 {
     public const FAILURE_NO_RECIPIENT = 'no_recipient';
 
@@ -34,9 +37,16 @@ final class MailDeliveryChannel implements DeliveryChannelInterface
      */
     public function deliver(EbillingDocument $document): array
     {
-        $resolved = $this->recipients->resolve($document);
+        return $this->deliverTo($document, $this->recipients->resolve($document));
+    }
 
-        if ($resolved === []) {
+    /**
+     * @param  list<DeliveryRecipient>  $recipients
+     * @return list<DeliveryOutcome>
+     */
+    public function deliverTo(EbillingDocument $document, array $recipients): array
+    {
+        if ($recipients === []) {
             return [
                 new DeliveryOutcome(
                     recipient: '',
@@ -49,7 +59,7 @@ final class MailDeliveryChannel implements DeliveryChannelInterface
 
         $outcomes = [];
 
-        foreach ($resolved as $recipient) {
+        foreach ($recipients as $recipient) {
             $result = $this->sender->send($document, $recipient);
 
             $outcomes[] = new DeliveryOutcome(

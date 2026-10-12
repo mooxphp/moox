@@ -28,6 +28,9 @@ interface ZugferdInvoice
 
     public ?string $customerVatId { get; }
 
+    /** Buyer's national tax number; no EN 16931 term, written as buyer FC registration when there is no VAT id. */
+    public ?string $customerTaxNumber { get; }
+
     public string $supplierName { get; }
 
     public ?ZugferdAddress $supplierAddress { get; }
@@ -41,6 +44,9 @@ interface ZugferdInvoice
     public ?string $supplierVatId { get; }
 
     public ?string $supplierTaxNumber { get; }
+
+    /** BT-29 seller identifier; null/empty → do not emit. */
+    public ?string $supplierNumber { get; }
 
     public ?string $paymentTerms { get; }
 
@@ -80,4 +86,11 @@ interface ZugferdInvoice
 
     /** @var list<string> */
     public array $documentNotes { get; }
+
+    /**
+     * BG-3 preceding invoice references: BT-25 number, BT-26 issue date (Y-m-d).
+     *
+     * @var list<array{number: string, date: ?string}>
+     */
+    public array $precedingInvoices { get; }
 }

@@ -63,3 +63,33 @@ Which fields are `must` vs `should` remains host configuration under `field_vali
 
 - Severity gating / MoSCoW: [#13](https://github.com/mooxphp/e-billing/issues/13), `CONTEXT.md` (Severity gating)
 - Dispatch approval remains a separate gate: [#15](https://github.com/mooxphp/e-billing/issues/15)
+
+## Amendment (2026-09-30): confirming accepts findings for manual approval and dispatch
+
+### Context
+
+This ADR kept manual approval and dispatch on the strict `needsHumanReview()`. A confirmed document whose finding cannot be cleared could then never be approved or dispatched. Example: the document legitimately diverges from stale master data, and a value correction may only restore what the source says, never align to master data (mooxphp/e-billing#40).
+
+### Decision
+
+The product owner decided that a confirmed document is approvable despite open `needs_review` findings.
+
+- New `EbillingDocument::hasUnacceptedReviewFindings()`: when `review_status` is `human_confirmed`, only missing must fields count (`missingMustFields()`); otherwise it equals `needsHumanReview()`.
+- `DocumentApprovalGuard::blockReason()` (manual approval) and `DocumentDispatchGuard::dispatchBlockReason()` use it instead of `needsHumanReview()`. A human can approve, and the package can dispatch, a confirmed document with open `needs_review` or missing-should findings.
+- `blockReason()` checks `must_field_missing` (via `missingMustFields()`) before `human_review_required`, so a missing must field is reported specifically (it was unreachable before). The `hasBlockingMustFieldFindings()` check is removed from the approval guard. Order: `not_pending`, `pipeline_running`, `artifact_failed` / `artifact_not_validated`, `must_field_missing`, `human_review_required`, `credit_note_negative_total`.
+- Block texts: `approval_blocked.human_review_required` = "Correct these fields or confirm the document:"; `must_field_missing` = "These required fields are missing:". The status banner lists the fields below as bullets; the approve tooltip appends them comma-separated.
+
+### Unchanged
+
+- Auto-approve (`AutoApproveEvaluator`) still fails with `human_review_required` and blocking must findings.
+- The review queue, tabs and filters (`scopeNeedsHumanReview`) and `needsHumanReview()` itself stay strict.
+- An unconfirmed or changed document always passes a human: leave-edit's rematch resets `review_status` to `parser_created` and an attribution change resets it to `db_validated`, so the reviewer must confirm again.
+
+### Consequences
+
+- Dispatch is loosened only through `hasUnacceptedReviewFindings()`; `needsHumanReview()` is not changed.
+- Tests: `tests/Feature/ApprovalBlockReasonTest.php` covers confirmed-accepts (approval and dispatch allowed, auto-approve still refused), unconfirmed-blocks, and confirmed-with-missing-must blocks.
+
+## Addendum 2026-10-01 — findings a confirmation cannot accept
+
+A confirmation accepts `needs_review` findings because a person vouches for a value the system could not corroborate. A totals mismatch (`totals_reconciliation`, reason `totals_mismatch`) is different: the lines and charges do not add up to the printed net total, so the e-invoice fails BR-CO-13 whatever the reviewer believes. `missingMustFields()` therefore also lists invoice-level must fields whose review reason is in `EbillingDocument::NON_ACCEPTABLE_REVIEW_REASONS` (currently only `totals_mismatch`). Confirm, manual approval and dispatch stay blocked until the amounts are corrected. Tests: `tests/Feature/InvoiceFieldValidatorTotalsReconciliationTest.php`.

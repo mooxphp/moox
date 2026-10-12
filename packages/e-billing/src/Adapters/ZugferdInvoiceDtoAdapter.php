@@ -7,6 +7,7 @@ namespace Moox\EBilling\Adapters;
 use Moox\EBilling\Data\Invoice;
 use Moox\EBilling\Data\InvoiceLine;
 use Moox\EBilling\Support\ConfiguredEn16931CodeResolver;
+use Moox\EBilling\Support\CreditNotePaymentTerms;
 use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\InvoiceDocumentNotes;
 use Moox\Zugferd\Contracts\ZugferdAddress;
@@ -42,6 +43,8 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
 
     public ?string $customerVatId;
 
+    public ?string $customerTaxNumber;
+
     public string $supplierName;
 
     public ?ZugferdAddress $supplierAddress;
@@ -55,6 +58,8 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
     public ?string $supplierVatId;
 
     public ?string $supplierTaxNumber;
+
+    public ?string $supplierNumber;
 
     public ?string $paymentTerms;
 
@@ -94,6 +99,9 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
     /** @var list<string> */
     public array $documentNotes;
 
+    /** @var list<array{number: string, date: ?string}> */
+    public array $precedingInvoices;
+
     public function __construct(Invoice $invoice)
     {
         $this->invoiceNumber = $invoice->invoiceNumber;
@@ -107,6 +115,7 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
         $this->customerName = $invoice->customerName;
         $this->customerAddress = $invoice->customerAddress;
         $this->customerVatId = $invoice->customerVatId;
+        $this->customerTaxNumber = $invoice->customerTaxNumber;
         $this->supplierName = $invoice->supplierName;
         $this->supplierAddress = $invoice->supplierAddress;
         $this->supplierPhone = $invoice->supplierPhone;
@@ -114,7 +123,12 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
         $this->agent = $invoice->agent;
         $this->supplierVatId = $invoice->supplierVatId;
         $this->supplierTaxNumber = $invoice->supplierTaxNumber;
-        $this->paymentTerms = $invoice->paymentTerms;
+        $this->supplierNumber = $invoice->supplierNumber;
+        $this->paymentTerms = CreditNotePaymentTerms::forEmission(
+            $invoice->documentTypeCode,
+            $invoice->dueDate,
+            $invoice->paymentTerms,
+        );
         $this->deliveryDate = DeliveryDateTransmission::documentActualDeliveryDate(
             $invoice->deliveryDate,
             $invoice->lines,
@@ -153,5 +167,6 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
             );
         $this->bankAccounts = $invoice->bankAccounts();
         $this->documentNotes = InvoiceDocumentNotes::fromDto($invoice);
+        $this->precedingInvoices = $invoice->precedingInvoices;
     }
 }

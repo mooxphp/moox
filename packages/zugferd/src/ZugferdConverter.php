@@ -14,7 +14,9 @@ use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdInvoice;
 use Moox\Zugferd\Contracts\ZugferdInvoiceLine;
+use Moox\Zugferd\Contracts\ZugferdNoteLabels;
 use Moox\Zugferd\Exceptions\IncompleteInvoiceException;
+use Moox\Zugferd\Support\EnglishNoteLabels;
 use Moox\Zugferd\Support\FlexibleDateParser;
 use Moox\Zugferd\Support\ShipToPartyEquality;
 use Symfony\Component\Process\Process;
@@ -36,6 +38,11 @@ class ZugferdConverter
         'EXTENDED' => ZugferdProfiles::PROFILE_EXTENDED,
         'XRECHNUNG' => ZugferdProfiles::PROFILE_XRECHNUNG_3,
     ];
+
+    public function __construct(
+        private readonly ZugferdNoteLabels $noteLabels = new EnglishNoteLabels,
+    ) {
+    }
 
     public function convert(ZugferdInvoice $invoice, string $profileKey): string
     {
@@ -217,6 +224,7 @@ class ZugferdConverter
         $this->setSeller($document, $invoice);
         $this->setBuyer($document, $invoice);
         $this->setTradeReferences($document, $invoice);
+        $this->setPrecedingInvoices($document, $invoice);
         $this->setDelivery($document, $invoice);
         if (trim($invoice->vatCategoryCode) === '') {
             throw new IncompleteInvoiceException('Missing required field: vatCategoryCode (BT-118).');
@@ -253,11 +261,35 @@ class ZugferdConverter
         }
     }
 
+    /**
+     * BG-3: one InvoiceReferencedDocument per preceding invoice (BT-25, optional BT-26).
+     */
+    private function setPrecedingInvoices(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
+    {
+        foreach ($invoice->precedingInvoices as $reference) {
+            $number = trim($reference['number']);
+            if ($number === '') {
+                continue;
+            }
+
+            $date = $reference['date'] !== null
+                ? (\DateTime::createFromFormat('!Y-m-d', $reference['date']) ?: null)
+                : null;
+
+            $doc->addDocumentInvoiceReferencedDocument($number, null, $date);
+        }
+    }
+
     // ─── Seller (BG-4) ──────────────────────────────────────────
 
     private function setSeller(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
     {
         $doc->setDocumentSeller($invoice->supplierName);
+
+        $sellerId = $invoice->supplierNumber !== null ? trim($invoice->supplierNumber) : '';
+        if ($sellerId !== '') {
+            $doc->addDocumentSellerId($sellerId);
+        }
 
         if ($invoice->supplierAddress === null) {
             throw new IncompleteInvoiceException('Missing required field: supplierAddress (BG-5 seller postal address).');
@@ -317,6 +349,9 @@ class ZugferdConverter
 
         if ($invoice->customerVatId) {
             $doc->addDocumentBuyerTaxRegistration('VA', $invoice->customerVatId);
+        } elseif ($invoice->customerTaxNumber) {
+            // No EN 16931 term for the buyer's tax number; the CII schema allows FC on the buyer and KoSIT ignores it.
+            $doc->addDocumentBuyerTaxRegistration('FC', $invoice->customerTaxNumber);
         }
 
         $doc->setDocumentBuyerCommunication('EM', $invoice->customerNumber ?: 'N/A');
@@ -470,17 +505,20 @@ class ZugferdConverter
     {
         $candidate = null;
         foreach ($invoice->lines as $line) {
-            $value = $line->deliveryNoteNumber !== null ? trim($line->deliveryNoteNumber) : '';
-            if ($value === '') {
-                continue;
-            }
-            if ($candidate === null) {
-                $candidate = $value;
+            $values = [$line->deliveryNoteNumber, ...array_column($line->partialDeliveries, 'delivery_note')];
+            foreach ($values as $value) {
+                $value = $value !== null ? trim($value) : '';
+                if ($value === '') {
+                    continue;
+                }
+                if ($candidate === null) {
+                    $candidate = $value;
 
-                continue;
-            }
-            if ($candidate !== $value) {
-                return null;
+                    continue;
+                }
+                if ($candidate !== $value) {
+                    return null;
+                }
             }
         }
 
@@ -563,24 +601,43 @@ class ZugferdConverter
         $headerOrder = $invoice->purchaseOrderReference !== null ? trim($invoice->purchaseOrderReference) : '';
         $lineOrderDoc = $line->orderDocumentReference !== null ? trim($line->orderDocumentReference) : '';
         if ($lineOrderDoc !== '' && $lineOrderDoc !== $headerOrder) {
-            $parts[] = 'Purchase order: '.$lineOrderDoc;
+            $parts[] = $this->noteLabels->purchaseOrder().': '.$lineOrderDoc;
         }
 
+        $headerOrderDate = $invoice->purchaseOrderDate !== null ? trim($invoice->purchaseOrderDate) : '';
         $lineOrderDate = $line->purchaseOrderDate !== null ? trim($line->purchaseOrderDate) : '';
-        if ($lineOrderDate !== '') {
-            $parts[] = 'Order date: '.$lineOrderDate;
+        if ($lineOrderDate !== '' && $lineOrderDate !== $headerOrderDate) {
+            $parts[] = $this->noteLabels->orderDate().': '.$this->noteLabels->date($lineOrderDate);
         }
 
         $commonDn = $this->commonLineDeliveryNoteNumber($invoice);
         $lineDn = $line->deliveryNoteNumber !== null ? trim($line->deliveryNoteNumber) : '';
-        if ($lineDn !== '' && ($commonDn === null || $lineDn !== $commonDn)) {
-            $parts[] = 'Despatch advice: '.$lineDn;
+        if ($line->partialDeliveries !== [] && $commonDn === null) {
+            $parts[] = $this->formatPartialDeliveriesNote($line);
+        } elseif ($lineDn !== '' && ($commonDn === null || $lineDn !== $commonDn)) {
+            $parts[] = $this->noteLabels->despatchAdvice().': '.$lineDn;
         }
 
         $note = trim(implode('; ', array_filter($parts)));
         if ($note !== '') {
             $doc->setDocumentPositionNote($note);
         }
+    }
+
+    /**
+     * "Despatch advice: 55667.26 (2026-09-22, 55 pcs); Despatch advice: 57532.26 (…)" for a line delivered in parts.
+     */
+    private function formatPartialDeliveriesNote(ZugferdInvoiceLine $line): string
+    {
+        return implode('; ', array_map(function (array $delivery) use ($line): string {
+            $details = array_filter([
+                $delivery['date'] !== null ? $this->noteLabels->date($delivery['date']) : null,
+                $delivery['quantity'] !== null ? trim($this->noteLabels->quantity($delivery['quantity']).' '.$line->unit) : null,
+            ]);
+            $text = trim($this->noteLabels->despatchAdvice().': '.($delivery['delivery_note'] ?? ''));
+
+            return $details !== [] ? $text.' ('.implode(', ', $details).')' : $text;
+        }, $line->partialDeliveries));
     }
 
     private function formatConsigneeNote(?string $name, ?ZugferdAddress $address): string
@@ -599,7 +656,7 @@ class ZugferdConverter
             }
         }
 
-        return 'Consignee: '.implode(', ', $chunks);
+        return $this->noteLabels->consignee().': '.implode(', ', $chunks);
     }
 
     private function emitLineAllowanceCharges(ZugferdDocumentBuilder $doc, ZugferdInvoiceLine $line): void
@@ -683,12 +740,11 @@ class ZugferdConverter
                 $line->unitCode,
             );
 
-            // Line total WITHOUT surcharges (surcharges go to document level)
-            $doc->setDocumentPositionLineSummation($line->lineTotal);
+            $doc->setDocumentPositionLineSummation($this->lineNetAmount($line));
 
             $doc->addDocumentPositionTax($invoice->vatCategoryCode, 'VAT', $invoice->vatRate);
 
-            $this->setLineDeliveryDate($doc, $line->deliveryDate, $emitLineActualDelivery);
+            $this->setLineDeliveryDate($doc, $line, $emitLineActualDelivery);
             $this->emitLinePurchaseOrderLineReference($doc, $invoice, $line);
             $this->emitLineProductFacts($doc, $line);
             $this->emitLineShipToAndReferenceNotes($doc, $invoice, $line);
@@ -698,10 +754,10 @@ class ZugferdConverter
 
     private function setLineDeliveryDate(
         ZugferdDocumentBuilder $doc,
-        ?string $deliveryDate,
+        ZugferdInvoiceLine $line,
         bool $emitLineActualDelivery,
     ): void {
-        $parsed = FlexibleDateParser::parse($deliveryDate);
+        $parsed = FlexibleDateParser::parse($line->deliveryDate);
         if ($parsed === null) {
             return;
         }
@@ -712,7 +768,16 @@ class ZugferdConverter
             return;
         }
 
-        $doc->setDocumentPositionBillingPeriod($parsed, $parsed);
+        // A line delivered in parts: its period runs from the first to the last delivery.
+        $dates = array_filter([
+            $parsed,
+            ...array_map(
+                static fn (array $delivery): ?\DateTimeInterface => FlexibleDateParser::parse($delivery['date']),
+                $line->partialDeliveries,
+            ),
+        ]);
+
+        $doc->setDocumentPositionBillingPeriod(min($dates), max($dates));
     }
 
     // ─── Allowances & Charges (BG-20/BG-21) ─────────────────────
@@ -753,11 +818,13 @@ class ZugferdConverter
 
     private function setTotals(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
     {
-        $lineTotalSum = 0;
+        $lineTotalSum = 0.0;
         foreach ($invoice->lines as $line) {
-            $lineTotalSum += $line->lineTotal;
+            $lineTotalSum += $this->lineNetAmount($line);
         }
 
+        // BT-107 / BT-108 cover document-level allowances and charges only (BR-CO-11, BR-CO-12);
+        // line-level ones are already inside BT-131.
         $chargeTotal = 0.0;
         $allowanceTotal = 0.0;
 
@@ -770,20 +837,6 @@ class ZugferdConverter
                 $chargeTotal += $item->amount;
             } else {
                 $allowanceTotal += $item->amount;
-            }
-        }
-
-        foreach ($invoice->lines as $line) {
-            foreach ($line->allowanceCharges as $item) {
-                if ($item->amount <= 0) {
-                    continue;
-                }
-
-                if ($item->isCharge) {
-                    $chargeTotal += $item->amount;
-                } else {
-                    $allowanceTotal += $item->amount;
-                }
             }
         }
 
@@ -801,6 +854,25 @@ class ZugferdConverter
     }
 
     // ─── Helper functions ─────────────────────────────────────────
+
+    /**
+     * Invoice line net amount (BT-131): the line total (quantity × net price) plus line charges (BG-28)
+     * minus line allowances (BG-27), as emitted by {@see emitLineAllowanceCharges()}.
+     */
+    private function lineNetAmount(ZugferdInvoiceLine $line): float
+    {
+        $amount = $line->lineTotal;
+
+        foreach ($line->allowanceCharges as $item) {
+            if ($item->amount <= 0) {
+                continue;
+            }
+
+            $amount += $item->isCharge ? $item->amount : -$item->amount;
+        }
+
+        return round($amount, 2);
+    }
 
     /**
      * @return array{0: ?string, 1: ?string, 2: ?string}

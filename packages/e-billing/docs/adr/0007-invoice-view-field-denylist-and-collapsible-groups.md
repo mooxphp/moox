@@ -40,7 +40,7 @@ MoSCoW stays a flat `field => must|should|could` map under `field_validation`.
 - **Marker** on the `<summary>`: text + colour (e.g. issue count / “Must missing”) — not colour-only.
 - **Denylisted fields do not count** toward marker or force-open (opening a section for a problem the UI deliberately hides is worse than relying on the status banner / score).
 - Line `<details>` use the same force-open + marker rules per line.
-- Notes stay a **sibling** after delivery (not nested inside the delivery group), with the same collapse / force-open / marker rules and a `field_groups.notes.default_open` key.
+- Notes stay a **sibling** after delivery (not nested inside the delivery group), with the same collapse / force-open / marker rules and a `field_groups.notes.default_open` key. When the delivery group itself is omitted (zero visible fields after denylist), notes still render before totals (or at the end if totals are also absent).
 
 ### 4. What this is not
 

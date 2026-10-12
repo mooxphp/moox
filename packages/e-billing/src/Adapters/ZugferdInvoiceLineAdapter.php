@@ -7,6 +7,7 @@ namespace Moox\EBilling\Adapters;
 use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
 use Moox\EBilling\Support\LineItemAttributeMapper;
+use Moox\EBilling\Support\PartialDeliveries;
 use Moox\EBilling\Support\UnitCodeResolver;
 use Moox\Invoice\Models\InvoiceAllowanceCharge;
 use Moox\Invoice\Models\InvoiceLine;
@@ -31,6 +32,9 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
     public readonly ?string $orderDocumentReference;
 
     public readonly ?string $deliveryNoteNumber;
+
+    /** @var list<array{date: ?string, delivery_note: ?string, quantity: ?float}> */
+    public readonly array $partialDeliveries;
 
     public readonly ?string $purchaseOrderDate;
 
@@ -73,6 +77,7 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
 
         $this->orderDocumentReference = self::trimOrNull($this->line->order_number ?? null);
         $this->deliveryNoteNumber = self::trimOrNull($this->line->delivery_note_number ?? null);
+        $this->partialDeliveries = PartialDeliveries::normalize($this->line->deliveries ?? null);
         $this->purchaseOrderDate = self::trimOrNull($this->line->order_date ?? null);
         $this->itemAttributes = LineItemAttributeMapper::attributes(
             is_string($this->line->material) ? $this->line->material : null,

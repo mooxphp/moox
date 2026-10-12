@@ -28,6 +28,7 @@ use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Formats\ArtifactKind;
 use Moox\EBilling\Support\EBillingArtifactNaming;
+use Moox\EBilling\Support\FieldValidationProfile;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\InvoiceModels;
 use Moox\KositValidator\Models\KositValidation;
@@ -69,6 +70,8 @@ use Throwable;
  * @property AttributionSource|null $attribution_source How customer_id was set (`auto` matcher vs `manual` operator). Manual survives rematch.
  * @property int|null $validation_score
  * @property string|null $scope
+ * @property Carbon|null $processed_at When the artifact last passed validation.
+ * @property Carbon|null $review_changed_at Last reviewer change to what the artifact is generated from (ADR 0004).
  */
 class EbillingDocument extends BaseItemModel
 {
@@ -138,7 +141,33 @@ class EbillingDocument extends BaseItemModel
             'approval_acted_at' => 'datetime',
             'validation_score' => 'integer',
             'processed_at' => 'datetime',
+            'review_changed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Stamps a reviewer change to what the artifact is generated from: a value correction, a classification,
+     * the recipient or the customer attribution (ADR 0004). Leave-edit regenerates when it is newer than the artifact.
+     * The column is not fillable: only reviewer acts stamp it.
+     */
+    public function markReviewChanged(): void
+    {
+        $this->forceFill(['review_changed_at' => now()])->save();
+    }
+
+    /**
+     * Whether a reviewer changed the document after its artifact was last validated. Until the record files
+     * (mooxphp/e-billing#86) carry their generation time, the last successful validation stands in for it;
+     * edits are refused while the pipeline runs, so no change can fall between generation and validation.
+     */
+    public function hasReviewChangesSinceArtifact(): bool
+    {
+        $changedAt = $this->review_changed_at;
+        if ($changedAt === null) {
+            return false;
+        }
+
+        return $this->processed_at === null || $changedAt->greaterThan($this->processed_at);
     }
 
     public static function getResourceName(): string
@@ -167,6 +196,25 @@ class EbillingDocument extends BaseItemModel
         $source = $this->source;
 
         return $source instanceof InboxAttachment ? $source : null;
+    }
+
+    /**
+     * Recipient address a reviewer set on the document (BT-58, `buyer.contact.email`). The parser
+     * never fills the buyer contact, so a value here is always a reviewer's (ADR 0004 addendum).
+     */
+    public function documentRecipientEmail(): ?string
+    {
+        $email = trim((string) ($this->invoice?->buyer?->contact->email ?? ''));
+
+        return $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
+    }
+
+    /**
+     * The address the document goes to: the one set on the document, else the inbox To address.
+     */
+    public function recipientEmail(): ?string
+    {
+        return $this->documentRecipientEmail() ?? $this->inboxToEmail();
     }
 
     /**
@@ -553,9 +601,12 @@ class EbillingDocument extends BaseItemModel
             });
     }
 
-    public static function fieldValidationsNeedHumanReview(?array $fieldValidations, ?array $severityReleases): bool
-    {
-        [$invoiceFields, $lineFields] = self::configuredPriorityMaps();
+    public static function fieldValidationsNeedHumanReview(
+        ?array $fieldValidations,
+        ?array $severityReleases,
+        ?string $documentType = null,
+    ): bool {
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps($documentType);
         $validations = is_array($fieldValidations) ? $fieldValidations : [];
 
         if (self::priorityMapBlocksReview($invoiceFields, $validations, $severityReleases)) {
@@ -574,32 +625,12 @@ class EbillingDocument extends BaseItemModel
     /**
      * @return array{0: array<string, string>, 1: array<string, string>}
      */
-    private static function configuredPriorityMaps(): array
+    private static function configuredPriorityMaps(?string $documentType): array
     {
         return [
-            self::stringPriorityMap(config('e-billing.field_validation.invoice_fields', [])),
-            self::stringPriorityMap(config('e-billing.field_validation.invoice_line_fields', [])),
+            FieldValidationProfile::invoiceFields($documentType),
+            FieldValidationProfile::lineFields($documentType),
         ];
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private static function stringPriorityMap(mixed $config): array
-    {
-        if (! is_array($config)) {
-            return [];
-        }
-
-        $map = [];
-
-        foreach ($config as $field => $priority) {
-            if (is_string($field) && is_string($priority)) {
-                $map[$field] = $priority;
-            }
-        }
-
-        return $map;
     }
 
     /**
@@ -612,15 +643,55 @@ class EbillingDocument extends BaseItemModel
         ?array $severityReleases,
         ?string $lineId = null,
     ): bool {
+        return self::priorityMapBlockingFields($fields, $validations, $severityReleases, $lineId) !== [];
+    }
+
+    /**
+     * @param  array<string, string>  $fields
+     * @param  array<string, mixed>  $validations
+     * @return list<string>
+     */
+    private static function priorityMapBlockingFields(
+        array $fields,
+        array $validations,
+        ?array $severityReleases,
+        ?string $lineId = null,
+    ): array {
+        $blocking = [];
+
         foreach ($fields as $field => $priority) {
             $status = self::readFieldStatusFromValidations($validations, $field);
 
             if (self::configuredFieldBlocksReview($status, $priority, $severityReleases, $field, $lineId)) {
-                return true;
+                $blocking[] = $field;
             }
         }
 
-        return false;
+        return $blocking;
+    }
+
+    /**
+     * The fields that make {@see needsHumanReview()} true, each named once however many lines it blocks,
+     * so a refused approval can say which fields to check.
+     *
+     * @return list<string>
+     */
+    public function humanReviewBlockingFields(): array
+    {
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps($this->profileDocumentType());
+        $validations = is_array($this->field_validations) ? $this->field_validations : [];
+        $severityReleases = is_array($this->severity_releases) ? $this->severity_releases : null;
+
+        $blocking = self::priorityMapBlockingFields($invoiceFields, $validations, $severityReleases);
+
+        foreach (self::readLineFieldValidationsFromArray($validations) as $lineId => $lineFieldValidations) {
+            $blocking = [
+                ...$blocking,
+                ...self::priorityMapBlockingFields($lineFields, $lineFieldValidations, $severityReleases, (string) $lineId),
+            ];
+        }
+
+        return array_values(array_unique($blocking));
     }
 
     public static function configuredFieldBlocksReview(
@@ -802,15 +873,7 @@ class EbillingDocument extends BaseItemModel
             return null;
         }
 
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
-
-        if (! is_array($invoiceFields)) {
-            $invoiceFields = [];
-        }
-        if (! is_array($lineFields)) {
-            $lineFields = [];
-        }
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps($this->profileDocumentType());
 
         $total = 0;
         $valid = 0;
@@ -881,12 +944,7 @@ class EbillingDocument extends BaseItemModel
 
     public function isFullyValidated(): bool
     {
-        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
-        if (! is_array($invoiceFields)) {
-            return true;
-        }
-
-        foreach ($invoiceFields as $field => $priority) {
+        foreach (FieldValidationProfile::invoiceFields($this->profileDocumentType()) as $field => $priority) {
             if ($priority !== 'must') {
                 continue;
             }
@@ -904,7 +962,35 @@ class EbillingDocument extends BaseItemModel
         return self::fieldValidationsNeedHumanReview(
             is_array($this->field_validations) ? $this->field_validations : null,
             is_array($this->severity_releases) ? $this->severity_releases : null,
+            $this->profileDocumentType(),
         );
+    }
+
+    /**
+     * Whether open findings still hold up a human approval and its dispatch (ADR 0005 amendment). Confirming
+     * accepts `needs_review` findings and missing should fields; a missing must field blocks until it has a
+     * value. Auto-approve, queues and tabs keep the strict {@see needsHumanReview()}.
+     */
+    public function hasUnacceptedReviewFindings(): bool
+    {
+        if ($this->resolveReviewStatusEnum() !== InvoiceProcessingStatus::HumanConfirmed) {
+            return $this->needsHumanReview();
+        }
+
+        return self::missingMustFields(
+            is_array($this->field_validations) ? $this->field_validations : null,
+            $this->profileDocumentType(),
+        ) !== [];
+    }
+
+    /**
+     * BT-3 of the linked invoice; selects the MoSCoW profile (ADR 0009). Null reads the invoice profile.
+     */
+    public function profileDocumentType(): ?string
+    {
+        $type = $this->invoice?->document_type;
+
+        return is_string($type) && $type !== '' ? $type : null;
     }
 
     public function resolveApprovalStatusEnum(): ?DocumentApprovalStatus
@@ -943,6 +1029,25 @@ class EbillingDocument extends BaseItemModel
     }
 
     /**
+     * Keep the document from auto-approval until a person approves it, e.g. after an operator
+     * re-ran a parser or validation change on documents that were already imported.
+     */
+    public function holdForApproval(): void
+    {
+        $flags = is_array($this->approval_flags) ? $this->approval_flags : [];
+        $flags['held'] = ['held_at' => now()->toIso8601String()];
+
+        $this->approval_flags = $flags;
+    }
+
+    public function isHeldForApproval(): bool
+    {
+        $flags = is_array($this->approval_flags) ? $this->approval_flags : [];
+
+        return isset($flags['held']) && is_array($flags['held']);
+    }
+
+    /**
      * Sync approval_flags.duplicate from field validations (invoice number collision).
      * Preserves host-set anomalies.
      */
@@ -975,28 +1080,51 @@ class EbillingDocument extends BaseItemModel
     }
 
     /**
-     * Configured must fields whose stored status is missing (invoice + lines).
-     * Confirm hard-block only — see ADR docs/adr/0005-confirm-gate-must-missing-only.md.
+     * Review reasons a person cannot accept by confirming: the parsed amounts do not reproduce the printed
+     * net total, so confirmation would release an e-invoice that fails BR-CO-13 (ADR 0012 amendment 2026-10-01).
+     */
+    private const NON_ACCEPTABLE_REVIEW_REASONS = ['totals_mismatch'];
+
+    /**
+     * Configured must fields whose stored status is missing (invoice + lines), plus invoice-level must
+     * findings whose review reason cannot be accepted ({@see NON_ACCEPTABLE_REVIEW_REASONS}).
+     * Confirm hard-block — see ADR docs/adr/0005-confirm-gate-must-missing-only.md.
      *
      * @return list<string>
      */
-    public static function missingMustFields(?array $fieldValidations): array
+    public static function missingMustFields(?array $fieldValidations, ?string $documentType = null): array
     {
-        return self::mustFieldsWithStatuses($fieldValidations, ['missing']);
+        $blocking = self::mustFieldsWithStatuses($fieldValidations, ['missing'], $documentType);
+
+        [$invoiceFields] = self::configuredPriorityMaps($documentType);
+        foreach ($invoiceFields as $field => $priority) {
+            $reason = is_array($fieldValidations) && is_array($fieldValidations[$field] ?? null)
+                ? ($fieldValidations[$field]['reason'] ?? null)
+                : null;
+
+            if ($priority === 'must' && in_array($reason, self::NON_ACCEPTABLE_REVIEW_REASONS, true)) {
+                $blocking[] = $field;
+            }
+        }
+
+        return array_values(array_unique($blocking));
     }
 
-    public static function hasBlockingMustFieldFindings(?array $fieldValidations): bool
+    public static function hasBlockingMustFieldFindings(?array $fieldValidations, ?string $documentType = null): bool
     {
-        return self::mustFieldsWithStatuses($fieldValidations, ['missing', 'needs_review']) !== [];
+        return self::mustFieldsWithStatuses($fieldValidations, ['missing', 'needs_review'], $documentType) !== [];
     }
 
     /**
      * @param  list<string>  $statuses
      * @return list<string>
      */
-    private static function mustFieldsWithStatuses(?array $fieldValidations, array $statuses): array
-    {
-        [$invoiceFields, $lineFields] = self::configuredPriorityMaps();
+    private static function mustFieldsWithStatuses(
+        ?array $fieldValidations,
+        array $statuses,
+        ?string $documentType,
+    ): array {
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps($documentType);
         $validations = is_array($fieldValidations) ? $fieldValidations : [];
         $matched = self::collectMustFieldsMatching($invoiceFields, $validations, $statuses);
 
@@ -1045,16 +1173,7 @@ class EbillingDocument extends BaseItemModel
 
     public function resolveConfiguredFieldPriority(string $field, bool $isLineField = false): string
     {
-        $configKey = $isLineField ? 'invoice_line_fields' : 'invoice_fields';
-        $fields = config("e-billing.field_validation.{$configKey}", []);
-
-        if (! is_array($fields)) {
-            return 'could';
-        }
-
-        $priority = $fields[$field] ?? null;
-
-        return is_string($priority) ? $priority : 'could';
+        return FieldValidationProfile::priority($field, $this->profileDocumentType(), $isLineField);
     }
 
     public function resolveFieldValidationStatus(string $field, ?string $lineId = null): ?string
@@ -1151,7 +1270,40 @@ class EbillingDocument extends BaseItemModel
      */
     private static function applyScopeConfiguredFieldBlocksReview(Builder $query): void
     {
-        [$invoiceFields, $lineFields] = self::configuredPriorityMaps();
+        $ownPriorityTypes = FieldValidationProfile::documentTypesWithOwnPriorities();
+
+        if ($ownPriorityTypes === []) {
+            self::applyScopeProfileFieldBlocksReview($query, null);
+
+            return;
+        }
+
+        $query->where(function (Builder $byType) use ($ownPriorityTypes): void {
+            foreach ($ownPriorityTypes as $type) {
+                $byType->orWhere(function (Builder $ofType) use ($type): void {
+                    $ofType->whereHas(
+                        'invoice',
+                        fn (Builder $invoice): Builder => $invoice->where('document_type', $type),
+                    )
+                        ->where(fn (Builder $inner) => self::applyScopeProfileFieldBlocksReview($inner, $type));
+                });
+            }
+
+            $byType->orWhere(function (Builder $others) use ($ownPriorityTypes): void {
+                $others->whereDoesntHave(
+                    'invoice',
+                    fn (Builder $invoice): Builder => $invoice->whereIn('document_type', $ownPriorityTypes),
+                )->where(fn (Builder $inner) => self::applyScopeProfileFieldBlocksReview($inner, null));
+            });
+        });
+    }
+
+    /**
+     * @param  Builder<EbillingDocument>  $query
+     */
+    private static function applyScopeProfileFieldBlocksReview(Builder $query, ?string $documentType): void
+    {
+        [$invoiceFields, $lineFields] = self::configuredPriorityMaps($documentType);
         $fvColumn = $query->qualifyColumn('field_validations');
         $srColumn = $query->qualifyColumn('severity_releases');
         $driver = self::jsonSqlDriver($query);

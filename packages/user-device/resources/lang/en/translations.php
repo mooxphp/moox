@@ -26,6 +26,7 @@ return [
     'mail_label_system' => 'System',
     'mail_label_ip' => 'IP address',
     'mail_label_location' => 'Location',
+    'mail_location_unknown' => 'Unknown',
     'mail_if_it_was_you' => 'If this was you, you can ignore this email.',
     'mail_if_it_was_not_you' => 'If this was not you:',
     'mail_step_review_devices' => 'Review your devices',
@@ -36,8 +37,8 @@ return [
     'mail_outro_secure_account' => 'If this was not you, please secure your account.',
 
     // Enforcement
-    'device_blocked_title' => 'Device confirmation required',
-    'device_blocked_body' => 'Please confirm this device using the link from the email we sent you.',
+    'device_blocked_title' => 'New device detected',
+    'device_blocked_body' => 'This device has not been confirmed yet. We sent you an email. Please open the confirmation link in it, then you can sign in.',
 
     // Devices
     'device_trusted' => 'Trusted',

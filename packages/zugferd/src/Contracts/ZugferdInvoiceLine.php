@@ -38,6 +38,15 @@ interface ZugferdInvoiceLine
 
     public ?string $deliveryNoteNumber { get; }
 
+    /**
+     * The parts of the line delivered on different occasions (date Y-m-d, delivery note, quantity).
+     * Empty when the line was delivered at once. The line period (BG-26) spans their dates and the
+     * line note (BT-127) lists them.
+     *
+     * @var list<array{date: ?string, delivery_note: ?string, quantity: ?float}>
+     */
+    public array $partialDeliveries { get; }
+
     public ?string $purchaseOrderDate { get; }
 
     /** @var list<ZugferdItemAttribute> */

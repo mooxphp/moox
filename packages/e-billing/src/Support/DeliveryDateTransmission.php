@@ -83,6 +83,12 @@ final class DeliveryDateTransmission
                 continue;
             }
 
+            // Each part of a line delivered in parts has its own delivery date.
+            $partialDeliveries = PartialDeliveries::normalize($line->deliveries ?? $line->partialDeliveries ?? null);
+            foreach ($partialDeliveries as $delivery) {
+                $dates[] = $delivery['date'];
+            }
+
             if (isset($line->delivery_date)) {
                 $dates[] = self::scalarDate($line->delivery_date);
 

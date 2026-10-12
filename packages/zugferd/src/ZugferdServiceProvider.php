@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Moox\Zugferd;
 
 use Moox\Core\MooxServiceProvider;
+use Moox\Zugferd\Contracts\ZugferdNoteLabels;
+use Moox\Zugferd\Support\EnglishNoteLabels;
 use Spatie\LaravelPackageTools\Package;
 
 class ZugferdServiceProvider extends MooxServiceProvider
@@ -29,6 +31,7 @@ class ZugferdServiceProvider extends MooxServiceProvider
     {
         parent::packageRegistered();
 
+        $this->app->bindIf(ZugferdNoteLabels::class, EnglishNoteLabels::class);
         $this->app->singleton(ZugferdConverter::class);
     }
 }

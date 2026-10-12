@@ -16,11 +16,12 @@ Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through a
 - MoSCoW severity gating: must/should/could priorities, severity release with auditable actor identity, and review queue aligned with the findings gate
 - Duplicate document-number detection (`invoice_number` + same `document_type`, optionally scoped by seller VAT via `duplicate_number.scope`): differing source PDFs flag `needs_review` and block auto-Validated / auto-approve; identical source PDFs are discarded without a new version
 - Filament `InvoiceResource` for list, filter, and manual review workflows
-- Manual customer attribution and explicit rematch (interim Filament actions via `SetInvoiceAttributionAction` / rematch; to be replaced by the mixed review workspace + leave-edit pipeline — ADR `docs/adr/0004-mixed-review-workspace-and-leave-edit-pipeline.md`, [#47](https://github.com/mooxphp/e-billing/issues/47), [#48](https://github.com/mooxphp/e-billing/issues/48))
+- Review workspace on the invoice view: per-row value corrections and customer attribution in one edit mode, with leave-edit as the single trigger for re-match, regeneration and re-validation (see [Review workspace](#review-workspace); ADR `docs/adr/0004-mixed-review-workspace-and-leave-edit-pipeline.md`, [#47](https://github.com/mooxphp/e-billing/issues/47), [#48](https://github.com/mooxphp/e-billing/issues/48))
 - Host-bound invoice parser via `InvoiceParserInterface` (no parser ships with this package)
 - Delivery-date carriage into generated artifacts: one unique date → document actual delivery (BT-72); several differing dates → per-line dates only (no document BT-72, no invoicing-period merge); intra-community invoices with multiple dates surface `delivery_date` as `needs_review` (BR-IC-11) instead of aggregating
 - Consignee party on invoice and line `delivery` (name + address): persisted even without a country; detail views show the name first (`PartyAddressFormatter`); field label Consignee (hint BG-13); adapters expose `shipTo*` / trade refs / `itemAttributes` / `itemClassifications`; `moox/zugferd` omits BG-15 when ship-to equals buyer (keep BT-72; VAT **K** still emits), may promote a shared line ship-to, else BT-127 — no tax registration or contact; BG-15 only when a country is present and the party is emitted
 - `LineItemAttributeMapper`: material, net/gross weight as kg text, unpriced certificate → BG-32 (BT-160 names from `e-billing::emission` + `document_locale`, package default `en`); customs tariff → BT-158 `HS`; certificate charges default UNCL 7161 `CAE`
+- Customer-readable XML text (BT-22 and BT-127 note labels, BG-32 names, reason texts) follows `e-billing.document_locale`, not the app locale; BT-127 labels come from `DocumentNoteLabels`, bound to `Moox\Zugferd\Contracts\ZugferdNoteLabels`
 - `InvoiceDocumentNotes` includes `order_date` as BT-22 free text (no OrderReference IssueDate / UBL-CR-018)
 
 <!--/features-->
@@ -35,8 +36,8 @@ The pipeline then runs in order:
 | --- | --- | --- |
 | 1 | `ProcessInboxAttachmentListener` | Creates or finds an `EbillingDocument` for the attachment and dispatches `StoreBillDataJob`. Honours optional `e-billing.intake.scopes` allowlist (non-listed Scopes → attachment Skipped). |
 | 2 | `StoreBillDataJob` | Reads parsed `bill_data` on the document (populated upstream by the host parser) and dispatches `FilterForeignInvoiceJob`. |
-| 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign invoices. Foreign disposition (`e-billing.foreign.disposition`): `ignore` (default) settles as `Ignored` / `IgnoredForeign`; `forward` runs Source-PDF relay to inbox To then settles the same way (ADR 0006). Domestic invoices advance to artifact generation. |
-| 4 | `GenerateArtifactJob` | Maps `bill_data` to a persisted `Invoice`, generates the format-specific artifact (XML only or hybrid PDF with embedded XML), runs field validation, and dispatches `ValidateArtifactJob`. |
+| 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign invoices. Foreign disposition (`e-billing.foreign.disposition`): `ignore` (default) settles as `Ignored` / `IgnoredForeign`; `forward` runs Source-PDF relay to inbox To then settles the same way (ADR 0006). Domestic invoices advance to artifact generation, unless the **intake cutoff** (`e-billing.intake.invoice_date_from`, `Y-m-d`) applies: a mail-sourced invoice whose parsed invoice date (BT-2) lies before that day settles as `Ignored` / `IgnoredBeforeCutoff`, after a Source-PDF relay when `e-billing.intake.before_cutoff_disposition` is `forward` (default `ignore`). The cutoff day is processed; a missing or unparseable invoice date, foreign invoices and manual uploads are not affected. An invalid date value throws. |
+| 4 | `GenerateArtifactJob` | Maps `bill_data` to a persisted `Invoice` once (only when the document has none yet; later runs use the existing Invoice rows), generates the format-specific artifact (XML only or hybrid PDF with embedded XML), runs field validation, and dispatches `ValidateArtifactJob`. |
 | 5 | `ValidateArtifactJob` | Runs KoSIT validation on the XML that will be delivered (loose XML or XML extracted from the hybrid PDF). For hybrid formats, also runs veraPDF PDF/A-3 validation. A hybrid passes only when both succeed; if veraPDF is missing the document is retained and flagged, never `Validated`. On pass, stores a SHA-256 hash of the deliverable. |
 
 There is no `HandleFailedJob`. Failure handling uses each job's `failed()` method plus `InboxMessagePipelineFinalizer` to update attachment and message status.
@@ -87,14 +88,16 @@ Published as `config/e-billing.php`.
 | Key | Controls |
 | --- | --- |
 | `resources` | Filament resource registration (`invoices` → `InvoiceResource`) |
-| `tabs` | List-page tab filters (`all`, `needs_review`, `confirmed`, `deleted`) |
+| `tabs` | List-page tab filters (`all`, `needs_review`, `confirmed`, `awaiting_approval`, `sent`, `deleted`); the pseudo fields `approval_status` and `delivered` filter on the e-billing document |
 | `default` | Single default when the preference port returns null: `format` (FormatRegistry key, default `zugferd`) + `profile` (hybrid library profile, default `EN16931`, must be in `allowed_profiles`). XRechnung ignores `profile` and always uses `XRECHNUNG` |
 | `allowed_profiles` | Hybrid profiles a recipient preference may request for `zugferd` / `factur-x` (default `['EN16931']`). XRechnung never takes a preference profile |
 | `zugferd` | ZUGFeRD filesystem disk (`storage_disk`, `storage_root`). Hybrid profiles come from `default.profile`, not `moox/zugferd` config |
 | `default_customer_country` | Transitional fallback buyer country when the parser derives none (default `DE`); removed in a future master-data phase |
 | `supplier` | Central supplier master data copied onto invoices as a snapshot at creation time |
 | `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length`, `name_legal_form_stop_words`, `buyer_address_roles` (billing + postal), `delivery_address_roles` (delivery first, then postal/billing fallback) |
-| `field_validation` | MoSCoW priority rules for invoice and line fields |
+| `cross_checked` | Fields checked against master data, shared by the review workspace pickers and the divergence report: `strict` (`EBILLING_CROSS_CHECKED_STRICT`, default `false`) and `fields` (see [Cross-checked fields](#cross-checked-fields)) |
+| `field_validation` | MoSCoW priority rules for invoice and line fields. `credit_note_*` siblings (fields, line fields, contextual-should lists) apply to BT-3 `381` documents; a host that omits a `credit_note_*` key falls back to the `invoice_*` key (ADR 0009) |
+| `field_validation.invoice_fields_satisfied_by_lines` | Header fields (default `[]`) that count as present when every invoice line carries its own value, e.g. `order_number` / `order_date` on a collective invoice. Profile-scoped like the other keys: `credit_note_fields_satisfied_by_lines`, `corrected_invoice_fields_satisfied_by_lines` (a profile falls back to the invoice list unless it defines its own, which may be empty). See [Header fields satisfied by lines](#header-fields-satisfied-by-lines) |
 | `approval` | Dispatch approval gate: `required`, `auto_approve_enabled` |
 | `notification` | Review announce strategy: `immediate` / `batched`, batch key, window minutes, optional `recorder` class |
 | `escalation` | Overdue-approval scan: `day_counting`, `working_weekdays`, `exclude_dates`, ordered `levels` (`key` / `after` / `unit`); empty `levels` disables the feature |
@@ -111,7 +114,8 @@ Mailbox credentials, driver registration, and folder names belong to `moox/mail-
 # Optional — preferred UN/ECE piece unit code for line unit normalization (default: H87)
 EBILLING_PREFERRED_PIECE_UNIT_CODE=H87
 
-# Optional — emission language for BG-32 BT-160 names / CAE reason_text fallbacks (package default: en)
+# Optional — language of customer-readable XML text: BG-32 BT-160 names, CAE reason_text fallbacks,
+# BT-22 / BT-127 note labels (package default: en; not the app/UI locale)
 EBILLING_DOCUMENT_LOCALE=en
 ```
 
@@ -129,6 +133,8 @@ EBILLING_DOCUMENT_LOCALE=en
 | `EBILLING_DELIVERY_ENABLED` | `delivery.enabled` | `false` | No |
 | `EBILLING_DELIVERY_MAILER` | `delivery.mailer` | `null` | No |
 | `EBILLING_FOREIGN_DISPOSITION` | `foreign.disposition` | `ignore` | No |
+| `EBILLING_INTAKE_INVOICE_DATE_FROM` | `intake.invoice_date_from` | `null` (off) | No |
+| `EBILLING_INTAKE_BEFORE_CUTOFF_DISPOSITION` | `intake.before_cutoff_disposition` | `ignore` | No |
 | `EBILLING_DELIVERY_RECIPIENTS_MAIL_SOURCE` | `delivery.recipients.mail_source` | `inbox_to` | No |
 | `EBILLING_DELIVERY_RECIPIENTS_MANUAL_UPLOAD` | `delivery.recipients.manual_upload` | `none` | No |
 
@@ -193,6 +199,88 @@ php artisan e-billing:scan-overdue-approval-escalation
 
 Schedule this in the host app — the package does not register a schedule. See [Approval escalation scan](#approval-escalation-scan).
 
+### Re-validate documents
+
+After a validation or emission change (field rules, labels, charge handling), re-run field validation and regenerate the artifact from the **stored** invoice. Review corrections are kept:
+
+```bash
+php artisan e-billing:revalidate {ids*} {--in-review} {--hold} {--dry-run}
+```
+
+| Argument / option | Effect |
+| --- | --- |
+| `ids` | One or more e-billing document ids |
+| `--in-review` | Selects every document in the needs-human-review scope |
+| `--hold` | Holds the revalidated documents for approval (see [Hold for approval](#hold-for-approval)) |
+| `--dry-run` | Lists the selection and whether each document would be revalidated or refused, without changing anything |
+
+Each document takes the same path as leaving the review workspace: `review_status` is reset to `parser_created`, field validation runs again, `gateway_status` becomes `generating` and `GenerateArtifactJob` is queued. Each revalidation is logged as activity `document_revalidated` on the document (previous `review_status`, `held`). A document is refused with a reason key:
+
+| Reason key | Document state |
+| --- | --- |
+| `no_invoice` | No stored invoice to revalidate |
+| `human_confirmed` | `review_status` is `human_confirmed` |
+| `approval_decided` | Approved or rejected |
+| `pipeline_running` | Generating or validating |
+| `delivered` | Delivery attempts exist |
+
+Revalidate keeps what the invoice says. Use [re-parse](#re-parse-documents) when the parser changed and the invoice must be rebuilt from the source PDF.
+
+### Hold for approval
+
+`EbillingDocument::holdForApproval()` marks a document as held (`approval_flags.held`; it survives re-validation) and `isHeldForApproval()` reads the mark. `AutoApproveEvaluator` then fails with `AutoApproveFailureReason::HeldForApproval` (`held_for_approval`), so a person must approve it. `--hold` on `e-billing:revalidate` and `e-billing:reparse` sets it, which keeps regenerated documents from being auto-approved and dispatched when the queue drains.
+
+Recommended operator workflow: run with `--dry-run`, pick the ids, then run with `--hold`.
+
+### Dispatch status
+
+The invoice list shows a **Dispatch status** column (`DispatchStatus`, derived, never stored): `sent` (at least one successful delivery attempt), `delivery_failed` (attempts, none successful), `held` (pending approval and held), `awaiting_approval` (pending, not held), `rejected`, or `—` while the document is not ready to send. A select filter offers the same states (`DispatchStatus::constrain()`). Two list tabs use it: **Awaiting approval** (`approval_status` in `pending`, held documents included) and **Sent** (`delivered`). The detail page's status banner says when a pending document is held.
+
+### Re-parse documents
+
+After a parser fix, re-run the configured parser on documents that nobody has touched yet:
+
+```bash
+php artisan e-billing:reparse {ids?*} {--kosit-failed} {--order-missing} {--hold} {--dry-run}
+```
+
+| Argument / option | Effect |
+| --- | --- |
+| `ids` | One or more e-billing document ids |
+| `--kosit-failed` | Selects documents whose latest KoSIT validation failed (combines with `ids`) |
+| `--order-missing` | Selects documents whose `order_number` or `order_date` validated as missing (combines with `ids`) |
+| `--hold` | Holds the reparsed documents for approval (see [Hold for approval](#hold-for-approval)) |
+| `--dry-run` | Lists the selection (id, review status, gateway status, and whether it would be reparsed or refused with which reason) without changing anything |
+
+Without ids and without `--kosit-failed` or `--order-missing` the command does nothing. Start with `--dry-run`, then run it again without it.
+
+For each selected document the command re-parses the source PDF, soft-deletes and unlinks the draft invoice, resets `bill_data`, `field_validations` and `validation_score`, sets `review_status` to `parser_created` and `gateway_status` to `generating`, logs the activity `document_reparsed` (old and new net and line totals) and dispatches `GenerateArtifactJob`, which keeps the existing artifact paths. Artifact regeneration and KoSIT validation run on the queue; the new validation attaches to the same document and the earlier one stays as history.
+
+Mind the queue: a regenerated document that now validates cleanly is auto-approved like any other, and its dispatch job follows on the same queue. Draining the queue after a bulk reparse therefore also delivers those documents.
+
+A document is refused, never silently skipped, and the command prints the reason key:
+
+| Reason key | Document state |
+| --- | --- |
+| `human_confirmed` | `review_status` is `human_confirmed` |
+| `approval_decided` | Approved or rejected, or a person acted on the approval (pending set automatically after validation does not count) |
+| `review_edited` | `review_changed_at` is set (a reviewer edited it) |
+| `delivered` | Delivery attempts exist |
+
+### Header fields satisfied by lines
+
+A collective invoice may carry its order references per line instead of in the header. List such header fields in `field_validation.invoice_fields_satisfied_by_lines` (profile-scoped, see [Config keys](#config-keys)). An empty listed field then validates as `parsed` with `source: lines` when **every** invoice line carries its own value; each field is judged on its own. Otherwise the normal empty-field handling applies (a `must` field is `missing`). The review screen shows such a field as parsed, not missing.
+
+When the header names no order (BT-13) but lines carry orders, a BT-22 note lists the distinct line orders (for example `Purchase orders: 4711 (2026-09-01), 4712` in `en`, `Bestellungen: 4711 (01.09.2026), 4712` in `de`; the date format is `emission.date_format`). No BT-13 is emitted, because EN 16931 allows only one; line orders ride in BT-127.
+
+### Itemized document charges
+
+`Invoice::$documentCharges` (bill data key `document_charges`) lists charges as `{field, amount, reason}` for the itemizable charge fields `shipping_cost`, `packaging_cost`, `minimum_quantity_surcharge`, `freight_flat_rate`, `certificate_cost` and `customs_cost` (positive amounts). When a field has rows, they replace that field's summed scalar on emission: one BG-21 charge per row, with the row's reason as text (or the default label when empty) and the field's reason code (for example `CAE` for `certificate_cost`). A host parser can use this to name the delivery note a charge belongs to.
+
+`HeaderChargeResolver` matches a charge to its field when the reason text equals the label or starts with the label followed by a space (`Shipping delivery note 56793.26`), and adds up all matching charges for a charge field.
+
+In the review workspace, a charge field with several charges shows their sum and is not editable (reason `several_charges`), followed by one row per charge (edit key `charge:<id>`) that edits that charge's amount.
+
 ### Severity gating (MoSCoW)
 
 Per-field priority under `field_validation` drives three distinct behaviours:
@@ -207,7 +295,7 @@ Severity release applies to **absent** fields only (`status: missing`). It is no
 
 `ReleaseSeverityFieldAction` writes `released_at`, `released_by_id` (acting identity), `released_by` (display copy), and `reason` to the document's `severity_releases` JSON (invoice-level keys, or `lines.{lineId}.{field}` for line fields). Releases without a reason, without an authenticated actor, or with an entry that fails gate validation are refused. The column is cast but **not** in `$fillable` — only the action writes it; bulk `update([...])` silently drops releases.
 
-`ConfirmInvoiceAction` returns `false` while `needsHumanReview()` is true.
+`ConfirmInvoiceAction` refuses only while a configured must field is missing (ADR 0005); once confirmed, open `needs_review` and missing-should findings no longer block manual approval and dispatch (`hasUnacceptedReviewFindings()`).
 
 Two related checks answer different questions:
 
@@ -219,6 +307,24 @@ Two related checks answer different questions:
 Within awaiting-review statuses, both use the same field predicate (including valid severity releases on **should** fields). When several severities apply, the most severe finding wins.
 
 Changing a field's configured priority changes its behaviour with no code change.
+
+**Totals reconciliation:** the invoice-level field `totals_reconciliation` (priority `must` in all three field profiles) checks that the sum of (line total + line charges - line allowances) + document charges - document allowances equals `net_total` (BT-109) within 0.01 (BR-CO-13). A mismatch sets `needs_review` with reason `totals_mismatch` and a `difference` (EUR, two decimals). It is never releasable, so the document cannot reach `validated`, and confirming does not accept it: `EbillingDocument::missingMustFields()` lists it, so confirm, manual approval and dispatch stay blocked until the amounts are corrected. The review amounts group shows it as "Totals reconciliation" with the difference and a hint.
+
+**Document-level certificate and customs charges:** `certificate_cost` (reason code `CAE`, reason text "Attestkosten") and `customs_cost` (reason text "Zollkosten", no reason code) are emitted as BG-21 charges; priority `could` by default. `customs_cost` has no code because UNCL 7161 `ABW` is not in the EN 16931 code-list subset and fails BR-CL-20; a reason text alone satisfies BR-38 / BR-CO-22.
+
+### Document-type profiles (credit notes, corrected invoices)
+
+`FieldValidationProfile` selects which MoSCoW and ViewInvoice-denylist maps apply, keyed on the invoice's `document_type` (BT-3), ADR 0009. `field_validation.document_type_profiles` maps a type code to a key prefix — package default `381 => credit_note`, `384 => corrected_invoice`. A mapped type reads `field_validation.{prefix}_fields` / `{prefix}_line_fields` / `{prefix}_contextual_should` / `{prefix}_line_contextual_should` and `invoice_ui.{prefix}_fields_hidden` / `{prefix}_line_fields_hidden`; unmapped types read the `invoice_*` keys, and a host config that omits a `{prefix}_*` key falls back to the matching `invoice_*` key. The package default config spells out both profiles: the credit-note profile adds `preceding_invoice_number` / `preceding_invoice_date` as `could`, the corrected-invoice profile as `should`; invoices hide both fields.
+
+**Document classification (ADR 0011):** `ClassifyDocumentTypeAction` lets a reviewer switch a document between the types in `e-billing.document_classification.types` (default `381 => positive`, `384 => negative`) before approval. It negates all document, line and allowance/charge amounts when the signs differ. The field changes are audited by moox/audit like any invoice update, and the act is logged as its own `document_classified` activity (from, to, amounts negated, origin) — never a value correction. `384 => negative` describes a correction issued as a credit (the delta); a host that issues full, positive restatements sets `positive`. Dropdown labels and "when to choose" hints: `DocumentClassificationLabels` (`e-billing::fields.document_classification.{code}.label|hint`). The credit-note list shows both types (`resources.credit_notes.document_types`) with per-type tabs and a type badge.
+
+**Value correction (mooxphp/e-billing#45):** `CorrectFieldValueAction::execute($document, $target, $attribute, $value, $note = null)` lets an authenticated reviewer correct one field of the invoice, a line or an allowance/charge to what the source document says. It works on pending documents only (approved and rejected are refused) and needs no permission beyond an authenticated actor, like approval. The field must match `e-billing.value_correction.fields` (default `['*']`; `Str::is` patterns on the normalised field, e.g. `buyer.vat_id`, `lines.quantity`, `allowance_charges.amount`, `lines.allowance_charges.amount`) and be an attribute audited by moox/audit. JSON columns (`seller`, `buyer`, `delivery`, `payment_means`) are corrected per sub-key; a sub-key the column's structure does not have is refused, except the fixed `CREATABLE_KEYS` set the parser may leave out (see [Review workspace](#review-workspace)). The parsed value is read from the row's `created` activity (`ParsedValueHistory`); a row without one is refused. The document and the corrected row are re-read under a row lock inside the transaction, so an approval that lands after the models were loaded still refuses the correction, and `previous_value` is the stored value. A value equal after normalisation (numeric columns by value, other text trimmed so `0123` differs from `123`, empty string = null, dates by day) is a no-op: the action returns `false` and records nothing. If the save is cancelled (e.g. by a `saving` listener), nothing is recorded. Otherwise it writes the value and logs a `value_corrected` activity (`CorrectFieldValueAction::ACTIVITY_EVENT`, entry type `audit`, log name `e-billing`) on the Invoice with `action_type`, `field`, `target_type`, `target_id`, `position`, `parsed_value`, `previous_value`, `corrected_value` and `note`; actor and time are the activity's causer and `created_at`. **moox/audit is required for this feature** (a composer `suggest`, not a requirement): without it, or with `audit.enabled` / `e-billing.audit.enabled` off, the action throws a `RuntimeException`; when the activity cannot be written (e.g. logging disabled at runtime) the value change is rolled back (this covers the activity only when the activity log uses the default database connection). Corrections are append-only by convention: no package code updates or deletes activities, but moox/audit does not enforce immutability yet (mooxphp/audit#2), so keep `audit` entries out of retention pruning. `ReviewerActionType` names the reviewer acts (`value_correction`, `approval`, `rejection`, `severity_release`); only value corrections mean the parser read a value wrong. There is no UI yet (review workspace: mooxphp/e-billing#47), and regenerating or revalidating after a correction is not part of this action.
+
+**Declared document type at upload:** `resources.{key}.manual_upload.document_types` (credit notes: `['381', '384']`) adds a required type choice without preselection to the upload dialog, with a collapsible instruction built from `document_classification.{code}.rule|examples` and `document_classification_help.*`. Codes must be in the resource's `document_types`, `document_classification.types` and `allowed_document_type_codes`. One code is applied without a choice; an empty list leaves the parser in charge. The choice is stored on the uploaded source, logged as `document_classified` (origin `upload`) and applied after parsing: a parsed 381/384 is replaced (with the sign flip), any other parsed type is kept and flagged for review. Credit notes and corrected invoices count as one type for duplicate detection. Hosts override the examples in `lang/vendor/e-billing/{locale}/fields.php`; example lists merge by index, so keep them the same length. Run the migration `add_document_type_to_ebilling_uploaded_pdf_sources_table`.
+
+**Credit note payment terms:** `e-billing.credit_note_payment_terms` (default `null`) is emitted as BT-20 for a 381 without due date and payment terms, which BR-CO-25 otherwise rejects for a positive amount due.
+
+**Preceding invoice reference (BG-3):** `preceding_invoice_number` / `preceding_invoice_date` map to `Invoice::$preceding_invoices[0]` (BT-25/BT-26). When present, `InvoiceFieldValidator` looks the referenced invoice up among stored invoices — number comparison ignores separators (`30641.25` matches `3064125`) — and never blocks: not found or a differing date is `status: parsed` with a `reason` (`preceding_invoice_not_found` / `preceding_invoice_date_mismatch`); a match sets `matched_id` and ViewInvoice renders `preceding_invoice_number` as a link to that invoice.
 
 ### Duplicate document-number rule
 
@@ -250,9 +356,11 @@ Distinct from `review_status` (field-review clearance) and `gateway_status` (KOS
 
 Transitions write latest-only `approval_reason`, `approval_actor_id` (string; `'system'` for auto-approve), and `approval_acted_at` on the document. Approving a document that carries valid severity releases forwards those release reasons into `approval_reason` when no other reason is supplied. History is the `moox/audit` Activity trail on `EbillingDocument` (`approval_status`, `approval_reason` in the body; actor and time come from the Activity causer/timestamp, not extra attribute rows); the invoice detail Activity table aggregates the document via `aggregate_subjects`. Only `RecordApprovalTransitionAction` writes approval state for approve/reject/restore. Initialize and invalidate set `pending` and clear actor, time, and reason so a prior sign-off cannot dispatch. Rematch and manual attribution both invalidate prior approval. `DocumentApprovalTransitioned` is emitted for host listeners (the package does not send mail).
 
+A credit note (BT-3 `381`) with a negative gross total (BT-112) blocks approval and dispatch (ADR 0010): `CreditNoteSign::hasNegativeTotal()` is checked by `DocumentApprovalGuard` (manual approve refused), `AutoApproveEvaluator` (`AutoApproveFailureReason::CreditNoteNegativeTotal`), and `DocumentDispatchGuard` (block reason `credit_note_negative_total`). Flipping the sign is the parser's job, not this package's.
+
 `DocumentDispatchGuard` requires `approval_status = approved` and a non-empty actor id plus `approval_acted_at` when approval is required. Approved-but-missing actor or acted-at blocks with `approval_incomplete`. It never reads Activity. Auto-approve persists with no authenticated user so the Activity causer is the host `audit.system_causer` (when set), not a logged-in operator. Document actor id on the row stays `'system'`.
 
-**Automatic approval** runs after gateway validation when every condition holds separately: gateway validated, no unresolved review findings, no blocking must-field, no duplicate flag (`approval_flags.duplicate`), no anomaly flag (`approval_flags.anomalies`). Failing any one leaves the document pending. Field validation syncs `approval_flags.duplicate` when `invoice_number` has reason `duplicate_invoice_number`; hosts may set `approval_flags.anomalies` on the document for anomaly flags (no dedicated writer API on the model). **Manual approve** requires pending status, a deliverable gateway artifact, no unresolved human-review findings, and no blocking must-field; duplicate and anomaly flags do not block a human sign-off after review is clear.
+**Automatic approval** runs after gateway validation when every condition holds separately: gateway validated, no unresolved review findings, no blocking must-field, no duplicate flag (`approval_flags.duplicate`), no anomaly flag (`approval_flags.anomalies`). Failing any one leaves the document pending. Field validation syncs `approval_flags.duplicate` when `invoice_number` has reason `duplicate_invoice_number`; hosts may set `approval_flags.anomalies` on the document for anomaly flags (no dedicated writer API on the model). **Manual approve** requires pending status, a deliverable gateway artifact, no missing must field, and no unaccepted review findings (`hasUnacceptedReviewFindings()`: on a `human_confirmed` document only missing must fields count, otherwise same as `needsHumanReview()`), so a confirmed document with open `needs_review` or missing-should findings can be approved and dispatched (ADR 0005 amendment); duplicate and anomaly flags do not block a human sign-off after review is clear.
 
 | Config key | Default | Effect |
 | --- | --- | --- |
@@ -279,24 +387,29 @@ Final pipeline stage after approval: get an approved document to its recipients 
 
 | Strategy value | Recipients |
 | --- | --- |
-| `inbox_to` | Validated `InboxMessage.to_email` (optional `to_name`); empty or invalid → no recipients |
+| `inbox_to` | The address a reviewer set on the document (`buyer.contact.email`) when there is one, else the validated `InboxMessage.to_email` (optional `to_name`); empty or invalid → no recipients |
+| `document` | Only the address a reviewer set on the document (`buyer.contact.email`, BT-58); none set → no recipients |
 | `master` | Validated attributed `company.email` (optional company name); empty or invalid → no recipients |
 | `none` | Empty list |
 
 Hosts may still bind their own `DeliveryRecipientResolverInterface` to replace this policy.
 
-**Invoice view:** the buyer section shows display-only `buyer_email` = inbox To email (validated `InboxMessage.to_email`). It is not corroborated against master data; the UI shows a soft informational hint (`hint_info_buyer_email`). Labels: en `Recipient email` / de `Empfänger-E-Mail`.
+**Manual upload:** the upload dialog collects `recipient_email` when enabled (required when MoSCoW `buyer_email` is `must` for the declared document type). It is stored on `UploadedPdfSource` (`uploader_user_id`, `recipient_email_applied_at`) and applied once to `buyer.contact.email` during `GenerateArtifactJob` via `ApplyUploadedRecipientEmailAction` (audited `recipient_set`, origin `upload`).
+
+**Invoice view:** the buyer section shows `buyer_email` = `EbillingDocument::recipientEmail()`: the address a reviewer set on the document (`buyer.contact.email`, BT-58; `documentRecipientEmail()`), else the validated inbox To email (`InboxMessage.to_email`). It is not corroborated against master data; the UI shows a soft informational hint (`hint_info_buyer_email`). A set document address or inbox To counts as present for validation; when both are empty, MoSCoW applies (`must` → `missing`, which blocks confirm/approval — including manual uploads). Reviewers set it in the [review workspace](#delivery-recipient-in-review). Labels: en `Recipient email` / de `Empfänger-E-Mail`.
 
 **Records:** table `ebilling_delivery_attempts` — one row per channel × recipient × attempt (append-only; re-dispatch adds rows). No document-level “delivered” flag. Invoice detail shows the attempt history; when `moox/audit` is present, each attempt also writes an Activity entry (`delivery_attempted`); configured `audit.log_events` attributes become Spatie `attribute_changes` for the Änderungen UI (same path as model audits).
 
-**Job:** approving (manual or auto) calls `QueueDocumentDeliveryAction`, which queues `DispatchDocumentJob` when `delivery.enabled` is true (all configured channels). The job uses `JobProgress` and implements `failed()`. Filament **Re-dispatch** (*Erneut zustellen*) is **selective redispatch** (ADR 0008): the operator picks a non-empty subset of configured channels (defaults to failed / never-run; warns when re-selecting successes); optional `$channelKeys` on Queue → Job → `DispatchDocumentAction`. No work in a listener.
+**Job:** approving (manual or auto) calls `QueueDocumentDeliveryAction`, which queues `DispatchDocumentJob` when `delivery.enabled` is true (all configured channels). The job uses `JobProgress` and implements `failed()`. Filament **Re-dispatch** is **selective redispatch** (ADR 0008): the operator picks a non-empty subset of configured channels (defaults to failed / never-run; warns when re-selecting successes); optional `$channelKeys` on Queue → Job → `DispatchDocumentAction`. No work in a listener.
+
+**Recipient override (ADR 0016):** while a channel that implements `Contracts\RecipientOverridableDeliveryChannel` is selected (the shipped `MailDeliveryChannel` does), the Re-dispatch modal shows an optional **Different recipient** field (one or more e-mail addresses; the helper text names the currently resolved recipients). The addresses **replace** the resolved recipients for that run only — master data, inbox To and the document stay unchanged; channels without the interface (e.g. portal) ignore it. Optional `$recipientOverride` on Queue → Job → `DispatchDocumentAction` (trimmed, blanks dropped, de-duplicated case-insensitively, each validated; nothing left = no override). An override without an explicit channel selection is refused, so approval-triggered dispatch never carries one. Each recipient lands on its own attempt row, and the queue action logs a `delivery_recipient_overridden` activity (actor, `recipients`, `channels`). When a previously successful mail channel is re-selected with an override, the modal warns "will be sent to X instead of Y" instead of the generic re-send warning. The host mail sender sends to the given address, so mail-outbox safe test mode still applies.
 
 | Config key | Default | Effect |
 | --- | --- | --- |
 | `delivery.enabled` | `false` | When `false`, approve does not queue dispatch and `DispatchDocumentAction` writes no records (gate still asserted) |
 | `delivery.mailer` | `null` | Optional Laravel mailer name (`EBILLING_DELIVERY_MAILER`) for host senders |
-| `delivery.recipients.mail_source` | `inbox_to` | Recipient strategy for mail-sourced documents (`inbox_to` \| `master` \| `none`) |
-| `delivery.recipients.manual_upload` | `none` | Recipient strategy for manual uploads (`inbox_to` \| `master` \| `none`) |
+| `delivery.recipients.mail_source` | `inbox_to` | Recipient strategy for mail-sourced documents (`inbox_to` \| `document` \| `master` \| `none`) |
+| `delivery.recipients.manual_upload` | `none` | Recipient strategy for manual uploads (`inbox_to` \| `document` \| `master` \| `none`) |
 | `delivery.channels` | `[]` | FQCNs implementing `DeliveryChannelInterface` |
 
 ### Review notification announce
@@ -387,6 +500,7 @@ Scheduled scan for documents still `approval_status = pending` past configured t
 | `field_validations` | `json` | nullable | Per-field validation results |
 | `severity_releases` | `json` | nullable | Severity releases for missing **should** fields (`released_at`, `released_by_id`, `released_by`, `reason`); written only via `ReleaseSeverityFieldAction`; not in `$fillable` |
 | `processed_at` | `timestamp` | nullable | Set when validation passes |
+| `review_changed_at` | `timestamp` | nullable | Last reviewer change (`markReviewChanged()`); newer than `processed_at` means the artifact needs regeneration; not in `$fillable` |
 | `error_message` | `text` | nullable | Last pipeline error |
 | `created_at` | `timestamp` | NOT NULL | |
 | `updated_at` | `timestamp` | NOT NULL | |
@@ -447,6 +561,8 @@ The invoice `delivery` party (name + address) is mapped onto `shipToName` / `shi
 
 When several dates differ, each line with a `delivery_date` is emitted on that line. EN 16931 / XRechnung (and other non-EXTENDED profiles) carry the date as a line billing period with start and end equal to that day; EXTENDED uses the line-level actual delivery date. The active ZUGFeRD profile selects which line carrier `ZugferdConverter` uses.
 
+**Partial deliveries.** A line delivered in several parts (`invoice_lines.deliveries`, list of `{date, delivery_note, quantity}`, normalized by `Support\PartialDeliveries::normalize()`) counts its partial dates as line dates: differing dates leave out the document BT-72, emit line dates, and are visible to the intra-community check. On the line, `moox/zugferd` writes a period (BG-26) from the earliest to the latest date and lists the parts in BT-127. Quantities in that note follow `document_locale` (`emission.decimal_separator`: `,` in `de`, `.` in `en`). Run the `moox/invoice` migration `add_deliveries_to_invoice_lines_table`; parsers pass the parts through `Data\InvoiceLine::$partialDeliveries` (array key `deliveries`).
+
 `InvoiceFieldValidator` flags `delivery_date` as `needs_review` when the invoice is an intra-community supply (seller and buyer EU VAT country prefixes differ) and several differing dates would require aggregating them into a single actual delivery date for BR-IC-11. Operators see a review hint in the Filament UI; the adapter does not merge dates silently.
 
 ## Changelog
@@ -485,3 +601,84 @@ Presentation-only config under `e-billing.invoice_ui` (does **not** change MoSCo
 
 Groups with **visible** blocking `must` findings force-open and show a text+colour issue count on the summary. Denylisted fields do not count toward that marker. Empty groups after the denylist are omitted. See ADR `docs/adr/0007-invoice-view-field-denylist-and-collapsible-groups.md`.
 
+
+## Review workspace
+
+Edit mode on the invoice and credit-note view pages (`ViewInvoice` / `ViewCreditNote`) combines value corrections and customer attribution in one place. Design rationale: ADR `docs/adr/0004-mixed-review-workspace-and-leave-edit-pipeline.md` ([#47](https://github.com/mooxphp/e-billing/issues/47), [#48](https://github.com/mooxphp/e-billing/issues/48)).
+
+### Requirements
+
+Edit mode is available only while the document's approval status is `pending`, the pipeline is not running (`gateway_status` is neither `generating` nor `validating`; `DocumentEditGuard::canEdit()`) and `moox/audit` auditing is available (a correction keeps the parsed value in the audit trail). Otherwise the header actions do not appear. All reviewer acts (value correction, classification, recipient, attribution) also refuse changes while the pipeline runs.
+
+### Edit and leave
+
+- **Edit** (`start_review_edit`) turns on edit mode. **Confirm** and **approve** are hidden while you edit.
+- Each row gets a pencil action (`editField`) that opens a slide-over on the start side, so the PDF preview stays visible. It saves exactly that row as a value correction. The note is optional.
+- Customer attribution changes through `editAttribution` inside the edit banner (`SetInvoiceAttributionAction`, `attribution_source = manual`).
+- **Finish editing** (`finish_review_edit`, with confirmation) leaves edit mode and runs `LeaveEditAction`. It always re-runs matching and field checks synchronously (manual attribution preserved), so fixed master data is picked up. If a reviewer changed anything since the last successful validation, it also sets `gateway_status = generating` and queues `GenerateArtifactJob`, which regenerates the e-invoice from the corrected rows and then validates it. Per-field saves never start this pipeline.
+- **Approve** is hidden while you edit. Outside edit mode it shows for every pending document (when approval is required) and is disabled with the reason as tooltip; the status banner repeats it. Reason codes (`DocumentApprovalGuard::blockReason()`): `not_pending`, `pipeline_running`, `artifact_failed`, `artifact_not_validated`, `must_field_missing`, `human_review_required`, `credit_note_negative_total` (checked in this order). Confirming the document accepts open review findings; a leave-edit rematch or an attribution change resets the confirmation. A document a reviewer changed is never auto-approved (`review_changed`).
+- The view shows `generating` / `validating` in the status banner and polls (`wire:poll.5s`) only while the pipeline runs. Hosts that override `filament/partials/invoice-status-banner.blade.php` must port the gateway and approval-block rows.
+
+Run the migration `add_review_changed_at_to_ebilling_documents_table` (publish or copy it): `review_changed_at` is stamped by the reviewer acts and compared with `processed_at` (`EbillingDocument::hasReviewChangesSinceArtifact()`). The stale-artifact approval block against the record files follows with [#86](https://github.com/mooxphp/e-billing/issues/86).
+
+The standalone `set_attribution` and `rematch` actions (view header and invoice list row action) and `InvoiceResource::getSetAttributionAction()` are removed, together with their translation keys.
+
+### Which rows can be edited
+
+Every row resolves through `ReviewFieldCatalog` (row keys `invoice:{field}`, `notes:{index}`, `line:{lineId}:{field}`) to either an edit or a visible, translated reason (`e-billing::fields.review_not_editable.*`):
+
+| Reason key | Meaning |
+|---|---|
+| `not_configured` | Field is not in `value_correction.fields` |
+| `not_audited` | Attribute is not audited, so its parsed value could not be kept |
+| `unknown_key` | The document has no such value |
+| `unknown_field` | Row is not mapped to an editable field |
+| `no_charge_row` | The allowance/charge row does not exist; adding one is not supported |
+| `document_level` | Line `vat_category` is a document-level value; correct it under Amounts |
+| `not_classifiable` | The document type is not one of `document_classification.types` |
+
+- **Addresses** (buyer, seller, delivery, line delivery) and **bank accounts** edit in one slide-over but record one correction per changed sub-field (`CorrectFieldValueAction::executeMany()`).
+- **Header charges and line surcharges** edit the existing allowance/charge row (`amount`, `percentage`, `reason_text`).
+- **`document_type`** switches between the configured classification types through `ClassifyDocumentTypeAction`; it is not a value correction.
+- Corrected rows show "Corrected. Parsed value: …" (from `ParsedValueHistory::correctedFields()`), in and outside edit mode.
+
+An attribute must also be audited by its model to be correctable: the `invoice.audit` attributes of `moox/invoice` (and any host override) decide which fields get a pencil rather than `not_audited`.
+
+`CorrectFieldValueAction` can create a fixed set of JSON sub-keys the parser left out (`CREATABLE_KEYS`): seller/buyer contact name, phone and email; delivery name and address parts; the `payment_means` code and the first bank account's `iban` / `bic` / `bank_name`; the first preceding invoice's number and date. The parsed value of a created key is `null`. JSON sub-keys of one column are written together, and a value a JSON value object would drop is refused. `refusal()` returns the `REFUSAL_*` code for a field that cannot be corrected; `field()` returns its normalised field name.
+
+### Cross-checked fields
+
+`e-billing.cross_checked` is the single catalogue of fields checked against master data. The review workspace uses it for pickers; the divergence report ([#46](https://github.com/mooxphp/e-billing/issues/46)) is intended to use the same mapping.
+
+```php
+'cross_checked' => [
+    'strict' => (bool) env('EBILLING_CROSS_CHECKED_STRICT', false),
+    'fields' => [
+        'customer_number' => ['record' => 'customer', 'attribute' => 'customer_number'],
+        'customer_name' => ['record' => 'company', 'attribute' => 'name'],
+        'customer_vat_id' => ['record' => 'company', 'attribute' => 'vat_number'],
+        'customer_address' => ['record' => 'company', 'addresses' => 'buyer'],
+        'delivery_address' => ['record' => 'company', 'addresses' => 'delivery'],
+    ],
+],
+```
+
+Each field names the matched `record` (`customer` or `company`) and either an `attribute` of it or its `addresses` filtered by the `corroboration` role config (`buyer` or `delivery`). `CrossCheckedFields` scopes the options to the attributed customer:
+
+| Mode | Behaviour |
+|---|---|
+| `strict = false` (default) | Datalist suggestions plus free text. Addresses add an "Address from master data" picker that fills the parts |
+| `strict = true` | Select-only. For addresses, leaving the picker empty clears the address parts |
+
+Values that are not in the attributed customer's master data are flagged in edit mode, never cleared; a field whose master data has no value is not flagged. Review never writes master data.
+
+A column that does not accept `null` (e.g. `invoice_number`) cannot be cleared; the save is refused with "The field … cannot be empty."
+
+### Delivery recipient in review
+
+The `buyer_email` row edits the document's delivery recipient through `SetRecipientEmailAction`:
+
+- **Mail-sourced documents:** a value correction of `buyer.contact.email`.
+- **Other sources (manual upload):** writes `buyer.contact.email` and logs an audited `recipient_set` activity, so it stays out of parser-feedback data.
+
+Use the `document` recipient strategy (see [Delivery dispatch](#delivery-dispatch)) to deliver only to an address set this way.

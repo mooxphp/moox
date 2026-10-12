@@ -16,8 +16,9 @@ Moox Zugferd converts invoice data implementing `ZugferdInvoice` into valid ZUGF
 - Concrete `AllowanceCharge` DTO for tests and simple consumers
 - Required profile key on convert: MINIMUM, BASIC, EN16931, EXTENDED, XRECHNUNG (unknown keys throw)
 - Optional `deliveryDate` on invoice (BT-72 via `setDocumentSupplyChainEvent`) and on lines (line billing period with start=end for non-EXTENDED profiles, line actual delivery for EXTENDED); profile key selects the line-date carrier; no header invoicing period (BG-14) is derived from delivery dates
-- Optional `shipToName` / `shipToAddress` on invoice and lines (BG-13 via `setDocumentShipTo` / `setDocumentShipToAddress`); address is omitted when country is empty; ship-to tax registration and contact are never emitted
+- Optional `supplierNumber` (BT-29; emit via `addDocumentSellerId` when non-empty, omit when empty/whitespace), `shipToName` / `shipToAddress` on invoice and lines (BG-13 via `setDocumentShipTo` / `setDocumentShipToAddress`); address is omitted when country is empty; ship-to tax registration and contact are never emitted
 - Omit duplicate ShipTo when name + postal fingerprint equals buyer (street, street2, postal code, country; city excluded; keep BT-72); VAT **K** still emits BG-15 (buyer postal OK). Promote shared distinct line ship-to when header empty; else BT-127 notes. Line `itemAttributes` / `itemClassifications` → BG-32 / BT-158; trade refs BT-13 / BT-16 (common line DN fallback) / BT-132 (`purchaseOrderLineReference`); line allowance/charges. `purchaseOrderDate` is never OrderReference IssueDate (UBL-CR-018)
+- Optional `precedingInvoices` on invoice (BG-3): one `ram:InvoiceReferencedDocument` per entry (IssuerAssignedID + optional FormattedIssueDateTime)
 
 <!--/features-->
 
@@ -115,11 +116,11 @@ Header, parties, totals, `lines`, `bankAccounts`, and `allowanceCharges`.
 - Non-empty trimmed `supplierEmail`
 - Non-empty `bankAccounts` with non-empty IBAN on each account
 
-**Other notable fields:** `documentType` (credit note when value contains `gutschrift` → type code `381`, else `380`), `paymentMeansCode` (default `58`), `dueDate` / `paymentTerms`, `deliveryDate` (BT-72), `documentNotes` (BT-22), `purchaseOrderReference` (BT-13), `despatchAdviceReference` (BT-16; converter may fill from a common line `deliveryNoteNumber`), `purchaseOrderDate` (unstructured notes only — never OrderReference IssueDate), `shipToName` / `shipToAddress` (BG-13; address requires a country; omitted when equal to buyer unless VAT **K**), `vatCategoryCode`, `vatRate`, `netTotal`, `vatAmount`, `grossTotal`.
+**Other notable fields:** `documentType` (credit note when value contains `gutschrift` → type code `381`, else `380`), `paymentMeansCode` (default `58`), `dueDate` / `paymentTerms`, `supplierNumber` (BT-29; emit via `addDocumentSellerId` when non-empty), `deliveryDate` (BT-72), `documentNotes` (BT-22), `purchaseOrderReference` (BT-13), `despatchAdviceReference` (BT-16; converter may fill from a common line `deliveryNoteNumber`), `purchaseOrderDate` (unstructured notes only — never OrderReference IssueDate), `shipToName` / `shipToAddress` (BG-13; address requires a country; omitted when equal to buyer unless VAT **K**), `precedingInvoices` (BG-3: `list<array{number, date}>`, BT-25/BT-26 — one `InvoiceReferencedDocument` per entry), `vatCategoryCode`, `vatRate`, `netTotal`, `vatAmount`, `grossTotal`.
 
 ### `ZugferdInvoiceLine`
 
-`position`, `description`, `descriptionDetail`, `articleNumber`, `unitPrice`, `quantity`, `unit` / `unitCode`, `lineTotal`, `deliveryDate`, `shipToName` / `shipToAddress`, `purchaseOrderLineReference` (BT-132), `orderDocumentReference` (divergent PO document → BT-127), `deliveryNoteNumber`, `purchaseOrderDate` (line note only), `itemAttributes` (BG-32), `itemClassifications` (BT-158), `allowanceCharges`.
+`position`, `description`, `descriptionDetail`, `articleNumber`, `unitPrice`, `quantity`, `unit` / `unitCode`, `lineTotal`, `deliveryDate`, `shipToName` / `shipToAddress`, `purchaseOrderLineReference` (BT-132), `orderDocumentReference` (divergent PO document → BT-127), `deliveryNoteNumber`, `partialDeliveries` (`list<array{date, delivery_note, quantity}>`; empty for a line delivered at once), `purchaseOrderDate` (line note only), `itemAttributes` (BG-32), `itemClassifications` (BT-158), `allowanceCharges`.
 
 ### `ZugferdAddress`
 
@@ -146,6 +147,7 @@ Class: `Moox\Zugferd\ZugferdConverter` (singleton in `ZugferdServiceProvider`).
 | `convert(ZugferdInvoice $invoice, string $profileKey): string` | XML string | Builds horstoeko document; required `$profileKey` selects how line `deliveryDate` is emitted (line period vs line actual delivery); `getContentSafely()` mitigates stream-resource warnings |
 | `convertToFile(ZugferdInvoice $invoice, string $profileKey, ?string $outputPath = null): string` | File path | Writes `{outputPath}/{invoiceNumber}.xml` |
 | `mergePdfWithXml(string $pdfPath, string $xml, ?string $documentTypeCode = null): string` | PDF binary | Optional qpdf decrypt → merge (unencrypted output); Title from `resolvePdfTitleTemplate($documentTypeCode)` |
+| `__construct(ZugferdNoteLabels $noteLabels = new EnglishNoteLabels)` | — | Optional BT-127 line-note label source; defaults to `Support\EnglishNoteLabels` |
 | `resolvePdfTitleTemplate(?string $documentTypeCode = null): string` | Title sprintf template | `pdf_title_templates[$code]` or `pdf_title_template` / `PDF_TITLE_TEMPLATE` |
 | `extractXmlFromPdf(string $absolutePdfPath): string` | XML string | Embedded XML from hybrid PDF |
 
@@ -192,6 +194,16 @@ File: `config/zugferd.php`
 | `pdf_title_templates` | — | `[]` | Optional map of UN/CEFACT document type code → Title template; selected when `mergePdfWithXml(..., $documentTypeCode)` is passed |
 
 `ZugferdConverter::resolvePdfTitleTemplate(?string $documentTypeCode)` picks the map entry or falls back to `pdf_title_template` / `PDF_TITLE_TEMPLATE`.
+
+### Note labels (BT-127)
+
+Line notes (purchase order, order date, despatch advice, consignee) carry a text label, and the order date is written in the note text. The converter takes both from `Moox\Zugferd\Contracts\ZugferdNoteLabels` (`date()` writes a Y-m-d date and `quantity(float)` writes a quantity; the default returns the date unchanged and writes a quantity with up to three decimals, no trailing zeros, and `.` as separator). The default, `Support\EnglishNoteLabels`, keeps the previous English strings and is bound with `bindIf` in `ZugferdServiceProvider`. Bind your own implementation to emit these labels in the invoice language:
+
+```php
+$this->app->bind(\Moox\Zugferd\Contracts\ZugferdNoteLabels::class, MyNoteLabels::class);
+```
+
+**Partial deliveries.** A line with `partialDeliveries` gets a line period (BG-26) from the earliest to the latest date among the line `deliveryDate` and the partial dates. Its BT-127 note lists each part as `<despatch advice label>: <note> (<date>, <quantity> <unit>)`, joined by `; `, instead of the single despatch advice fragment. The header despatch advice (BT-16, common line delivery note) also considers the partial delivery notes, so it is omitted when they differ.
 
 **Cross-package config:** `mail-inbox.zugferd.pdf_password` — read in `mergePdfWithXml()` only.
 

@@ -19,12 +19,12 @@ use Moox\EBilling\Actions\CreateManualUploadDocumentAction;
 use Moox\EBilling\Actions\DispatchDocumentAction;
 use Moox\EBilling\Actions\InitializeDocumentApprovalAction;
 use Moox\EBilling\Actions\InvalidateDocumentApprovalAction;
+use Moox\EBilling\Actions\LeaveEditAction;
 use Moox\EBilling\Actions\QueueDocumentDeliveryAction;
 use Moox\EBilling\Actions\RecordApprovalTransitionAction;
 use Moox\EBilling\Actions\RecordDeliveryAttemptsAction;
 use Moox\EBilling\Actions\RejectDocumentAction;
 use Moox\EBilling\Actions\ReleaseSeverityFieldAction;
-use Moox\EBilling\Actions\RematchAttributionAction;
 use Moox\EBilling\Actions\RestoreRejectedDocumentAction;
 use Moox\EBilling\Actions\SetInvoiceAttributionAction;
 use Moox\EBilling\Actions\TryAutoApproveDocumentAction;
@@ -35,6 +35,8 @@ use Moox\EBilling\Approval\DocumentDispatchGuard;
 use Moox\EBilling\Approval\ImmediateReviewNotificationStrategy;
 use Moox\EBilling\Console\Commands\BackfillValidationScoresCommand;
 use Moox\EBilling\Console\Commands\FlushReviewNotificationBatchCommand;
+use Moox\EBilling\Console\Commands\ReparseDocumentsCommand;
+use Moox\EBilling\Console\Commands\RevalidateDocumentsCommand;
 use Moox\EBilling\Console\Commands\ScanOverdueApprovalEscalationCommand;
 use Moox\EBilling\Contracts\DeliveryRecipientResolverInterface;
 use Moox\EBilling\Contracts\InvoiceParserInterface;
@@ -54,6 +56,7 @@ use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 use Moox\EBilling\Support\AllowedProfiles;
 use Moox\EBilling\Support\CustomerFormatPreferenceResolver;
+use Moox\EBilling\Support\DocumentNoteLabels;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\EBilling\Support\InvoiceRelationsConfig;
 use Moox\EBilling\Support\LetterheadSourcePdfPreparer;
@@ -66,6 +69,7 @@ use Moox\KositValidator\Models\KositValidation;
 use Moox\MailInbox\Events\InboxAttachmentProcessed;
 use Moox\MailOutbox\Models\MailSendLog;
 use Moox\VeraPdf\Models\VeraPdfValidation;
+use Moox\Zugferd\Contracts\ZugferdNoteLabels;
 use Spatie\LaravelPackageTools\Package;
 
 class EBillingServiceProvider extends MooxServiceProvider
@@ -80,6 +84,8 @@ class EBillingServiceProvider extends MooxServiceProvider
             ->hasRoutes('web')
             ->hasCommands([
                 BackfillValidationScoresCommand::class,
+                ReparseDocumentsCommand::class,
+                RevalidateDocumentsCommand::class,
                 FlushReviewNotificationBatchCommand::class,
                 ScanOverdueApprovalEscalationCommand::class,
             ])
@@ -93,6 +99,9 @@ class EBillingServiceProvider extends MooxServiceProvider
                 'create_ebilling_uploaded_pdf_sources_table',
                 'add_profile_to_ebilling_documents_table',
                 'create_ebilling_delivery_attempts_table',
+                'add_document_type_to_ebilling_uploaded_pdf_sources_table',
+                'add_review_changed_at_to_ebilling_documents_table',
+                'add_recipient_email_to_ebilling_uploaded_pdf_sources_table',
             ]);
 
         $this->getMooxPackage()
@@ -109,11 +118,12 @@ class EBillingServiceProvider extends MooxServiceProvider
     {
         parent::packageRegistered();
 
+        $this->app->bind(ZugferdNoteLabels::class, DocumentNoteLabels::class);
         $this->app->singleton(InvoiceFieldValidator::class);
         $this->app->singleton(ConfirmInvoiceAction::class);
         $this->app->singleton(CreateManualUploadDocumentAction::class);
         $this->app->singleton(SetInvoiceAttributionAction::class);
-        $this->app->singleton(RematchAttributionAction::class);
+        $this->app->singleton(LeaveEditAction::class);
         $this->app->singleton(ReleaseSeverityFieldAction::class);
         $this->app->singleton(AutoApproveEvaluator::class);
         $this->app->singleton(DocumentApprovalGuard::class);
@@ -237,7 +247,8 @@ class EBillingServiceProvider extends MooxServiceProvider
     }
 
     /**
-     * Resolve host invoice model subclasses into the audit registry keys.
+     * Resolve host invoice model subclasses into the audit registry keys. The invoice itself is
+     * registered by moox/invoice; e-billing only adds its labels, so it adds nothing when that is off.
      *
      * @return array<string, mixed>
      */
@@ -246,6 +257,10 @@ class EBillingServiceProvider extends MooxServiceProvider
         /** @var array<string, mixed> $audit */
         $audit = config('e-billing.audit', []);
         $invoiceClass = InvoiceModels::invoice();
+
+        if (! config('invoice.audit.enabled', true) && is_array($audit['models'] ?? null)) {
+            unset($audit['models'][Invoice::class]);
+        }
 
         if ($invoiceClass === Invoice::class) {
             return $audit;

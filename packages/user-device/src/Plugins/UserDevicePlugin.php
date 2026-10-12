@@ -8,6 +8,7 @@ use Filament\Support\Concerns\EvaluatesClosures;
 use Moox\UserDevice\Http\Middleware\EnsureTrustedDevice;
 use Moox\UserDevice\Http\Middleware\SyncDeviceIdToSessionRow;
 use Moox\UserDevice\Resources\UserDeviceResource;
+use Moox\UserDevice\Support\UserDevicePanel;
 
 class UserDevicePlugin implements Plugin
 {
@@ -20,13 +21,16 @@ class UserDevicePlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        // Origin only — scoped children appear under User (source), not here.
-        $panel->resources([
-            UserDeviceResource::class,
-        ]);
-
+        // Plugin present on the panel is not enough — master switch must be on.
         if (! config('user-device.enabled', false)) {
             return;
+        }
+
+        // Resource is ops UI only (default: admin). Portal keeps middleware, no menu.
+        if ($this->shouldRegisterResource($panel)) {
+            $panel->resources([
+                UserDeviceResource::class,
+            ]);
         }
 
         $middleware = [
@@ -39,6 +43,11 @@ class UserDevicePlugin implements Plugin
 
         // Must be persistent so it also runs for Livewire requests (Filament actions/forms).
         $panel->authMiddleware($middleware, isPersistent: true);
+    }
+
+    protected function shouldRegisterResource(Panel $panel): bool
+    {
+        return UserDevicePanel::registersResource($panel->getId());
     }
 
     public function boot(Panel $panel): void

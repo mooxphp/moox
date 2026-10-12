@@ -11,7 +11,11 @@ use Filament\Actions\BulkAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Text;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Icons\Heroicon;
@@ -26,20 +30,22 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\HtmlString;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
-use Moox\Customer\Models\Customer;
 use Moox\EBilling\Actions\CreateManualUploadDocumentAction;
-use Moox\EBilling\Actions\RematchAttributionAction;
-use Moox\EBilling\Actions\SetInvoiceAttributionAction;
+use Moox\EBilling\Enums\DispatchStatus;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
-use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ListInvoices;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ViewInvoice;
 use Moox\EBilling\Resources\InvoiceResource\RelationManagers\MailSendLogsRelationManager;
+use Moox\EBilling\Support\DocumentClassification;
+use Moox\EBilling\Support\DocumentClassificationLabels;
+use Moox\EBilling\Support\FieldValidationProfile;
 use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\InvoiceModels;
@@ -149,6 +155,7 @@ class InvoiceResource extends BaseItemResource
 
         return $query->with([
             'ebillingDocument',
+            'ebillingDocument.deliveryAttempts',
             'ebillingDocument.kositValidations' => fn ($query) => $query
                 ->orderByDesc('validated_at')
                 ->orderByDesc('id'),
@@ -200,6 +207,14 @@ class InvoiceResource extends BaseItemResource
                 ->sortable()
                 ->color('primary')
                 ->weight('medium')
+                ->toggleable(),
+            TextColumn::make('document_type')
+                ->label(__('e-billing::fields.document_type'))
+                ->badge()
+                ->formatStateUsing(fn (?string $state): ?string => $state !== null
+                    ? DocumentClassificationLabels::label($state)
+                    : null)
+                ->visible(count(static::documentTypes()) > 1)
                 ->toggleable(),
             TextColumn::make('document_version')
                 ->label(__('e-billing::fields.document_version'))
@@ -354,6 +369,13 @@ class InvoiceResource extends BaseItemResource
                     return self::processingStatusColor($enum);
                 })
                 ->toggleable(),
+            TextColumn::make('dispatch_status')
+                ->label(__('e-billing::fields.dispatch_status'))
+                ->badge()
+                ->getStateUsing(fn (Invoice $record): ?DispatchStatus => DispatchStatus::forDocument($record->ebillingDocument))
+                ->formatStateUsing(fn (?DispatchStatus $state): string => $state?->label() ?? '—')
+                ->color(fn (?DispatchStatus $state): string => $state?->color() ?? 'gray')
+                ->toggleable(),
             TextColumn::make('created_at')
                 ->label(__('e-billing::fields.created_at'))
                 ->dateTime('d.m.Y H:i')
@@ -368,6 +390,18 @@ class InvoiceResource extends BaseItemResource
     private static function invoiceListTableFilters(): array
     {
         return [
+            SelectFilter::make('dispatch_status')
+                ->label(__('e-billing::fields.dispatch_status'))
+                ->options(collect(DispatchStatus::cases())
+                    ->mapWithKeys(fn (DispatchStatus $case): array => [$case->value => $case->label()])
+                    ->all())
+                ->query(function (Builder $query, array $data): Builder {
+                    $status = DispatchStatus::tryFrom((string) ($data['value'] ?? ''));
+
+                    return $status === null
+                        ? $query
+                        : $query->whereHas('ebillingDocument', fn ($documentQuery): Builder => $status->constrain($documentQuery));
+                }),
             SelectFilter::make('review_status')
                 ->label(__('e-billing::fields.status'))
                 ->options([
@@ -469,39 +503,6 @@ class InvoiceResource extends BaseItemResource
                 ->label(__('e-billing::fields.action_details'))
                 ->icon(Heroicon::OutlinedEye)
                 ->url(fn (Invoice $record): string => self::getUrl('view', ['record' => $record])),
-            Action::make('rematch')
-                ->label(__('e-billing::fields.action_rematch'))
-                ->icon(Heroicon::OutlinedArrowPath)
-                ->color('warning')
-                ->requiresConfirmation()
-                ->modalHeading(__('e-billing::fields.action_rematch_modal_heading'))
-                ->modalDescription(__('e-billing::fields.action_rematch_modal_description'))
-                ->modalSubmitActionLabel(__('e-billing::fields.action_rematch_submit'))
-                ->visible(fn (Invoice $record): bool => $record->ebillingDocument instanceof EbillingDocument)
-                ->action(function (Invoice $record): void {
-                    $document = $record->ebillingDocument;
-                    if (! $document instanceof EbillingDocument) {
-                        return;
-                    }
-
-                    try {
-                        app(RematchAttributionAction::class)->execute($document);
-                    } catch (Throwable) {
-                        Notification::make()
-                            ->title(__('e-billing::fields.notification_rematch_failed_title'))
-                            ->body(__('e-billing::fields.notification_rematch_failed_body'))
-                            ->danger()
-                            ->send();
-
-                        return;
-                    }
-
-                    Notification::make()
-                        ->title(__('e-billing::fields.notification_rematch_success_title'))
-                        ->body(__('e-billing::fields.notification_rematch_success_body'))
-                        ->success()
-                        ->send();
-                }),
             Action::make('kosit_report')
                 ->label(__('e-billing::fields.action_kosit_report'))
                 ->icon(Heroicon::OutlinedDocumentMagnifyingGlass)
@@ -649,8 +650,23 @@ class InvoiceResource extends BaseItemResource
                 $isDeletedTab = true;
             }
 
-            if (in_array($condition['field'], ['review_status', 'gateway_status'], true)) {
+            if (in_array($condition['field'], ['review_status', 'gateway_status', 'approval_status', 'delivered'], true)) {
                 $isAllTab = false;
+            }
+
+            if ($condition['field'] === 'approval_status' && $condition['operator'] === 'in') {
+                $query->whereHas(
+                    'ebillingDocument',
+                    fn ($documentQuery) => $documentQuery->whereIn('approval_status', (array) $value),
+                );
+
+                continue;
+            }
+
+            if ($condition['field'] === 'delivered') {
+                $query->whereHas('ebillingDocument', fn ($documentQuery) => DispatchStatus::Sent->constrain($documentQuery));
+
+                continue;
             }
 
             if ($condition['field'] === 'review_status' && $condition['operator'] === 'in') {
@@ -689,6 +705,95 @@ class InvoiceResource extends BaseItemResource
         return $query;
     }
 
+    /**
+     * Declared document type for the manual upload (ADR 0011 addendum): a collapsible "which type?"
+     * instruction and a required choice without preselection. Nothing to choose with fewer than two codes.
+     *
+     * @param  list<string>  $selectableTypes
+     * @return list<Section|Select>
+     */
+    /**
+     * @param  list<string>  $selectableTypes
+     */
+    private static function manualUploadRecipientEmailField(array $selectableTypes): TextInput
+    {
+        return TextInput::make('recipient_email')
+            ->label(__('e-billing::fields.buyer_email'))
+            ->helperText(__('e-billing::fields.hint_info_buyer_email'))
+            ->email()
+            ->maxLength(255)
+            ->live(onBlur: true)
+            ->required(function (Get $get) use ($selectableTypes): bool {
+                if (count($selectableTypes) === 1) {
+                    $documentType = $selectableTypes[0];
+                } else {
+                    $declared = $get('document_type');
+                    $documentType = is_int($declared) || is_string($declared) ? (string) $declared : '';
+                }
+
+                return $documentType !== ''
+                    && FieldValidationProfile::priority('buyer_email', $documentType) === 'must';
+            });
+    }
+
+    private static function manualUploadDocumentTypeComponents(array $selectableTypes): array
+    {
+        if (count($selectableTypes) < 2) {
+            return [];
+        }
+
+        $options = array_intersect_key(DocumentClassificationLabels::options(), array_flip($selectableTypes));
+
+        return [
+            Section::make(__('e-billing::fields.document_classification_help.title'))
+                ->collapsible()
+                ->collapsed()
+                ->schema([
+                    Text::make(self::documentTypeInstructionHtml(
+                        DocumentClassificationLabels::instruction($selectableTypes),
+                    )),
+                ]),
+            Select::make('document_type')
+                ->label(__('e-billing::fields.document_type'))
+                ->options($options)
+                ->placeholder(__('e-billing::fields.document_classification_help.placeholder'))
+                ->helperText(__('e-billing::fields.document_classification_help.helper'))
+                ->required(),
+        ];
+    }
+
+    /**
+     * One compact block per code: bold label, rule, bulleted examples. Inline styles, because the panel
+     * theme does not ship utility classes for package markup; every text is escaped.
+     *
+     * @param  list<array{label: string, rule: ?string, examples: list<string>}>  $blocks
+     */
+    private static function documentTypeInstructionHtml(array $blocks): HtmlString
+    {
+        $html = '';
+
+        foreach ($blocks as $index => $block) {
+            $html .= $index > 0 ? '<div style="margin-top: 1rem;">' : '<div>';
+            $html .= '<p style="margin: 0; font-weight: 600;">'.e($block['label']).'</p>';
+
+            if ($block['rule'] !== null) {
+                $html .= '<p style="margin: 0.25rem 0 0;">'.e($block['rule']).'</p>';
+            }
+
+            if ($block['examples'] !== []) {
+                $html .= '<ul style="margin: 0.375rem 0 0; padding-inline-start: 1.25rem; list-style: disc outside;">';
+                foreach ($block['examples'] as $example) {
+                    $html .= '<li style="margin: 0.125rem 0 0;">'.e($example).'</li>';
+                }
+                $html .= '</ul>';
+            }
+
+            $html .= '</div>';
+        }
+
+        return new HtmlString($html);
+    }
+
     public static function getManualUploadAction(): ?Action
     {
         $config = config('e-billing.resources.'.static::resourceConfigKey().'.manual_upload');
@@ -703,6 +808,8 @@ class InvoiceResource extends BaseItemResource
         $label = is_string($config['label'] ?? null) ? $config['label'] : __('e-billing::fields.action_manual_upload');
         $scope = is_string($config['scope'] ?? null) ? $config['scope'] : static::resourceConfigKey();
         $requiresLetterhead = (bool) ($config['requires_letterhead_overlay'] ?? false);
+        $resourceKey = static::resourceConfigKey();
+        $selectableTypes = DocumentClassification::selectableForUpload($resourceKey);
 
         return Action::make('manualUpload')
             ->label($label)
@@ -722,8 +829,10 @@ class InvoiceResource extends BaseItemResource
                     ->directory($directory)
                     ->storeFileNamesIn('pdf_original_filename')
                     ->required(),
+                ...self::manualUploadDocumentTypeComponents($selectableTypes),
+                self::manualUploadRecipientEmailField($selectableTypes),
             ])
-            ->action(function (array $data, $livewire) use ($disk, $scope, $requiresLetterhead): void {
+            ->action(function (array $data, $livewire) use ($disk, $scope, $requiresLetterhead, $resourceKey): void {
                 $path = $data['pdf'] ?? null;
 
                 if (! is_string($path) || $path === '') {
@@ -736,6 +845,10 @@ class InvoiceResource extends BaseItemResource
                     'original_filename' => self::resolveUploadedOriginalFilename($data, $path),
                     'scope' => $scope,
                     'requires_letterhead_overlay' => $requiresLetterhead,
+                    'resource' => $resourceKey,
+                    'document_type' => $data['document_type'] ?? null,
+                    'recipient_email' => $data['recipient_email'] ?? null,
+                    'uploader_user_id' => Auth::id() !== null ? (string) Auth::id() : null,
                 ]);
 
                 Notification::make()
@@ -778,81 +891,6 @@ class InvoiceResource extends BaseItemResource
         }
 
         return basename($storedPath);
-    }
-
-    /**
-     * Filament header action for manual customer attribution.
-     *
-     * Not registered on {@see ViewInvoice}; kept for a later surface.
-     */
-    public static function getSetAttributionAction(Invoice $record): Action
-    {
-        $document = $record->ebillingDocument;
-
-        return Action::make('set_attribution')
-            ->label(__('e-billing::fields.action_set_attribution'))
-            ->icon(Heroicon::OutlinedUserCircle)
-            ->color('gray')
-            ->modalHeading(__('e-billing::fields.action_set_attribution_modal_heading'))
-            ->modalDescription(__('e-billing::fields.action_set_attribution_modal_description'))
-            ->modalSubmitActionLabel(__('e-billing::fields.action_set_attribution_submit'))
-            ->visible(fn (): bool => $document instanceof EbillingDocument)
-            ->fillForm(fn (): array => [
-                'customer_id' => $document?->customer_id,
-            ])
-            ->schema([
-                Select::make('customer_id')
-                    ->label(__('e-billing::fields.field_customer'))
-                    ->searchable()
-                    ->nullable()
-                    ->native(false)
-                    ->getSearchResultsUsing(function (string $search): array {
-                        return Customer::query()
-                            ->where(function ($query) use ($search): void {
-                                $query->where('customer_name', 'like', "%{$search}%")
-                                    ->orWhere('customer_number', 'like', "%{$search}%");
-                            })
-                            ->orderBy('customer_name')
-                            ->limit(50)
-                            ->get()
-                            ->mapWithKeys(fn (Customer $customer): array => [
-                                (string) $customer->getKey() => $customer->displayLabel()
-                                    .(filled($customer->customer_number) ? " ({$customer->customer_number})" : ''),
-                            ])
-                            ->all();
-                    })
-                    ->getOptionLabelUsing(function (?string $value): ?string {
-                        if ($value === null || $value === '') {
-                            return null;
-                        }
-
-                        $customer = Customer::query()->withTrashed()->find($value);
-
-                        return $customer instanceof Customer
-                            ? $customer->displayLabel()
-                                .(filled($customer->customer_number) ? " ({$customer->customer_number})" : '')
-                            : $value;
-                    }),
-            ])
-            ->action(function (array $data) use ($record, $document): void {
-                if (! $document instanceof EbillingDocument) {
-                    return;
-                }
-
-                $customerId = $data['customer_id'] ?? null;
-                app(SetInvoiceAttributionAction::class)->execute(
-                    $document,
-                    is_string($customerId) && $customerId !== '' ? $customerId : null,
-                );
-
-                Notification::make()
-                    ->title(__('e-billing::fields.notification_attribution_updated_title'))
-                    ->body(__('e-billing::fields.notification_attribution_updated_body'))
-                    ->success()
-                    ->send();
-
-                $record->load('ebillingDocument');
-            });
     }
 
     public static function shouldRegisterNavigation(): bool

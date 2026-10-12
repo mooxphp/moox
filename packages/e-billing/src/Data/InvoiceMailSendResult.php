@@ -10,6 +10,9 @@ namespace Moox\EBilling\Data;
  *
  * {@see $actualRecipient} is the address the transport used (e.g. after a
  * sandbox redirect). When null, the channel records the resolved business recipient.
+ *
+ * {@see $terminal} marks a refusal the caller must not retry (e.g. the sender
+ * cannot build a valid message). Only meaningful when not accepted.
  */
 final readonly class InvoiceMailSendResult
 {
@@ -18,6 +21,7 @@ final readonly class InvoiceMailSendResult
         public ?string $correlationId = null,
         public ?string $failureReason = null,
         public ?string $actualRecipient = null,
+        public bool $terminal = false,
     ) {
     }
 }

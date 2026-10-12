@@ -7,6 +7,8 @@ namespace Moox\EBilling\Approval;
 use Moox\EBilling\Enums\AutoApproveFailureReason;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Models\UploadedPdfSource;
+use Moox\EBilling\Support\CreditNoteSign;
 
 final class AutoApproveEvaluator
 {
@@ -26,14 +28,30 @@ final class AutoApproveEvaluator
             $failures[] = AutoApproveFailureReason::GatewayNotValidated;
         }
 
+        if ($document->review_changed_at !== null) {
+            $failures[] = AutoApproveFailureReason::ReviewChanged;
+        }
+
         if ($document->needsHumanReview()) {
             $failures[] = AutoApproveFailureReason::HumanReviewRequired;
         }
 
+        if (
+            (bool) config('e-billing.approval.manual_upload_requires_human_approval', false)
+            && $document->source instanceof UploadedPdfSource
+        ) {
+            $failures[] = AutoApproveFailureReason::ManualUploadRequiresHumanApproval;
+        }
+
         if (EbillingDocument::hasBlockingMustFieldFindings(
             is_array($document->field_validations) ? $document->field_validations : null,
+            $document->profileDocumentType(),
         )) {
             $failures[] = AutoApproveFailureReason::MustFieldBlocked;
+        }
+
+        if (CreditNoteSign::hasNegativeTotal($document->invoice)) {
+            $failures[] = AutoApproveFailureReason::CreditNoteNegativeTotal;
         }
 
         if ($document->hasDuplicateApprovalFlag()) {
@@ -42,6 +60,10 @@ final class AutoApproveEvaluator
 
         if ($document->hasAnomalyApprovalFlags()) {
             $failures[] = AutoApproveFailureReason::AnomalyFlagged;
+        }
+
+        if ($document->isHeldForApproval()) {
+            $failures[] = AutoApproveFailureReason::HeldForApproval;
         }
 
         return new AutoApproveResult($failures);

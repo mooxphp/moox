@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\UserDevice\Resources\UserDeviceResource\Pages;
 
+use Filament\Schemas\Components\Tabs\Tab;
 use Moox\Core\Entities\Items\Item\Pages\BaseListItems;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\UserDevice\Models\UserDevice;
@@ -33,6 +34,17 @@ class ListPage extends BaseListItems
             return [];
         }
 
-        return $this->getDynamicTabs('user-device.resources.devices.tabs', UserDevice::class);
+        $tabs = $this->getDynamicTabs('user-device.resources.devices.tabs', UserDevice::class);
+
+        foreach (UserDeviceResource::panelTabDefinitions() as $panelId => $definition) {
+            $userTypes = $definition['user_types'];
+
+            $tabs[$panelId] = Tab::make($definition['label'])
+                ->icon($definition['icon'])
+                ->modifyQueryUsing(fn ($query) => $query->whereIn('user_type', $userTypes))
+                ->badge(UserDevice::query()->whereIn('user_type', $userTypes)->count());
+        }
+
+        return $tabs;
     }
 }

@@ -1,6 +1,8 @@
 @php
     $banner = $viewModel->statusBanner();
     $gatewayBanner = $viewModel->gatewayStatusBanner();
+    // The approve action is hidden while editing, so its reason is too.
+    $approvalBlock = ($showApprovalBlock ?? true) ? $viewModel->approvalBlock() : null;
     $bannerInnerClasses = match ($banner['color']) {
         'red' => 'bg-red-50 text-red-800 dark:bg-red-500/15 dark:text-red-300',
         'yellow' => 'bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300',
@@ -31,6 +33,22 @@
                     {{ $gatewayBannerInnerClasses }}"
             >
                 <span class="min-w-0">{{ $gatewayBanner['text'] }}</span>
+            </div>
+        @endif
+        @if ($approvalBlock)
+            <div
+                class="min-w-0 rounded-lg px-3 py-3 text-sm
+                    bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
+            >
+                <div class="font-medium">{{ __('e-billing::fields.approval_blocked_prefix') }}</div>
+                <div class="mt-1">{{ $approvalBlock['message'] }}</div>
+                @if ($approvalBlock['fields'] !== [])
+                    <ul class="mt-1 list-disc space-y-0.5 pl-5">
+                        @foreach ($approvalBlock['fields'] as $fieldLabel)
+                            <li>{{ $fieldLabel }}</li>
+                        @endforeach
+                    </ul>
+                @endif
             </div>
         @endif
     </div>

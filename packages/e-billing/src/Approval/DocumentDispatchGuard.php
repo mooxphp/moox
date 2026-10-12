@@ -7,6 +7,7 @@ namespace Moox\EBilling\Approval;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Exceptions\DocumentNotDispatchableException;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\CreditNoteSign;
 
 final class DocumentDispatchGuard
 {
@@ -37,8 +38,13 @@ final class DocumentDispatchGuard
             return 'artifact_not_validated';
         }
 
-        if ($document->needsHumanReview()) {
+        // A confirmed document's accepted findings do not hold up dispatch (ADR 0005 amendment).
+        if ($document->hasUnacceptedReviewFindings()) {
             return 'human_review_required';
+        }
+
+        if (CreditNoteSign::hasNegativeTotal($document->invoice)) {
+            return 'credit_note_negative_total';
         }
 
         if (! $this->isApprovalRequired()) {

@@ -24,7 +24,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | Master switch for device tracking on login and session sync.
-    | The Filament devices resource stays available even when this is false.
+    | When false: no tracking, no trust middleware, no devices resource —
+    | even if UserDevicePlugin is listed on a panel.
+    | When true: only panels that register UserDevicePlugin get track/mail/trust.
     |
     */
     'enabled' => env('USER_DEVICE_ENABLED', false),
@@ -35,8 +37,10 @@ return [
     |--------------------------------------------------------------------------
     |
     | When true (default), untrusted devices are hard-blocked in Filament until
-    | confirmed via email trust link or admin Trust action.
-    | When false, devices are tracked only — no login gate.
+    | confirmed via email trust link or admin Trust action, and the new-device
+    | mail includes a trust CTA.
+    | When false, devices are tracked only — no login gate; new-device mail is
+    | still sent without a trust CTA (notify-only).
     |
     */
     'enforce_trust' => env('USER_DEVICE_ENFORCE_TRUST', true),
@@ -137,13 +141,84 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Panels that show the devices resource
+    |--------------------------------------------------------------------------
+    |
+    | Only when enabled: Filament resource (nav + /user-devices) registers on
+    | these panel IDs. Tracking, trust middleware and new-device mail only run
+    | on panels that register UserDevicePlugin (admin/portal). Empty array =
+    | no resource UI anywhere; plugin still controls logic per panel.
+    |
+    */
+    'resource_panels' => ['admin'],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Extra auth models per panel (device tabs)
+    |--------------------------------------------------------------------------
+    |
+    | Admin device tabs are built from panels that register UserDevicePlugin,
+    | filtering by each panel's auth model. Add legacy or additional morph
+    | types here when needed.
+    |
+    */
+    'panel_user_types' => [],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Panel tab icons
+    |--------------------------------------------------------------------------
+    |
+    | Icons for the admin devices list tabs (one tab per panel that registers
+    | UserDevicePlugin). Unknown panels fall back to gmdi-devices-o.
+    |
+    */
+    'panel_tab_icons' => [],
+
+    /*
+    |--------------------------------------------------------------------------
     | Mail logo URL
     |--------------------------------------------------------------------------
     |
     | Either a full URL (https://...) or a public path (/logo/foo.svg).
+    | Used only for the Blade fallback when moox/mail-template is unavailable.
     |
     */
     'mail_logo_url' => '/logo/logo_heco_2021.svg',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mail template slug
+    |--------------------------------------------------------------------------
+    |
+    | When moox/mail-template is installed, NewDeviceNotification renders this
+    | MailTemplate slug (layout login-link) instead of the package Blade view.
+    |
+    */
+    'mail_template_slug' => env('USER_DEVICE_MAIL_TEMPLATE_SLUG', 'new-device'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Outbound mail
+    |--------------------------------------------------------------------------
+    |
+    | enabled: when false, a new device is still recorded but no mail is sent.
+    | Package default is on so existing installs keep mailing; a host that
+    | must not emit mail defaults this off and opts in with
+    | USER_DEVICE_MAIL_ENABLED=true.
+    | mailer: Laravel mailer name. Empty uses the application default.
+    | outbox sends the new-device mail through moox/mail-outbox. test_mode
+    | forces that send into the outbox sandbox. Both default off here so
+    | other apps keep the notification mail channel; the host opts in.
+    |
+    */
+
+    'mail' => [
+        'enabled' => (bool) env('USER_DEVICE_MAIL_ENABLED', true),
+        'outbox' => (bool) env('USER_DEVICE_MAIL_OUTBOX', false),
+        'mailer' => env('USER_DEVICE_MAILER'),
+        'test_mode' => (bool) env('USER_DEVICE_MAIL_TEST_MODE', true),
+    ],
 
     /*
     |--------------------------------------------------------------------------

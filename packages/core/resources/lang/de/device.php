@@ -1,13 +1,13 @@
 <?php
 
 return [
-    'device' => 'Gerät',
-    'devices' => 'Geräte',
+    'device' => 'Device',
+    'devices' => 'Devices',
 
     // Deprecated
-    'title' => 'Gerät',
+    'title' => 'Device',
     // Deprecated
-    'totalone' => 'Geräte',
+    'totalone' => 'Devices',
     // Deprecated
     'totaltwo' => 'Benutzer',
     // Deprecated
