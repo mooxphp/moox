@@ -14,8 +14,8 @@ use Moox\Core\Entities\Items\Item\Pages\BaseListItems;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Migrate\Models\Migration;
 use Moox\Migrate\Resources\MigrationResource;
-use Moox\Migrate\Support\MigrationInventory;
 use Moox\Migrate\Support\MigrateRunner;
+use Moox\Migrate\Support\MigrationInventory;
 use Moox\Migrate\Support\PendingMigrationSchema;
 use Override;
 

@@ -36,7 +36,7 @@ it('puts only the exception message into the ui body', function (): void {
     Artisan::shouldReceive('call')
         ->once()
         ->with('migrate', ['--force' => true])
-        ->andThrow(new \RuntimeException('connection refused'));
+        ->andThrow(new RuntimeException('connection refused'));
 
     $result = app(MigrateRunner::class)->run();
 

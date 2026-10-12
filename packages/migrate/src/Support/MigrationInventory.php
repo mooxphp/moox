@@ -9,7 +9,9 @@ use Illuminate\Support\Str;
 
 final class MigrationInventory
 {
-    public function __construct(private Migrator $migrator) {}
+    public function __construct(private Migrator $migrator)
+    {
+    }
 
     /**
      * @return list<PendingMigration>

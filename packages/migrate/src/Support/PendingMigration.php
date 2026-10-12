@@ -13,7 +13,8 @@ final readonly class PendingMigration
         public string $name,
         public string $path,
         public string $origin,
-    ) {}
+    ) {
+    }
 
     public function label(): string
     {
