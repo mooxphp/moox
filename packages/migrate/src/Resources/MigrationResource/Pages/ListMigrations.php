@@ -6,19 +6,37 @@ namespace Moox\Migrate\Resources\MigrationResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Artisan;
+use Filament\Schemas\Components\EmbeddedTable;
+use Filament\Schemas\Components\RenderHook;
+use Filament\Schemas\Schema;
+use Filament\View\PanelsRenderHook;
 use Moox\Core\Entities\Items\Item\Pages\BaseListItems;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Migrate\Models\Migration;
 use Moox\Migrate\Resources\MigrationResource;
+use Moox\Migrate\Support\MigrationInventory;
+use Moox\Migrate\Support\MigrateRunner;
+use Moox\Migrate\Support\PendingMigrationSchema;
 use Override;
-use Throwable;
 
 class ListMigrations extends BaseListItems
 {
     use HasListPageTabs;
 
     protected static string $resource = MigrationResource::class;
+
+    #[Override]
+    public function content(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                $this->getTabsContentComponent(),
+                RenderHook::make(PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_BEFORE),
+                PendingMigrationSchema::callout(),
+                EmbeddedTable::make(),
+                RenderHook::make(PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_AFTER),
+            ]);
+    }
 
     #[Override]
     public function getHeaderActions(): array
@@ -28,31 +46,30 @@ class ListMigrations extends BaseListItems
                 ->label(__('migrate::migrate.migrate'))
                 ->requiresConfirmation()
                 ->modalHeading(__('migrate::migrate.migrate_modal_heading'))
-                ->modalDescription(__('migrate::migrate.migrate_modal_description'))
-                ->action(function (): void {
-                    try {
-                        $exitCode = Artisan::call('migrate', ['--force' => true]);
-                        $output = trim(Artisan::output());
+                ->modalDescription(function (): string {
+                    if (app(MigrationInventory::class)->pendingCount() === 0) {
+                        return __('migrate::migrate.pending_empty');
+                    }
 
-                        if ($exitCode !== 0) {
-                            Notification::make()
-                                ->title(__('migrate::migrate.migrate_failed'))
-                                ->body($output !== '' ? $output : null)
-                                ->danger()
-                                ->send();
-                        } else {
-                            Notification::make()
-                                ->title(__('migrate::migrate.migrate_done'))
-                                ->body($output !== '' ? $output : null)
-                                ->success()
-                                ->send();
-                        }
-                    } catch (Throwable $exception) {
-                        Notification::make()
-                            ->title(__('migrate::migrate.migrate_failed'))
-                            ->body($exception->getMessage())
-                            ->danger()
-                            ->send();
+                    return __('migrate::migrate.migrate_modal_description');
+                })
+                ->schema(fn (): array => app(MigrationInventory::class)->pendingCount() > 0
+                    ? [PendingMigrationSchema::list()]
+                    : [])
+                ->formWrapper(false)
+                ->action(function (MigrateRunner $runner): void {
+                    $result = $runner->run();
+
+                    $notification = Notification::make()
+                        ->title($result['title'])
+                        ->body($result['body']);
+
+                    if ($result['ok']) {
+                        $notification->success()->send();
+                    } elseif ($result['busy']) {
+                        $notification->warning()->send();
+                    } else {
+                        $notification->danger()->send();
                     }
 
                     $this->resetTable();

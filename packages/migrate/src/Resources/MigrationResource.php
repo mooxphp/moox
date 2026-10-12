@@ -8,9 +8,12 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Migrate\Models\Migration;
 use Moox\Migrate\Resources\MigrationResource\Pages\ListMigrations;
+use Moox\Migrate\Support\MigrationInventory;
 use Override;
 
 class MigrationResource extends BaseItemResource
@@ -35,6 +38,31 @@ class MigrationResource extends BaseItemResource
     }
 
     public static function enableDelete(): bool
+    {
+        return false;
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return false;
+    }
+
+    public static function canView(Model $record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return false;
+    }
+
+    public static function canDeleteAny(): bool
     {
         return false;
     }
@@ -112,5 +140,31 @@ class MigrationResource extends BaseItemResource
     public static function getNavigationGroup(): ?string
     {
         return config('migrate.navigation_group');
+    }
+
+    #[Override]
+    public static function getNavigationBadge(): ?string
+    {
+        $count = app(MigrationInventory::class)->pendingCount();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    #[Override]
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return app(MigrationInventory::class)->pendingCount() > 0 ? 'warning' : null;
+    }
+
+    #[Override]
+    public static function getNavigationBadgeTooltip(): string|Htmlable|null
+    {
+        $count = app(MigrationInventory::class)->pendingCount();
+
+        if ($count === 0) {
+            return null;
+        }
+
+        return trans_choice('migrate::migrate.pending_heading', $count, ['count' => $count]);
     }
 }

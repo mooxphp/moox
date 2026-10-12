@@ -7,8 +7,11 @@ Simple moox Entity for Laravel's existing `migrations` table. Lists applied migr
 - List of rows from the existing `migrations` table
 - Searchable by migration name
 - Filterable by batch
+- Pending files listed above the table, in the confirm modal, and as a navigation badge
 - No create, view, edit, or delete
 - Header action **Migrate** with confirmation modal
+- Artisan output is truncated in the UI; the full log stays in the application log
+- Concurrent runs are blocked with a cache lock
 
 ## Requirements
 
