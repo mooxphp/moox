@@ -75,4 +75,3 @@ return [
         'log_name' => env('MOOX_MIGRATE_AUDIT_LOG', 'migrate'),
     ],
 ];
-

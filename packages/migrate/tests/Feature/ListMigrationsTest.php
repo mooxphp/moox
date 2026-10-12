@@ -28,7 +28,6 @@ beforeEach(function (): void {
     ]));
 });
 
-
 function migrateUiTempMigration(string $name, string $upBody = ''): string
 {
     $path = database_path('migrations/'.$name.'.php');
@@ -239,4 +238,3 @@ it('applies a pending migration when the header action runs', function (): void 
         }
     }
 });
-

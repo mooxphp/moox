@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Moox\Audit\Models\Activity;
 use Moox\Migrate\Support\MigrateAuditor;
 
 uses(RefreshDatabase::class);
@@ -39,7 +40,7 @@ it('logs through MooxActivityLogger when audit is available', function (): void 
 
     MigrateAuditor::log($user, false, false, 1, 3);
 
-    $activity = \Moox\Audit\Models\Activity::query()
+    $activity = Activity::query()
         ->where('log_name', 'migrate')
         ->where('event', 'migrate_run')
         ->latest('id')

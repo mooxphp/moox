@@ -33,7 +33,8 @@ final class RunMigrationsJob implements ShouldBeUnique, ShouldQueue
         public mixed $userId,
         public ?string $userType,
         public int $pendingCount,
-    ) {}
+    ) {
+    }
 
     public function uniqueId(): string
     {

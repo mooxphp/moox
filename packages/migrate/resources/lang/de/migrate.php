@@ -19,4 +19,3 @@ return [
     'copy_filename' => 'Dateiname kopieren',
     'origin_app' => 'App',
 ];
-
