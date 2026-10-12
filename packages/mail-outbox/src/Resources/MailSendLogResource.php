@@ -16,6 +16,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema as DatabaseSchema;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\MailOutbox\Enums\MailSendSource;
 use Moox\MailOutbox\Enums\MailSendStatus;
@@ -279,6 +280,10 @@ final class MailSendLogResource extends BaseItemResource
 
     public static function getNavigationBadge(): ?string
     {
+        if (! DatabaseSchema::hasTable((new MailSendLog)->getTable())) {
+            return null;
+        }
+
         $count = MailSendLog::query()
             ->where('status', MailSendStatus::Failed)
             ->count();

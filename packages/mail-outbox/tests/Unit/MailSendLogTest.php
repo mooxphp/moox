@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Schema;
 use Moox\MailOutbox\Enums\MailSendStatus;
 use Moox\MailOutbox\Models\MailSendLog;
+use Moox\MailOutbox\Resources\MailSendLogResource;
 use Moox\MailOutbox\Tests\TestCase;
 
 uses(TestCase::class);
@@ -72,4 +74,10 @@ test('delivery badge shows redirected, direct, or unknown', function (): void {
         ->and($direct->deliveryBadgeColor())->toBe('success')
         ->and($unknown->deliveryBadgeLabel())->toBe('—')
         ->and($unknown->deliveryBadgeColor())->toBe('gray');
+});
+
+test('navigation badge stays empty when mail_send_logs table is missing', function (): void {
+    Schema::dropIfExists('mail_send_logs');
+
+    expect(MailSendLogResource::getNavigationBadge())->toBeNull();
 });
