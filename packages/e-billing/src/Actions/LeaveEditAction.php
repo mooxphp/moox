@@ -7,7 +7,6 @@ namespace Moox\EBilling\Actions;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Moox\EBilling\Approval\DocumentEditGuard;
-use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Jobs\GenerateArtifactJob;
@@ -37,7 +36,7 @@ final class LeaveEditAction
         $started = DB::transaction(function () use ($document): bool {
             $locked = $document->newQuery()->lockForUpdate()->findOrFail($document->getKey());
 
-            if ($locked->resolveApprovalStatusEnum() !== DocumentApprovalStatus::Pending) {
+            if (! $this->editGuard->awaitsApprovalDecision($locked)) {
                 throw new InvalidArgumentException('Only a pending document can leave the review workspace.');
             }
 
