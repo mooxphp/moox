@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Moox\Audit\Services\MooxActivityLogger;
 use Moox\EBilling\Approval\DocumentEditGuard;
-use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\ParsedValueHistory;
 use Moox\Invoice\Models\Invoice;
@@ -69,7 +68,7 @@ final class SetRecipientEmailAction
 
         return DB::transaction(function () use ($document, $email, $note): bool {
             $lockedDocument = $document->newQuery()->lockForUpdate()->findOrFail($document->getKey());
-            if ($lockedDocument->resolveApprovalStatusEnum() !== DocumentApprovalStatus::Pending) {
+            if (! $this->editGuard->awaitsApprovalDecision($lockedDocument)) {
                 throw new InvalidArgumentException('Only a pending document can be changed.');
             }
 
