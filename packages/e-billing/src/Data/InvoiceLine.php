@@ -59,6 +59,13 @@ class InvoiceLine implements ZugferdInvoiceLine
         /** @var list<array{date: ?string, delivery_note: ?string, quantity: ?float}> */
         public array $partialDeliveries = [],
         public bool $isNonGoods = false,
+        /**
+         * Text the parser found where a field is printed but could not read as that field's value, by field name
+         * (e.g. ['material' => 'galvanised']). The field stays empty and validation asks for review.
+         *
+         * @var array<string, string>
+         */
+        public array $unrecognizedFields = [],
     ) {
         $this->partialDeliveries = PartialDeliveries::normalize($this->partialDeliveries);
 
@@ -134,6 +141,9 @@ class InvoiceLine implements ZugferdInvoiceLine
                 : null,
             partialDeliveries: PartialDeliveries::normalize($data['deliveries'] ?? null),
             isNonGoods: ($data['is_non_goods'] ?? false) === true,
+            unrecognizedFields: is_array($data['unrecognized_fields'] ?? null)
+                ? array_filter($data['unrecognized_fields'], static fn (mixed $text, mixed $field): bool => is_string($field) && is_string($text), ARRAY_FILTER_USE_BOTH)
+                : [],
         );
     }
 
@@ -165,6 +175,7 @@ class InvoiceLine implements ZugferdInvoiceLine
             'purchase_order_line_reference' => $this->purchaseOrderLineReference,
             'deliveries' => $this->partialDeliveries,
             'is_non_goods' => $this->isNonGoods,
+            'unrecognized_fields' => $this->unrecognizedFields,
         ];
     }
 }

@@ -6,6 +6,7 @@ namespace Moox\EBilling\Services;
 
 use Moox\Company\Models\Company;
 use Moox\Customer\Models\Customer;
+use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
 use Moox\EBilling\Enums\AttributionSource;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceValidationCompleted;
@@ -97,6 +98,7 @@ class InvoiceFieldValidator
 
         $invoiceValidations = $this->applyRequiredOneOfGroups($invoice, $invoiceValidations);
 
+        $unrecognizedByPosition = $this->unrecognizedFieldsByPosition($document);
         $lineValidations = [];
         foreach ($invoice->lines as $line) {
             $lineValidations[(string) $line->getKey()] = $this->validateInvoiceLine(
@@ -105,6 +107,7 @@ class InvoiceFieldValidator
                 $lineFields,
                 $matchedCustomer,
                 $matchedCompany,
+                $unrecognizedByPosition[(int) $line->position] ?? [],
             );
         }
 
@@ -880,7 +883,8 @@ class InvoiceFieldValidator
 
     /**
      * @param  array<string, string>  $lineFields
-     * @return array<string, array{status: string, source?: string, matched_id?: string}>
+     * @param  array<string, string>  $unrecognizedFields
+     * @return array<string, array{status: string, source?: string, matched_id?: string, reason?: string, printed?: string}>
      */
     private function validateInvoiceLine(
         Invoice $invoice,
@@ -888,6 +892,7 @@ class InvoiceFieldValidator
         array $lineFields,
         ?Customer $matchedCustomer,
         ?Company $matchedCompany,
+        array $unrecognizedFields,
     ): array {
         $line->loadMissing('allowanceCharges');
 
@@ -906,9 +911,31 @@ class InvoiceFieldValidator
                 $matchedCustomer,
                 $matchedCompany,
             );
+
+            if ($validations[$field]['status'] === 'missing' && isset($unrecognizedFields[$field])) {
+                $validations[$field] = ['status' => 'needs_review', 'reason' => 'unrecognized', 'printed' => $unrecognizedFields[$field]];
+            }
         }
 
         return $validations;
+    }
+
+    /**
+     * Printed text the parser could not read as a line field's value, by line position (from the parsed bill data).
+     *
+     * @return array<int, array<string, string>>
+     */
+    private function unrecognizedFieldsByPosition(EbillingDocument $document): array
+    {
+        $byPosition = [];
+        foreach ($document->bill_data['lines'] ?? [] as $line) {
+            if (is_array($line)) {
+                $parsed = InvoiceLineDto::fromArray($line);
+                $byPosition[$parsed->position] = $parsed->unrecognizedFields;
+            }
+        }
+
+        return $byPosition;
     }
 
     /**

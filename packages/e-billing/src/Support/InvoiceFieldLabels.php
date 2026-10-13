@@ -218,7 +218,7 @@ final class InvoiceFieldLabels
     }
 
     /**
-     * @param  array{status?: string, source?: string, matched_id?: string, reason?: string, difference?: string}|null  $validation
+     * @param  array{status?: string, source?: string, matched_id?: string, reason?: string, difference?: string, printed?: string}|null  $validation
      */
     public static function hint(string $field, string $status, ?array $validation = null): ?string
     {
@@ -248,6 +248,10 @@ final class InvoiceFieldLabels
                 'buyer_email' => __('e-billing::fields.hint_missing_buyer_email'),
                 default => __('e-billing::fields.hint_missing_default'),
             };
+        }
+
+        if ($status === 'needs_review' && ($validation['reason'] ?? null) === 'unrecognized') {
+            return __('e-billing::fields.hint_review_unrecognized', ['printed' => (string) ($validation['printed'] ?? '')]);
         }
 
         if ($status === 'needs_review') {
