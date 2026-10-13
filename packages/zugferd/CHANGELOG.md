@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Fixed
+- `ZugferdConverter` payment terms (BT-20): the invoice's `paymentTerms` are written as given and the converter no longer composes payment terms text. Before, a due date appended the German `; zahlbar ohne Abzug bis zum <date>` to the terms (or wrote it alone, starting with `; `). An invoice with a due date but no payment terms now gets only the due date (BT-9, `ram:DueDateDateTime`), which satisfies BR-CO-25; payment terms without a due date are still written.
 - `ZugferdConverter` line net amount (BT-131, `ram:LineTotalAmount`) is now line total (quantity x net price) + line-level charges (BG-28) - line-level allowances (BG-27). BT-106 is the sum of BT-131; BT-107 / BT-108 cover document-level allowances and charges only. Previously line charges were added to BT-108 and missing from BT-131, which violated BR-CO-12, BR-CO-13 and BR-S-08.
 
 ### Added

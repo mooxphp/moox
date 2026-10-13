@@ -721,16 +721,10 @@ class ZugferdConverter
             );
         }
 
-        // Payment terms
-        if ($invoice->dueDate) {
-            $dueDate = \DateTime::createFromFormat('Y-m-d', $invoice->dueDate);
-            $termText = ($invoice->paymentTerms ?? '')
-                .'; zahlbar ohne Abzug bis zum '.date('d.m.Y', strtotime($invoice->dueDate));
-            if ($dueDate) {
-                $doc->addDocumentPaymentTerm($termText, $dueDate);
-            }
-        } elseif ($invoice->paymentTerms) {
-            $doc->addDocumentPaymentTerm($invoice->paymentTerms);
+        // Payment terms (BT-20) are written as given, never composed; the due date stays structured in BT-9.
+        $dueDate = $invoice->dueDate ? \DateTime::createFromFormat('Y-m-d', $invoice->dueDate) : false;
+        if ($invoice->paymentTerms || $dueDate) {
+            $doc->addDocumentPaymentTerm($invoice->paymentTerms ?: null, $dueDate ?: null);
         }
     }
 
