@@ -415,6 +415,7 @@ return [
     'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits und muss geprüft werden.',
     'hint_review_declared_document_type' => 'Beim Hochladen wurde ein anderer Belegtyp gewählt, '
         .'als das Dokument trägt – bitte prüfen.',
+    'hint_review_unrecognized' => 'Gedruckt steht „:printed“, das wurde nicht als Wert erkannt — bitte prüfen.',
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 
     // Field hints — informational (no validation status)
