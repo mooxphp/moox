@@ -65,6 +65,12 @@ document wording, no host model names. Keep lean.
   as its number (BT-25) and optional issue date (BT-26). A document may carry several. The buyer matches
   it against the referenced invoice's BT-1, so any difference in spelling between the two is a matching risk.
   Optional for credit notes (381). *Avoid:* treating it as the document's own number; parking it in a note.
+- **Early-payment discount** (Skonto) — a reduction of the amount due that applies only if the buyer pays
+  within a number of days. A tier is: days after the invoice date, percent, an optional base amount
+  (absent = the whole amount due, BT-115) and the discount amount as printed. Transmitted as `#SKONTO#`
+  lines in BT-20 (XRechnung convention); the printed amount is used for validation only. *Avoid:*
+  confusing it with a document allowance (BG-20): an early-payment discount is conditional on the payment
+  date and does not reduce the invoice totals.
 - **Buyer identifier** — BT-46. The debtor identity of the document. Distinct from **buyer reference**
   (BT-10); the two are separate terms and must not be conflated.
 - **Seller identifier** (**supplier number**) — BT-29. The seller's identifier as printed on the

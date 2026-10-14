@@ -133,6 +133,7 @@ class ParsedInvoiceMapper
             headerCharges: $this->buildHeaderChargeDraftsFromDto($dto),
             notes: $this->notesWithKnownSubjectCodes($dto->notes),
             preceding_invoices: $dto->precedingInvoices,
+            payment_discounts: $dto->paymentDiscounts,
         );
     }
 

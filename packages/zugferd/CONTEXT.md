@@ -28,6 +28,8 @@ Glossary for structured e-invoice **emission** (`packages/zugferd`, `moox/zugfer
 
 - **Preceding invoice reference** — BG-3 on the emission view (BT-25 number, optional BT-26 date). One referenced document per entry. Document-type rules for when it applies live in e-billing / invoice. *Avoid:* treating it as this document’s own number.
 
+- **Early-payment discount tier** — `paymentDiscounts` on the emission view: days, percent and optional base amount. Written as one XRechnung `#SKONTO#TAGE=<days>#PROZENT=<percent>#[BASISBETRAG=<amount>#]` line per tier at the start of BT-20, ahead of the free-text payment terms, in every profile; the due date stays in BT-9. Tiers need payment terms text (the writer drops them otherwise), so a tier without it is an incomplete invoice. A payment terms line starting with `#` loses its leading `#`, so free text is never read as a tier (BR-DE-18). Meaning lives in the invoice glossary. *Avoid:* writing the discount as an allowance (BG-20) or as the amount due; putting tiers anywhere but BT-20.
+
 - **Document note** — unstructured text carried as BT-22 (and line BT-127 where used). Includes facts that have no IssueDate carrier (e.g. purchase order date must not become OrderReference IssueDate — UBL-CR-018). Line-note labels come from the `ZugferdNoteLabels` seam (English by default); the adapter binds the language. *Avoid:* stuffing structured trade refs into notes when a core BT exists.
 
 - **Item attribute / classification** — BG-32 (BT-160/161) and BT-158 on a line. Free-text attributes need both name and value (BR-54); classifications need a scheme (BR-65), e.g. HS for customs. *Avoid:* dumping the same weight both as an attribute and as a duplicate BT-127 unless they differ.

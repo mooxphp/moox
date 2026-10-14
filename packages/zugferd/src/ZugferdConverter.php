@@ -722,10 +722,35 @@ class ZugferdConverter
         }
 
         // Payment terms (BT-20) are written as given, never composed; the due date stays structured in BT-9.
-        $dueDate = $invoice->dueDate ? \DateTime::createFromFormat('Y-m-d', $invoice->dueDate) : false;
-        if ($invoice->paymentTerms || $dueDate) {
-            $doc->addDocumentPaymentTerm($invoice->paymentTerms ?: null, $dueDate ?: null);
+        $dueDate = ($invoice->dueDate ? \DateTime::createFromFormat('Y-m-d', $invoice->dueDate) : false) ?: null;
+        $paymentTerms = $this->paymentTermsText($invoice->paymentTerms);
+        $discounts = $invoice->paymentDiscounts;
+
+        if ($discounts !== []) {
+            if ($paymentTerms === null) {
+                throw new IncompleteInvoiceException('Missing required field: paymentTerms (BT-20) for paymentDiscounts.');
+            }
+
+            $doc->addDocumentPaymentTermXRechnung(
+                $paymentTerms,
+                array_column($discounts, 'days'),
+                array_column($discounts, 'percent'),
+                array_column($discounts, 'base_amount'),
+                $dueDate,
+            );
+        } elseif ($paymentTerms !== null || $dueDate !== null) {
+            $doc->addDocumentPaymentTerm($paymentTerms, $dueDate);
         }
+    }
+
+    /**
+     * No BT-20 line may start with `#`: XRechnung reads such lines as `#SKONTO#` tiers (BR-DE-18).
+     */
+    private function paymentTermsText(?string $paymentTerms): ?string
+    {
+        $text = (string) preg_replace('/(^|\r)[ \t]*#+[ \t]*/m', '$1', (string) $paymentTerms);
+
+        return trim($text) !== '' ? $text : null;
     }
 
     // ─── Line Items ──────────────────────────────────────────────

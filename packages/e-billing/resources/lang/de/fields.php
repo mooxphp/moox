@@ -412,6 +412,8 @@ return [
         .'bei innergemeinschaftlicher Lieferung nicht, ohne sie zu einem Zeitraum zusammenzuziehen.',
     'hint_review_totals_reconciliation' => 'Positionen und Zu-/Abschläge ergeben nicht den Nettobetrag '
         .'(Differenz :difference €). Positionsbeträge und Zuschläge mit dem PDF abgleichen.',
+    'hint_review_payment_discount' => 'Der gedruckte Skontobetrag (€ :printed) passt nicht zu Prozentsatz und Basis '
+        .'(erwartet € :expected). Skonto und Zahlbetrag mit dem PDF abgleichen.',
     'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits und muss geprüft werden.',
     'hint_review_declared_document_type' => 'Beim Hochladen wurde ein anderer Belegtyp gewählt, '
         .'als das Dokument trägt – bitte prüfen.',

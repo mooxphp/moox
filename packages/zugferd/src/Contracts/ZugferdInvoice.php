@@ -98,4 +98,12 @@ interface ZugferdInvoice
      * @var list<array{number: string, date: ?string}>
      */
     public array $precedingInvoices { get; }
+
+    /**
+     * Early-payment discount tiers, written as XRechnung `#SKONTO#` lines into BT-20 ahead of the payment
+     * terms. A null base amount means the discount applies to the amount due (BT-115).
+     *
+     * @var list<array{days: int, percent: float, base_amount: ?float}>
+     */
+    public array $paymentDiscounts { get; }
 }

@@ -17,6 +17,7 @@ readonly class InvoiceDraft
      * @param  list<ChargeDraft>  $headerCharges
      * @param  list<string|InvoiceNote>  $notes  Plain strings are stored as notes without a subject code
      * @param  list<array{number: string, date: ?string}>  $preceding_invoices  BG-3: BT-25 number, BT-26 date (Y-m-d)
+     * @param  list<array{days: int, percent: float, base_amount: ?float, amount: ?float}>  $payment_discounts  Early-payment discount tiers; `amount` is the discount as printed
      */
     public function __construct(
         public string $invoice_number,
@@ -46,6 +47,7 @@ readonly class InvoiceDraft
         public array $headerCharges,
         public array $notes = [],
         public array $preceding_invoices = [],
+        public array $payment_discounts = [],
     ) {
     }
 }

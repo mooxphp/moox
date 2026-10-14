@@ -195,6 +195,7 @@ The `Invoice` model (`Moox\Invoice\Models\Invoice`) stores the invoice header. I
 -   `shipping_method` (string, nullable) - Shipping / delivery method as shown on the document
 -   `delivery_terms` (string, nullable) - Delivery terms / freight bearer (e.g. ex works; free text; serialized as note in e-billing / ZUGFeRD layer; not payment terms)
 -   `preceding_invoices` (json, nullable) - Preceding invoice references (EN 16931 **BG-3**: list of `{number, date}`, BT-25/BT-26)
+-   `payment_discounts` (json, nullable) - Early-payment discount tiers (list of `{days, percent, base_amount, amount}`; `amount` is the printed discount amount, used for validation only and never transmitted)
 -   `notes` (json, nullable) - Free-text notes (EN 16931 **BT-22**): list of `{text, subject_code}`, `subject_code` (BT-21, UNTDID 4451) is `null` when none. Cast by `InvoiceNotesCast`, which also reads rows that still hold plain strings. Migration stub `convert_invoice_notes_to_objects` (host: publish and run) rewrites stored string notes.
 -   `seller` (json, nullable) - Seller party snapshot; cast to `Party` via `PartyCast`
 -   `buyer` (json, nullable) - Buyer party snapshot; cast to `Party` via `PartyCast`
