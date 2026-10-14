@@ -218,7 +218,7 @@ final class InvoiceFieldLabels
     }
 
     /**
-     * @param  array{status?: string, source?: string, matched_id?: string, reason?: string, difference?: string, printed?: string}|null  $validation
+     * @param  array{status?: string, source?: string, matched_id?: string, reason?: string, difference?: string, expected?: string, printed?: string}|null  $validation
      */
     public static function hint(string $field, string $status, ?array $validation = null): ?string
     {
@@ -268,6 +268,10 @@ final class InvoiceFieldLabels
                 'minimum_quantity_surcharge' => __('e-billing::fields.hint_review_minimum_quantity_surcharge'),
                 'freight_flat_rate' => __('e-billing::fields.hint_review_freight_flat_rate'),
                 'delivery_date' => __('e-billing::fields.hint_review_delivery_date'),
+                'payment_terms' => __('e-billing::fields.hint_review_payment_discount', [
+                    'printed' => (string) ($validation['printed'] ?? ''),
+                    'expected' => (string) ($validation['expected'] ?? ''),
+                ]),
                 'totals_reconciliation' => __('e-billing::fields.hint_review_totals_reconciliation', [
                     'difference' => (string) ($validation['difference'] ?? ''),
                 ]),

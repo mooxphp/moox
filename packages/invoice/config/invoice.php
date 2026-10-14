@@ -59,6 +59,7 @@ return [
                     'delivery_terms',
                     'notes',
                     'preceding_invoices',
+                    'payment_discounts',
                     'seller',
                     'buyer',
                     'delivery',

@@ -10,6 +10,7 @@ use Moox\EBilling\Support\ConfiguredEn16931CodeResolver;
 use Moox\EBilling\Support\CreditNotePaymentTerms;
 use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\InvoiceDocumentNotes;
+use Moox\EBilling\Support\PaymentDiscounts;
 use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdBankAccount;
@@ -104,6 +105,9 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
     /** @var list<array{number: string, date: ?string}> */
     public array $precedingInvoices;
 
+    /** @var list<array{days: int, percent: float, base_amount: ?float}> */
+    public array $paymentDiscounts;
+
     public function __construct(Invoice $invoice)
     {
         $this->invoiceNumber = $invoice->invoiceNumber;
@@ -170,5 +174,6 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
         $this->bankAccounts = $invoice->bankAccounts();
         $this->documentNotes = InvoiceDocumentNotes::fromDto($invoice);
         $this->precedingInvoices = $invoice->precedingInvoices;
+        $this->paymentDiscounts = PaymentDiscounts::forEmission($invoice->paymentDiscounts);
     }
 }

@@ -8,6 +8,7 @@ use Moox\EBilling\Support\CreditNotePaymentTerms;
 use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\EBilling\Support\InvoiceDocumentNotes;
+use Moox\EBilling\Support\PaymentDiscounts;
 use Moox\EBilling\Support\PrecedingInvoiceReferences;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceAllowanceCharge;
@@ -270,6 +271,11 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
     /** @var list<array{number: string, date: ?string}> */
     public array $precedingInvoices {
         get => PrecedingInvoiceReferences::normalize($this->model->preceding_invoices);
+    }
+
+    /** @var list<array{days: int, percent: float, base_amount: ?float}> */
+    public array $paymentDiscounts {
+        get => PaymentDiscounts::forEmission($this->model->payment_discounts);
     }
 
     private static function mapAllowanceCharge(InvoiceAllowanceCharge $charge): AllowanceCharge

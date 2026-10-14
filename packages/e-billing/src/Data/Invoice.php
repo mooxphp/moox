@@ -6,6 +6,7 @@ namespace Moox\EBilling\Data;
 
 use Moox\EBilling\Adapters\ZugferdInvoiceDtoAdapter;
 use Moox\EBilling\Support\BillDataAllowanceChargeMapper;
+use Moox\EBilling\Support\PaymentDiscounts;
 use Moox\EBilling\Support\PrecedingInvoiceReferences;
 use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Invoice\Support\InvoiceNotes;
@@ -81,6 +82,9 @@ class Invoice
 
         /** @var list<array{number: string, date: ?string}> BG-3: BT-25 number, BT-26 date (Y-m-d) */
         public array $precedingInvoices = [],
+
+        /** @var list<array{days: int, percent: float, base_amount: ?float, amount: ?float}> early-payment discount tiers, see PaymentDiscounts */
+        public array $paymentDiscounts = [],
 
         // Currency
         public string $currency = 'EUR',
@@ -311,6 +315,7 @@ class Invoice
             lines: $lines,
             notes: $notes,
             precedingInvoices: PrecedingInvoiceReferences::normalize($data['preceding_invoices'] ?? null),
+            paymentDiscounts: PaymentDiscounts::normalize($data['payment_discounts'] ?? null),
             currency: is_string($data['currency'] ?? null) && $data['currency'] !== '' ? $data['currency'] : 'EUR',
             documentCharges: is_array($data['document_charges'] ?? null) ? $data['document_charges'] : [],
         );
@@ -419,6 +424,7 @@ class Invoice
             'lines' => array_map(fn (InvoiceLine $line) => $line->toArray(), $this->lines),
             'notes' => $this->notes,
             'preceding_invoices' => $this->precedingInvoices,
+            'payment_discounts' => $this->paymentDiscounts,
             'document_charges' => $this->documentCharges,
         ];
     }

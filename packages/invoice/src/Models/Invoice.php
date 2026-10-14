@@ -34,6 +34,7 @@ use Moox\Invoice\Support\InvoiceNotes;
  * @property bool $is_current
  * @property list<InvoiceNote>|null $notes BT-22 notes with an optional BT-21 subject code
  * @property list<array{number: string, date: ?string}>|null $preceding_invoices
+ * @property list<array{days: int, percent: float, base_amount: ?float, amount: ?float}>|null $payment_discounts
  */
 class Invoice extends BaseItemModel
 {
@@ -66,6 +67,7 @@ class Invoice extends BaseItemModel
         'delivery_terms',
         'notes',
         'preceding_invoices',
+        'payment_discounts',
         'seller',
         'buyer',
         'delivery',
@@ -91,6 +93,7 @@ class Invoice extends BaseItemModel
             'is_current' => 'boolean',
             'notes' => InvoiceNotesCast::class,
             'preceding_invoices' => 'array',
+            'payment_discounts' => 'array',
             'net_total' => 'decimal:2',
             'vat_rate' => 'decimal:2',
             'vat_amount' => 'decimal:2',

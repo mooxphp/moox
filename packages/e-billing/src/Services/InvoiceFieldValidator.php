@@ -20,6 +20,7 @@ use Moox\EBilling\Support\FieldValidationProfile;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\InvoiceNumberDuplicateChecker;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
+use Moox\EBilling\Support\PaymentDiscounts;
 use Moox\EBilling\Support\PrecedingInvoiceReferences;
 use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Invoice\Models\Invoice;
@@ -324,6 +325,7 @@ class InvoiceFieldValidator
             'delivery_date' => $this->validateDeliveryDateField($invoice, $priority),
             'totals_reconciliation' => $this->validateTotalsReconciliationField($invoice),
             'preceding_invoice_number' => $this->validatePrecedingInvoiceNumberField($invoice, $priority),
+            'payment_terms' => $this->validatePaymentTermsField($invoice, $priority),
             default => $this->validateGenericInvoiceField($invoice, $field, $priority),
         };
     }
@@ -344,6 +346,37 @@ class InvoiceFieldValidator
         }
 
         return $generic;
+    }
+
+    /**
+     * A printed early-payment discount amount must be its percent of the tier's base (the amount due when the
+     * tier has none), within one rounding cent; otherwise the tier was misread or the document is inconsistent.
+     *
+     * @return array<string, mixed>
+     */
+    private function validatePaymentTermsField(Invoice $invoice, string $priority): array
+    {
+        $cents = static fn (float $amount): int => (int) round($amount * 100);
+
+        foreach (PaymentDiscounts::normalize($invoice->payment_discounts) as $discount) {
+            if ($discount['amount'] === null) {
+                continue;
+            }
+
+            $base = $discount['base_amount'] ?? (float) $invoice->gross_total;
+            $expected = $cents($base * $discount['percent'] / 100);
+
+            if (abs($expected - $cents($discount['amount'])) > 1) {
+                return [
+                    'status' => 'needs_review',
+                    'reason' => 'payment_discount_mismatch',
+                    'expected' => number_format($expected / 100, 2, '.', ''),
+                    'printed' => number_format($discount['amount'], 2, '.', ''),
+                ];
+            }
+        }
+
+        return $this->validateGenericInvoiceField($invoice, 'payment_terms', $priority);
     }
 
     /**
