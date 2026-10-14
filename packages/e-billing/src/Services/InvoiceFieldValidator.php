@@ -715,6 +715,10 @@ class InvoiceFieldValidator
             return $this->entryForEmptyField('delivery_address', $priority, $isInvoiceLine);
         }
 
+        if ($effectiveParty !== $buyer && $this->isConsigneeWithoutPostalAddress($effectiveParty, $buyer)) {
+            return ['status' => 'needs_review', 'reason' => 'consignee_address_missing'];
+        }
+
         if ($matchedCustomer === null) {
             return ['status' => 'parsed'];
         }
@@ -742,6 +746,27 @@ class InvoiceFieldValidator
             'source' => 'auto',
             'matched_id' => $result['matched_id'],
         ];
+    }
+
+    /**
+     * A consignee named apart from the buyer but printed without street, postal code or city: the goods went to a
+     * party whose address the document does not give, so review has to supply it. "Postal address" means what
+     * {@see \Moox\EBilling\Data\Address::hasPostalData()} means, read here from the EN 16931 party.
+     */
+    private function isConsigneeWithoutPostalAddress(?Party $consignee, ?Party $buyer): bool
+    {
+        if (! $consignee instanceof Party) {
+            return false;
+        }
+
+        $address = $consignee->address;
+        if (trim($address->line1) !== '' || trim($address->postal_code) !== '' || trim($address->city) !== '') {
+            return false;
+        }
+
+        $consigneeName = mb_strtolower($this->normalizeString($consignee->name));
+
+        return $consigneeName !== '' && $consigneeName !== mb_strtolower($this->normalizeString($buyer?->name));
     }
 
     private function resolveEffectiveDeliveryParty(
