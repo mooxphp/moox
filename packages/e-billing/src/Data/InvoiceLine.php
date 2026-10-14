@@ -7,6 +7,7 @@ namespace Moox\EBilling\Data;
 use Moox\EBilling\Support\BillDataAllowanceChargeMapper;
 use Moox\EBilling\Support\LineItemAttributeMapper;
 use Moox\EBilling\Support\PartialDeliveries;
+use Moox\EBilling\Support\UnrecognizedFields;
 use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdInvoiceLine;
@@ -141,9 +142,7 @@ class InvoiceLine implements ZugferdInvoiceLine
                 : null,
             partialDeliveries: PartialDeliveries::normalize($data['deliveries'] ?? null),
             isNonGoods: ($data['is_non_goods'] ?? false) === true,
-            unrecognizedFields: is_array($data['unrecognized_fields'] ?? null)
-                ? array_filter($data['unrecognized_fields'], static fn (mixed $text, mixed $field): bool => is_string($field) && is_string($text), ARRAY_FILTER_USE_BOTH)
-                : [],
+            unrecognizedFields: UnrecognizedFields::normalize($data['unrecognized_fields'] ?? null),
         );
     }
 
