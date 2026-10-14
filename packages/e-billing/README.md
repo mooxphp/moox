@@ -145,7 +145,7 @@ Override `supplier` in your published `config/e-billing.php` with your company d
 
 ### `default_customer_country`
 
-When the parser cannot derive a buyer country from the PDF, this ISO code is used as a fallback for domestic classification. It is transitional and will be replaced by Company / Address master-data lookup.
+When the parser cannot derive a buyer country from the PDF, this ISO code is used as a fallback for domestic classification. It also fills an empty country on the document delivery address and on each line delivery address that has a street, postal code or city (a country printed there is kept; a name-only line consignee gets none), so a consignee equal to the buyer is recognised and omitted from the ship-to party. It is transitional and will be replaced by Company / Address master-data lookup.
 
 ## Parser integration
 
