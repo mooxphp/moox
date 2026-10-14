@@ -363,6 +363,11 @@ class Invoice
         $this->applyDefaultCustomerCountry();
     }
 
+    /**
+     * Fill the configured default country where none is printed: buyer, document delivery address, and line delivery
+     * addresses with street, postal code or city — so a line consignee equal to the buyer does not differ by country
+     * alone. A name-only line consignee gets no guessed country.
+     */
     public function applyDefaultCustomerCountry(): void
     {
         $default = self::normalizeCountry(config('e-billing.default_customer_country'));
@@ -376,6 +381,13 @@ class Invoice
 
         if ($this->deliveryAddress !== null && self::isCountryEmpty($this->deliveryAddress->country)) {
             $this->deliveryAddress->country = $default;
+        }
+
+        foreach ($this->lines as $line) {
+            $address = $line->deliveryAddress;
+            if ($address !== null && $address->hasPostalData() && self::isCountryEmpty($address->country)) {
+                $address->country = $default;
+            }
         }
     }
 

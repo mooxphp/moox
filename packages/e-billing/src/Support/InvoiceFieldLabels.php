@@ -254,6 +254,10 @@ final class InvoiceFieldLabels
             return __('e-billing::fields.hint_review_unrecognized', ['printed' => (string) ($validation['printed'] ?? '')]);
         }
 
+        if ($status === 'needs_review' && ($validation['reason'] ?? null) === 'consignee_address_missing') {
+            return __('e-billing::fields.hint_review_consignee_address_missing');
+        }
+
         if ($status === 'needs_review') {
             return match ($field) {
                 'customer_number' => self::hasMatchedId($validation)

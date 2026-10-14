@@ -416,6 +416,8 @@ return [
     'hint_review_duplicate_invoice_number' => 'This document number already exists and needs review.',
     'hint_review_declared_document_type' => 'A different document type was chosen at upload than the document carries '
         .'– please check.',
+    'hint_review_consignee_address_missing' => 'The consignee is not the buyer and is printed without an address '
+        .'– please look up and enter its delivery address.',
     'hint_review_unrecognized' => 'Printed as “:printed”, which was not recognised as a value — please check.',
     'hint_review_default' => 'This field should be reviewed manually.',
 
