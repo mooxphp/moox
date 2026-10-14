@@ -22,6 +22,7 @@ use Moox\EBilling\Support\InvoiceNumberDuplicateChecker;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
 use Moox\EBilling\Support\PaymentDiscounts;
 use Moox\EBilling\Support\PrecedingInvoiceReferences;
+use Moox\EBilling\Support\UnrecognizedFields;
 use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceLine;
@@ -98,6 +99,12 @@ class InvoiceFieldValidator
         }
 
         $invoiceValidations = $this->applyRequiredOneOfGroups($invoice, $invoiceValidations);
+
+        foreach (UnrecognizedFields::normalize($document->bill_data['unrecognized_fields'] ?? null) as $field => $printed) {
+            if (in_array($invoiceValidations[$field]['status'] ?? null, ['parsed', 'missing'], true)) {
+                $invoiceValidations[$field] = ['status' => 'needs_review', 'reason' => 'unrecognized', 'printed' => $printed];
+            }
+        }
 
         $unrecognizedByPosition = $this->unrecognizedFieldsByPosition($document);
         $lineValidations = [];

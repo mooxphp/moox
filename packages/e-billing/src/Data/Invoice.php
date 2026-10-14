@@ -8,6 +8,7 @@ use Moox\EBilling\Adapters\ZugferdInvoiceDtoAdapter;
 use Moox\EBilling\Support\BillDataAllowanceChargeMapper;
 use Moox\EBilling\Support\PaymentDiscounts;
 use Moox\EBilling\Support\PrecedingInvoiceReferences;
+use Moox\EBilling\Support\UnrecognizedFields;
 use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Invoice\Support\InvoiceNotes;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
@@ -85,6 +86,14 @@ class Invoice
 
         /** @var list<array{days: int, percent: float, base_amount: ?float, amount: ?float}> early-payment discount tiers, see PaymentDiscounts */
         public array $paymentDiscounts = [],
+
+        /**
+         * Text the parser found where a header field is printed but could not read (fully) as that field's value,
+         * by field name (e.g. ['payment_terms' => '…']). Validation asks for review of that field.
+         *
+         * @var array<string, string>
+         */
+        public array $unrecognizedFields = [],
 
         // Currency
         public string $currency = 'EUR',
@@ -316,6 +325,7 @@ class Invoice
             notes: $notes,
             precedingInvoices: PrecedingInvoiceReferences::normalize($data['preceding_invoices'] ?? null),
             paymentDiscounts: PaymentDiscounts::normalize($data['payment_discounts'] ?? null),
+            unrecognizedFields: UnrecognizedFields::normalize($data['unrecognized_fields'] ?? null),
             currency: is_string($data['currency'] ?? null) && $data['currency'] !== '' ? $data['currency'] : 'EUR',
             documentCharges: is_array($data['document_charges'] ?? null) ? $data['document_charges'] : [],
         );
@@ -425,6 +435,7 @@ class Invoice
             'notes' => $this->notes,
             'preceding_invoices' => $this->precedingInvoices,
             'payment_discounts' => $this->paymentDiscounts,
+            'unrecognized_fields' => $this->unrecognizedFields,
             'document_charges' => $this->documentCharges,
         ];
     }
