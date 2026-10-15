@@ -10,6 +10,8 @@ return [
     // PHP date format for dates inside customer-readable notes (stored dates are Y-m-d).
     'date_format' => 'd.m.Y',
     'decimal_separator' => ',',
+    // BT-11 project name when the document names none (CII requires one).
+    'project_name' => 'Projektreferenz',
     'notes' => [
         'purchase_order' => 'Bestell-Nr.',
         'purchase_orders' => 'Bestellungen',

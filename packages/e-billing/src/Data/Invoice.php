@@ -38,6 +38,9 @@ class Invoice
 
         public ?string $orderNumber = null,
         public ?string $orderDate = null,
+        /** BT-11 the buyer's project identifier */
+        public ?string $projectReference = null,
+        public ?string $projectName = null,
         public ?string $deliveryDate = null,
         public ?Address $deliveryAddress = null,
 
@@ -287,6 +290,8 @@ class Invoice
             customerReference: isset($data['customer_reference']) && is_string($data['customer_reference']) ? $data['customer_reference'] : null,
             orderNumber: isset($data['order_number']) && is_string($data['order_number']) ? $data['order_number'] : null,
             orderDate: isset($data['order_date']) && is_string($data['order_date']) ? $data['order_date'] : null,
+            projectReference: isset($data['project_reference']) && is_string($data['project_reference']) ? $data['project_reference'] : null,
+            projectName: isset($data['project_name']) && is_string($data['project_name']) ? $data['project_name'] : null,
             deliveryDate: isset($data['delivery_date']) && is_string($data['delivery_date'])
                 ? $data['delivery_date']
                 : null,
@@ -410,6 +415,8 @@ class Invoice
 
             'order_number' => $this->orderNumber,
             'order_date' => $this->orderDate,
+            'project_reference' => $this->projectReference,
+            'project_name' => $this->projectName,
             'delivery_date' => $this->deliveryDate,
             'delivery_address' => $this->deliveryAddress?->toArray(),
 

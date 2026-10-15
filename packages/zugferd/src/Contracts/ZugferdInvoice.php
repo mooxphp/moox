@@ -106,4 +106,10 @@ interface ZugferdInvoice
      * @var list<array{days: int, percent: float, base_amount: ?float}>
      */
     public array $paymentDiscounts { get; }
+
+    /** BT-11 the buyer's project identifier; null/empty → do not emit. */
+    public ?string $projectReference { get; }
+
+    /** Name of the BT-11 project; the CII binding requires one, so "Project Reference" stands in when empty. */
+    public ?string $projectName { get; }
 }

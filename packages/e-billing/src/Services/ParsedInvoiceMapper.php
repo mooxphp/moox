@@ -134,6 +134,8 @@ class ParsedInvoiceMapper
             notes: $this->notesWithKnownSubjectCodes($dto->notes),
             preceding_invoices: $dto->precedingInvoices,
             payment_discounts: $dto->paymentDiscounts,
+            project_reference: $dto->projectReference,
+            project_name: $dto->projectName,
         );
     }
 

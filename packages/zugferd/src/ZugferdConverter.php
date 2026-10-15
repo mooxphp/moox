@@ -32,6 +32,9 @@ class ZugferdConverter
      */
     public const PDF_TITLE_TEMPLATE = '%3$s : %2$s %1$s';
 
+    /** BT-11 project name when none is given: the CII binding requires `ram:Name`. */
+    private const DEFAULT_PROJECT_NAME = 'Project Reference';
+
     private const PROFILE_MAP = [
         'MINIMUM' => ZugferdProfiles::PROFILE_MINIMUM,
         'BASIC' => ZugferdProfiles::PROFILE_BASIC,
@@ -503,6 +506,12 @@ class ZugferdConverter
         if ($orderRef !== '') {
             // IssueDate forbidden in core EN 16931 (UBL-CR-018).
             $doc->setDocumentBuyerOrderReferencedDocument($orderRef, null);
+        }
+
+        $projectReference = trim((string) $invoice->projectReference);
+        if ($projectReference !== '') {
+            $projectName = trim((string) $invoice->projectName);
+            $doc->setDocumentProcuringProject($projectReference, $projectName !== '' ? $projectName : self::DEFAULT_PROJECT_NAME);
         }
 
         $despatch = $invoice->despatchAdviceReference !== null ? trim($invoice->despatchAdviceReference) : '';

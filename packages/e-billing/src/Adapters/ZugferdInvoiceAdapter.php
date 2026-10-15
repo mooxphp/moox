@@ -6,6 +6,7 @@ namespace Moox\EBilling\Adapters;
 
 use Moox\EBilling\Support\CreditNotePaymentTerms;
 use Moox\EBilling\Support\DeliveryDateTransmission;
+use Moox\EBilling\Support\DocumentEmissionLabels;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\EBilling\Support\InvoiceDocumentNotes;
 use Moox\EBilling\Support\PaymentDiscounts;
@@ -156,6 +157,18 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
 
     public ?string $despatchAdviceReference {
         get => null;
+    }
+
+    public ?string $projectReference {
+        get {
+            $value = trim((string) ($this->model->project_reference ?? ''));
+
+            return $value !== '' ? $value : null;
+        }
+    }
+
+    public ?string $projectName {
+        get => DocumentEmissionLabels::projectName($this->model->project_reference, $this->model->project_name);
     }
 
     public ?string $purchaseOrderDate {

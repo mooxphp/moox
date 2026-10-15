@@ -21,6 +21,8 @@ return [
     'customer_reference' => 'Kundenreferenz',
     'order_number' => 'Bestellnummer',
     'order_date' => 'Bestelldatum',
+    'project_reference' => 'Projektreferenz',
+    'project_name' => 'Projektname',
     'delivery_address' => 'Warenempfänger',
     'supplier_number' => 'Lieferantennummer',
     'supplier_phone' => 'Telefon Lieferant',

@@ -53,6 +53,8 @@ return [
                     'customer_reference',
                     'order_number',
                     'order_date',
+                    'project_reference',
+                    'project_name',
                     'delivery_date',
                     'payment_terms',
                     'shipping_method',

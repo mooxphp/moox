@@ -190,6 +190,8 @@ The `Invoice` model (`Moox\Invoice\Models\Invoice`) stores the invoice header. I
 -   `customer_reference` (string, nullable) - Reference the buyer asked to see on the document (EN 16931 **BT-10**); distinct from `customer_number`
 -   `order_number` (string, nullable) - Associated order number
 -   `order_date` (string, nullable) - Associated order date
+-   `project_reference` (string, nullable) - The buyer's project identifier (EN 16931 **BT-11**)
+-   `project_name` (string, nullable) - Name of that project
 -   `delivery_date` (string, nullable) - Actual delivery date for the document (EN 16931 **BT-72**)
 -   `payment_terms` (text, nullable) - Payment terms free text (EN 16931 **BT-20**)
 -   `shipping_method` (string, nullable) - Shipping / delivery method as shown on the document

@@ -9,6 +9,7 @@ use Moox\EBilling\Data\InvoiceLine;
 use Moox\EBilling\Support\ConfiguredEn16931CodeResolver;
 use Moox\EBilling\Support\CreditNotePaymentTerms;
 use Moox\EBilling\Support\DeliveryDateTransmission;
+use Moox\EBilling\Support\DocumentEmissionLabels;
 use Moox\EBilling\Support\InvoiceDocumentNotes;
 use Moox\EBilling\Support\PaymentDiscounts;
 use Moox\Zugferd\Contracts\ZugferdAddress;
@@ -73,6 +74,10 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
     public ?string $despatchAdviceReference;
 
     public ?string $purchaseOrderDate;
+
+    public ?string $projectReference;
+
+    public ?string $projectName;
 
     public ?string $shipToName;
 
@@ -144,6 +149,9 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
         $this->despatchAdviceReference = null;
         $orderDate = $invoice->orderDate !== null ? trim($invoice->orderDate) : '';
         $this->purchaseOrderDate = $orderDate !== '' ? $orderDate : null;
+        $projectReference = trim((string) $invoice->projectReference);
+        $this->projectReference = $projectReference !== '' ? $projectReference : null;
+        $this->projectName = DocumentEmissionLabels::projectName($invoice->projectReference, $invoice->projectName);
         $deliveryAddress = $invoice->deliveryAddress;
         $shipToName = $deliveryAddress?->company;
         $this->shipToName = $shipToName !== null && trim($shipToName) !== '' ? trim($shipToName) : null;
