@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace Moox\Department\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Traits\Relations\HasRelations;
-use Moox\Department\Database\Factories\DepartmentFactory;
 use Moox\Support\Audit\HasAudit;
 use Moox\Support\Identity\HasIdentifier;
 
 class Department extends Model
 {
-    /** @use HasFactory<DepartmentFactory> */
     use HasAudit;
-
-    use HasFactory;
     use HasIdentifier;
     use HasRelations;
     use SoftDeletes;
@@ -58,11 +53,6 @@ class Department extends Model
     protected $attributes = [
         'is_active' => true,
     ];
-
-    public static function newFactory(): DepartmentFactory
-    {
-        return DepartmentFactory::new();
-    }
 
     public static function getResourceName(): string
     {

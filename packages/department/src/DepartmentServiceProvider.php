@@ -55,7 +55,6 @@ class DepartmentServiceProvider extends MooxServiceProvider
             ->templateEntityFiles([
                 'config/department.php',
                 'config/department-person.php',
-                'database/factories/DepartmentFactory.php',
                 'database/migrations/create_departments_table.php.stub',
                 'database/migrations/create_department_persons_table.php.stub',
                 'resources/lang/en/department.php',
@@ -72,7 +71,6 @@ class DepartmentServiceProvider extends MooxServiceProvider
                 'src/Resources/DepartmentPerson/Pages/ViewDepartmentPerson.php',
                 'src/Resources/DepartmentResource.php',
                 'src/Resources/DepartmentPersonResource.php',
-                'src/Support/DepartmentRules.php',
                 'src/Plugins/DepartmentPlugin.php',
                 'resources/lang/de/fields.php',
             ])

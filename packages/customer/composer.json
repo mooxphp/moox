@@ -21,8 +21,7 @@
     ],
     "require": {
         "moox/core": "dev-main",
-        "moox/support": "dev-main",
-        "moox/contact": "dev-main"
+        "moox/support": "dev-main"
     },
     "autoload": {
         "psr-4": {
