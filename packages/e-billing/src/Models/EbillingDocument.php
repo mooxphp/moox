@@ -1421,7 +1421,7 @@ class EbillingDocument extends BaseItemModel
     ): void {
         if ($driver === 'mysql') {
             $releaseValid = self::sqlMySqlLineSeverityReleaseIsValid($srColumn, 'lk.line_key', $field);
-            $statusPath = "CONCAT('$.lines.', lk.line_key, '.{$field}.status')";
+            $statusPath = self::sqlMySqlLinePath('lk.line_key', "{$field}.status");
             $statusExpr = "JSON_UNQUOTE(JSON_EXTRACT({$fvColumn}, {$statusPath}))";
 
             if ($priority === 'must') {
@@ -1518,11 +1518,20 @@ class EbillingDocument extends BaseItemModel
         return "({$reason} IS NOT NULL AND {$releasedAt} IS NOT NULL AND {$releasedById} IS NOT NULL)";
     }
 
+    /**
+     * JSON path to a member of one line, with the line key quoted: line keys are UUIDs, and a path member that starts
+     * with a digit is invalid in MySQL unless quoted.
+     */
+    private static function sqlMySqlLinePath(string $lineKeyExpr, string $memberPath): string
+    {
+        return "CONCAT('$.lines.\"', {$lineKeyExpr}, '\".{$memberPath}')";
+    }
+
     private static function sqlMySqlLineSeverityReleaseIsValid(string $srColumn, string $lineKeyExpr, string $field): string
     {
-        $reasonPath = "CONCAT('$.lines.', {$lineKeyExpr}, '.{$field}.reason')";
-        $releasedAtPath = "CONCAT('$.lines.', {$lineKeyExpr}, '.{$field}.released_at')";
-        $releasedByIdPath = "CONCAT('$.lines.', {$lineKeyExpr}, '.{$field}.released_by_id')";
+        $reasonPath = self::sqlMySqlLinePath($lineKeyExpr, "{$field}.reason");
+        $releasedAtPath = self::sqlMySqlLinePath($lineKeyExpr, "{$field}.released_at");
+        $releasedByIdPath = self::sqlMySqlLinePath($lineKeyExpr, "{$field}.released_by_id");
         $reason = "NULLIF(TRIM(JSON_UNQUOTE(JSON_EXTRACT({$srColumn}, {$reasonPath}))), '')";
         $releasedAt = "NULLIF(TRIM(JSON_UNQUOTE(JSON_EXTRACT({$srColumn}, {$releasedAtPath}))), '')";
         $releasedById = "JSON_EXTRACT({$srColumn}, {$releasedByIdPath})";
