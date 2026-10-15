@@ -56,6 +56,22 @@ it('can create a contact via filament', function (): void {
         ->and($contact->created_by_id)->toBeInt();
 });
 
+it('shows records that belong to a contact on the edit page', function (): void {
+    $contact = Contact::factory()->create([
+        'name_1' => 'Muster GmbH',
+    ]);
+
+    livewire(EditContact::class, ['record' => $contact->getKey()])
+        ->assertSuccessful()
+        ->assertSee(__('contact::contact.contact_identifiers'))
+        ->assertSee(__('contact::contact.contact_relationships'))
+        ->assertSee(__('contact::contact.incoming_contact_relationships'))
+        ->assertSee(__('person::person.persons'))
+        ->assertSee(__('department::department.departments'))
+        ->assertSee(__('customer::customer.customers'))
+        ->assertSee(__('supplier::supplier.suppliers'));
+});
+
 it('can edit an existing contact via filament', function (): void {
     $contact = Contact::factory()->create([
         'name_1' => 'Muster GmbH',

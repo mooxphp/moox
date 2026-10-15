@@ -14,7 +14,7 @@ class ContactServiceProvider extends MooxServiceProvider
     {
         $package
             ->name('contact')
-            ->hasConfigFile(['contact', 'contact-identifier-rule', 'contact-identifier'])
+            ->hasConfigFile(['contact', 'contact-identifier-rule', 'contact-identifier', 'contact-relationship', 'contact-relationship-type'])
             ->hasTranslations()
             ->hasMigrations([
                 'create_contacts_table',
@@ -22,6 +22,9 @@ class ContactServiceProvider extends MooxServiceProvider
                 'create_contact_identifiers_table',
                 'create_contact_identifier_types_table',
                 'create_contact_identifier_type_translations_table',
+                'create_contact_relationships_table',
+                'create_contact_relationship_types_table',
+                'create_contact_relationship_type_translations_table',
             ])
             ->hasCommands();
 

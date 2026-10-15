@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('contact_relationship_type_translations', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('contact_relationship_type_id');
+            $table->foreign('contact_relationship_type_id', 'crt_translations_type_id_foreign')
+                ->references('id')
+                ->on('contact_relationship_types')
+                ->cascadeOnDelete();
+            $table->string('locale');
+            $table->string('title');
+            $table->string('slug');
+
+            $table->unique(['contact_relationship_type_id', 'locale'], 'contact_relationship_type_locale_unique');
+            $table->unique(['locale', 'slug'], 'contact_relationship_type_locale_slug_unique');
+            $table->index('locale');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('contact_relationship_type_translations');
+    }
+};
