@@ -4,26 +4,32 @@ declare(strict_types=1);
 
 namespace Moox\Contact\Resources;
 
+use Closure;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Database\Eloquent\Builder;
 use Moox\Contact\Models\Contact;
 use Moox\Contact\Resources\Contact\Pages\CreateContact;
 use Moox\Contact\Resources\Contact\Pages\EditContact;
 use Moox\Contact\Resources\Contact\Pages\ListContacts;
 use Moox\Contact\Resources\Contact\Pages\ViewContact;
 use Moox\Contact\Support\ContactRules;
+use Moox\Organization\Models\LegalForm;
 use Moox\Support\Active\HasActiveForm;
 use Moox\Support\Archive\HasArchiveForm;
 use Moox\Support\Audit\HasAuditForm;
@@ -42,7 +48,9 @@ class ContactResource extends Resource
     use HasDataForm;
     use HasExternalForm;
     use HasIdentityForm;
-    use HasRelationForm;
+    use HasRelationForm {
+        relationField as buildRelationField;
+    }
     use HasSoftDeleteForm;
 
     protected static ?string $model = Contact::class;
@@ -136,6 +144,62 @@ class ContactResource extends Resource
     protected static function featureRules(string $field): array
     {
         return ContactRules::for($field);
+    }
+
+    /**
+     * @param  array<string, mixed>  $configured
+     */
+    protected static function relationField(string $column, string $relation, array $configured): Select|TextInput
+    {
+        $field = static::buildRelationField($column, $relation, $configured);
+
+        if ($column === 'country_id' && $field instanceof Select) {
+            return $field
+                ->live()
+                ->afterStateUpdated(function (Set $set): void {
+                    $set('legal_form_id', null);
+                });
+        }
+
+        if ($column !== 'legal_form_id' || ! $field instanceof Select) {
+            return $field;
+        }
+
+        return $field
+            ->relationship(
+                $relation,
+                'title',
+                function (Builder $query, Get $get): Builder {
+                    $countryId = $get('country_id');
+
+                    if (blank($countryId)) {
+                        return $query->whereRaw('1 = 0');
+                    }
+
+                    return $query->where('country_id', $countryId);
+                },
+            )
+            ->disabled(fn (Get $get): bool => blank($get('country_id')))
+            ->rules(function (Get $get): array {
+                return [
+                    ...static::featureRules('legal_form_id'),
+                    function (string $attribute, mixed $value, Closure $fail) use ($get): void {
+                        if (blank($value)) {
+                            return;
+                        }
+
+                        $countryId = $get('country_id');
+                        $matches = filled($countryId) && LegalForm::query()
+                            ->whereKey($value)
+                            ->where('country_id', $countryId)
+                            ->exists();
+
+                        if (! $matches) {
+                            $fail(__('contact::fields.legal_form_country_mismatch'));
+                        }
+                    },
+                ];
+            });
     }
 
     public static function table(Table $table): Table

@@ -167,11 +167,16 @@ class TestCase extends Orchestra
 
     protected function loadPackageMigrations(): void
     {
-        $path = dirname(__DIR__).'/database/migrations/create_contacts_table.php.stub';
+        foreach ([
+            'create_contacts_table.php.stub',
+            'create_contact_identifier_rules_table.php.stub',
+        ] as $migration) {
+            $path = dirname(__DIR__).'/database/migrations/'.$migration;
 
-        if (is_file($path)) {
-            $instance = include $path;
-            $instance->up();
+            if (is_file($path)) {
+                $instance = include $path;
+                $instance->up();
+            }
         }
 
         foreach (['static_languages', 'static_countries'] as $table) {
