@@ -6,7 +6,7 @@ namespace Moox\Department\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
-use Moox\Core\Support\Resources\ChildResourceRegistrar;
+use Moox\Department\Resources\DepartmentPersonResource;
 use Moox\Department\Resources\DepartmentResource;
 
 class DepartmentPlugin implements Plugin
@@ -18,12 +18,10 @@ class DepartmentPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        ChildResourceRegistrar::registerFromParentDefinition(
-            $panel,
+        $panel->resources([
             DepartmentResource::class,
-            'department',
-            config('department.resources.department', []),
-        );
+            DepartmentPersonResource::class,
+        ]);
     }
 
     public function boot(Panel $panel): void
