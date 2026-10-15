@@ -14,7 +14,10 @@ it('emits the payment terms as given, with the due date kept structured', functi
     $xml = app(ZugferdConverter::class)->convert($invoice, 'EN16931');
 
     expect($xml)
-        ->toMatch("#<ram:Description>Net 30 days\nPayable by 14\.02\.2026</ram:Description>\s*<ram:DueDateDateTime>\s*<udt:DateTimeString format=\"102\">20260214</udt:DateTimeString>#");
+        ->toMatch(
+            "#<ram:Description>Net 30 days\nPayable by 14\.02\.2026</ram:Description>\s*"
+            .'<ram:DueDateDateTime>\s*<udt:DateTimeString format="102">20260214</udt:DateTimeString>#',
+        );
 });
 
 it('emits only the due date when no payment terms are given', function (): void {
@@ -24,7 +27,10 @@ it('emits only the due date when no payment terms are given', function (): void 
     $xml = app(ZugferdConverter::class)->convert($invoice, 'EN16931');
 
     expect($xml)
-        ->toMatch('#<ram:SpecifiedTradePaymentTerms>\s*<ram:DueDateDateTime>\s*<udt:DateTimeString format="102">20260214</udt:DateTimeString>#')
+        ->toMatch(
+            '#<ram:SpecifiedTradePaymentTerms>\s*<ram:DueDateDateTime>\s*'
+            .'<udt:DateTimeString format="102">20260214</udt:DateTimeString>#',
+        )
         ->not->toContain('<ram:Description>');
 });
 

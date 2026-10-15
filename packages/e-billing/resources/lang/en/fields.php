@@ -413,8 +413,8 @@ return [
         .'actual delivery date rule without aggregating them into a period.',
     'hint_review_totals_reconciliation' => 'Lines, charges and allowances do not add up to the net total '
         .'(difference €:difference). Compare line amounts and charges with the PDF.',
-    'hint_review_payment_discount' => 'The printed early-payment discount (€:printed) does not match its percent and base '
-        .'(expected €:expected). Compare the discount and the amount due with the PDF.',
+    'hint_review_payment_discount' => 'The printed early-payment discount (€:printed) does not match '
+        .'its percent and base (expected €:expected). Compare the discount and the amount due with the PDF.',
     'hint_review_duplicate_invoice_number' => 'This document number already exists and needs review.',
     'hint_review_declared_document_type' => 'A different document type was chosen at upload than the document carries '
         .'– please check.',

@@ -511,7 +511,10 @@ class ZugferdConverter
         $projectReference = trim((string) $invoice->projectReference);
         if ($projectReference !== '') {
             $projectName = trim((string) $invoice->projectName);
-            $doc->setDocumentProcuringProject($projectReference, $projectName !== '' ? $projectName : self::DEFAULT_PROJECT_NAME);
+            $doc->setDocumentProcuringProject(
+                $projectReference,
+                $projectName !== '' ? $projectName : self::DEFAULT_PROJECT_NAME,
+            );
         }
 
         $despatch = $invoice->despatchAdviceReference !== null ? trim($invoice->despatchAdviceReference) : '';
@@ -737,7 +740,9 @@ class ZugferdConverter
 
         if ($discounts !== []) {
             if ($paymentTerms === null) {
-                throw new IncompleteInvoiceException('Missing required field: paymentTerms (BT-20) for paymentDiscounts.');
+                throw new IncompleteInvoiceException(
+                    'Missing required field: paymentTerms (BT-20) for paymentDiscounts.',
+                );
             }
 
             $doc->addDocumentPaymentTermXRechnung(

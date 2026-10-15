@@ -17,7 +17,8 @@ readonly class InvoiceDraft
      * @param  list<ChargeDraft>  $headerCharges
      * @param  list<string|InvoiceNote>  $notes  Plain strings are stored as notes without a subject code
      * @param  list<array{number: string, date: ?string}>  $preceding_invoices  BG-3: BT-25 number, BT-26 date (Y-m-d)
-     * @param  list<array{days: int, percent: float, base_amount: ?float, amount: ?float}>  $payment_discounts  Early-payment discount tiers; `amount` is the discount as printed
+     * @param  list<array{days: int, percent: float, base_amount: ?float, amount: ?float}>  $payment_discounts
+     *         Early-payment discount tiers; `amount` is the discount as printed
      * @param  ?string  $project_reference  BT-11 the buyer's project identifier
      * @param  ?string  $project_name  Name of the BT-11 project
      */
