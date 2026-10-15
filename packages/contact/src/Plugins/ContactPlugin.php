@@ -9,6 +9,8 @@ use Filament\Panel;
 use Moox\Contact\Resources\ContactIdentifierResource;
 use Moox\Contact\Resources\ContactIdentifierRuleResource;
 use Moox\Contact\Resources\ContactIdentifierTypeResource;
+use Moox\Contact\Resources\ContactRelationshipResource;
+use Moox\Contact\Resources\ContactRelationshipTypeResource;
 use Moox\Contact\Resources\ContactResource;
 
 class ContactPlugin implements Plugin
@@ -25,6 +27,8 @@ class ContactPlugin implements Plugin
             ContactIdentifierResource::class,
             ContactIdentifierRuleResource::class,
             ContactIdentifierTypeResource::class,
+            ContactRelationshipResource::class,
+            ContactRelationshipTypeResource::class,
         ]);
     }
 

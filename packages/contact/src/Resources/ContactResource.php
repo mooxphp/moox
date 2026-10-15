@@ -29,6 +29,7 @@ use Moox\Contact\Resources\Contact\Pages\EditContact;
 use Moox\Contact\Resources\Contact\Pages\ListContacts;
 use Moox\Contact\Resources\Contact\Pages\ViewContact;
 use Moox\Contact\Support\ContactRules;
+use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Organization\Models\LegalForm;
 use Moox\Support\Active\HasActiveForm;
 use Moox\Support\Archive\HasArchiveForm;
@@ -51,6 +52,7 @@ class ContactResource extends Resource
     use HasRelationForm {
         relationField as buildRelationField;
     }
+    use HasResourceRelations;
     use HasSoftDeleteForm;
 
     protected static ?string $model = Contact::class;
