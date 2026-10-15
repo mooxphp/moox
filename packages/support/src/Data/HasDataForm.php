@@ -56,7 +56,9 @@ trait HasDataForm
     {
         return new class($translation) implements ValidationRule
         {
-            public function __construct(private string $translation) {}
+            public function __construct(private string $translation)
+            {
+            }
 
             public function validate(string $attribute, mixed $value, Closure $fail): void
             {
