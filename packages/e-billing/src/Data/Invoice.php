@@ -89,7 +89,7 @@ class Invoice
 
         /**
          * @var list<array{days: int, percent: float, base_amount: ?float, amount: ?float}>
-         *     early-payment discount tiers, see PaymentDiscounts
+         *                                                                                  early-payment discount tiers, see PaymentDiscounts
          */
         public array $paymentDiscounts = [],
 
