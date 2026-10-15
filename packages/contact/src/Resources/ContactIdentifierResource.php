@@ -82,25 +82,6 @@ class ContactIdentifierResource extends Resource
             ]);
     }
 
-    protected static function relationSection(): Section
-    {
-        $translation = static::featureTranslation();
-        $relations = config(static::featureResourceName().'.relations', []);
-        $contact = is_array($relations) ? ($relations['contact'] ?? []) : [];
-        $country = is_array($relations) ? ($relations['country'] ?? []) : [];
-
-        return Section::make(FeatureFields::label($translation, 'relation'))
-            ->schema([
-                static::relationField('contact_id', 'contact', is_array($contact) ? $contact : []),
-                TextInput::make('contact_identifier_type_id')
-                    ->label(FeatureFields::label($translation, 'contact_identifier_type_id'))
-                    ->numeric()
-                    ->rules(static::featureRules('contact_identifier_type_id')),
-                static::relationField('country_id', 'country', is_array($country) ? $country : []),
-            ])
-            ->columns(2);
-    }
-
     protected static function featureTranslation(): string
     {
         return 'contact::fields';

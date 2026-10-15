@@ -7,10 +7,8 @@ namespace Moox\Contact\Resources;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -75,21 +73,6 @@ class ContactIdentifierRuleResource extends Resource
                 ->columns(3)
                 ->columnSpanFull(),
         ]);
-    }
-
-    protected static function relationSection(): Section
-    {
-        $translation = static::featureTranslation();
-
-        return Section::make(FeatureFields::label($translation, 'relation'))
-            ->schema([
-                TextInput::make('contact_identifier_type_id')
-                    ->label(FeatureFields::label($translation, 'contact_identifier_type_id'))
-                    ->numeric()
-                    ->rules(static::featureRules('contact_identifier_type_id')),
-                ...static::configuredRelationFields(),
-            ])
-            ->columns(2);
     }
 
     protected static function featureTranslation(): string

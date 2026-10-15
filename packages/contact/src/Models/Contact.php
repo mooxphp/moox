@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace Moox\Contact\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Contact\Database\Factories\ContactFactory;
 use Moox\Core\Traits\Relations\HasRelations;
 use Moox\Support\Audit\HasAudit;
 use Moox\Support\Identity\HasIdentifier;
 
 class Contact extends Model
 {
-    /** @use HasFactory<ContactFactory> */
     use HasAudit;
-
-    use HasFactory;
     use HasIdentifier;
     use HasRelations;
     use SoftDeletes;
@@ -40,7 +35,7 @@ class Contact extends Model
         'country_id',
         'organization_type_id',
         'legal_form_id',
-        'data_json',
+        'data',
         'created_by_id',
         'created_by_type',
         'updated_by_id',
@@ -61,13 +56,7 @@ class Contact extends Model
      */
     protected $attributes = [
         'is_active' => true,
-        'data_json' => '{}',
     ];
-
-    public static function newFactory(): ContactFactory
-    {
-        return ContactFactory::new();
-    }
 
     public static function getResourceName(): string
     {
@@ -81,7 +70,7 @@ class Contact extends Model
     {
         return [
             'is_active' => 'boolean',
-            'data_json' => 'array',
+            'data' => 'array',
             'language_id' => 'integer',
             'country_id' => 'integer',
             'organization_type_id' => 'integer',
@@ -94,14 +83,5 @@ class Contact extends Model
             'archived_at' => 'datetime',
             'restored_at' => 'datetime',
         ];
-    }
-
-    protected static function booted(): void
-    {
-        static::saved(function (Contact $contact): void {
-            $displayName = $contact->newQuery()->whereKey($contact->getKey())->value('display_name');
-            $contact->display_name = is_string($displayName) ? $displayName : null;
-            $contact->syncOriginalAttribute('display_name');
-        });
     }
 }
