@@ -9,6 +9,13 @@ return [
             'foreign_key' => 'contact_id',
             'title_attribute' => 'display_name',
         ],
+        'contactIdentifierType' => [
+            'kind' => 'belongs_to',
+            'presentation' => 'hidden',
+            'model' => 'Moox\\Contact\\Models\\ContactIdentifierType',
+            'foreign_key' => 'contact_identifier_type_id',
+            'title_attribute' => 'title',
+        ],
         'country' => [
             'kind' => 'belongs_to',
             'presentation' => 'hidden',

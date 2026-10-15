@@ -25,8 +25,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Contact\\": "src",
-            "Moox\\Contact\\Database\\Factories\\": "database/factories"
+            "Moox\\Contact\\": "src"
         }
     },
     "autoload-dev": {

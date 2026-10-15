@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Contact;
 
-use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -61,7 +60,6 @@ class ContactServiceProvider extends MooxServiceProvider
             ])
             ->templateEntityFiles([
                 'config/contact.php',
-                'database/factories/ContactFactory.php',
                 'database/migrations/create_contacts_table.php.stub',
                 'resources/lang/en/contact.php',
                 'resources/lang/en/fields.php',
@@ -71,23 +69,11 @@ class ContactServiceProvider extends MooxServiceProvider
                 'src/Resources/Contact/Pages/ListContacts.php',
                 'src/Resources/Contact/Pages/ViewContact.php',
                 'src/Resources/ContactResource.php',
-                'src/Support/ContactRules.php',
                 'src/Plugins/ContactPlugin.php',
                 'resources/lang/de/fields.php',
             ])
             ->templateRemove([
                 '',
             ]);
-    }
-
-    public function packageBooted(): void
-    {
-        if (
-            class_exists(AuditPackageRegistry::class)
-            && config('audit.enabled', true)
-            && config('contact.audit.enabled', true)
-        ) {
-            AuditPackageRegistry::register('contact', config('contact.audit', []));
-        }
     }
 }

@@ -37,8 +37,6 @@ return [
     'legal_form_id' => 'Legal form',
     'legal_form_country_mismatch' => 'The legal form does not belong to the selected country.',
     'data' => 'Data',
-    'data_json' => 'Data',
-    'data_json_invalid' => 'Data must be valid JSON.',
     'data_invalid' => 'Data must be valid JSON.',
     'audit' => 'Audit',
     'archive' => 'Archive',
