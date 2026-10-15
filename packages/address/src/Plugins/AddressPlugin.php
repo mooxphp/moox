@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Address\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Moox\Address\Resources\AddressResource;
-use Moox\Core\Support\Resources\ChildResourceRegistrar;
 
 class AddressPlugin implements Plugin
 {
@@ -16,12 +17,9 @@ class AddressPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        ChildResourceRegistrar::registerFromParentDefinition(
-            $panel,
+        $panel->resources([
             AddressResource::class,
-            'address',
-            config('address.resources.address', []),
-        );
+        ]);
     }
 
     public function boot(Panel $panel): void
