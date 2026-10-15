@@ -87,7 +87,10 @@ class Invoice
         /** @var list<array{number: string, date: ?string}> BG-3: BT-25 number, BT-26 date (Y-m-d) */
         public array $precedingInvoices = [],
 
-        /** @var list<array{days: int, percent: float, base_amount: ?float, amount: ?float}> early-payment discount tiers, see PaymentDiscounts */
+        /**
+         * @var list<array{days: int, percent: float, base_amount: ?float, amount: ?float}>
+         *     early-payment discount tiers, see PaymentDiscounts
+         */
         public array $paymentDiscounts = [],
 
         /**
@@ -290,8 +293,12 @@ class Invoice
             customerReference: isset($data['customer_reference']) && is_string($data['customer_reference']) ? $data['customer_reference'] : null,
             orderNumber: isset($data['order_number']) && is_string($data['order_number']) ? $data['order_number'] : null,
             orderDate: isset($data['order_date']) && is_string($data['order_date']) ? $data['order_date'] : null,
-            projectReference: isset($data['project_reference']) && is_string($data['project_reference']) ? $data['project_reference'] : null,
-            projectName: isset($data['project_name']) && is_string($data['project_name']) ? $data['project_name'] : null,
+            projectReference: isset($data['project_reference']) && is_string($data['project_reference'])
+                ? $data['project_reference']
+                : null,
+            projectName: isset($data['project_name']) && is_string($data['project_name'])
+                ? $data['project_name']
+                : null,
             deliveryDate: isset($data['delivery_date']) && is_string($data['delivery_date'])
                 ? $data['delivery_date']
                 : null,

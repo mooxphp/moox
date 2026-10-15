@@ -18,7 +18,11 @@ final class UnrecognizedFields
     public static function normalize(mixed $raw): array
     {
         return is_array($raw)
-            ? array_filter($raw, static fn (mixed $text, mixed $field): bool => is_string($field) && is_string($text), ARRAY_FILTER_USE_BOTH)
+            ? array_filter(
+                $raw,
+                static fn (mixed $text, mixed $field): bool => is_string($field) && is_string($text),
+                ARRAY_FILTER_USE_BOTH,
+            )
             : [];
     }
 }

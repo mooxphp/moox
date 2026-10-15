@@ -222,7 +222,15 @@ final class InvoiceFieldLabels
     }
 
     /**
-     * @param  array{status?: string, source?: string, matched_id?: string, reason?: string, difference?: string, expected?: string, printed?: string}|null  $validation
+     * @param  array{
+     *     status?: string,
+     *     source?: string,
+     *     matched_id?: string,
+     *     reason?: string,
+     *     difference?: string,
+     *     expected?: string,
+     *     printed?: string
+     * }|null  $validation
      */
     public static function hint(string $field, string $status, ?array $validation = null): ?string
     {
@@ -255,7 +263,9 @@ final class InvoiceFieldLabels
         }
 
         if ($status === 'needs_review' && ($validation['reason'] ?? null) === 'unrecognized') {
-            return __('e-billing::fields.hint_review_unrecognized', ['printed' => (string) ($validation['printed'] ?? '')]);
+            return __('e-billing::fields.hint_review_unrecognized', [
+                'printed' => (string) ($validation['printed'] ?? ''),
+            ]);
         }
 
         if ($status === 'needs_review' && ($validation['reason'] ?? null) === 'consignee_address_missing') {

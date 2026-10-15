@@ -102,9 +102,15 @@ class InvoiceFieldValidator
 
         $invoiceValidations = $this->applyRequiredOneOfGroups($invoice, $invoiceValidations);
 
-        foreach (UnrecognizedFields::normalize($document->bill_data['unrecognized_fields'] ?? null) as $field => $printed) {
+        foreach (
+            UnrecognizedFields::normalize($document->bill_data['unrecognized_fields'] ?? null) as $field => $printed
+        ) {
             if (in_array($invoiceValidations[$field]['status'] ?? null, ['parsed', 'missing'], true)) {
-                $invoiceValidations[$field] = ['status' => 'needs_review', 'reason' => 'unrecognized', 'printed' => $printed];
+                $invoiceValidations[$field] = [
+                    'status' => 'needs_review',
+                    'reason' => 'unrecognized',
+                    'printed' => $printed,
+                ];
             }
         }
 
@@ -953,7 +959,10 @@ class InvoiceFieldValidator
     /**
      * @param  array<string, string>  $lineFields
      * @param  array<string, string>  $unrecognizedFields
-     * @return array<string, array{status: string, source?: string, matched_id?: string, reason?: string, printed?: string}>
+     * @return array<
+     *     string,
+     *     array{status: string, source?: string, matched_id?: string, reason?: string, printed?: string}
+     * >
      */
     private function validateInvoiceLine(
         Invoice $invoice,
@@ -982,7 +991,11 @@ class InvoiceFieldValidator
             );
 
             if ($validations[$field]['status'] === 'missing' && isset($unrecognizedFields[$field])) {
-                $validations[$field] = ['status' => 'needs_review', 'reason' => 'unrecognized', 'printed' => $unrecognizedFields[$field]];
+                $validations[$field] = [
+                    'status' => 'needs_review',
+                    'reason' => 'unrecognized',
+                    'printed' => $unrecognizedFields[$field],
+                ];
             }
         }
 
