@@ -14,10 +14,14 @@ class ContactServiceProvider extends MooxServiceProvider
     {
         $package
             ->name('contact')
-            ->hasConfigFile()
+            ->hasConfigFile(['contact', 'contact-identifier-rule', 'contact-identifier'])
             ->hasTranslations()
             ->hasMigrations([
                 'create_contacts_table',
+                'create_contact_identifier_rules_table',
+                'create_contact_identifiers_table',
+                'create_contact_identifier_types_table',
+                'create_contact_identifier_type_translations_table',
             ])
             ->hasCommands();
 

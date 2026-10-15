@@ -6,6 +6,9 @@ namespace Moox\Contact\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Moox\Contact\Resources\ContactIdentifierResource;
+use Moox\Contact\Resources\ContactIdentifierRuleResource;
+use Moox\Contact\Resources\ContactIdentifierTypeResource;
 use Moox\Contact\Resources\ContactResource;
 
 class ContactPlugin implements Plugin
@@ -19,6 +22,9 @@ class ContactPlugin implements Plugin
     {
         $panel->resources([
             ContactResource::class,
+            ContactIdentifierResource::class,
+            ContactIdentifierRuleResource::class,
+            ContactIdentifierTypeResource::class,
         ]);
     }
 
