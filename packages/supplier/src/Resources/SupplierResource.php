@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Supplier\Resources;
 
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -17,244 +19,211 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Moox\Core\Entities\Items\Record\BaseRecordResource;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Moox\Supplier\Models\Supplier;
 use Moox\Supplier\Resources\Supplier\Pages\CreateSupplier;
 use Moox\Supplier\Resources\Supplier\Pages\EditSupplier;
 use Moox\Supplier\Resources\Supplier\Pages\ListSuppliers;
 use Moox\Supplier\Resources\Supplier\Pages\ViewSupplier;
 use Moox\Supplier\Support\SupplierRules;
+use Moox\Support\Active\HasActiveForm;
+use Moox\Support\Archive\HasArchiveForm;
+use Moox\Support\Audit\HasAuditForm;
+use Moox\Support\External\HasExternalForm;
+use Moox\Support\Filament\FeatureFields;
+use Moox\Support\Identity\HasIdentityForm;
+use Moox\Support\Relation\HasRelationForm;
+use Moox\Support\SoftDelete\HasSoftDeleteForm;
 
-class SupplierResource extends BaseRecordResource
+class SupplierResource extends Resource
 {
-    use HasResourceTabs;
-    use HasResourceTaxonomy;
+    use HasActiveForm;
+    use HasArchiveForm;
+    use HasAuditForm;
+    use HasExternalForm;
+    use HasIdentityForm;
+    use HasRelationForm;
+    use HasSoftDeleteForm;
 
     protected static ?string $model = Supplier::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-local-shipping';
+    protected static ?string $recordTitleAttribute = 'supplier_name';
 
-    protected static function getEntityType(): string
-    {
-        return 'supplier';
-    }
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-local-shipping';
 
     public static function getModelLabel(): string
     {
-        return config('supplier.resources.supplier.single');
+        return __('supplier::supplier.supplier');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('supplier.resources.supplier.plural');
+        return __('supplier::supplier.suppliers');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('supplier.resources.supplier.plural');
+        return __('supplier::supplier.suppliers');
     }
 
-    public static function getBreadcrumb(): string
+    public static function form(Schema $schema): Schema
     {
-        return config('supplier.resources.supplier.single');
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return config('supplier.navigation_group');
-    }
-
-    public static function form(Schema $form): Schema
-    {
-        $taxonomyFields = static::getTaxonomyFields();
-        $statusOptions = static::configOptions('supplier.statuses');
-
-        $schema = [
+        return $schema->components([
             Grid::make()
                 ->schema([
-                    Section::make(__('supplier::fields.identity'))
+                    Grid::make(1)
                         ->schema([
-                            Select::make('status')
-                                ->label(__('supplier::fields.status'))
-                                ->options($statusOptions)
-                                ->required()
-                                ->rules(SupplierRules::for('status'))
-                                ->default('draft'),
-                            TextInput::make('supplier_number')
-                                ->label(__('supplier::fields.supplier_number'))
-                                ->rules(SupplierRules::for('supplier_number'))
-                                ->maxLength(40),
-                            TextInput::make('supplier_name')
-                                ->label(__('supplier::fields.supplier_name'))
-                                ->rules(SupplierRules::for('supplier_name'))
-                                ->maxLength(160),
-                            TextInput::make('external_reference')
-                                ->label(__('supplier::fields.external_reference'))
-                                ->rules(SupplierRules::for('external_reference'))
-                                ->maxLength(100),
-                            Textarea::make('search_terms')
-                                ->label(__('supplier::fields.search_terms'))
-                                ->rules(SupplierRules::for('search_terms'))
-                                ->columnSpanFull(),
+                            static::activeSection(),
+                            static::domainSection(),
+                            static::externalSection(),
+                            static::dataSection(),
                         ])
                         ->columnSpan(2),
-                    Grid::make()
+                    Grid::make(1)
                         ->schema([
-                            Section::make()
-                                ->schema([
-                                    static::getFormActions(),
-                                ]),
-                            Section::make(__('supplier::fields.settings'))
-                                ->schema([
-                                    Select::make('language_id')
-                                        ->label(__('supplier::fields.language_id'))
-                                        ->relationship('language', 'common_name')
-                                        ->searchable()
-                                        ->preload()
-                                        ->rules(SupplierRules::for('language_id')),
-                                    TextInput::make('sort')
-                                        ->label(__('supplier::fields.sort'))
-                                        ->numeric()
-                                        ->rules(SupplierRules::for('sort')),
-                                    Toggle::make('is_preferred')
-                                        ->label(__('supplier::fields.is_preferred')),
-                                    Toggle::make('is_active')
-                                        ->label(__('supplier::fields.is_active'))
-                                        ->default(true),
-                                    DateTimePicker::make('approved_at')
-                                        ->label(__('supplier::fields.approved_at'))
-                                        ->rules(SupplierRules::for('approved_at')),
-                                ]),
-                            Section::make('')
-                                ->schema($taxonomyFields),
-                            Section::make('')
-                                ->schema([
-                                    Section::make('')
-                                        ->schema([
-                                            ...static::getStandardTimestampFields(),
-                                        ]),
-                                ])
-                                ->hidden(fn (?Supplier $record) => $record === null),
+                            static::relationSection()->columns(1),
+                            static::identitySection()->columns(1),
+                            static::auditSection()->columns(1),
+                            static::archiveSection()->columns(1),
+                            static::softDeleteSection()->columns(1),
                         ])
-                        ->columnSpan(1)
-                        ->columns(1),
+                        ->columnSpan(1),
                 ])
                 ->columns(3)
                 ->columnSpanFull(),
-            Section::make(__('supplier::fields.procurement'))
-                ->schema([
-                    TextInput::make('discount_percent')
-                        ->label(__('supplier::fields.discount_percent'))
-                        ->numeric()
-                        ->rules(SupplierRules::for('discount_percent')),
-                    TextInput::make('lead_time_days')
-                        ->label(__('supplier::fields.lead_time_days'))
-                        ->numeric()
-                        ->rules(SupplierRules::for('lead_time_days')),
-                    TextInput::make('minimum_order_value')
-                        ->label(__('supplier::fields.minimum_order_value'))
-                        ->numeric()
-                        ->rules(SupplierRules::for('minimum_order_value')),
-                    Textarea::make('note')
-                        ->label(__('supplier::fields.note'))
-                        ->rules(SupplierRules::for('note'))
-                        ->columnSpanFull(),
-                    Textarea::make('data')
-                        ->label(__('supplier::fields.data'))
-                        ->columnSpanFull()
-                        ->cols(100)
-                        ->rows(10)
-                        ->formatStateUsing(function ($state) {
-                            return json_encode((array) $state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                        }),
-                ])
-                ->columns(2)
-                ->columnSpanFull(),
-        ];
+        ]);
+    }
 
-        return $form->components($schema);
+    protected static function domainSection(): Section
+    {
+        $translation = static::featureTranslation();
+
+        return Section::make(FeatureFields::label($translation, 'domain'))
+            ->schema([
+                Select::make('supplier_type')
+                    ->label(FeatureFields::label($translation, 'supplier_type'))
+                    ->options([
+                        'Producer' => 'Producer',
+                        'Distributor' => 'Distributor',
+                    ])
+                    ->required()
+                    ->rules(static::featureRules('supplier_type')),
+                TextInput::make('supplier_name')
+                    ->label(FeatureFields::label($translation, 'supplier_name'))
+                    ->required()
+                    ->maxLength(255)
+                    ->rules(static::featureRules('supplier_name')),
+                TextInput::make('supplier_number')
+                    ->label(FeatureFields::label($translation, 'supplier_number'))
+                    ->required()
+                    ->maxLength(255)
+                    ->rules(static::featureRules('supplier_number')),
+                Textarea::make('note')
+                    ->label(FeatureFields::label($translation, 'note'))
+                    ->rules(static::featureRules('note'))
+                    ->columnSpanFull(),
+            ])
+            ->columns(2);
+    }
+
+    protected static function dataSection(): Section
+    {
+        $translation = static::featureTranslation();
+
+        return Section::make(FeatureFields::label($translation, 'data'))
+            ->schema([
+                Textarea::make('data')
+                    ->label(FeatureFields::label($translation, 'data'))
+                    ->rows(8)
+                    ->formatStateUsing(function (mixed $state): string {
+                        if (is_string($state)) {
+                            return $state;
+                        }
+
+                        if ($state === null || $state === []) {
+                            return '';
+                        }
+
+                        $encoded = json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+                        return is_string($encoded) ? $encoded : '';
+                    })
+                    ->dehydrateStateUsing(function (mixed $state): ?array {
+                        if (! is_string($state) || $state === '' || $state === '{}' || $state === '[]') {
+                            return null;
+                        }
+
+                        $decoded = json_decode($state, true);
+
+                        return is_array($decoded) ? $decoded : null;
+                    })
+                    ->dehydrated(fn (mixed $state): bool => is_string($state) && $state !== '' && $state !== '{}' && $state !== '[]')
+                    ->rules(static::featureRules('data'))
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    protected static function featureTranslation(): string
+    {
+        return 'supplier::fields';
+    }
+
+    /**
+     * @return list<string|ValidationRule>
+     */
+    protected static function featureRules(string $field): array
+    {
+        return SupplierRules::for($field);
     }
 
     public static function table(Table $table): Table
     {
+        $translation = static::featureTranslation();
+
         return $table
             ->columns([
-                TextColumn::make('supplier_name')
-                    ->label(__('supplier::fields.supplier_name'))
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('supplier_number')
-                    ->label(__('supplier::fields.supplier_number'))
+                    ->label(FeatureFields::label($translation, 'supplier_number'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('status')
-                    ->label(__('supplier::fields.status'))
+                TextColumn::make('supplier_name')
+                    ->label(FeatureFields::label($translation, 'supplier_name'))
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('supplier_type')
+                    ->label(FeatureFields::label($translation, 'supplier_type'))
                     ->badge()
                     ->sortable(),
-                IconColumn::make('is_preferred')
-                    ->label(__('supplier::fields.is_preferred'))
-                    ->boolean()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('lead_time_days')
-                    ->label(__('supplier::fields.lead_time_days'))
-                    ->toggleable(),
-                TextColumn::make('minimum_order_value')
-                    ->label(__('supplier::fields.minimum_order_value'))
-                    ->money('EUR')
-                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_active')
-                    ->label(__('supplier::fields.is_active'))
+                    ->label(FeatureFields::label($translation, 'is_active'))
                     ->boolean(),
-                TextColumn::make('created_at')
+                TextColumn::make('external_reference')
+                    ->label(FeatureFields::label($translation, 'external_reference'))
+                    ->toggleable(),
+                TextColumn::make('updated_at')
+                    ->label(FeatureFields::label($translation, 'updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                ...static::getTaxonomyColumns(),
             ])
-            ->defaultSort('supplier_name')
-            ->recordActions([...static::getTableActions()])
-            ->toolbarActions([...static::getBulkActions()])
+            ->defaultSort('supplier_number')
             ->filters([
-                ...static::getSupplierTableFilters(),
-                ...static::getTaxonomyFilters(),
+                SelectFilter::make('supplier_type')
+                    ->label(FeatureFields::label($translation, 'supplier_type'))
+                    ->options([
+                        'Producer' => 'Producer',
+                        'Distributor' => 'Distributor',
+                    ]),
+                TernaryFilter::make('is_active')
+                    ->label(FeatureFields::label($translation, 'is_active')),
             ])
-            ->deferFilters(false)
-            ->persistFiltersInSession();
-    }
-
-    /**
-     * @return array<SelectFilter|TernaryFilter>
-     */
-    protected static function getSupplierTableFilters(): array
-    {
-        return [
-            SelectFilter::make('status')
-                ->label(__('supplier::fields.status'))
-                ->options(static::configOptions('supplier.statuses')),
-            TernaryFilter::make('is_active')
-                ->label(__('supplier::fields.is_active')),
-        ];
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    protected static function configOptions(string $configKey): array
-    {
-        /** @var mixed $configured */
-        $configured = config($configKey, []);
-        $values = is_array($configured) ? $configured : [];
-
-        $options = [];
-        foreach ($values as $value) {
-            if (is_string($value) && $value !== '') {
-                $options[$value] = $value;
-            }
-        }
-
-        return $options;
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                DeleteBulkAction::make(),
+            ]);
     }
 
     public static function getPages(): array
@@ -262,8 +231,8 @@ class SupplierResource extends BaseRecordResource
         return [
             'index' => ListSuppliers::route('/'),
             'create' => CreateSupplier::route('/create'),
-            'edit' => EditSupplier::route('/{record}/edit'),
             'view' => ViewSupplier::route('/{record}'),
+            'edit' => EditSupplier::route('/{record}/edit'),
         ];
     }
 }
