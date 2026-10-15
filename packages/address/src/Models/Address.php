@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Address\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Traits\Relations\HasRelations;
 use Moox\Support\Audit\HasAudit;
@@ -84,5 +85,13 @@ class Address extends Model
             'archived_at' => 'datetime',
             'restored_at' => 'datetime',
         ];
+    }
+
+    /**
+     * @return MorphTo<Model, $this>
+     */
+    public function owner(): MorphTo
+    {
+        return $this->morphTo();
     }
 }

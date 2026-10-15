@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'owner_types' => [],
     'relations' => [
         'country' => [
             'kind' => 'belongs_to',
