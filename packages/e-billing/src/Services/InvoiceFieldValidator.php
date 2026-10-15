@@ -6,6 +6,7 @@ namespace Moox\EBilling\Services;
 
 use Moox\Company\Models\Company;
 use Moox\Customer\Models\Customer;
+use Moox\EBilling\Adapters\ZugferdAddressAdapter;
 use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
 use Moox\EBilling\Enums\AttributionSource;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
@@ -28,6 +29,7 @@ use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceLine;
 use Moox\Invoice\Support\En16931\Address;
 use Moox\Invoice\Support\En16931\Party;
+use Moox\Zugferd\Support\ShipToPartyEquality;
 use RuntimeException;
 
 class InvoiceFieldValidator
@@ -318,13 +320,11 @@ class InvoiceFieldValidator
             ),
             'buyer_email' => $this->validateBuyerEmailField($document, $priority),
             'delivery_address' => $this->validateDeliveryAddressField(
-                $priority,
                 $invoice->delivery,
                 null,
                 $invoice->buyer,
                 $matchedCustomer,
                 $matchedCompany,
-                false,
             ),
             'shipping_cost', 'packaging_cost', 'minimum_quantity_surcharge', 'freight_flat_rate',
             'certificate_cost', 'customs_cost',
@@ -698,24 +698,30 @@ class InvoiceFieldValidator
     }
 
     /**
-     * @return array{status: string, source?: string, matched_id?: string}
+     * Only a separate consignee is corroborated: one that is printed and is not the same party as the buyer, nor
+     * (on a line) as the header consignee that already carries the verdict. A miss is information only, unless the
+     * consignee carries the buyer's name: one of the buyer's own sites belongs among the master-data delivery
+     * addresses.
+     *
+     * @return array{status: string, source?: string, matched_id?: string, reason?: string}
      */
     private function validateDeliveryAddressField(
-        string $priority,
-        ?Party $explicitParty,
-        ?Party $headerDelivery,
+        ?Party $consignee,
+        ?Party $headerConsignee,
         ?Party $buyer,
         ?Customer $matchedCustomer,
         ?Company $matchedCompany,
-        bool $isInvoiceLine,
     ): array {
-        $effectiveParty = $this->resolveEffectiveDeliveryParty($explicitParty, $headerDelivery, $buyer);
-
-        if ($this->isDeliveryPartyEmpty($effectiveParty)) {
-            return $this->entryForEmptyField('delivery_address', $priority, $isInvoiceLine);
+        if (! $consignee instanceof Party
+            || $this->isDeliveryPartyEmpty($consignee)
+            || $this->isSameParty($consignee, $buyer)
+            || $this->isSameParty($consignee, $headerConsignee)) {
+            return ['status' => 'not_applicable'];
         }
 
-        if ($effectiveParty !== $buyer && $this->isConsigneeWithoutPostalAddress($effectiveParty, $buyer)) {
+        $carriesBuyerName = $this->carriesBuyerName($consignee, $buyer);
+
+        if (! $carriesBuyerName && $this->hasNoPostalAddress($consignee)) {
             return ['status' => 'needs_review', 'reason' => 'consignee_address_missing'];
         }
 
@@ -723,15 +729,19 @@ class InvoiceFieldValidator
             return ['status' => 'parsed'];
         }
 
-        if (! $effectiveParty instanceof Party) {
-            return $this->entryForEmptyField('delivery_address', $priority, $isInvoiceLine);
+        $corroborator = new AttributionCorroborator;
+
+        if ($carriesBuyerName) {
+            $match = $corroborator->findOwnSiteDeliveryAddress($consignee->address, $matchedCompany);
+
+            return [
+                'status' => ($match['exists'] ?? false) ? 'db_validated' : 'needs_review',
+                'source' => 'auto',
+                'matched_id' => ($match['matched_id'] ?? '') ?: (string) $matchedCustomer->getKey(),
+            ];
         }
 
-        $result = (new AttributionCorroborator)->corroborateDeliveryParty(
-            $effectiveParty,
-            $matchedCustomer,
-            $matchedCompany,
-        );
+        $result = $corroborator->corroborateDeliveryParty($consignee, $matchedCustomer, $matchedCompany);
 
         if ($result['corroborates']) {
             return [
@@ -741,52 +751,46 @@ class InvoiceFieldValidator
             ];
         }
 
-        return [
-            'status' => 'needs_review',
-            'source' => 'auto',
-            'matched_id' => $result['matched_id'],
-        ];
+        return ['status' => 'parsed', 'reason' => 'consignee_not_in_master_data'];
     }
 
     /**
-     * A consignee named apart from the buyer but printed without street, postal code or city: the goods went to a
-     * party whose address the document does not give, so review has to supply it. "Postal address" means what
-     * {@see \Moox\EBilling\Data\Address::hasPostalData()} means, read here from the EN 16931 party.
+     * The one definition of "same party" shared with emission, which omits a consignee equal to the buyer.
      */
-    private function isConsigneeWithoutPostalAddress(?Party $consignee, ?Party $buyer): bool
+    private function isSameParty(Party $consignee, ?Party $other): bool
     {
-        if (! $consignee instanceof Party) {
+        if (! $other instanceof Party) {
             return false;
         }
 
-        $address = $consignee->address;
-        if (trim($address->line1) !== '' || trim($address->postal_code) !== '' || trim($address->city) !== '') {
-            return false;
-        }
-
-        $consigneeName = mb_strtolower($this->normalizeString($consignee->name));
-
-        return $consigneeName !== '' && $consigneeName !== mb_strtolower($this->normalizeString($buyer?->name));
+        return ShipToPartyEquality::equals(
+            $consignee->name,
+            new ZugferdAddressAdapter($consignee->address),
+            $other->name,
+            new ZugferdAddressAdapter($other->address),
+        );
     }
 
-    private function resolveEffectiveDeliveryParty(
-        ?Party $explicitParty,
-        ?Party $headerDelivery,
-        ?Party $buyer,
-    ): ?Party {
-        if (! $this->isDeliveryPartyEmpty($explicitParty)) {
-            return $explicitParty;
-        }
+    /**
+     * Name only, unlike {@see self::isSameParty()}: a consignee with the buyer's name but another address is one of
+     * the buyer's own sites, not the buyer itself.
+     */
+    private function carriesBuyerName(Party $consignee, ?Party $buyer): bool
+    {
+        $consigneeName = mb_strtolower($this->normalizeString($consignee->name));
 
-        if (! $this->isDeliveryPartyEmpty($headerDelivery)) {
-            return $headerDelivery;
-        }
+        return $consigneeName !== '' && $consigneeName === mb_strtolower($this->normalizeString($buyer?->name));
+    }
 
-        if (! $this->isDeliveryPartyEmpty($buyer)) {
-            return $buyer;
-        }
+    /**
+     * No street, postal code or city: what {@see \Moox\EBilling\Data\Address::hasPostalData()} means, read here from
+     * the EN 16931 party.
+     */
+    private function hasNoPostalAddress(Party $consignee): bool
+    {
+        $address = $consignee->address;
 
-        return null;
+        return trim($address->line1) === '' && trim($address->postal_code) === '' && trim($address->city) === '';
     }
 
     /**
@@ -1016,13 +1020,11 @@ class InvoiceFieldValidator
     ): array {
         $validation = match ($field) {
             'delivery_address' => $this->validateDeliveryAddressField(
-                $priority,
                 $line->delivery,
                 $invoice->delivery,
                 $invoice->buyer,
                 $matchedCustomer,
                 $matchedCompany,
-                true,
             ),
             'vat_category' => $this->validateGenericInvoiceField($invoice, 'vat_category', $priority),
             'surcharge_amount', 'surcharge_description' => $this->validateLineSurchargeField($line, $field, $priority),

@@ -178,6 +178,20 @@ final class AttributionCorroborator
     }
 
     /**
+     * Existence check of one of the buyer's own sites: the delivery role only, no postal/billing fallback.
+     *
+     * @return array{exists: bool, matched_id: string}|null null when invoice address is empty
+     */
+    public function findOwnSiteDeliveryAddress(?InvoiceAddress $invoiceAddress, ?Company $company): ?array
+    {
+        return $this->findAddressAmongRoleTiers(
+            $invoiceAddress,
+            $company,
+            [array_slice($this->deliveryAddressRoles(), 0, 1)],
+        );
+    }
+
+    /**
      * @param  list<list<string>>  $roleTiers
      * @return array{exists: bool, matched_id: string}|null
      */

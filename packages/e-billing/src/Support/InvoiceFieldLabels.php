@@ -298,6 +298,10 @@ final class InvoiceFieldLabels
             return __('e-billing::fields.hint_info_buyer_email');
         }
 
+        if ($field === 'delivery_address' && ($validation['reason'] ?? null) === 'consignee_not_in_master_data') {
+            return __('e-billing::fields.hint_info_consignee_not_in_master_data');
+        }
+
         // Preceding invoice lookup warns without blocking (ADR 0009 addendum).
         if ($field === 'preceding_invoice_number') {
             return match ($validation['reason'] ?? null) {
