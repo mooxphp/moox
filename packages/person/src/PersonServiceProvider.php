@@ -62,7 +62,6 @@ class PersonServiceProvider extends MooxServiceProvider
                 'src/Resources/Person/Pages/ListPersons.php',
                 'src/Resources/Person/Pages/ViewPerson.php',
                 'src/Resources/PersonResource.php',
-                'src/Support/PersonRules.php',
                 'src/Plugins/PersonPlugin.php',
                 'resources/lang/de/fields.php',
             ])

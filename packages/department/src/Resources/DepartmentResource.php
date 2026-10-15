@@ -22,10 +22,10 @@ use Moox\Department\Resources\Department\Pages\CreateDepartment;
 use Moox\Department\Resources\Department\Pages\EditDepartment;
 use Moox\Department\Resources\Department\Pages\ListDepartments;
 use Moox\Department\Resources\Department\Pages\ViewDepartment;
-use Moox\Department\Support\DepartmentRules;
 use Moox\Support\Active\HasActiveForm;
 use Moox\Support\Archive\HasArchiveForm;
 use Moox\Support\Audit\HasAuditForm;
+use Moox\Support\Data\HasDataForm;
 use Moox\Support\External\HasExternalForm;
 use Moox\Support\Filament\FeatureFields;
 use Moox\Support\Identity\HasIdentityForm;
@@ -38,6 +38,7 @@ class DepartmentResource extends Resource
     use HasActiveForm;
     use HasArchiveForm;
     use HasAuditForm;
+    use HasDataForm;
     use HasExternalForm;
     use HasIdentityForm;
     use HasRelationForm;
@@ -116,43 +117,6 @@ class DepartmentResource extends Resource
             ]);
     }
 
-    protected static function dataSection(): Section
-    {
-        $translation = static::featureTranslation();
-
-        return Section::make(FeatureFields::label($translation, 'data'))
-            ->schema([
-                Textarea::make('data')
-                    ->label(FeatureFields::label($translation, 'data'))
-                    ->rows(8)
-                    ->formatStateUsing(function (mixed $state): string {
-                        if (is_string($state)) {
-                            return $state;
-                        }
-
-                        if ($state === null || $state === []) {
-                            return '';
-                        }
-
-                        $encoded = json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-
-                        return is_string($encoded) ? $encoded : '';
-                    })
-                    ->dehydrateStateUsing(function (mixed $state): ?array {
-                        if (! is_string($state) || $state === '' || $state === '{}' || $state === '[]') {
-                            return null;
-                        }
-
-                        $decoded = json_decode($state, true);
-
-                        return is_array($decoded) ? $decoded : null;
-                    })
-                    ->dehydrated(fn (mixed $state): bool => is_string($state) && $state !== '' && $state !== '{}' && $state !== '[]')
-                    ->rules(static::featureRules('data'))
-                    ->columnSpanFull(),
-            ]);
-    }
-
     protected static function featureTranslation(): string
     {
         return 'department::fields';
@@ -163,7 +127,14 @@ class DepartmentResource extends Resource
      */
     protected static function featureRules(string $field): array
     {
-        return DepartmentRules::for($field);
+        return match ($field) {
+            'is_active' => ['boolean'],
+            'title', 'slug' => ['required', 'string', 'max:255'],
+            'note' => ['nullable', 'string'],
+            'external_reference', 'external_info', 'external_status' => ['nullable', 'string', 'max:255'],
+            'contact_id' => ['required', 'integer'],
+            default => [],
+        };
     }
 
     public static function table(Table $table): Table
