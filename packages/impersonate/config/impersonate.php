@@ -48,4 +48,23 @@ return [
         'log_name' => env('MOOX_IMPERSONATE_AUDIT_LOG', 'impersonate'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Shield / Spatie permissions
+    |--------------------------------------------------------------------------
+    |
+    | Who may impersonate is controlled by Shield roles — not by .env.
+    | Ops only toggles enabled + targets above. Permission names are app
+    | constants; register the same keys as Filament Shield custom permissions.
+    |
+    */
+
+    'permissions' => [
+        'required' => true,
+        'targets' => [
+            'portal' => 'Impersonate:PortalUser',
+            'finance' => 'Impersonate:FinanceUser',
+        ],
+    ],
+
 ];

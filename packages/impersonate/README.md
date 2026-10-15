@@ -7,6 +7,7 @@ Filament user impersonation for Moox — built on [stechstudio/filament-imperson
 ## Features
 
 - Global enable switch plus an allowlist of targets (`impersonate.enabled` / `impersonate.targets`)
+- Optional Shield/Spatie gate (`impersonate.permissions`) — config **and** permission must pass
 - Registers enter/leave listeners that log to moox/audit when that package is installed
 - While impersonating, Spatie activity causer resolves to the real admin (via moox/audit `CauserResolver`)
 - Filament action factory so resources soft-depend on this package instead of STS directly
@@ -45,7 +46,9 @@ use Moox\Impersonate\Filament\Actions\ImpersonateAction;
 
 public static function impersonateAction(): ?Action
 {
-    if (! class_exists(ImpersonateAction::class) || ! ImpersonateAction::isEnabled('finance')) {
+    $user = auth()->user();
+
+    if (! class_exists(ImpersonateAction::class) || ! ImpersonateAction::userMay($user, 'finance')) {
         return null;
     }
 
@@ -56,7 +59,7 @@ public static function impersonateAction(): ?Action
 }
 ```
 
-Targets need `canBeImpersonated(): bool` on the model; admins need `canImpersonate(): bool`.
+Targets need `canBeImpersonated(): bool` on the model; admins need `canImpersonate(): bool` (should call `ImpersonateAction::userMay($this)`).
 
 ### Config
 
@@ -67,6 +70,8 @@ MOOX_IMPERSONATE_ENABLED=true
 MOOX_IMPERSONATE_TARGETS=finance,portal
 MOOX_IMPERSONATE_AUDIT=true
 ```
+
+Who may impersonate is **not** an env flag — register Shield custom permissions `Impersonate:PortalUser` / `Impersonate:FinanceUser` and assign them to Admin/Support roles.
 
 ### User-device trust while impersonating
 
