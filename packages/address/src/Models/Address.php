@@ -4,46 +4,67 @@ declare(strict_types=1);
 
 namespace Moox\Address\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Address\Database\Factories\AddressFactory;
-use Moox\Address\Exceptions\DuplicateAddressException;
-use Moox\Address\Support\AddressFingerprint;
-use Moox\Core\Entities\Items\Item\BaseItemModel;
-use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Moox\Core\Traits\Relations\HasRelations;
+use Moox\Support\Audit\HasAudit;
+use Moox\Support\Identity\HasIdentifier;
 
-/**
- * @method HasMany<AddressAssignment, $this> addressAssignments()
- *
- * @property string $street
- * @property string|null $street2
- * @property string $postal_code
- * @property string $city
- * @property string|null $state
- * @property string $country_code
- * @property bool $is_primary
- * @property array<string, mixed>|null $data
- */
-class Address extends BaseItemModel
+class Address extends Model
 {
-    /** @use HasFactory<AddressFactory> */
-    use HasFactory;
-
-    use HasModelTaxonomy;
+    use HasAudit;
+    use HasIdentifier;
+    use HasRelations;
     use SoftDeletes;
 
+    protected $table = 'addresses';
+
+    /**
+     * @var list<string>
+     */
     protected $fillable = [
+        'is_active',
         'street',
-        'street2',
+        'house_number',
+        'address_line_2',
+        'po_box',
         'postal_code',
         'city',
         'state',
-        'country_code',
-        'is_primary',
+        'note',
+        'external_reference',
+        'external_info',
+        'external_status',
+        'owner_id',
+        'owner_type',
+        'country_id',
         'data',
+        'created_by_id',
+        'created_by_type',
+        'updated_by_id',
+        'updated_by_type',
+        'archived_at',
+        'archived_by_id',
+        'archived_by_type',
+        'deleted_at',
+        'deleted_by_id',
+        'deleted_by_type',
+        'restored_at',
+        'restored_by_id',
+        'restored_by_type',
     ];
+
+    /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'is_active' => true,
+    ];
+
+    public static function getResourceName(): string
+    {
+        return 'address';
+    }
 
     /**
      * @return array<string, string>
@@ -51,76 +72,17 @@ class Address extends BaseItemModel
     protected function casts(): array
     {
         return [
-            'is_primary' => 'boolean',
+            'is_active' => 'boolean',
             'data' => 'array',
+            'owner_id' => 'integer',
+            'country_id' => 'integer',
+            'created_by_id' => 'integer',
+            'updated_by_id' => 'integer',
+            'archived_by_id' => 'integer',
+            'deleted_by_id' => 'integer',
+            'restored_by_id' => 'integer',
+            'archived_at' => 'datetime',
+            'restored_at' => 'datetime',
         ];
-    }
-
-    public static function getResourceName(): string
-    {
-        return 'address';
-    }
-
-    public static function newFactory(): AddressFactory
-    {
-        return AddressFactory::new();
-    }
-
-    protected static function booted(): void
-    {
-        static::saving(function (Address $address): void {
-            if ($address->country_code !== null) {
-                $address->country_code = strtoupper(trim($address->country_code));
-            }
-
-            if ($address->findDuplicate()) {
-                throw DuplicateAddressException::forAddress();
-            }
-        });
-    }
-
-    public function findDuplicate(): ?self
-    {
-        $query = $this->scopeWithFingerprint(
-            static::query(),
-            AddressFingerprint::fromAddress($this),
-        );
-
-        if ($this->exists) {
-            $query->whereKeyNot($this->getKey());
-        }
-
-        return $query->first();
-    }
-
-    /**
-     * @param  Builder<covariant Address>  $query
-     * @param  array<string, ?string>  $fingerprint
-     * @return Builder<covariant Address>
-     */
-    public function scopeWithFingerprint(Builder $query, array $fingerprint): Builder
-    {
-        foreach (AddressFingerprint::columns() as $column) {
-            $value = $fingerprint[$column] ?? null;
-
-            if ($value === null) {
-                $query->whereNull($column);
-            } else {
-                $query->where($column, $value);
-            }
-        }
-
-        return $query;
-    }
-
-    public function formattedLine(): string
-    {
-        return collect([
-            trim(implode(' ', array_filter([$this->street, $this->street2]))),
-            trim(implode(' ', array_filter([$this->postal_code, $this->city]))),
-            $this->country_code,
-        ])
-            ->filter()
-            ->implode(', ');
     }
 }

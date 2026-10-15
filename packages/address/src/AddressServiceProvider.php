@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Address;
 
-use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -18,7 +17,6 @@ class AddressServiceProvider extends MooxServiceProvider
             ->hasTranslations()
             ->hasMigrations([
                 'create_addresses_table',
-                'create_address_assignments_table',
             ])
             ->hasCommands();
 
@@ -28,19 +26,19 @@ class AddressServiceProvider extends MooxServiceProvider
             ->stability('stable')
             ->category('development')
             ->usedFor([
-                '%%UsedFor%%',
+                'Address records with polymorphic owner',
             ])
             ->alternatePackages([
-                '', // optional alternative package (e.g. moox/post)
+                '',
             ])
             ->templateFor([
-                'creating simple Laravel packages',
+                'creating address entities',
             ])
             ->templateReplace([
                 'Address' => '%%PackageName%%',
                 'address' => '%%PackageSlug%%',
-                'Address is a simple Moox Entity, that can be used to create and manage addresses.' => '%%Description%%',
-                'building a simple Moox Entity, not used as installed package' => '%%UsedFor%%',
+                'Address is a Moox Entity for addresses with polymorphic owner.' => '%%Description%%',
+                'Address records with polymorphic owner' => '%%UsedFor%%',
                 'released(true)' => 'released(false)',
                 'stability(stable)' => 'stability(dev)',
                 'category(development)' => 'category(unknown)',
@@ -55,38 +53,21 @@ class AddressServiceProvider extends MooxServiceProvider
             ])
             ->templateEntityFiles([
                 'config/address.php',
-                'database/factories/AddressFactory.php',
                 'database/migrations/create_addresses_table.php.stub',
-                'database/migrations/create_address_assignments_table.php.stub',
-                'src/Models/AddressAssignment.php',
-                'src/Concerns/HasAddresses.php',
                 'resources/lang/en/address.php',
+                'resources/lang/en/fields.php',
                 'src/Models/Address.php',
-                'src/Frontend/AddressFrontend.php',
                 'src/Resources/Address/Pages/CreateAddress.php',
                 'src/Resources/Address/Pages/EditAddress.php',
                 'src/Resources/Address/Pages/ListAddresses.php',
                 'src/Resources/Address/Pages/ViewAddress.php',
                 'src/Resources/AddressResource.php',
-                'src/Resources/Address/RelationManagers/AddressablesRelationManager.php',
-                'src/Support/AddressRelationConfig.php',
+                'src/Support/AddressRules.php',
                 'src/Plugins/AddressPlugin.php',
-                'resources/lang/en/fields.php',
                 'resources/lang/de/fields.php',
             ])
             ->templateRemove([
                 '',
             ]);
-    }
-
-    public function packageBooted(): void
-    {
-        if (
-            class_exists(AuditPackageRegistry::class)
-            && config('audit.enabled', true)
-            && config('address.audit.enabled', true)
-        ) {
-            AuditPackageRegistry::register('address', config('address.audit', []));
-        }
     }
 }

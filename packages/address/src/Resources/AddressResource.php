@@ -4,251 +4,248 @@ declare(strict_types=1);
 
 namespace Moox\Address\Resources;
 
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Moox\Address\Models\Address;
 use Moox\Address\Resources\Address\Pages\CreateAddress;
 use Moox\Address\Resources\Address\Pages\EditAddress;
 use Moox\Address\Resources\Address\Pages\ListAddresses;
 use Moox\Address\Resources\Address\Pages\ViewAddress;
 use Moox\Address\Support\AddressRules;
-use Moox\Core\Entities\Items\Record\BaseRecordResource;
-use Moox\Core\Traits\InteractsWithAuditResourceRelations;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
-use Moox\Data\Models\StaticCountry;
+use Moox\Support\Active\HasActiveForm;
+use Moox\Support\Archive\HasArchiveForm;
+use Moox\Support\Audit\HasAuditForm;
+use Moox\Support\External\HasExternalForm;
+use Moox\Support\Filament\FeatureFields;
+use Moox\Support\Identity\HasIdentityForm;
+use Moox\Support\Relation\HasRelationForm;
+use Moox\Support\SoftDelete\HasSoftDeleteForm;
 
-class AddressResource extends BaseRecordResource
+class AddressResource extends Resource
 {
-    use HasResourceTabs;
-    use HasResourceTaxonomy;
-    use InteractsWithAuditResourceRelations;
+    use HasActiveForm;
+    use HasArchiveForm;
+    use HasAuditForm;
+    use HasExternalForm;
+    use HasIdentityForm;
+    use HasRelationForm;
+    use HasSoftDeleteForm;
 
     protected static ?string $model = Address::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-location-on';
+    protected static ?string $recordTitleAttribute = 'street';
 
-    protected static function getEntityType(): string
-    {
-        return 'address';
-    }
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-place';
 
     public static function getModelLabel(): string
     {
-        return config('address.resources.address.single');
+        return __('address::address.address');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('address.resources.address.plural');
+        return __('address::address.addresses');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('address.resources.address.plural');
+        return __('address::address.addresses');
     }
 
-    public static function getBreadcrumb(): string
+    public static function form(Schema $schema): Schema
     {
-        return config('address.resources.address.single');
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return config('address.navigation_group');
-    }
-
-    public static function form(Schema $form): Schema
-    {
-        $taxonomyFields = static::getTaxonomyFields();
-
-        $schema = [
+        return $schema->components([
             Grid::make()
                 ->schema([
-                    Section::make()
+                    Grid::make(1)
                         ->schema([
-                            TextInput::make('street')
-                                ->label(__('address::fields.street'))
-                                ->required()
-                                ->rules(AddressRules::for('street'))
-                                ->maxLength(160),
-                            TextInput::make('street2')
-                                ->label(__('address::fields.street2'))
-                                ->rules(AddressRules::for('street2'))
-                                ->maxLength(160),
-                            Grid::make(2)
-                                ->schema([
-                                    TextInput::make('postal_code')
-                                        ->label(__('address::fields.postal_code'))
-                                        ->required()
-                                        ->rules(AddressRules::for('postal_code'))
-                                        ->maxLength(20),
-                                    TextInput::make('city')
-                                        ->label(__('address::fields.city'))
-                                        ->required()
-                                        ->rules(AddressRules::for('city'))
-                                        ->maxLength(120),
-                                ]),
-                            Grid::make(2)
-                                ->schema([
-                                    TextInput::make('state')
-                                        ->label(__('address::fields.state'))
-                                        ->rules(AddressRules::for('state'))
-                                        ->maxLength(120),
-                                    TextInput::make('country_code')
-                                        ->label(__('address::fields.country_code'))
-                                        ->required()
-                                        ->rules(AddressRules::for('country_code'))
-                                        ->maxLength(2)
-                                        ->length(2),
-                                ]),
-                            Toggle::make('is_primary')
-                                ->label(__('address::fields.is_primary')),
-                            Textarea::make('data')
-                                ->label(__('address::fields.data'))
-                                ->columnSpanFull()
-                                ->cols(100)
-                                ->rows(10)
-                                ->formatStateUsing(function ($state) {
-                                    return json_encode((array) $state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                                }),
+                            static::activeSection(),
+                            static::domainSection(),
+                            static::externalSection(),
+                            static::dataSection(),
                         ])
                         ->columnSpan(2),
-                    Grid::make()
+                    Grid::make(1)
                         ->schema([
-                            Section::make()
-                                ->schema([
-                                    static::getFormActions(),
-                                ]),
-                            Section::make('')
-                                ->schema($taxonomyFields),
-                            Section::make('')
-                                ->schema([
-                                    Section::make('')
-                                        ->schema([
-                                            ...static::getStandardTimestampFields(),
-                                        ]),
-                                ])
-                                ->hidden(fn (?Address $record) => $record === null),
+                            static::relationSection()->columns(1),
+                            static::identitySection()->columns(1),
+                            static::auditSection()->columns(1),
+                            static::archiveSection()->columns(1),
+                            static::softDeleteSection()->columns(1),
                         ])
-                        ->columnSpan(1)
-                        ->columns(1),
+                        ->columnSpan(1),
                 ])
                 ->columns(3)
                 ->columnSpanFull(),
-        ];
+        ]);
+    }
 
-        return $form->components($schema);
+    protected static function domainSection(): Section
+    {
+        $translation = static::featureTranslation();
+
+        return Section::make(FeatureFields::label($translation, 'domain'))
+            ->schema([
+                TextInput::make('street')
+                    ->label(FeatureFields::label($translation, 'street'))
+                    ->required()
+                    ->maxLength(255)
+                    ->rules(static::featureRules('street')),
+                TextInput::make('house_number')
+                    ->label(FeatureFields::label($translation, 'house_number'))
+                    ->required()
+                    ->maxLength(255)
+                    ->rules(static::featureRules('house_number')),
+                TextInput::make('address_line_2')
+                    ->label(FeatureFields::label($translation, 'address_line_2'))
+                    ->required()
+                    ->maxLength(255)
+                    ->rules(static::featureRules('address_line_2')),
+                TextInput::make('po_box')
+                    ->label(FeatureFields::label($translation, 'po_box'))
+                    ->required()
+                    ->maxLength(255)
+                    ->rules(static::featureRules('po_box')),
+                TextInput::make('postal_code')
+                    ->label(FeatureFields::label($translation, 'postal_code'))
+                    ->required()
+                    ->maxLength(255)
+                    ->rules(static::featureRules('postal_code')),
+                TextInput::make('city')
+                    ->label(FeatureFields::label($translation, 'city'))
+                    ->required()
+                    ->maxLength(255)
+                    ->rules(static::featureRules('city')),
+                TextInput::make('state')
+                    ->label(FeatureFields::label($translation, 'state'))
+                    ->required()
+                    ->maxLength(255)
+                    ->rules(static::featureRules('state')),
+                TextInput::make('owner_id')
+                    ->label(FeatureFields::label($translation, 'owner_id'))
+                    ->numeric()
+                    ->required()
+                    ->rules(static::featureRules('owner_id')),
+                TextInput::make('owner_type')
+                    ->label(FeatureFields::label($translation, 'owner_type'))
+                    ->required()
+                    ->maxLength(255)
+                    ->rules(static::featureRules('owner_type')),
+                Textarea::make('note')
+                    ->label(FeatureFields::label($translation, 'note'))
+                    ->rules(static::featureRules('note'))
+                    ->columnSpanFull(),
+            ])
+            ->columns(2);
+    }
+
+    protected static function dataSection(): Section
+    {
+        $translation = static::featureTranslation();
+
+        return Section::make(FeatureFields::label($translation, 'data'))
+            ->schema([
+                Textarea::make('data')
+                    ->label(FeatureFields::label($translation, 'data'))
+                    ->rows(8)
+                    ->formatStateUsing(function (mixed $state): string {
+                        if (is_string($state)) {
+                            return $state;
+                        }
+
+                        if ($state === null || $state === []) {
+                            return '';
+                        }
+
+                        $encoded = json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+                        return is_string($encoded) ? $encoded : '';
+                    })
+                    ->dehydrateStateUsing(function (mixed $state): ?array {
+                        if (! is_string($state) || $state === '' || $state === '{}' || $state === '[]') {
+                            return null;
+                        }
+
+                        $decoded = json_decode($state, true);
+
+                        return is_array($decoded) ? $decoded : null;
+                    })
+                    ->dehydrated(fn (mixed $state): bool => is_string($state) && $state !== '' && $state !== '{}' && $state !== '[]')
+                    ->rules(static::featureRules('data'))
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    protected static function featureTranslation(): string
+    {
+        return 'address::fields';
+    }
+
+    /**
+     * @return list<string|ValidationRule>
+     */
+    protected static function featureRules(string $field): array
+    {
+        return AddressRules::for($field);
     }
 
     public static function table(Table $table): Table
     {
+        $translation = static::featureTranslation();
+
         return $table
             ->columns([
                 TextColumn::make('street')
-                    ->label(__('address::fields.street'))
+                    ->label(FeatureFields::label($translation, 'street'))
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('house_number')
+                    ->label(FeatureFields::label($translation, 'house_number'))
+                    ->toggleable(),
+                TextColumn::make('postal_code')
+                    ->label(FeatureFields::label($translation, 'postal_code'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('city')
-                    ->label(__('address::fields.city'))
+                    ->label(FeatureFields::label($translation, 'city'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('postal_code')
-                    ->label(__('address::fields.postal_code'))
-                    ->searchable(),
-                TextColumn::make('country_code')
-                    ->label(__('address::fields.country_code')),
-                IconColumn::make('is_primary')
-                    ->label(__('address::fields.is_primary'))
+                IconColumn::make('is_active')
+                    ->label(FeatureFields::label($translation, 'is_active'))
                     ->boolean(),
-                TextColumn::make('address_assignments_count')
-                    ->counts('addressAssignments')
-                    ->label(__('address::fields.assignments')),
-                TextColumn::make('created_at')
+                TextColumn::make('owner_type')
+                    ->label(FeatureFields::label($translation, 'owner_type'))
+                    ->toggleable(),
+                TextColumn::make('updated_at')
+                    ->label(FeatureFields::label($translation, 'updated_at'))
                     ->dateTime()
-                    ->sortable(),
-                ...static::getTaxonomyColumns(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('id', 'desc')
-            ->recordActions([...static::getTableActions()])
-            ->toolbarActions([...static::getBulkActions()])
+            ->defaultSort('city')
             ->filters([
-                ...static::getAddressTableFilters(),
-                ...static::getTaxonomyFilters(),
+                TernaryFilter::make('is_active')
+                    ->label(FeatureFields::label($translation, 'is_active')),
             ])
-            ->deferFilters(false)
-            ->persistFiltersInSession();
-    }
-
-    /**
-     * @return array<SelectFilter|TernaryFilter>
-     */
-    protected static function getAddressTableFilters(): array
-    {
-        return [
-            SelectFilter::make('city')
-                ->label(__('address::fields.city'))
-                ->options(fn (): array => static::getDistinctFilterOptions('city'))
-                ->searchable()
-                ->preload(),
-            SelectFilter::make('postal_code')
-                ->label(__('address::fields.postal_code'))
-                ->options(fn (): array => static::getDistinctFilterOptions('postal_code'))
-                ->searchable()
-                ->preload(),
-            TernaryFilter::make('is_primary')
-                ->label(__('address::fields.is_primary')),
-            SelectFilter::make('country_code')
-                ->label(__('address::fields.country_code'))
-                ->options(fn (): array => static::getCountryFilterOptions())
-                ->searchable()
-                ->preload(),
-        ];
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    protected static function getDistinctFilterOptions(string $column): array
-    {
-        return Address::query()
-            ->whereNotNull($column)
-            ->where($column, '!=', '')
-            ->distinct()
-            ->orderBy($column)
-            ->pluck($column, $column)
-            ->all();
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    protected static function getCountryFilterOptions(): array
-    {
-        if (class_exists(StaticCountry::class) && \Illuminate\Support\Facades\Schema::hasTable('static_countries')) {
-            $model = StaticCountry::class;
-
-            return $model::query()
-                ->whereNotNull('alpha2')
-                ->orderBy('common_name')
-                ->get(['alpha2', 'common_name'])
-                ->mapWithKeys(fn ($country): array => [
-                    strtoupper((string) $country->alpha2) => sprintf('%s %s', $country->common_name, strtoupper((string) $country->alpha2)),
-
-                ])
-                ->all();
-        }
-
-        return static::getDistinctFilterOptions('country_code');
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                DeleteBulkAction::make(),
+            ]);
     }
 
     public static function getPages(): array
@@ -256,8 +253,8 @@ class AddressResource extends BaseRecordResource
         return [
             'index' => ListAddresses::route('/'),
             'create' => CreateAddress::route('/create'),
-            'edit' => EditAddress::route('/{record}/edit'),
             'view' => ViewAddress::route('/{record}'),
+            'edit' => EditAddress::route('/{record}/edit'),
         ];
     }
 }
