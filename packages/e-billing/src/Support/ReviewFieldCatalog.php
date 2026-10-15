@@ -36,6 +36,8 @@ final class ReviewFieldCatalog
         'order_number' => ['order_number' => 'text'],
         'order_date' => ['order_date' => 'date'],
         'customer_reference' => ['customer_reference' => 'text'],
+        'project_reference' => ['project_reference' => 'text'],
+        'project_name' => ['project_name' => 'text'],
         'payment_terms' => ['payment_terms' => 'textarea'],
         'material_test_certificate' => ['material_test_certificate' => 'text'],
         'supplier_name' => ['seller.name' => 'text'],

@@ -19,6 +19,7 @@ Moox Zugferd converts invoice data implementing `ZugferdInvoice` into valid ZUGF
 - Optional `supplierNumber` (BT-29; emit via `addDocumentSellerId` when non-empty, omit when empty/whitespace), `shipToName` / `shipToAddress` on invoice and lines (BG-13 via `setDocumentShipTo` / `setDocumentShipToAddress`); address is omitted when country is empty; ship-to tax registration and contact are never emitted
 - Omit duplicate ShipTo when name + postal fingerprint equals buyer (street, street2, postal code, country; city excluded; keep BT-72); VAT **K** still emits BG-15 (buyer postal OK). Promote shared distinct line ship-to when header empty; else BT-127 notes. Line `itemAttributes` / `itemClassifications` → BG-32 / BT-158; trade refs BT-13 / BT-16 (common line DN fallback) / BT-132 (`purchaseOrderLineReference`); line allowance/charges. `purchaseOrderDate` is never OrderReference IssueDate (UBL-CR-018)
 - Optional `precedingInvoices` on invoice (BG-3): one `ram:InvoiceReferencedDocument` per entry (IssuerAssignedID + optional FormattedIssueDateTime)
+- Optional `projectReference` / `projectName` on invoice: BT-11 project reference as `SpecifiedProcuringProject`; without a name the CII-required `Name` is `Project Reference`
 - Optional `paymentDiscounts` on invoice (early-payment discount tiers): one XRechnung `#SKONTO#TAGE=…#PROZENT=…#[BASISBETRAG=…#]` line per tier in BT-20, ahead of the free-text payment terms; requires payment terms text; a payment terms line starting with `#` loses its leading `#`
 
 <!--/features-->

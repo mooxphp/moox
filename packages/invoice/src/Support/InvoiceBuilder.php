@@ -41,6 +41,8 @@ class InvoiceBuilder
         $invoice->customer_reference = $draft->customer_reference;
         $invoice->order_number = $draft->order_number;
         $invoice->order_date = $draft->order_date;
+        $invoice->project_reference = $draft->project_reference;
+        $invoice->project_name = $draft->project_name;
         $invoice->delivery_date = $draft->delivery_date;
         $invoice->payment_terms = $draft->payment_terms;
         $invoice->shipping_method = $draft->shipping_method;

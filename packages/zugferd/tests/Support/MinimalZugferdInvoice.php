@@ -169,6 +169,10 @@ function minimalZugferdInvoice(
         /** @var list<array{days: int, percent: float, base_amount: ?float}> */
         public array $paymentDiscounts = [];
 
+        public ?string $projectReference = null;
+
+        public ?string $projectName = null;
+
         /**
          * @param  list<ZugferdAllowanceCharge>  $allowanceCharges
          */

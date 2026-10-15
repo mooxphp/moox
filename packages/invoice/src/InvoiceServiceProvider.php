@@ -32,6 +32,7 @@ class InvoiceServiceProvider extends MooxServiceProvider
                 'add_is_non_goods_to_invoice_lines_table',
                 'convert_invoice_notes_to_objects',
                 'add_payment_discounts_to_invoices_table',
+                'add_project_reference_to_invoices_table',
             ])
             ->hasCommands();
 

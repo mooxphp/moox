@@ -35,6 +35,8 @@ use Moox\Invoice\Support\InvoiceNotes;
  * @property list<InvoiceNote>|null $notes BT-22 notes with an optional BT-21 subject code
  * @property list<array{number: string, date: ?string}>|null $preceding_invoices
  * @property list<array{days: int, percent: float, base_amount: ?float, amount: ?float}>|null $payment_discounts
+ * @property string|null $project_reference BT-11 the buyer's project identifier
+ * @property string|null $project_name name of the BT-11 project
  */
 class Invoice extends BaseItemModel
 {
@@ -61,6 +63,8 @@ class Invoice extends BaseItemModel
         'customer_reference',
         'order_number',
         'order_date',
+        'project_reference',
+        'project_name',
         'delivery_date',
         'payment_terms',
         'shipping_method',
