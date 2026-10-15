@@ -425,6 +425,8 @@ return [
 
     // Field hints — informational (no validation status)
     'hint_info_buyer_email' => 'Delivery recipient — not checked against master data.',
+    'hint_info_consignee_not_in_master_data' => 'Consignee not in the buyer\'s master data — '
+        .'expected for a delivery to a third party (does not block).',
     'hint_warning_preceding_invoice_not_found' => 'Preceding invoice not found in the system — please check '
         .'(does not block).',
     'hint_warning_preceding_invoice_date_mismatch' => 'Date differs from the stored preceding invoice — '
