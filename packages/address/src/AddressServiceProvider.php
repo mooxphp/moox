@@ -13,10 +13,13 @@ class AddressServiceProvider extends MooxServiceProvider
     {
         $package
             ->name('address')
-            ->hasConfigFile()
+            ->hasConfigFile(['address', 'address-usage', 'address-usage-type'])
             ->hasTranslations()
             ->hasMigrations([
                 'create_addresses_table',
+                'create_address_usage_types_table',
+                'create_address_usage_type_translations_table',
+                'create_address_usages_table',
             ])
             ->hasCommands();
 
@@ -62,7 +65,6 @@ class AddressServiceProvider extends MooxServiceProvider
                 'src/Resources/Address/Pages/ListAddresses.php',
                 'src/Resources/Address/Pages/ViewAddress.php',
                 'src/Resources/AddressResource.php',
-                'src/Support/AddressRules.php',
                 'src/Plugins/AddressPlugin.php',
                 'resources/lang/de/fields.php',
             ])

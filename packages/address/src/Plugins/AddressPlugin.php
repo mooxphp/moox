@@ -7,6 +7,8 @@ namespace Moox\Address\Plugins;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Moox\Address\Resources\AddressResource;
+use Moox\Address\Resources\AddressUsageResource;
+use Moox\Address\Resources\AddressUsageTypeResource;
 
 class AddressPlugin implements Plugin
 {
@@ -19,6 +21,8 @@ class AddressPlugin implements Plugin
     {
         $panel->resources([
             AddressResource::class,
+            AddressUsageResource::class,
+            AddressUsageTypeResource::class,
         ]);
     }
 
