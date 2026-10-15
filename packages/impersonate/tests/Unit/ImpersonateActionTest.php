@@ -62,7 +62,9 @@ it('requires a mapped shield permission when permissions.required is true', func
             return null;
         }
 
-        public function setRememberToken($value): void {}
+        public function setRememberToken($value): void
+        {
+        }
 
         public function getRememberTokenName(): string
         {
