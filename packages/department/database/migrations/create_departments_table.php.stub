@@ -11,16 +11,43 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('departments', function (Blueprint $table): void {
-            $table->uuid('id')->primary();
-            $table->string('status', 30)->default('draft')->index();
-            $table->boolean('is_active')->default(true)->index();
-            $table->string('name', 160)->index();
-            $table->string('code', 40)->nullable()->index();
-            $table->text('description')->nullable();
-            $table->string('external_reference', 100)->nullable()->index();
+            $table->id();
+            $table->ulid('ulid')->unique();
+            $table->uuid('uuid')->unique();
+
+            $table->boolean('is_active')->default(true);
+
+            $table->string('title');
+            $table->string('slug')->unique();
+
+            $table->text('note')->nullable();
+
+            $table->string('external_reference')->nullable();
+            $table->string('external_info')->nullable();
+            // Allowed enum values are unset in the concept, so this cannot be a native ENUM yet.
+            $table->string('external_status')->nullable();
+
+            $table->unsignedBigInteger('contact_id');
+
             $table->json('data')->nullable();
-            $table->softDeletes();
-            $table->timestamps();
+
+            $table->timestamp('created_at');
+            $table->unsignedBigInteger('created_by_id');
+            $table->string('created_by_type');
+            $table->timestamp('updated_at');
+            $table->unsignedBigInteger('updated_by_id');
+            $table->string('updated_by_type');
+
+            $table->timestamp('archived_at')->nullable();
+            $table->unsignedBigInteger('archived_by_id')->nullable();
+            $table->string('archived_by_type')->nullable();
+
+            $table->timestamp('deleted_at')->nullable();
+            $table->unsignedBigInteger('deleted_by_id')->nullable();
+            $table->string('deleted_by_type')->nullable();
+            $table->timestamp('restored_at')->nullable();
+            $table->unsignedBigInteger('restored_by_id')->nullable();
+            $table->string('restored_by_type')->nullable();
         });
     }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Department\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 use Moox\Department\Models\Department;
 
 /**
@@ -19,31 +20,29 @@ class DepartmentFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->randomElement(['Sales', 'Support', 'Finance', 'Management', 'Logistics', 'IT']);
+        $title = fake()->randomElement(['Sales', 'Support', 'Finance', 'Management', 'Logistics', 'IT']);
 
         return [
-            'status' => fake()->randomElement(config('department.statuses', ['draft', 'active'])),
             'is_active' => true,
-            'name' => $name,
-            'code' => strtoupper(fake()->unique()->bothify('DEP-###')),
-            'description' => fake()->optional(0.4)->sentence(),
+            'title' => $title,
+            'slug' => Str::slug($title).'-'.fake()->unique()->numerify('###'),
+            'note' => fake()->optional(0.4)->sentence(),
             'external_reference' => fake()->optional(0.3)->uuid(),
+            'external_info' => fake()->optional()->sentence(),
+            'external_status' => null,
+            'contact_id' => 1,
             'data' => null,
+            'created_by_id' => 1,
+            'created_by_type' => 'App\\Models\\User',
+            'updated_by_id' => 1,
+            'updated_by_type' => 'App\\Models\\User',
         ];
-    }
-
-    public function draft(): static
-    {
-        return $this->state(fn (): array => [
-            'status' => 'draft',
-        ]);
     }
 
     public function inactive(): static
     {
         return $this->state(fn (): array => [
             'is_active' => false,
-            'status' => 'inactive',
         ]);
     }
 }
