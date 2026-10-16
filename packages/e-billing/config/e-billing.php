@@ -126,7 +126,10 @@ return [
     |--------------------------------------------------------------------------
     |
     | Internal admin uploads for documents that never enter the mailbox flow.
-    | Enabled per resource via resources.*.manual_upload.enabled.
+    | Enabled per resource via resources.*.manual_upload.enabled. The bulk
+    | upload (several files in one act, each its own document) is enabled per
+    | resource via resources.*.manual_upload.bulk_enabled and needs the single
+    | upload of that resource.
     |
     */
 
@@ -134,6 +137,7 @@ return [
         'source_disk' => env('EBILLING_MANUAL_SOURCE_DISK', 'local'),
         'source_path' => env('EBILLING_MANUAL_SOURCE_PATH', 'ebilling/manual-uploads/source'),
         'max_size_kb' => (int) env('EBILLING_MANUAL_MAX_SIZE_KB', 20480),
+        'bulk_max_files' => (int) env('EBILLING_MANUAL_UPLOAD_BULK_MAX_FILES', 50),
     ],
 
     'letterhead' => [
@@ -307,6 +311,7 @@ return [
                 'label' => 'Manual upload',
                 'scope' => 'invoices',
                 'requires_letterhead_overlay' => false,
+                'bulk_enabled' => (bool) env('EBILLING_INVOICES_MANUAL_UPLOAD_BULK_ENABLED', false),
             ],
         ],
         'credit_notes' => [
@@ -328,6 +333,7 @@ return [
                 // Codes the uploader chooses from (required, no preselection). One code = fixed, [] = the
                 // parser decides. Must be document_types, document_classification types and allowed codes.
                 'document_types' => ['381', '384'],
+                'bulk_enabled' => (bool) env('EBILLING_CREDIT_NOTES_MANUAL_UPLOAD_BULK_ENABLED', false),
             ],
         ],
     ],

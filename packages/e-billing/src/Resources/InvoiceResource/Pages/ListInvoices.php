@@ -26,6 +26,7 @@ final class ListInvoices extends ListRecords
     {
         return array_values(array_filter([
             InvoiceResource::getManualUploadAction(),
+            InvoiceResource::getBulkManualUploadAction(),
         ]));
     }
 }
