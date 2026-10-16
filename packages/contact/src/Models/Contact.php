@@ -63,6 +63,25 @@ class Contact extends Model
         return 'contact';
     }
 
+    public function callingCode(): ?string
+    {
+        if ($this->country_id === null) {
+            return null;
+        }
+
+        $country = $this->relationLoaded('country') ? $this->getRelation('country') : $this->country()->first();
+        if (! is_object($country)) {
+            return null;
+        }
+
+        $callingCode = $country->calling_code ?? null;
+        if (! is_string($callingCode) || trim($callingCode) === '') {
+            return null;
+        }
+
+        return trim($callingCode);
+    }
+
     /**
      * @return array<string, string>
      */
