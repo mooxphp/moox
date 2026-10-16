@@ -28,6 +28,7 @@ final class ListCreditNotes extends ListRecords
     {
         return array_values(array_filter([
             CreditNoteResource::getManualUploadAction(),
+            CreditNoteResource::getBulkManualUploadAction(),
         ]));
     }
 }
