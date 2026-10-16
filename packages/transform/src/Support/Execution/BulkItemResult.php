@@ -12,6 +12,7 @@ final class BulkItemResult
         public readonly ?string $destinationKey = null,
         public readonly ?string $sourceLabel = null,
         public readonly ?string $sourceReference = null,
+        public readonly ?string $externalId = null,
     ) {
     }
 }

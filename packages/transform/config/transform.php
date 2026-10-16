@@ -36,6 +36,17 @@ return [
     'job_timeout' => env('TRANSFORM_JOB_TIMEOUT', 0),
 
     /*
+    | User stored on created_by / updated_by when a transform runs.
+    */
+    'actor_email' => env('TRANSFORM_ACTOR_EMAIL'),
+
+    /*
+    | Class implementing Moox\Transform\Contracts\PreparesTransformSource.
+    | Runs before a queued transform so callers can narrow source_references.
+    */
+    'source_preparer' => null,
+
+    /*
     |--------------------------------------------------------------------------
     | Default locale for draft translation handling
     |--------------------------------------------------------------------------

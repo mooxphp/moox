@@ -7,7 +7,7 @@ namespace Moox\Communication\Resources;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
@@ -18,6 +18,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rule;
+use Moox\Communication\Enums\CommunicationValidationType;
 use Moox\Communication\Models\CommunicationType;
 use Moox\Communication\Resources\CommunicationType\Pages\CreateCommunicationType;
 use Moox\Communication\Resources\CommunicationType\Pages\EditCommunicationType;
@@ -92,10 +94,10 @@ class CommunicationTypeResource extends Resource
                 Toggle::make('mandatory')
                     ->label(FeatureFields::label($translation, 'mandatory'))
                     ->rules(static::featureRules('mandatory')),
-                TextInput::make('validation_type')
+                Select::make('validation_type')
                     ->label(FeatureFields::label($translation, 'validation_type'))
+                    ->options(array_combine(CommunicationValidationType::values(), CommunicationValidationType::values()))
                     ->required()
-                    ->maxLength(255)
                     ->rules(static::featureRules('validation_type')),
             ])
             ->columns(2);
@@ -112,7 +114,8 @@ class CommunicationTypeResource extends Resource
     protected static function featureRules(string $field): array
     {
         return match ($field) {
-            'title', 'slug', 'validation_type' => ['required', 'string', 'max:255'],
+            'title', 'slug' => ['required', 'string', 'max:255'],
+            'validation_type' => ['required', 'string', Rule::in(CommunicationValidationType::values())],
             'mandatory' => ['boolean'],
             default => [],
         };

@@ -19,8 +19,9 @@ trait HasAudit
                 $model->setAttribute('created_by_type', $user::class);
             }
 
-            if ($model->getAttribute('updated_by_id') === null) {
-                $model->setAttribute('updated_by_id', $model->getAttribute('created_by_id'));
+            $createdById = $model->getAttribute('created_by_id');
+            if ($model->getAttribute('updated_by_id') === null && $createdById !== null) {
+                $model->setAttribute('updated_by_id', $createdById);
                 $model->setAttribute('updated_by_type', $model->getAttribute('created_by_type'));
             }
         });
