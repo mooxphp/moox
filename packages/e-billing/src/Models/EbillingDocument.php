@@ -22,6 +22,7 @@ use Moox\Company\Models\Company;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Core\Traits\MorphPivot\HasMorphPivotRelations;
 use Moox\Customer\Models\Customer;
+use Moox\EBilling\Actions\RelayForeignSourcePdfAction;
 use Moox\EBilling\Enums\AttributionSource;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
@@ -484,6 +485,25 @@ class EbillingDocument extends BaseItemModel
                     [$morphClass],
                 );
         });
+    public function scopeWhereLatestSourcePdfRelayFailed(Builder $query): Builder
+    {
+        return $query->whereHas(
+            'latestSourcePdfRelayAttempt',
+            fn (Builder $attempt): Builder => $attempt->where('success', false),
+        );
+    }
+
+    /**
+     * Most recent source-PDF relay attempt; attempts with the same `created_at` resolve by id.
+     *
+     * @return HasOne<EbillingDeliveryAttempt, $this>
+     */
+    public function latestSourcePdfRelayAttempt(): HasOne
+    {
+        return $this->hasOne(EbillingDeliveryAttempt::class, 'ebilling_document_id')->ofMany(
+            ['created_at' => 'max', 'id' => 'max'],
+            fn (Builder $attempt): Builder => $attempt->where('channel', RelayForeignSourcePdfAction::CHANNEL),
+        );
     }
 
     /**
@@ -519,15 +539,21 @@ class EbillingDocument extends BaseItemModel
      */
     public function filamentViewUrl(): ?string
     {
-        $invoice = $this->invoice;
+        return self::filamentViewUrlFor($this->invoice);
+    }
 
-        if ($invoice === null) {
+    /**
+     * Filament view URL for a record through whichever resource the current panel registers for it.
+     */
+    public static function filamentViewUrlFor(?Model $record): ?string
+    {
+        if ($record === null) {
             return null;
         }
 
         try {
             $panel = Filament::getCurrentPanel() ?? Filament::getDefaultPanel();
-            $resourceClass = $panel->getModelResource($invoice);
+            $resourceClass = $panel->getModelResource($record);
         } catch (Throwable) {
             return null;
         }
@@ -542,7 +568,7 @@ class EbillingDocument extends BaseItemModel
             }
 
             try {
-                return $resourceClass::getUrl($page, ['record' => $invoice], shouldGuessMissingParameters: false);
+                return $resourceClass::getUrl($page, ['record' => $record], shouldGuessMissingParameters: false);
             } catch (Throwable) {
                 continue;
             }
@@ -1373,7 +1399,7 @@ class EbillingDocument extends BaseItemModel
                     return;
                 }
 
-                self::applyScopeInvoiceFieldBlocksReview($fieldQuery, $field, $priority, $fvColumn, $srColumn, $driver);
+                self::applyScopeInvoiceFieldBlocksReview($fieldQuery, $field, $priority, $fvColumn, $srColumn);
             });
         }
 
@@ -1389,22 +1415,21 @@ class EbillingDocument extends BaseItemModel
         string $priority,
         string $fvColumn,
         string $srColumn,
-        string $driver,
     ): void {
-        $statusPath = '$.'.$field.'.status';
-        $statusExpr = self::sqlJsonExtract($fvColumn, $statusPath, $driver);
+        $status = "{$fvColumn}->{$field}->status";
 
-        $query->where(function (Builder $statusQuery) use ($statusExpr, $priority, $srColumn, $field, $driver): void {
-            $statusQuery->whereRaw("{$statusExpr} = ?", ['needs_review']);
+        $query->where(function (Builder $statusQuery) use ($status, $priority, $srColumn, $field): void {
+            $statusQuery->where($status, 'needs_review');
 
             if ($priority === 'must') {
-                $statusQuery->orWhereRaw("{$statusExpr} = ?", ['missing']);
+                $statusQuery->orWhere($status, 'missing');
 
                 return;
             }
 
-            $releaseValid = self::sqlInvoiceSeverityReleaseIsValid($srColumn, $field, $driver);
-            $statusQuery->orWhereRaw("({$statusExpr} = ? AND NOT ({$releaseValid}))", ['missing']);
+            $statusQuery->orWhere(fn (Builder $missing): Builder => $missing
+                ->where($status, 'missing')
+                ->whereNot(fn (Builder $released): Builder => self::whereSeverityReleaseIsValid($released, "{$srColumn}->{$field}")));
         });
     }
 

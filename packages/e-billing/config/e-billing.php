@@ -336,6 +336,15 @@ return [
                 'bulk_enabled' => (bool) env('EBILLING_CREDIT_NOTES_MANUAL_UPLOAD_BULK_ENABLED', false),
             ],
         ],
+        // Read-only list of documents the gateway ignored (foreign, before cutoff, identical file).
+        'ignored_documents' => [
+            'enabled' => true,
+            'label' => 'trans//e-billing::ebilling.ignored_document',
+            'plural_label' => 'trans//e-billing::ebilling.ignored_documents',
+            'navigation_group' => 'trans//e-billing::ebilling.navigation_group',
+            'navigation_icon' => 'heroicon-o-eye-slash',
+            'navigation_sort' => 3,
+        ],
     ],
 
     'tabs' => [
@@ -455,6 +464,64 @@ return [
                         'field' => 'deleted_at',
                         'operator' => '!=',
                         'value' => null,
+                    ],
+                ],
+            ],
+        ],
+        // Every tab is limited to ignored documents; `relay_failed` = latest source-PDF relay attempt failed.
+        'ignored_documents' => [
+            'all' => [
+                'label' => 'trans//e-billing::fields.tab_all',
+                'icon' => 'gmdi-filter-list',
+                'query' => [
+                    [
+                        'field' => 'gateway_status',
+                        'operator' => 'in',
+                        'value' => ['ignored_foreign', 'ignored_before_cutoff', 'ignored_identical_duplicate'],
+                    ],
+                ],
+            ],
+            'foreign' => [
+                'label' => 'trans//e-billing::fields.tab_ignored_foreign',
+                'icon' => 'gmdi-public',
+                'query' => [
+                    [
+                        'field' => 'gateway_status',
+                        'operator' => 'in',
+                        'value' => ['ignored_foreign'],
+                    ],
+                ],
+            ],
+            'before_cutoff' => [
+                'label' => 'trans//e-billing::fields.tab_ignored_before_cutoff',
+                'icon' => 'gmdi-event-busy',
+                'query' => [
+                    [
+                        'field' => 'gateway_status',
+                        'operator' => 'in',
+                        'value' => ['ignored_before_cutoff'],
+                    ],
+                ],
+            ],
+            'identical_duplicate' => [
+                'label' => 'trans//e-billing::fields.tab_ignored_identical_duplicate',
+                'icon' => 'gmdi-content-copy',
+                'query' => [
+                    [
+                        'field' => 'gateway_status',
+                        'operator' => 'in',
+                        'value' => ['ignored_identical_duplicate'],
+                    ],
+                ],
+            ],
+            'relay_failed' => [
+                'label' => 'trans//e-billing::fields.tab_relay_failed',
+                'icon' => 'gmdi-forward-to-inbox',
+                'query' => [
+                    [
+                        'field' => 'relay_failed',
+                        'operator' => '=',
+                        'value' => true,
                     ],
                 ],
             ],

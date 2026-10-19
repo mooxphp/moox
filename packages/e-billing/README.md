@@ -87,8 +87,8 @@ Published as `config/e-billing.php`.
 
 | Key | Controls |
 | --- | --- |
-| `resources` | Filament resource registration (`invoices` → `InvoiceResource`) |
-| `tabs` | List-page tab filters (`all`, `needs_review`, `confirmed`, `awaiting_approval`, `sent`, `deleted`); the pseudo fields `approval_status` and `delivered` filter on the e-billing document |
+| `resources` | Filament resource registration (`invoices` → `InvoiceResource`). `resources.ignored_documents`: `enabled` (default `true`), `label`, `plural_label`, `navigation_group`, `navigation_icon` (default `heroicon-o-eye-slash`), `navigation_sort` (default `3`); missing keys fall back to these defaults. See [Ignored documents](#ignored-documents) |
+| `tabs` | List-page tab filters (`all`, `needs_review`, `confirmed`, `awaiting_approval`, `sent`, `deleted`); the pseudo fields `approval_status` and `delivered` filter on the e-billing document. `tabs.ignored_documents`: `all`, `foreign`, `before_cutoff`, `identical_duplicate`, `relay_failed`; conditions use `gateway_status` (in) and the pseudo field `relay_failed` (true) |
 | `default` | Single default when the preference port returns null: `format` (FormatRegistry key, default `zugferd`) + `profile` (hybrid library profile, default `EN16931`, must be in `allowed_profiles`). XRechnung ignores `profile` and always uses `XRECHNUNG` |
 | `allowed_profiles` | Hybrid profiles a recipient preference may request for `zugferd` / `factur-x` (default `['EN16931']`). XRechnung never takes a preference profile |
 | `zugferd` | ZUGFeRD filesystem disk (`storage_disk`, `storage_root`). Hybrid profiles come from `default.profile`, not `moox/zugferd` config |
@@ -544,6 +544,17 @@ $panel->plugins([
 ```
 
 `EBillingPlugin` registers `InvoiceResource` (slug `invoices`), which manages `Moox\Invoice\Models\Invoice`. Create and edit are disabled; operators use the list and view pages to review parsed invoices, validation scores, KoSIT status, and confirm or reject records. The list search matches invoice number, supplier name, and recipient name (JSON `seller` / `buyer` party columns). The list table lives in `InvoiceResource\Tables\InvoicesTable::configure($table, $resource)`.
+
+### Ignored documents
+
+Documents the gateway deliberately does not turn into an invoice (`gateway_status` `ignored_foreign`, `ignored_before_cutoff` or `ignored_identical_duplicate`) have an `EbillingDocument` but no `Invoice`, so the invoice list cannot show them. `EBillingPlugin` also registers the read-only `IgnoredDocumentResource` (slug `ignored-documents`, list page only; no create, view, edit or delete). Set `e-billing.resources.ignored_documents.enabled` to `false` to hide it from the navigation. It has no navigation count badge.
+
+- **Tabs** (`e-billing.tabs.ignored_documents`): all, foreign, before cutoff, identical duplicate, and *relay failed*, where the latest Source-PDF relay attempt failed (a later successful attempt clears it). Every tab is limited to ignored documents.
+- **Columns**: received at (default sort, newest first), source filename, reason, reason detail (detected country or "net amount only" for foreign; invoice date against the cutoff; a link to the matched original invoice for an identical duplicate), invoice number and customer when known (toggleable), and the latest relay attempt (recipient, success or failure badge, failure reason as tooltip).
+- **Search and filters**: search by filename and invoice number; filter by received date range and by relay failed.
+- **Row actions**: view the source PDF (`ebilling.pdf.preview`) and open the inbox message (hidden for manual uploads).
+
+An ignored document cannot be re-processed from this list.
 
 ## Relation to moox/invoice
 
