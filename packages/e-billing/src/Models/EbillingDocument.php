@@ -1428,6 +1428,27 @@ class EbillingDocument extends BaseItemModel
     }
 
     /**
+     * SQL side of {@see severityReleaseEntryIsValid()} for the release entry at the JSON path `$entry`.
+     *
+     * @param  Builder<EbillingDocument>  $query
+     * @return Builder<EbillingDocument>
+     */
+    private static function whereSeverityReleaseIsValid(Builder $query, string $entry): Builder
+    {
+        $grammar = $query->getQuery()->getGrammar();
+
+        // Like the PHP rule, reason and released_at must hold more than whitespace.
+        foreach (['reason', 'released_at'] as $key) {
+            $query->whereNotNull("{$entry}->{$key}")
+                ->whereRaw('trim('.$grammar->wrap("{$entry}->{$key}").") != ''");
+        }
+
+        return $query
+            ->whereNotNull("{$entry}->released_by_id")
+            ->where("{$entry}->released_by_id", '!=', '');
+    }
+
+    /**
      * @param  Builder<EbillingDocument>  $query
      */
     private static function applyScopeLineFieldBlocksReview(
@@ -1496,36 +1517,6 @@ class EbillingDocument extends BaseItemModel
                    OR ({$statusExpr} = 'missing' AND NOT ({$releaseValid}))
             )",
         );
-    }
-
-    private static function sqlJsonExtract(string $column, string $path, string $driver): string
-    {
-        return match ($driver) {
-            'mysql' => "JSON_UNQUOTE(JSON_EXTRACT({$column}, '{$path}'))",
-            default => "json_extract({$column}, '{$path}')",
-        };
-    }
-
-    private static function sqlInvoiceSeverityReleaseIsValid(string $srColumn, string $field, string $driver): string
-    {
-        $reasonPath = '$.'.$field.'.reason';
-        $releasedAtPath = '$.'.$field.'.released_at';
-
-        $releasedByIdPath = '$.'.$field.'.released_by_id';
-
-        if ($driver === 'mysql') {
-            $reason = "NULLIF(TRIM(JSON_UNQUOTE(JSON_EXTRACT({$srColumn}, '{$reasonPath}'))), '')";
-            $releasedAt = "NULLIF(TRIM(JSON_UNQUOTE(JSON_EXTRACT({$srColumn}, '{$releasedAtPath}'))), '')";
-            $releasedById = "JSON_EXTRACT({$srColumn}, '{$releasedByIdPath}')";
-
-            return "({$reason} IS NOT NULL AND {$releasedAt} IS NOT NULL AND {$releasedById} IS NOT NULL)";
-        }
-
-        $reason = "NULLIF(trim(json_extract({$srColumn}, '{$reasonPath}')), '')";
-        $releasedAt = "NULLIF(trim(json_extract({$srColumn}, '{$releasedAtPath}')), '')";
-        $releasedById = "json_extract({$srColumn}, '{$releasedByIdPath}')";
-
-        return "({$reason} IS NOT NULL AND {$releasedAt} IS NOT NULL AND {$releasedById} IS NOT NULL)";
     }
 
     private static function sqlSqliteLineSeverityReleaseIsValid(string $srColumn, string $lineKeyExpr, string $field): string
