@@ -13,4 +13,6 @@ return [
     'send_visual_copy' => 'Mail attachment',
     'send_visual_copy_with_pdf' => 'XML with PDF copy',
     'send_visual_copy_xml_only' => 'XML only',
+    'ignored_document' => 'Ignored document',
+    'ignored_documents' => 'Ignored documents',
 ];

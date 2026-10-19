@@ -56,6 +56,25 @@ enum EBillingAttachmentProcessingStatus: string
         };
     }
 
+    /**
+     * Documents the gateway deliberately does not turn into an invoice.
+     *
+     * @return list<self>
+     */
+    public static function ignoredCases(): array
+    {
+        return [
+            self::IgnoredForeign,
+            self::IgnoredBeforeCutoff,
+            self::IgnoredIdenticalDuplicate,
+        ];
+    }
+
+    public function isIgnored(): bool
+    {
+        return in_array($this, self::ignoredCases(), true);
+    }
+
     public function isFailure(): bool
     {
         return in_array($this, [

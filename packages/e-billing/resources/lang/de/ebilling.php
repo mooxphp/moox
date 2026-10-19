@@ -13,4 +13,6 @@ return [
     'send_visual_copy' => 'Mail-Anhang',
     'send_visual_copy_with_pdf' => 'XML mit PDF-Kopie',
     'send_visual_copy_xml_only' => 'Nur XML',
+    'ignored_document' => 'Ignorierter Beleg',
+    'ignored_documents' => 'Ignorierte Belege',
 ];

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\EBilling\Resources\Concerns;
 
 use Moox\Core\Traits\Tabs\HasListPageTabs;
-use Moox\Invoice\Support\InvoiceModels;
 
 trait HasEBillingDocumentListTabs
 {
@@ -21,7 +20,7 @@ trait HasEBillingDocumentListTabs
     {
         return $this->getDynamicTabs(
             static::getResource()::tabsConfigPath(),
-            InvoiceModels::invoice(),
+            static::getResource()::getModel(),
         );
     }
 
