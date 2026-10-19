@@ -2,12 +2,29 @@
 
 namespace Moox\Prompts\Filament\Pages;
 
+use Filament\Facades\Filament;
 use Filament\Pages\Page;
 use Illuminate\Contracts\Console\Kernel;
 
 class RunCommandPage extends Page
 {
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-command-line';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canAccess() && parent::shouldRegisterNavigation();
+    }
+
+    public static function canAccess(): bool
+    {
+        $user = Filament::auth()?->user();
+
+        if ($user && method_exists($user, 'can')) {
+            return (bool) $user->can('View:RunCommandPage');
+        }
+
+        return parent::canAccess();
+    }
 
     protected string $view = 'moox-prompts::filament.pages.run-command';
 

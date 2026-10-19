@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\MailTesting\Pages;
 
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -50,6 +51,22 @@ class MailTestingPage extends Page
     protected static ?string $slug = 'mail-testing';
 
     protected static ?int $navigationSort = 80;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canAccess() && parent::shouldRegisterNavigation();
+    }
+
+    public static function canAccess(): bool
+    {
+        $user = Filament::auth()?->user();
+
+        if ($user && method_exists($user, 'can')) {
+            return (bool) $user->can('View:MailTestingPage');
+        }
+
+        return parent::canAccess();
+    }
 
     /**
      * @var array<string, mixed>|null
