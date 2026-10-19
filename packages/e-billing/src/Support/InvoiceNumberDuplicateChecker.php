@@ -7,6 +7,7 @@ namespace Moox\EBilling\Support;
 use Illuminate\Support\Collection;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\Invoice\Models\Invoice;
+use Moox\MailInbox\Models\InboxAttachment;
 
 /**
  * Detects an already-known invoice / credit-note number (billing#13 / #21 / #24).
@@ -68,6 +69,9 @@ final class InvoiceNumberDuplicateChecker
      * Same number + type (classification types as one family) + source PDF hash as an already stored document.
      * Both hashes must be non-empty; missing hashes never count as identical.
      * When scope is `issuer`, `$sellerVatId` narrows the match (blank buckets with blank).
+     * The intake recipient ({@see EbillingDocument::intakeRecipientEmail()}) must match too, case-insensitive:
+     * the same PDF for another recipient is a delivery to someone else, not a re-ingest. Documents without
+     * one match each other.
      */
     public function findIdenticalContentDuplicate(
         string $invoiceNumber,
@@ -75,6 +79,7 @@ final class InvoiceNumberDuplicateChecker
         string $sourceContentHash,
         ?string $exceptDocumentId = null,
         ?string $sellerVatId = null,
+        ?string $intakeRecipientEmail = null,
     ): ?Invoice {
         if (trim($invoiceNumber) === '' || trim($documentType) === '' || trim($sourceContentHash) === '') {
             return null;
@@ -88,7 +93,10 @@ final class InvoiceNumberDuplicateChecker
                     ->where('invoice_number', $invoiceNumber)
                     ->whereIn('document_type', DocumentClassification::familyOf($documentType));
             })
-            ->with('invoice')
+            ->with([
+                'invoice',
+                'source' => fn ($morphTo) => $morphTo->morphWith([InboxAttachment::class => ['message']]),
+            ])
             ->orderBy('created_at')
             ->orderBy('id');
 
@@ -96,8 +104,11 @@ final class InvoiceNumberDuplicateChecker
             $query->whereKeyNot($exceptDocumentId);
         }
 
+        $recipient = self::normalizeEmail($intakeRecipientEmail);
+
         /** @var Collection<int, Invoice> $invoices */
         $invoices = $query->get()
+            ->filter(fn (EbillingDocument $document): bool => self::normalizeEmail($document->intakeRecipientEmail()) === $recipient)
             ->pluck('invoice')
             ->filter(fn (mixed $invoice): bool => $invoice instanceof Invoice)
             ->values();
@@ -121,6 +132,13 @@ final class InvoiceNumberDuplicateChecker
         return $invoices
             ->filter(fn (Invoice $invoice): bool => VatIdNormalizer::normalize($invoice->seller?->vat_id) === $normalizedSellerVatId)
             ->values();
+    }
+
+    private static function normalizeEmail(?string $email): ?string
+    {
+        $email = mb_strtolower(trim((string) $email));
+
+        return $email !== '' ? $email : null;
     }
 
     private function comparisonScope(): string
