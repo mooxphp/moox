@@ -41,16 +41,11 @@ class ProcessInboxAttachmentListener
     {
         $scopes = config('e-billing.intake.scopes');
 
-        if (! is_array($scopes)) {
-            return true;
+        if (! is_array($scopes) || $scope === '') {
+            return false;
         }
 
-        $allowed = array_values(array_filter(
-            $scopes,
-            static fn (mixed $value): bool => is_string($value) && $value !== '',
-        ));
-
-        return $allowed === [] || in_array($scope, $allowed, true);
+        return in_array($scope, $scopes, true);
     }
 
     private function resolveOrCreateEbillingDocument(InboxAttachment $attachment): EbillingDocument

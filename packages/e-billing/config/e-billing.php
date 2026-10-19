@@ -1428,9 +1428,9 @@ return [
     | Inbox intake scopes
     |--------------------------------------------------------------------------
     |
-    | When set to a non-empty list of mail-inbox Scope keys, ProcessInboxAttachmentListener
-    | only creates EbillingDocuments for those Scopes. Other PDF attachments are marked
-    | Skipped (still visible in the inbox UI). null or [] = all Scopes (backwards compatible).
+    | Allowlist of mail-inbox Scope keys whose PDF attachments ProcessInboxAttachmentListener
+    | turns into EbillingDocuments. PDF attachments from any other Scope are marked Skipped
+    | (still visible in the inbox UI) and get no document. null or [] = nothing is processed.
     |
     | Intake cutoff: when invoice_date_from is set (Y-m-d), a mail-sourced document whose
     | parsed invoice date (BT-2) lies before that day is not converted. It ends as
