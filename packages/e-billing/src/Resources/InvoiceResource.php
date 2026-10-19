@@ -19,6 +19,7 @@ use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
 use Moox\EBilling\Enums\DispatchStatus;
+use Moox\EBilling\Resources\Concerns\ReadsEBillingResourceConfig;
 use Moox\EBilling\Resources\InvoiceResource\Actions\ManualUploadActions;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ListInvoices;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ViewInvoice;
@@ -35,6 +36,7 @@ class InvoiceResource extends BaseItemResource
         HasResourceRelations::getRelations as protected getConfiguredResourceRelations;
         InteractsWithAuditResourceRelations::getRelations as protected getAuditAwareRelations;
     }
+    use ReadsEBillingResourceConfig;
     use SingleSoftDeleteInResource;
 
     protected static ?string $slug = 'invoices';
@@ -338,16 +340,16 @@ class InvoiceResource extends BaseItemResource
         return ManualUploadActions::makeBulk(static::resourceConfigKey());
     }
 
-    public static function shouldRegisterNavigation(): bool
+    /**
+     * @return array<string, mixed>
+     */
+    protected static function resourceConfigDefaults(): array
     {
-        return (bool) config('e-billing.resources.'.static::resourceConfigKey().'.enabled', true);
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        $sort = config('e-billing.resources.'.static::resourceConfigKey().'.navigation_sort');
-
-        return is_int($sort) ? $sort : (is_numeric($sort) ? (int) $sort : null);
+        return [
+            'label' => 'trans//e-billing::ebilling.invoice',
+            'plural_label' => 'trans//e-billing::ebilling.invoices',
+            'navigation_icon' => Heroicon::OutlinedDocumentText,
+        ];
     }
 
     public static function getNavigationBadge(): ?string
@@ -362,47 +364,5 @@ class InvoiceResource extends BaseItemResource
     public static function getNavigationBadgeColor(): ?string
     {
         return 'primary';
-    }
-
-    public static function getModelLabel(): string
-    {
-        $default = 'trans//e-billing::ebilling.invoice';
-
-        return self::resolveConfigLabel((string) config('e-billing.resources.'.static::resourceConfigKey().'.label', $default));
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        $default = 'trans//e-billing::ebilling.invoices';
-
-        return self::resolveConfigLabel((string) config('e-billing.resources.'.static::resourceConfigKey().'.plural_label', $default));
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return self::getPluralModelLabel();
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        $group = config('e-billing.resources.'.static::resourceConfigKey().'.navigation_group');
-
-        return is_string($group) && $group !== '' ? self::resolveConfigLabel($group) : null;
-    }
-
-    public static function getNavigationIcon(): string|\BackedEnum|null
-    {
-        $icon = config('e-billing.resources.'.static::resourceConfigKey().'.navigation_icon');
-
-        return is_string($icon) && $icon !== '' ? $icon : Heroicon::OutlinedDocumentText;
-    }
-
-    private static function resolveConfigLabel(string $value): string
-    {
-        if (str_starts_with($value, 'trans//')) {
-            return __(substr($value, 8));
-        }
-
-        return $value;
     }
 }
