@@ -335,6 +335,7 @@ class InvoiceFieldValidator
             'shipping_cost', 'packaging_cost', 'minimum_quantity_surcharge', 'freight_flat_rate',
             'certificate_cost', 'customs_cost',
             'discount_amount', 'discount_percent' => $this->validateHeaderChargeField($invoice, $field, $priority),
+            'discount_reason' => $this->validateDiscountReasonField($invoice, $priority),
             'delivery_date' => $this->validateDeliveryDateField($invoice, $priority),
             'totals_reconciliation' => $this->validateTotalsReconciliationField($invoice),
             'preceding_invoice_number' => $this->validatePrecedingInvoiceNumberField($invoice, $priority),
@@ -817,6 +818,18 @@ class InvoiceFieldValidator
         }
 
         return $this->entryForEmptyField($field, $priority, false);
+    }
+
+    /**
+     * @return array{status: string, source?: string, matched_id?: string}
+     */
+    private function validateDiscountReasonField(Invoice $invoice, string $priority): array
+    {
+        $reason = HeaderChargeResolver::discountCharge($invoice->allowanceCharges)?->reason_text;
+
+        return is_string($reason) && trim($reason) !== ''
+            ? ['status' => 'parsed']
+            : $this->entryForEmptyField('discount_reason', $priority, false);
     }
 
     /**

@@ -182,6 +182,14 @@ final class ReviewFieldCatalog
             return $this->recipientField($invoice, $key, $label);
         }
 
+        if ($field === 'discount_reason') {
+            $charge = HeaderChargeResolver::discountCharge($invoice->allowanceCharges);
+
+            return $charge === null
+                ? $this->notEditable($key, $label, 'no_charge_row')
+                : $this->valueField($invoice, $key, $label, $charge, ['reason_text' => 'text']);
+        }
+
         if (array_key_exists($field, HeaderChargeResolver::FIELD_SPECS)) {
             if (HeaderChargeResolver::itemizedCharges($invoice->allowanceCharges, $field) !== []) {
                 return $this->notEditable($key, $label, 'several_charges');

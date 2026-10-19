@@ -41,6 +41,7 @@ return [
     'gross_total_short' => 'Gross',
     'discount_percent' => 'Discount (%)',
     'discount_amount' => 'Discount amount',
+    'discount_reason' => 'Discount reason',
     'shipping_cost' => 'Shipping cost',
     'minimum_quantity_surcharge' => 'Minimum quantity surcharge',
     'freight_flat_rate' => 'Freight flat rate',

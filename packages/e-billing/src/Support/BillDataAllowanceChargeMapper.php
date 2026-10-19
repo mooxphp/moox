@@ -82,6 +82,7 @@ final class BillDataAllowanceChargeMapper
         ?float $discountPercent,
         ?float $certificateCost = null,
         ?float $customsCost = null,
+        ?string $discountReason = null,
     ): array {
         $items = [];
 
@@ -112,9 +113,10 @@ final class BillDataAllowanceChargeMapper
         }
 
         if ($discountAmount !== null && $discountAmount > 0) {
-            $reasonText = $discountPercent
-                ? sprintf('%.0f %% vom Warenwert', $discountPercent)
-                : 'Rabatt';
+            $printedReason = trim((string) $discountReason);
+            $reasonText = $printedReason !== '' ? $printedReason : ($discountPercent
+                ? self::percentAsPrinted($discountPercent).' % vom Warenwert'
+                : 'Rabatt');
 
             $items[] = new AllowanceCharge(
                 isCharge: false,
@@ -157,5 +159,11 @@ final class BillDataAllowanceChargeMapper
         }
 
         return $items;
+    }
+
+    /** A percentage as printed: decimal comma, only the decimals needed (25 → 25, 3.5 → 3,5). */
+    private static function percentAsPrinted(float $percent): string
+    {
+        return rtrim(rtrim(number_format($percent, 2, ',', ''), '0'), ',');
     }
 }
