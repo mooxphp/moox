@@ -62,8 +62,8 @@ class Address implements ZugferdAddress
 
     /**
      * Buyer/seller postal address (BG-5 / BG-8). The first printed line after the name is BT-50: the street,
-     * or — when there is none, e.g. a PO box — the next address line. The company only fills BT-50 when
-     * nothing else is there; it is the party name, not an address line. Null without a country.
+     * or — when there is none, e.g. a PO box — the next address line. Without any, BT-50 stays empty: the
+     * company is the party name, not an address line. Null without a country.
      */
     public function toEn16931Address(): ?En16931Address
     {
@@ -80,7 +80,7 @@ class Address implements ZugferdAddress
             ],
             static fn (?string $line): bool => $line !== null,
         ));
-        $line1 = array_shift($lines) ?? self::trimmedNonEmpty($this->company) ?? '';
+        $line1 = array_shift($lines) ?? '';
 
         return new En16931Address(
             line1: $line1,
