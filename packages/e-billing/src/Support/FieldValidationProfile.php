@@ -80,6 +80,19 @@ final class FieldValidationProfile
     }
 
     /**
+     * Whether an empty line field is rightly empty because the line is a non-goods line and the host
+     * lists the field as a goods-identity field (ADR 0017). One list for all document types.
+     */
+    public static function isNotApplicableOnNonGoodsLine(bool $isNonGoodsLine, string $field): bool
+    {
+        return $isNonGoodsLine && in_array(
+            $field,
+            self::stringList(config('e-billing.field_validation.non_goods_line_fields_not_applicable', [])),
+            true,
+        );
+    }
+
+    /**
      * @return list<string>
      */
     public static function contextualShould(?string $documentType, bool $forLines = false): array

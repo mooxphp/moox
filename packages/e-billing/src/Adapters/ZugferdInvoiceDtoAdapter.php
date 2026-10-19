@@ -9,7 +9,9 @@ use Moox\EBilling\Data\InvoiceLine;
 use Moox\EBilling\Support\ConfiguredEn16931CodeResolver;
 use Moox\EBilling\Support\CreditNotePaymentTerms;
 use Moox\EBilling\Support\DeliveryDateTransmission;
+use Moox\EBilling\Support\DocumentEmissionLabels;
 use Moox\EBilling\Support\InvoiceDocumentNotes;
+use Moox\EBilling\Support\PaymentDiscounts;
 use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdBankAccount;
@@ -18,6 +20,8 @@ use Moox\Zugferd\Contracts\ZugferdInvoiceLine;
 
 /**
  * Flat {@see ZugferdInvoice} view of parsed bill_data; public field count mirrors the contract.
+ *
+ * @phpstan-import-type DocumentNote from ZugferdInvoice
  */
 final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
 {
@@ -71,6 +75,10 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
 
     public ?string $purchaseOrderDate;
 
+    public ?string $projectReference;
+
+    public ?string $projectName;
+
     public ?string $shipToName;
 
     public ?ZugferdAddress $shipToAddress;
@@ -96,11 +104,14 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
     /** @var list<ZugferdBankAccount> */
     public array $bankAccounts;
 
-    /** @var list<string> */
+    /** @var list<DocumentNote> */
     public array $documentNotes;
 
     /** @var list<array{number: string, date: ?string}> */
     public array $precedingInvoices;
+
+    /** @var list<array{days: int, percent: float, base_amount: ?float}> */
+    public array $paymentDiscounts;
 
     public function __construct(Invoice $invoice)
     {
@@ -138,6 +149,9 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
         $this->despatchAdviceReference = null;
         $orderDate = $invoice->orderDate !== null ? trim($invoice->orderDate) : '';
         $this->purchaseOrderDate = $orderDate !== '' ? $orderDate : null;
+        $projectReference = trim((string) $invoice->projectReference);
+        $this->projectReference = $projectReference !== '' ? $projectReference : null;
+        $this->projectName = DocumentEmissionLabels::projectName($invoice->projectReference, $invoice->projectName);
         $deliveryAddress = $invoice->deliveryAddress;
         $shipToName = $deliveryAddress?->company;
         $this->shipToName = $shipToName !== null && trim($shipToName) !== '' ? trim($shipToName) : null;
@@ -168,5 +182,6 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
         $this->bankAccounts = $invoice->bankAccounts();
         $this->documentNotes = InvoiceDocumentNotes::fromDto($invoice);
         $this->precedingInvoices = $invoice->precedingInvoices;
+        $this->paymentDiscounts = PaymentDiscounts::forEmission($invoice->paymentDiscounts);
     }
 }

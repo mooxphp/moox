@@ -35,6 +35,11 @@ final class InvoiceLineViewModel
         return is_numeric($p) ? (string) $p : (is_string($p) ? $p : null);
     }
 
+    public function subtitle(): ?string
+    {
+        return $this->line->is_non_goods === true ? __('e-billing::fields.non_goods_line') : null;
+    }
+
     /**
      * @return list<FieldViewData>
      */
@@ -135,6 +140,10 @@ final class InvoiceLineViewModel
      */
     private function emptyLineFieldValidation(string $field): array
     {
+        if (FieldValidationProfile::isNotApplicableOnNonGoodsLine($this->line->is_non_goods === true, $field)) {
+            return ['status' => 'not_applicable'];
+        }
+
         $priority = FieldValidationProfile::priority($field, $this->documentType, isLineField: true);
 
         if ($priority === 'could') {

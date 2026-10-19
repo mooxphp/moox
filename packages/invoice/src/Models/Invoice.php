@@ -13,14 +13,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Invoice\Database\Factories\InvoiceFactory;
+use Moox\Invoice\Support\Casts\InvoiceNotesCast;
 use Moox\Invoice\Support\En16931\Casts\DeliveryPartyCast;
 use Moox\Invoice\Support\En16931\Casts\PartyCast;
 use Moox\Invoice\Support\En16931\Casts\PaymentMeansCast;
 use Moox\Invoice\Support\En16931\Party;
 use Moox\Invoice\Support\En16931\PaymentMeans;
 use Moox\Invoice\Support\InvoiceModels;
+use Moox\Invoice\Support\InvoiceNotes;
 
 /**
+ * @phpstan-import-type InvoiceNote from InvoiceNotes
+ *
  * @property Party|null $seller
  * @property Party|null $buyer
  * @property Party|null $delivery
@@ -28,8 +32,11 @@ use Moox\Invoice\Support\InvoiceModels;
  * @property string|null $vat_category
  * @property int $document_version
  * @property bool $is_current
- * @property list<string>|null $notes
+ * @property list<InvoiceNote>|null $notes BT-22 notes with an optional BT-21 subject code
  * @property list<array{number: string, date: ?string}>|null $preceding_invoices
+ * @property list<array{days: int, percent: float, base_amount: ?float, amount: ?float}>|null $payment_discounts
+ * @property string|null $project_reference BT-11 the buyer's project identifier
+ * @property string|null $project_name name of the BT-11 project
  */
 class Invoice extends BaseItemModel
 {
@@ -56,12 +63,15 @@ class Invoice extends BaseItemModel
         'customer_reference',
         'order_number',
         'order_date',
+        'project_reference',
+        'project_name',
         'delivery_date',
         'payment_terms',
         'shipping_method',
         'delivery_terms',
         'notes',
         'preceding_invoices',
+        'payment_discounts',
         'seller',
         'buyer',
         'delivery',
@@ -85,8 +95,9 @@ class Invoice extends BaseItemModel
             'payment_means' => PaymentMeansCast::class,
             'document_version' => 'integer',
             'is_current' => 'boolean',
-            'notes' => 'array',
+            'notes' => InvoiceNotesCast::class,
             'preceding_invoices' => 'array',
+            'payment_discounts' => 'array',
             'net_total' => 'decimal:2',
             'vat_rate' => 'decimal:2',
             'vat_amount' => 'decimal:2',

@@ -26,6 +26,8 @@ final class InvoiceFieldLabels
             'customer_reference' => __('e-billing::fields.customer_reference'),
             'order_number' => __('e-billing::fields.order_number'),
             'order_date' => __('e-billing::fields.order_date'),
+            'project_reference' => __('e-billing::fields.project_reference'),
+            'project_name' => __('e-billing::fields.project_name'),
             'delivery_address' => __('e-billing::fields.delivery_address'),
             'supplier_name' => __('e-billing::fields.supplier_name'),
             'supplier_vat_id' => __('e-billing::fields.supplier_vat_id'),
@@ -164,6 +166,8 @@ final class InvoiceFieldLabels
             'currency' => 'BT-5',
             'due_date' => 'BT-9',
             'customer_reference' => 'BT-10',
+            'project_reference' => 'BT-11',
+            'project_name' => 'BT-11',
             'preceding_invoice_number' => 'BG-3 / BT-25',
             'preceding_invoice_date' => 'BG-3 / BT-26',
             'customer_number' => 'BT-46',
@@ -218,7 +222,15 @@ final class InvoiceFieldLabels
     }
 
     /**
-     * @param  array{status?: string, source?: string, matched_id?: string, reason?: string, difference?: string}|null  $validation
+     * @param  array{
+     *     status?: string,
+     *     source?: string,
+     *     matched_id?: string,
+     *     reason?: string,
+     *     difference?: string,
+     *     expected?: string,
+     *     printed?: string
+     * }|null  $validation
      */
     public static function hint(string $field, string $status, ?array $validation = null): ?string
     {
@@ -250,6 +262,16 @@ final class InvoiceFieldLabels
             };
         }
 
+        if ($status === 'needs_review' && ($validation['reason'] ?? null) === 'unrecognized') {
+            return __('e-billing::fields.hint_review_unrecognized', [
+                'printed' => (string) ($validation['printed'] ?? ''),
+            ]);
+        }
+
+        if ($status === 'needs_review' && ($validation['reason'] ?? null) === 'consignee_address_missing') {
+            return __('e-billing::fields.hint_review_consignee_address_missing');
+        }
+
         if ($status === 'needs_review') {
             return match ($field) {
                 'customer_number' => self::hasMatchedId($validation)
@@ -264,6 +286,10 @@ final class InvoiceFieldLabels
                 'minimum_quantity_surcharge' => __('e-billing::fields.hint_review_minimum_quantity_surcharge'),
                 'freight_flat_rate' => __('e-billing::fields.hint_review_freight_flat_rate'),
                 'delivery_date' => __('e-billing::fields.hint_review_delivery_date'),
+                'payment_terms' => __('e-billing::fields.hint_review_payment_discount', [
+                    'printed' => (string) ($validation['printed'] ?? ''),
+                    'expected' => (string) ($validation['expected'] ?? ''),
+                ]),
                 'totals_reconciliation' => __('e-billing::fields.hint_review_totals_reconciliation', [
                     'difference' => (string) ($validation['difference'] ?? ''),
                 ]),
@@ -280,6 +306,10 @@ final class InvoiceFieldLabels
         // Display-only inbox To — no master-data corroboration yet (deferred).
         if ($field === 'buyer_email') {
             return __('e-billing::fields.hint_info_buyer_email');
+        }
+
+        if ($field === 'delivery_address' && ($validation['reason'] ?? null) === 'consignee_not_in_master_data') {
+            return __('e-billing::fields.hint_info_consignee_not_in_master_data');
         }
 
         // Preceding invoice lookup warns without blocking (ADR 0009 addendum).

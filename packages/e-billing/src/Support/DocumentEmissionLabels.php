@@ -48,6 +48,21 @@ final class DocumentEmissionLabels
     }
 
     /**
+     * The BT-11 project name: as given, or the document-locale stand-in when a project reference has no name
+     * (CII requires one). Null without a project reference.
+     */
+    public static function projectName(?string $projectReference, ?string $projectName): ?string
+    {
+        if (trim((string) $projectReference) === '') {
+            return null;
+        }
+
+        $name = trim((string) $projectName);
+
+        return $name !== '' ? $name : self::label('project_name');
+    }
+
+    /**
      * Free-text note label: purchase_order, purchase_orders, order_date, despatch_advice, consignee.
      */
     public static function note(string $key): string

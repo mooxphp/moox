@@ -36,6 +36,14 @@ class Address implements ZugferdAddress
             && ($this->addressLine3 ?? '') === ($other->addressLine3 ?? '');
     }
 
+    /**
+     * Whether a street, postal code or city is printed — more than a name or country.
+     */
+    public function hasPostalData(): bool
+    {
+        return trim(($this->street ?? '').($this->zip ?? '').($this->city ?? '')) !== '';
+    }
+
     public function toEn16931DeliveryParty(): ?Party
     {
         $name = $this->company !== null ? trim($this->company) : '';

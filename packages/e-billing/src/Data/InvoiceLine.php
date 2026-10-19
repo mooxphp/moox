@@ -7,6 +7,7 @@ namespace Moox\EBilling\Data;
 use Moox\EBilling\Support\BillDataAllowanceChargeMapper;
 use Moox\EBilling\Support\LineItemAttributeMapper;
 use Moox\EBilling\Support\PartialDeliveries;
+use Moox\EBilling\Support\UnrecognizedFields;
 use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdInvoiceLine;
@@ -58,6 +59,14 @@ class InvoiceLine implements ZugferdInvoiceLine
         public ?string $purchaseOrderLineReference = null,
         /** @var list<array{date: ?string, delivery_note: ?string, quantity: ?float}> */
         public array $partialDeliveries = [],
+        public bool $isNonGoods = false,
+        /**
+         * Text the parser found where a field is printed but could not read as that field's value, by field name
+         * (e.g. ['material' => 'galvanised']). The field stays empty and validation asks for review.
+         *
+         * @var array<string, string>
+         */
+        public array $unrecognizedFields = [],
     ) {
         $this->partialDeliveries = PartialDeliveries::normalize($this->partialDeliveries);
 
@@ -132,6 +141,8 @@ class InvoiceLine implements ZugferdInvoiceLine
                 ? $data['purchase_order_line_reference']
                 : null,
             partialDeliveries: PartialDeliveries::normalize($data['deliveries'] ?? null),
+            isNonGoods: ($data['is_non_goods'] ?? false) === true,
+            unrecognizedFields: UnrecognizedFields::normalize($data['unrecognized_fields'] ?? null),
         );
     }
 
@@ -162,6 +173,8 @@ class InvoiceLine implements ZugferdInvoiceLine
             'delivery_address' => $this->deliveryAddress?->toArray(),
             'purchase_order_line_reference' => $this->purchaseOrderLineReference,
             'deliveries' => $this->partialDeliveries,
+            'is_non_goods' => $this->isNonGoods,
+            'unrecognized_fields' => $this->unrecognizedFields,
         ];
     }
 }

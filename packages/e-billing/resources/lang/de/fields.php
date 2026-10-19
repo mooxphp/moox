@@ -21,6 +21,8 @@ return [
     'customer_reference' => 'Kundenreferenz',
     'order_number' => 'Bestellnummer',
     'order_date' => 'Bestelldatum',
+    'project_reference' => 'Projektreferenz',
+    'project_name' => 'Projektname',
     'delivery_address' => 'Warenempfänger',
     'supplier_number' => 'Lieferantennummer',
     'supplier_phone' => 'Telefon Lieferant',
@@ -375,6 +377,7 @@ return [
     'empty_no_field_data' => 'Keine Felddaten verfügbar.',
     'empty_no_line_items' => 'Keine Positionen vorhanden.',
     'line_item_position' => 'Position :position',
+    'non_goods_line' => 'Kein Warenposten',
 
     // Field hints — missing
     'hint_satisfied_by_lines' => 'Steht nicht im Kopf, sondern in jeder Position; hier die Werte der Positionen.',
@@ -411,13 +414,20 @@ return [
         .'bei innergemeinschaftlicher Lieferung nicht, ohne sie zu einem Zeitraum zusammenzuziehen.',
     'hint_review_totals_reconciliation' => 'Positionen und Zu-/Abschläge ergeben nicht den Nettobetrag '
         .'(Differenz :difference €). Positionsbeträge und Zuschläge mit dem PDF abgleichen.',
+    'hint_review_payment_discount' => 'Der gedruckte Skontobetrag (€ :printed) passt nicht zu Prozentsatz und Basis '
+        .'(erwartet € :expected). Skonto und Zahlbetrag mit dem PDF abgleichen.',
     'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits und muss geprüft werden.',
     'hint_review_declared_document_type' => 'Beim Hochladen wurde ein anderer Belegtyp gewählt, '
         .'als das Dokument trägt – bitte prüfen.',
+    'hint_review_consignee_address_missing' => 'Der Warenempfänger ist nicht der Käufer und ohne Anschrift gedruckt '
+        .'– bitte seine Lieferadresse ermitteln und eintragen.',
+    'hint_review_unrecognized' => 'Gedruckt steht „:printed“, das wurde nicht als Wert erkannt — bitte prüfen.',
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 
     // Field hints — informational (no validation status)
     'hint_info_buyer_email' => 'Empfänger für die Zustellung — nicht mit Stammdaten abgeglichen.',
+    'hint_info_consignee_not_in_master_data' => 'Warenempfänger nicht in den Stammdaten des Käufers — '
+        .'bei einer Lieferung an Dritte erwartet (blockiert nicht).',
     'hint_warning_preceding_invoice_not_found' => 'Bezugsrechnung nicht im System gefunden — bitte prüfen '
         .'(blockiert nicht).',
     'hint_warning_preceding_invoice_date_mismatch' => 'Datum weicht von der gespeicherten Bezugsrechnung ab — '

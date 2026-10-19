@@ -6,8 +6,10 @@ namespace Moox\EBilling\Adapters;
 
 use Moox\EBilling\Support\CreditNotePaymentTerms;
 use Moox\EBilling\Support\DeliveryDateTransmission;
+use Moox\EBilling\Support\DocumentEmissionLabels;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\EBilling\Support\InvoiceDocumentNotes;
+use Moox\EBilling\Support\PaymentDiscounts;
 use Moox\EBilling\Support\PrecedingInvoiceReferences;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceAllowanceCharge;
@@ -18,6 +20,9 @@ use Moox\Zugferd\Contracts\ZugferdInvoice;
 use Moox\Zugferd\Contracts\ZugferdInvoiceLine;
 use Moox\Zugferd\Data\AllowanceCharge;
 
+/**
+ * @phpstan-import-type DocumentNote from ZugferdInvoice
+ */
 final class ZugferdInvoiceAdapter implements ZugferdInvoice
 {
     public function __construct(
@@ -154,6 +159,18 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
         get => null;
     }
 
+    public ?string $projectReference {
+        get {
+            $value = trim((string) ($this->model->project_reference ?? ''));
+
+            return $value !== '' ? $value : null;
+        }
+    }
+
+    public ?string $projectName {
+        get => DocumentEmissionLabels::projectName($this->model->project_reference, $this->model->project_name);
+    }
+
     public ?string $purchaseOrderDate {
         get {
             $value = trim((string) ($this->model->order_date ?? ''));
@@ -259,7 +276,7 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
         }
     }
 
-    /** @var list<string> */
+    /** @var list<DocumentNote> */
     public array $documentNotes {
         get => InvoiceDocumentNotes::fromInvoice($this->model);
     }
@@ -267,6 +284,11 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
     /** @var list<array{number: string, date: ?string}> */
     public array $precedingInvoices {
         get => PrecedingInvoiceReferences::normalize($this->model->preceding_invoices);
+    }
+
+    /** @var list<array{days: int, percent: float, base_amount: ?float}> */
+    public array $paymentDiscounts {
+        get => PaymentDiscounts::forEmission($this->model->payment_discounts);
     }
 
     private static function mapAllowanceCharge(InvoiceAllowanceCharge $charge): AllowanceCharge

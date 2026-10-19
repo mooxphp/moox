@@ -36,6 +36,8 @@ final class ReviewFieldCatalog
         'order_number' => ['order_number' => 'text'],
         'order_date' => ['order_date' => 'date'],
         'customer_reference' => ['customer_reference' => 'text'],
+        'project_reference' => ['project_reference' => 'text'],
+        'project_name' => ['project_name' => 'text'],
         'payment_terms' => ['payment_terms' => 'textarea'],
         'material_test_certificate' => ['material_test_certificate' => 'text'],
         'supplier_name' => ['seller.name' => 'text'],
@@ -117,7 +119,13 @@ final class ReviewFieldCatalog
 
         return match ($parts[0]) {
             'invoice' => $this->invoiceField($invoice, $key, $parts[1] ?? ''),
-            'notes' => $this->valueField($invoice, $key, InvoiceFieldLabels::label('notes'), $invoice, ['notes.'.(int) ($parts[1] ?? 0) => 'textarea']),
+            'notes' => $this->valueField(
+                $invoice,
+                $key,
+                InvoiceFieldLabels::label('notes'),
+                $invoice,
+                ['notes.'.(int) ($parts[1] ?? 0).'.text' => 'textarea'],
+            ),
             'line' => $this->lineField($invoice, $key, (string) ($parts[1] ?? ''), $parts[2] ?? ''),
             'charge' => $this->chargeField($invoice, $key, (string) ($parts[1] ?? '')),
             default => $this->notEditable($key, $key, 'unknown_field'),

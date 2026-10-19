@@ -21,6 +21,8 @@ return [
     'customer_reference' => 'Customer reference',
     'order_number' => 'Order number',
     'order_date' => 'Order date',
+    'project_reference' => 'Project reference',
+    'project_name' => 'Project name',
     'delivery_address' => 'Consignee',
     'supplier_number' => 'Supplier number',
     'supplier_phone' => 'Supplier phone',
@@ -374,6 +376,7 @@ return [
     'empty_no_field_data' => 'No field data available.',
     'empty_no_line_items' => 'No line items.',
     'line_item_position' => 'Line item :position',
+    'non_goods_line' => 'Non-goods line',
 
     // Field hints — missing
     'hint_satisfied_by_lines' => 'Not on the header but on every line; shown here are the lines\' values.',
@@ -410,13 +413,20 @@ return [
         .'actual delivery date rule without aggregating them into a period.',
     'hint_review_totals_reconciliation' => 'Lines, charges and allowances do not add up to the net total '
         .'(difference €:difference). Compare line amounts and charges with the PDF.',
+    'hint_review_payment_discount' => 'The printed early-payment discount (€:printed) does not match '
+        .'its percent and base (expected €:expected). Compare the discount and the amount due with the PDF.',
     'hint_review_duplicate_invoice_number' => 'This document number already exists and needs review.',
     'hint_review_declared_document_type' => 'A different document type was chosen at upload than the document carries '
         .'– please check.',
+    'hint_review_consignee_address_missing' => 'The consignee is not the buyer and is printed without an address '
+        .'– please look up and enter its delivery address.',
+    'hint_review_unrecognized' => 'Printed as “:printed”, which was not recognised as a value — please check.',
     'hint_review_default' => 'This field should be reviewed manually.',
 
     // Field hints — informational (no validation status)
     'hint_info_buyer_email' => 'Delivery recipient — not checked against master data.',
+    'hint_info_consignee_not_in_master_data' => 'Consignee not in the buyer\'s master data — '
+        .'expected for a delivery to a third party (does not block).',
     'hint_warning_preceding_invoice_not_found' => 'Preceding invoice not found in the system — please check '
         .'(does not block).',
     'hint_warning_preceding_invoice_date_mismatch' => 'Date differs from the stored preceding invoice — '

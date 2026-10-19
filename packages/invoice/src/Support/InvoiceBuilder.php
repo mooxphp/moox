@@ -41,12 +41,15 @@ class InvoiceBuilder
         $invoice->customer_reference = $draft->customer_reference;
         $invoice->order_number = $draft->order_number;
         $invoice->order_date = $draft->order_date;
+        $invoice->project_reference = $draft->project_reference;
+        $invoice->project_name = $draft->project_name;
         $invoice->delivery_date = $draft->delivery_date;
         $invoice->payment_terms = $draft->payment_terms;
         $invoice->shipping_method = $draft->shipping_method;
         $invoice->delivery_terms = $draft->delivery_terms;
-        $invoice->notes = $draft->notes !== [] ? $draft->notes : null;
+        $invoice->notes = $draft->notes;
         $invoice->preceding_invoices = $draft->preceding_invoices !== [] ? $draft->preceding_invoices : null;
+        $invoice->payment_discounts = $draft->payment_discounts !== [] ? $draft->payment_discounts : null;
         $invoice->seller = $draft->seller;
         $invoice->buyer = $draft->buyer;
         $invoice->delivery = $draft->delivery;
@@ -91,6 +94,7 @@ class InvoiceBuilder
         $line->customs_tariff_number = $lineDraft->customs_tariff_number;
         $line->unit_price = (string) $lineDraft->unit_price;
         $line->line_total = (string) $lineDraft->line_total;
+        $line->is_non_goods = $lineDraft->is_non_goods;
         $line->delivery_date = $lineDraft->delivery_date;
         $line->delivery_note_number = $lineDraft->delivery_note_number;
         $line->deliveries = $lineDraft->deliveries !== [] ? $lineDraft->deliveries : null;

@@ -7,13 +7,20 @@ namespace Moox\Invoice\Support;
 use Moox\Invoice\Support\En16931\Party;
 use Moox\Invoice\Support\En16931\PaymentMeans;
 
+/**
+ * @phpstan-import-type InvoiceNote from InvoiceNotes
+ */
 readonly class InvoiceDraft
 {
     /**
      * @param  list<InvoiceLineDraft>  $lines
      * @param  list<ChargeDraft>  $headerCharges
-     * @param  list<string>  $notes
+     * @param  list<string|InvoiceNote>  $notes  Plain strings are stored as notes without a subject code
      * @param  list<array{number: string, date: ?string}>  $preceding_invoices  BG-3: BT-25 number, BT-26 date (Y-m-d)
+     * @param  list<array{days: int, percent: float, base_amount: ?float, amount: ?float}>  $payment_discounts
+     *                                                                                                          Early-payment discount tiers; `amount` is the discount as printed
+     * @param  ?string  $project_reference  BT-11 the buyer's project identifier
+     * @param  ?string  $project_name  Name of the BT-11 project
      */
     public function __construct(
         public string $invoice_number,
@@ -43,6 +50,9 @@ readonly class InvoiceDraft
         public array $headerCharges,
         public array $notes = [],
         public array $preceding_invoices = [],
+        public array $payment_discounts = [],
+        public ?string $project_reference = null,
+        public ?string $project_name = null,
     ) {
     }
 }

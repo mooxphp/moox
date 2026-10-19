@@ -17,8 +17,22 @@ final class DocumentEditGuard
 {
     public function canEdit(EbillingDocument $document): bool
     {
-        return $document->resolveApprovalStatusEnum() === DocumentApprovalStatus::Pending
+        return $this->awaitsApprovalDecision($document)
             && ! $this->isPipelineRunning($document);
+    }
+
+    /**
+     * Pending, or no approval decision on an artifact that is not deliverable: an artifact that failed validation
+     * never enters approval, and that is exactly when a correction is needed (mooxphp/e-billing#109). A deliverable
+     * document without approval (approval not required) may be dispatched any moment, and a delivered one stays locked.
+     */
+    public function awaitsApprovalDecision(EbillingDocument $document): bool
+    {
+        return match ($document->resolveApprovalStatusEnum()) {
+            DocumentApprovalStatus::Pending => true,
+            null => ! $document->isDeliverable() && ! $document->deliveryAttempts()->exists(),
+            default => false,
+        };
     }
 
     public function isPipelineRunning(EbillingDocument $document): bool

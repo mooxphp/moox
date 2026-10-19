@@ -1,0 +1,55 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+
+/**
+ * Wraps each stored note string in {text, subject_code}. Only the shape changes: texts are kept exactly
+ * as recorded, including whitespace and empty notes. Self-contained on purpose, so later changes to the
+ * notes support classes cannot change what this migration did.
+ */
+return new class extends Migration
+{
+    public function up(): void
+    {
+        $this->rewrite(static fn (mixed $note): mixed => is_string($note)
+            ? ['text' => $note, 'subject_code' => null]
+            : $note);
+    }
+
+    public function down(): void
+    {
+        // Subject codes have no place in the string shape and are dropped.
+        $this->rewrite(static fn (mixed $note): mixed => is_array($note) && is_string($note['text'] ?? null)
+            ? $note['text']
+            : $note);
+    }
+
+    /**
+     * @param  Closure(mixed): mixed  $convertNote
+     */
+    private function rewrite(Closure $convertNote): void
+    {
+        DB::table('invoices')->whereNotNull('notes')->orderBy('id')->chunkById(100, function ($rows) use ($convertNote): void {
+            foreach ($rows as $row) {
+                $decoded = json_decode((string) $row->notes, true);
+
+                if (! is_array($decoded)) {
+                    continue;
+                }
+
+                $converted = array_map($convertNote, $decoded);
+
+                if ($converted === $decoded) {
+                    continue;
+                }
+
+                DB::table('invoices')->where('id', $row->id)->update([
+                    'notes' => json_encode($converted, JSON_THROW_ON_ERROR),
+                ]);
+            }
+        });
+    }
+};

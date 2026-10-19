@@ -6,12 +6,18 @@ namespace Moox\EBilling\Data;
 
 use Moox\EBilling\Adapters\ZugferdInvoiceDtoAdapter;
 use Moox\EBilling\Support\BillDataAllowanceChargeMapper;
+use Moox\EBilling\Support\PaymentDiscounts;
 use Moox\EBilling\Support\PrecedingInvoiceReferences;
+use Moox\EBilling\Support\UnrecognizedFields;
 use Moox\EBilling\Support\VatIdNormalizer;
+use Moox\Invoice\Support\InvoiceNotes;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdBankAccount;
 use Moox\Zugferd\Contracts\ZugferdInvoice;
 
+/**
+ * @phpstan-import-type InvoiceNote from InvoiceNotes
+ */
 class Invoice
 {
     public function __construct(
@@ -32,6 +38,9 @@ class Invoice
 
         public ?string $orderNumber = null,
         public ?string $orderDate = null,
+        /** BT-11 the buyer's project identifier */
+        public ?string $projectReference = null,
+        public ?string $projectName = null,
         public ?string $deliveryDate = null,
         public ?Address $deliveryAddress = null,
 
@@ -72,11 +81,25 @@ class Invoice
         /** @var InvoiceLine[] */
         public array $lines = [],
 
-        /** @var array<int, string> */
+        /** @var list<string|InvoiceNote> BT-22 notes, optionally with a BT-21 subject code */
         public array $notes = [],
 
         /** @var list<array{number: string, date: ?string}> BG-3: BT-25 number, BT-26 date (Y-m-d) */
         public array $precedingInvoices = [],
+
+        /**
+         * @var list<array{days: int, percent: float, base_amount: ?float, amount: ?float}>
+         *                                                                                  early-payment discount tiers, see PaymentDiscounts
+         */
+        public array $paymentDiscounts = [],
+
+        /**
+         * Text the parser found where a header field is printed but could not read (fully) as that field's value,
+         * by field name (e.g. ['payment_terms' => '…']). Validation asks for review of that field.
+         *
+         * @var array<string, string>
+         */
+        public array $unrecognizedFields = [],
 
         // Currency
         public string $currency = 'EUR',
@@ -241,7 +264,7 @@ class Invoice
         $notes = [];
         if (isset($data['notes']) && is_array($data['notes'])) {
             foreach ($data['notes'] as $n) {
-                if (is_string($n)) {
+                if (is_string($n) || (is_array($n) && is_string($n['text'] ?? null))) {
                     $notes[] = $n;
                 }
             }
@@ -270,6 +293,12 @@ class Invoice
             customerReference: isset($data['customer_reference']) && is_string($data['customer_reference']) ? $data['customer_reference'] : null,
             orderNumber: isset($data['order_number']) && is_string($data['order_number']) ? $data['order_number'] : null,
             orderDate: isset($data['order_date']) && is_string($data['order_date']) ? $data['order_date'] : null,
+            projectReference: isset($data['project_reference']) && is_string($data['project_reference'])
+                ? $data['project_reference']
+                : null,
+            projectName: isset($data['project_name']) && is_string($data['project_name'])
+                ? $data['project_name']
+                : null,
             deliveryDate: isset($data['delivery_date']) && is_string($data['delivery_date'])
                 ? $data['delivery_date']
                 : null,
@@ -307,6 +336,8 @@ class Invoice
             lines: $lines,
             notes: $notes,
             precedingInvoices: PrecedingInvoiceReferences::normalize($data['preceding_invoices'] ?? null),
+            paymentDiscounts: PaymentDiscounts::normalize($data['payment_discounts'] ?? null),
+            unrecognizedFields: UnrecognizedFields::normalize($data['unrecognized_fields'] ?? null),
             currency: is_string($data['currency'] ?? null) && $data['currency'] !== '' ? $data['currency'] : 'EUR',
             documentCharges: is_array($data['document_charges'] ?? null) ? $data['document_charges'] : [],
         );
@@ -344,6 +375,11 @@ class Invoice
         $this->applyDefaultCustomerCountry();
     }
 
+    /**
+     * Fill the configured default country where none is printed: buyer, document delivery address, and line delivery
+     * addresses with street, postal code or city — so a line consignee equal to the buyer does not differ by country
+     * alone. A name-only line consignee gets no guessed country.
+     */
     public function applyDefaultCustomerCountry(): void
     {
         $default = self::normalizeCountry(config('e-billing.default_customer_country'));
@@ -357,6 +393,13 @@ class Invoice
 
         if ($this->deliveryAddress !== null && self::isCountryEmpty($this->deliveryAddress->country)) {
             $this->deliveryAddress->country = $default;
+        }
+
+        foreach ($this->lines as $line) {
+            $address = $line->deliveryAddress;
+            if ($address !== null && $address->hasPostalData() && self::isCountryEmpty($address->country)) {
+                $address->country = $default;
+            }
         }
     }
 
@@ -379,6 +422,8 @@ class Invoice
 
             'order_number' => $this->orderNumber,
             'order_date' => $this->orderDate,
+            'project_reference' => $this->projectReference,
+            'project_name' => $this->projectName,
             'delivery_date' => $this->deliveryDate,
             'delivery_address' => $this->deliveryAddress?->toArray(),
 
@@ -415,6 +460,8 @@ class Invoice
             'lines' => array_map(fn (InvoiceLine $line) => $line->toArray(), $this->lines),
             'notes' => $this->notes,
             'preceding_invoices' => $this->precedingInvoices,
+            'payment_discounts' => $this->paymentDiscounts,
+            'unrecognized_fields' => $this->unrecognizedFields,
             'document_charges' => $this->documentCharges,
         ];
     }

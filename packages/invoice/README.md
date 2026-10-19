@@ -84,6 +84,7 @@ $draft = new InvoiceDraft(
             customs_tariff_number: null,
             unit_price: 100.0,
             line_total: 100.0,
+            is_non_goods: false, // true for a line that bills or credits an amount, not an article
             delivery_date: null,
             delivery_note_number: null,
             deliveries: [], // list of ['date' => 'Y-m-d', 'delivery_note' => '...', 'quantity' => 1.0]
@@ -189,11 +190,15 @@ The `Invoice` model (`Moox\Invoice\Models\Invoice`) stores the invoice header. I
 -   `customer_reference` (string, nullable) - Reference the buyer asked to see on the document (EN 16931 **BT-10**); distinct from `customer_number`
 -   `order_number` (string, nullable) - Associated order number
 -   `order_date` (string, nullable) - Associated order date
+-   `project_reference` (string, nullable) - The buyer's project identifier (EN 16931 **BT-11**)
+-   `project_name` (string, nullable) - Name of that project
 -   `delivery_date` (string, nullable) - Actual delivery date for the document (EN 16931 **BT-72**)
 -   `payment_terms` (text, nullable) - Payment terms free text (EN 16931 **BT-20**)
 -   `shipping_method` (string, nullable) - Shipping / delivery method as shown on the document
 -   `delivery_terms` (string, nullable) - Delivery terms / freight bearer (e.g. ex works; free text; serialized as note in e-billing / ZUGFeRD layer; not payment terms)
 -   `preceding_invoices` (json, nullable) - Preceding invoice references (EN 16931 **BG-3**: list of `{number, date}`, BT-25/BT-26)
+-   `payment_discounts` (json, nullable) - Early-payment discount tiers (list of `{days, percent, base_amount, amount}`; `amount` is the printed discount amount, used for validation only and never transmitted)
+-   `notes` (json, nullable) - Free-text notes (EN 16931 **BT-22**): list of `{text, subject_code}`, `subject_code` (BT-21, UNTDID 4451) is `null` when none. Cast by `InvoiceNotesCast`, which also reads rows that still hold plain strings. Migration stub `convert_invoice_notes_to_objects` (host: publish and run) rewrites stored string notes.
 -   `seller` (json, nullable) - Seller party snapshot; cast to `Party` via `PartyCast`
 -   `buyer` (json, nullable) - Buyer party snapshot; cast to `Party` via `PartyCast`
 -   `delivery` (json, nullable) - Consignee party (name + address); cast to `Party` via `DeliveryPartyCast`. VAT identifier, tax number, and contact are not stored. A stored consignee may lack `country_code`; BR-57 is enforced at emission.
@@ -230,6 +235,7 @@ The `InvoiceLine` model (`Moox\Invoice\Models\InvoiceLine`) stores a single invo
 -   `customs_tariff_number` (string, nullable) - Customs tariff number
 -   `unit_price` (decimal 12,2, default: `0`) - Net unit price
 -   `line_total` (decimal 12,2, default: `0`) - Net line total
+-   `is_non_goods` (boolean, default: `false`) - Line bills or credits an amount, not an article (for example refunded packaging or a lump sum). Set explicitly, never derived. Migration stub `add_is_non_goods_to_invoice_lines_table` (hosts must publish/run it).
 -   `delivery` (json, nullable) - Line consignee party (name + address); cast to `Party` via `DeliveryPartyCast`. VAT identifier, tax number, and contact are not stored. A stored consignee may lack `country_code`; BR-57 is enforced at emission.
 -   `delivery_date` (string, nullable) - Delivery date
 -   `delivery_note_number` (string, nullable) - Delivery note reference

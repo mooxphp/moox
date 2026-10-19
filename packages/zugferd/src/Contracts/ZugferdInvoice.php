@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\Zugferd\Contracts;
 
+/**
+ * DocumentNote: a BT-22 note, optionally with its BT-21 subject code (UNTDID 4451).
+ *
+ * @phpstan-type DocumentNote string|array{text: string, subject_code?: ?string}
+ */
 interface ZugferdInvoice
 {
     public string $invoiceNumber { get; }
@@ -84,7 +89,7 @@ interface ZugferdInvoice
     /** @var list<ZugferdBankAccount> */
     public array $bankAccounts { get; }
 
-    /** @var list<string> */
+    /** @var list<DocumentNote> */
     public array $documentNotes { get; }
 
     /**
@@ -93,4 +98,18 @@ interface ZugferdInvoice
      * @var list<array{number: string, date: ?string}>
      */
     public array $precedingInvoices { get; }
+
+    /**
+     * Early-payment discount tiers, written as XRechnung `#SKONTO#` lines into BT-20 ahead of the payment
+     * terms. A null base amount means the discount applies to the amount due (BT-115).
+     *
+     * @var list<array{days: int, percent: float, base_amount: ?float}>
+     */
+    public array $paymentDiscounts { get; }
+
+    /** BT-11 the buyer's project identifier; null/empty → do not emit. */
+    public ?string $projectReference { get; }
+
+    /** Name of the BT-11 project; the CII binding requires one, so "Project Reference" stands in when empty. */
+    public ?string $projectName { get; }
 }

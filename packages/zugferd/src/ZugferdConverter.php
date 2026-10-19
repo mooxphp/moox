@@ -18,6 +18,7 @@ use Moox\Zugferd\Contracts\ZugferdNoteLabels;
 use Moox\Zugferd\Exceptions\IncompleteInvoiceException;
 use Moox\Zugferd\Support\EnglishNoteLabels;
 use Moox\Zugferd\Support\FlexibleDateParser;
+use Moox\Zugferd\Support\NoteSubjectCodes;
 use Moox\Zugferd\Support\ShipToPartyEquality;
 use Symfony\Component\Process\Process;
 
@@ -30,6 +31,9 @@ class ZugferdConverter
      * Override via config('zugferd.pdf_title_template') / pdf_title_templates.
      */
     public const PDF_TITLE_TEMPLATE = '%3$s : %2$s %1$s';
+
+    /** BT-11 project name when none is given: the CII binding requires `ram:Name`. */
+    private const DEFAULT_PROJECT_NAME = 'Project Reference';
 
     private const PROFILE_MAP = [
         'MINIMUM' => ZugferdProfiles::PROFILE_MINIMUM,
@@ -257,7 +261,19 @@ class ZugferdConverter
     private function setDocumentNotes(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
     {
         foreach ($invoice->documentNotes as $note) {
-            $doc->addDocumentNote($note);
+            if (is_string($note)) {
+                $doc->addDocumentNote($note);
+
+                continue;
+            }
+
+            $subjectCode = $note['subject_code'] ?? null;
+
+            if ($subjectCode !== null && ! NoteSubjectCodes::isValid($subjectCode)) {
+                throw new InvalidArgumentException("Note subject code [{$subjectCode}] is not in UNTDID 4451.");
+            }
+
+            $doc->addDocumentNote($note['text'], null, $subjectCode);
         }
     }
 
@@ -492,6 +508,15 @@ class ZugferdConverter
             $doc->setDocumentBuyerOrderReferencedDocument($orderRef, null);
         }
 
+        $projectReference = trim((string) $invoice->projectReference);
+        if ($projectReference !== '') {
+            $projectName = trim((string) $invoice->projectName);
+            $doc->setDocumentProcuringProject(
+                $projectReference,
+                $projectName !== '' ? $projectName : self::DEFAULT_PROJECT_NAME,
+            );
+        }
+
         $despatch = $invoice->despatchAdviceReference !== null ? trim($invoice->despatchAdviceReference) : '';
         if ($despatch === '') {
             $despatch = $this->commonLineDeliveryNoteNumber($invoice) ?? '';
@@ -708,17 +733,38 @@ class ZugferdConverter
             );
         }
 
-        // Payment terms
-        if ($invoice->dueDate) {
-            $dueDate = \DateTime::createFromFormat('Y-m-d', $invoice->dueDate);
-            $termText = ($invoice->paymentTerms ?? '')
-                .'; zahlbar ohne Abzug bis zum '.date('d.m.Y', strtotime($invoice->dueDate));
-            if ($dueDate) {
-                $doc->addDocumentPaymentTerm($termText, $dueDate);
+        // Payment terms (BT-20) are written as given, never composed; the due date stays structured in BT-9.
+        $dueDate = ($invoice->dueDate ? \DateTime::createFromFormat('Y-m-d', $invoice->dueDate) : false) ?: null;
+        $paymentTerms = $this->paymentTermsText($invoice->paymentTerms);
+        $discounts = $invoice->paymentDiscounts;
+
+        if ($discounts !== []) {
+            if ($paymentTerms === null) {
+                throw new IncompleteInvoiceException(
+                    'Missing required field: paymentTerms (BT-20) for paymentDiscounts.',
+                );
             }
-        } elseif ($invoice->paymentTerms) {
-            $doc->addDocumentPaymentTerm($invoice->paymentTerms);
+
+            $doc->addDocumentPaymentTermXRechnung(
+                $paymentTerms,
+                array_column($discounts, 'days'),
+                array_column($discounts, 'percent'),
+                array_column($discounts, 'base_amount'),
+                $dueDate,
+            );
+        } elseif ($paymentTerms !== null || $dueDate !== null) {
+            $doc->addDocumentPaymentTerm($paymentTerms, $dueDate);
         }
+    }
+
+    /**
+     * No BT-20 line may start with `#`: XRechnung reads such lines as `#SKONTO#` tiers (BR-DE-18).
+     */
+    private function paymentTermsText(?string $paymentTerms): ?string
+    {
+        $text = (string) preg_replace('/(^|\r)[ \t]*#+[ \t]*/m', '$1', (string) $paymentTerms);
+
+        return trim($text) !== '' ? $text : null;
     }
 
     // ─── Line Items ──────────────────────────────────────────────

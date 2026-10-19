@@ -12,7 +12,6 @@ use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Moox\Audit\Services\MooxActivityLogger;
 use Moox\EBilling\Approval\DocumentEditGuard;
-use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\ReviewerActionType;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\ParsedValueHistory;
@@ -117,7 +116,7 @@ final class CorrectFieldValueAction
         $count = DB::transaction(function () use ($document, $invoice, $target, $values, $fields, $note): int {
             // Re-read under lock: an approval or another correction may have landed since the models were loaded.
             $lockedDocument = $document->newQuery()->lockForUpdate()->findOrFail($document->getKey());
-            if ($lockedDocument->resolveApprovalStatusEnum() !== DocumentApprovalStatus::Pending) {
+            if (! $this->editGuard->awaitsApprovalDecision($lockedDocument)) {
                 throw new InvalidArgumentException('Only a pending document can be corrected.');
             }
 
