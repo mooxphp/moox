@@ -354,7 +354,7 @@ Soft-deleted invoices are ignored (default SoftDeletes). Empty / blank document 
 **Outcomes:**
 
 1. **Differing source PDF bytes**, same number + type (and issuer when scoped) → a new document version is created. Field validation flags `invoice_number` as `needs_review` with reason `duplicate_invoice_number` and `matched_id` set to the colliding invoice’s id. That blocks auto-`Validated` and syncs `approval_flags.duplicate` (blocks auto-approve; a human may still approve after review is clear).
-2. **Identical source PDF** (same `invoice_number` + `document_type` + `source_content_hash`, and issuer when scoped) → discarded without creating a new invoice version (`gateway_status = ignored_identical_duplicate`). Operators are notified via Filament toast / database notifications (`e-billing.identical_duplicate`). This is an intentional short-circuit for re-processing or duplicate delivery, not a review case.
+2. **Identical source PDF for the same recipient** (same `invoice_number` + `document_type` + `source_content_hash` + intake recipient, and issuer when scoped) → discarded without creating a new invoice version (`gateway_status = ignored_identical_duplicate`). Operators are notified via Filament toast / database notifications (`e-billing.identical_duplicate`). This is an intentional short-circuit for re-processing or duplicate delivery, not a review case. The intake recipient is the inbox To address, or the recipient e-mail entered with a manual upload (compared case-insensitively; documents without one match each other). The same PDF for another recipient is a delivery to someone else and follows outcome 1 (new version, `duplicate_invoice_number` review).
 
 ### Dispatch approval gate
 

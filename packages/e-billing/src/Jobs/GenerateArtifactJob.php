@@ -153,6 +153,7 @@ class GenerateArtifactJob implements ShouldQueue
                     sourceContentHash: $sourceHash,
                     exceptDocumentId: (string) $document->getKey(),
                     sellerVatId: $dto->supplierVatId,
+                    intakeRecipientEmail: $document->intakeRecipientEmail(),
                 );
 
                 if ($identical !== null) {

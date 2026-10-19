@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\MySqlConnection;
@@ -205,9 +206,7 @@ class EbillingDocument extends BaseItemModel
      */
     public function documentRecipientEmail(): ?string
     {
-        $email = trim((string) ($this->invoice?->buyer?->contact->email ?? ''));
-
-        return $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
+        return self::validEmailOrNull($this->invoice?->buyer?->contact->email ?? null);
     }
 
     /**
@@ -219,23 +218,35 @@ class EbillingDocument extends BaseItemModel
     }
 
     /**
+     * The recipient the document arrived for: the inbox To address, or the address entered with a manual upload.
+     */
+    public function intakeRecipientEmail(): ?string
+    {
+        $source = $this->source;
+
+        if ($source instanceof UploadedPdfSource) {
+            return self::validEmailOrNull($source->recipient_email);
+        }
+
+        return $this->inboxToEmail();
+    }
+
+    /**
      * Validated To address from the sourcing inbox message, when present.
      */
     public function inboxToEmail(): ?string
     {
-        $message = $this->inboxMessage();
+        return self::validEmailOrNull($this->inboxMessage()?->to_email);
+    }
 
-        if ($message === null) {
-            return null;
-        }
+    /**
+     * The trimmed address when it is a valid e-mail address, else null.
+     */
+    private static function validEmailOrNull(?string $email): ?string
+    {
+        $email = trim((string) $email);
 
-        $email = trim((string) ($message->to_email ?? ''));
-
-        if ($email === '' || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return null;
-        }
-
-        return $email;
+        return $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
     }
 
     /**
