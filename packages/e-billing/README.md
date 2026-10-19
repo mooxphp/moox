@@ -219,6 +219,8 @@ php artisan e-billing:revalidate {ids*} {--in-review} {--hold} {--dry-run}
 | `--hold` | Holds the revalidated documents for approval (see [Hold for approval](#hold-for-approval)) |
 | `--dry-run` | Lists the selection and whether each document would be revalidated or refused, without changing anything |
 
+`--in-review` also selects superseded invoice versions, because the list's needs-review tab (like *all* and *deleted*) shows every version, so the selection matches that tab.
+
 Each document takes the same path as leaving the review workspace: `review_status` is reset to `parser_created`, field validation runs again, `gateway_status` becomes `generating` and `GenerateArtifactJob` is queued. Each revalidation is logged as activity `document_revalidated` on the document (previous `review_status`, `held`). A document is refused with a reason key:
 
 | Reason key | Document state |
@@ -252,12 +254,12 @@ php artisan e-billing:reparse {ids?*} {--kosit-failed} {--order-missing} {--hold
 | Argument / option | Effect |
 | --- | --- |
 | `ids` | One or more e-billing document ids |
-| `--kosit-failed` | Selects documents whose latest KoSIT validation failed (combines with `ids`) |
-| `--order-missing` | Selects documents whose `order_number` or `order_date` validated as missing (combines with `ids`) |
+| `--kosit-failed` | Selects documents whose latest KoSIT validation failed (combines with `ids`; see below for invoice versions) |
+| `--order-missing` | Selects documents whose `order_number` or `order_date` validated as missing (combines with `ids`; see below for invoice versions) |
 | `--hold` | Holds the reparsed documents for approval (see [Hold for approval](#hold-for-approval)) |
-| `--dry-run` | Lists the selection (id, review status, gateway status, and whether it would be reparsed or refused with which reason) without changing anything |
+| `--dry-run` | Lists the selection (id, invoice number, review status, gateway status, and whether it would be reparsed or refused with which reason) without changing anything |
 
-Without ids and without `--kosit-failed` or `--order-missing` the command does nothing. Start with `--dry-run`, then run it again without it.
+Without ids and without `--kosit-failed` or `--order-missing` the command does nothing. The selection by `--kosit-failed` or `--order-missing` without ids matches the invoice list's status tabs, which show only the current version; superseded versions and documents without an invoice are not selected. Explicit `ids` are not restricted to current versions: the id of a superseded version is reparsed or refused as before, also when combined with `--kosit-failed` or `--order-missing`. Start with `--dry-run`, then run it again without it.
 
 For each selected document the command re-parses the source PDF, soft-deletes and unlinks the draft invoice, resets `bill_data`, `field_validations` and `validation_score`, sets `review_status` to `parser_created` and `gateway_status` to `generating`, logs the activity `document_reparsed` (old and new net and line totals) and dispatches `GenerateArtifactJob`, which keeps the existing artifact paths. Artifact regeneration and KoSIT validation run on the queue; the new validation attaches to the same document and the earlier one stays as history.
 
