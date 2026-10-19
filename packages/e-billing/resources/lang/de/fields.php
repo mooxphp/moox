@@ -41,6 +41,7 @@ return [
     'gross_total_short' => 'Brutto',
     'discount_percent' => 'Rabatt (%)',
     'discount_amount' => 'Rabattbetrag',
+    'discount_reason' => 'Rabatt-Grund',
     'shipping_cost' => 'Versandkosten',
     'minimum_quantity_surcharge' => 'Mindermengenzuschlag',
     'freight_flat_rate' => 'Frachtkostenpauschale',

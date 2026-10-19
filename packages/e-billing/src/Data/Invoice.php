@@ -111,6 +111,9 @@ class Invoice
          * @var list<array{field: string, amount: float, reason: ?string}>
          */
         public array $documentCharges = [],
+
+        /** BT-97 of the document discount as printed; without it the reason text is generated from the percentage. */
+        public ?string $discountReason = null,
     ) {
         $this->customerVatId = VatIdNormalizer::normalize($this->customerVatId);
         $this->supplierVatId = VatIdNormalizer::normalize($this->supplierVatId);
@@ -155,6 +158,7 @@ class Invoice
                 $this->discountPercent,
                 $scalar('certificate_cost', $this->certificateCost),
                 $scalar('customs_cost', $this->customsCost),
+                $this->discountReason,
             ),
             ...BillDataAllowanceChargeMapper::fromDocumentChargeRows($this->documentCharges),
         ];
@@ -340,6 +344,7 @@ class Invoice
             unrecognizedFields: UnrecognizedFields::normalize($data['unrecognized_fields'] ?? null),
             currency: is_string($data['currency'] ?? null) && $data['currency'] !== '' ? $data['currency'] : 'EUR',
             documentCharges: is_array($data['document_charges'] ?? null) ? $data['document_charges'] : [],
+            discountReason: is_string($data['discount_reason'] ?? null) ? $data['discount_reason'] : null,
         );
 
         $invoice->applyDefaultCustomerCountry();
@@ -448,6 +453,7 @@ class Invoice
             'gross_total' => $this->grossTotal,
             'discount_percent' => $this->discountPercent,
             'discount_amount' => $this->discountAmount,
+            'discount_reason' => $this->discountReason,
             'shipping_cost' => $this->shippingCost,
             'minimum_quantity_surcharge' => $this->minimumQuantitySurcharge,
             'freight_flat_rate' => $this->freightFlatRate,

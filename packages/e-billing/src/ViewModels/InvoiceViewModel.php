@@ -81,7 +81,7 @@ final class InvoiceViewModel
                 'subtitle' => 'BG-21 / BG-22',
                 'fields' => $this->buildFields([
                     'net_total', 'totals_reconciliation', 'vat_category', 'vat_rate', 'vat_amount', 'gross_total',
-                    'discount_percent', 'discount_amount',
+                    'discount_percent', 'discount_amount', 'discount_reason',
                     'shipping_cost', 'freight_flat_rate', 'packaging_cost', 'minimum_quantity_surcharge',
                     'certificate_cost', 'customs_cost',
                 ]),
@@ -475,6 +475,10 @@ final class InvoiceViewModel
     {
         if (array_key_exists($field, HeaderChargeResolver::FIELD_SPECS)) {
             return HeaderChargeResolver::resolveAmount($this->invoice->allowanceCharges, $field);
+        }
+
+        if ($field === 'discount_reason') {
+            return HeaderChargeResolver::discountCharge($this->invoice->allowanceCharges)?->reason_text;
         }
 
         $precedingReference = PrecedingInvoiceReferences::first($this->invoice->preceding_invoices);

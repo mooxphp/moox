@@ -931,6 +931,7 @@ return [
             // Optional amounts
             'discount_percent' => 'could',  // BG-20 / BT-94
             'discount_amount' => 'could',  // BG-20 / BT-92
+            'discount_reason' => 'could',  // BG-20 / BT-97
             'shipping_cost' => 'could',  // BG-21 / BT-99
             'minimum_quantity_surcharge' => 'could',  // BG-21 / BT-99
             'freight_flat_rate' => 'could',  // BG-21 / BT-99
@@ -1109,6 +1110,7 @@ return [
             // Optional amounts
             'discount_percent' => 'could',  // BG-20 / BT-94
             'discount_amount' => 'could',  // BG-20 / BT-92
+            'discount_reason' => 'could',  // BG-20 / BT-97
             'shipping_cost' => 'could',  // BG-21 / BT-99
             'minimum_quantity_surcharge' => 'could',  // BG-21 / BT-99
             'freight_flat_rate' => 'could',  // BG-21 / BT-99
@@ -1232,6 +1234,7 @@ return [
             // Optional amounts
             'discount_percent' => 'could',  // BG-20 / BT-94
             'discount_amount' => 'could',  // BG-20 / BT-92
+            'discount_reason' => 'could',  // BG-20 / BT-97
             'shipping_cost' => 'could',  // BG-21 / BT-99
             'minimum_quantity_surcharge' => 'could',  // BG-21 / BT-99
             'freight_flat_rate' => 'could',  // BG-21 / BT-99

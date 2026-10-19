@@ -113,6 +113,14 @@ final class HeaderChargeResolver
         return $matching;
     }
 
+    /**
+     * The document discount (BG-20); its reason text is the discount reason (BT-97).
+     */
+    public static function discountCharge(iterable $allowanceCharges): ?InvoiceAllowanceCharge
+    {
+        return self::firstMatchingCharge($allowanceCharges, self::FIELD_SPECS['discount_amount'], true);
+    }
+
     public static function hasDiscountPercentSignal(iterable $allowanceCharges): bool
     {
         return self::resolveDiscountPercent($allowanceCharges) !== null;
