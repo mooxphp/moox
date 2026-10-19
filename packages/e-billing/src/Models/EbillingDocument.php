@@ -462,29 +462,23 @@ class EbillingDocument extends BaseItemModel
      */
     public function scopeWhereLatestKositValidationPassed(Builder $query, bool $passed): Builder
     {
-        $morphClass = $query->getModel()->getMorphClass();
-        $documentsTable = $query->getModel()->getTable();
+        $validation = new KositValidation;
 
-        return $query->whereExists(function ($exists) use ($morphClass, $documentsTable, $passed): void {
-            $exists->selectRaw('1')
-                ->from('kosit_validations as latest_kv')
-                ->join('kosit_validatables as latest_kvt', 'latest_kvt.kosit_validation_id', '=', 'latest_kv.id')
-                ->whereColumn('latest_kvt.validatable_id', "{$documentsTable}.id")
-                ->where('latest_kvt.validatable_type', $morphClass)
-                ->where('latest_kv.passed', $passed)
-                ->whereRaw(
-                    "latest_kv.id = (
-                        SELECT kv2.id
-                        FROM kosit_validatables kvt2
-                        INNER JOIN kosit_validations kv2 ON kv2.id = kvt2.kosit_validation_id
-                        WHERE kvt2.validatable_type = ?
-                        AND kvt2.validatable_id = {$documentsTable}.id
-                        ORDER BY kv2.validated_at DESC, kv2.id DESC
-                        LIMIT 1
-                    )",
-                    [$morphClass],
-                );
-        });
+        // The document's newest validation id, correlated through the morph pivot like whereHas().
+        $latestValidationId = $query->getModel()->kositValidations()
+            ->getRelationExistenceQuery($validation->newQuery(), $query, [$validation->qualifyColumn('id')])
+            ->orderByDesc($validation->qualifyColumn('validated_at'))
+            ->orderByDesc($validation->qualifyColumn('id'))
+            ->limit(1);
+
+        return $query->whereHas('kositValidations', fn (Builder $validations): Builder => $validations
+            ->where($validation->qualifyColumn('passed'), $passed)
+            ->where($validation->qualifyColumn('id'), $latestValidationId));
+    }
+
+    /**
+     * Documents whose most recent source-PDF relay attempt failed; a later successful attempt clears it.
+     */
     public function scopeWhereLatestSourcePdfRelayFailed(Builder $query): Builder
     {
         return $query->whereHas(
