@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Support;
 
+use InvalidArgumentException;
+use Moox\EBilling\Models\EbillingDocument;
+
 /**
  * Selects the MoSCoW and ViewInvoice denylist maps by document type (BT-3), ADR 0009.
  *
@@ -180,7 +183,12 @@ final class FieldValidationProfile
     }
 
     /**
+     * Field names end up inside JSON paths of the review-queue SQL ({@see EbillingDocument::scopeNeedsHumanReview()}),
+     * so only plain identifiers are accepted.
+     *
      * @return array<string, string>
+     *
+     * @throws InvalidArgumentException when a configured field name is not a plain identifier
      */
     private static function priorityMap(mixed $config): array
     {
@@ -191,9 +199,17 @@ final class FieldValidationProfile
         $map = [];
 
         foreach ($config as $field => $priority) {
-            if (is_string($field) && is_string($priority) && $priority !== '') {
-                $map[$field] = $priority;
+            if (! is_string($field) || ! is_string($priority) || $priority === '') {
+                continue;
             }
+
+            if (preg_match('/^[A-Za-z0-9_]+$/', $field) !== 1) {
+                throw new InvalidArgumentException(
+                    "e-billing field priority keys must be plain identifiers (letters, digits, underscore): '{$field}'."
+                );
+            }
+
+            $map[$field] = $priority;
         }
 
         return $map;
