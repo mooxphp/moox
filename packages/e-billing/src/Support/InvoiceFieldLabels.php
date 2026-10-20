@@ -231,7 +231,9 @@ final class InvoiceFieldLabels
      *     reason?: string,
      *     difference?: string,
      *     expected?: string,
-     *     printed?: string
+     *     printed?: string,
+     *     master_data_city?: string,
+     *     master_data_additional_lines?: string
      * }|null  $validation
      */
     public static function hint(string $field, string $status, ?array $validation = null): ?string
@@ -308,6 +310,26 @@ final class InvoiceFieldLabels
         // Display-only inbox To — no master-data corroboration yet (deferred).
         if ($field === 'buyer_email') {
             return __('e-billing::fields.hint_info_buyer_email');
+        }
+
+        if (($validation['reason'] ?? null) === 'address_differs_from_master_data') {
+            $details = [];
+            if (isset($validation['master_data_city'])) {
+                $details[] = __('e-billing::fields.hint_info_address_differs_city', [
+                    'city' => $validation['master_data_city'],
+                ]);
+            }
+            if (isset($validation['master_data_additional_lines'])) {
+                $details[] = $validation['master_data_additional_lines'] === ''
+                    ? __('e-billing::fields.hint_info_address_differs_no_additional_lines')
+                    : __('e-billing::fields.hint_info_address_differs_additional_lines', [
+                        'lines' => $validation['master_data_additional_lines'],
+                    ]);
+            }
+
+            return __('e-billing::fields.hint_info_address_differs', [
+                'details' => implode(__('e-billing::fields.hint_info_address_differs_separator'), $details),
+            ]);
         }
 
         if ($field === 'delivery_address' && ($validation['reason'] ?? null) === 'consignee_not_in_master_data') {

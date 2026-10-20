@@ -437,6 +437,11 @@ return [
     'hint_info_buyer_email' => 'Delivery recipient — not checked against master data.',
     'hint_info_consignee_not_in_master_data' => 'Consignee not in the buyer\'s master data — '
         .'expected for a delivery to a third party (does not block).',
+    'hint_info_address_differs' => 'Master data differs: :details (does not block).',
+    'hint_info_address_differs_city' => 'city “:city”',
+    'hint_info_address_differs_additional_lines' => 'additional address lines “:lines”',
+    'hint_info_address_differs_no_additional_lines' => 'no additional address lines',
+    'hint_info_address_differs_separator' => ', ',
     'hint_warning_preceding_invoice_not_found' => 'Preceding invoice not found in the system — please check '
         .'(does not block).',
     'hint_warning_preceding_invoice_date_mismatch' => 'Date differs from the stored preceding invoice — '
