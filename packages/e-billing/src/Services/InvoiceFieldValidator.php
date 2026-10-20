@@ -32,6 +32,9 @@ use Moox\Invoice\Support\En16931\Party;
 use Moox\Zugferd\Support\ShipToPartyEquality;
 use RuntimeException;
 
+/**
+ * @phpstan-import-type AddressDivergence from AttributionCorroborator
+ */
 class InvoiceFieldValidator
 {
     /** BT-3 of the invoice being validated; selects the MoSCoW profile (ADR 0009). */
@@ -688,11 +691,11 @@ class InvoiceFieldValidator
         }
 
         if ($result['exists']) {
-            return [
+            return $this->withAddressDivergence([
                 'status' => 'db_validated',
                 'source' => 'auto',
                 'matched_id' => $result['matched_id'],
-            ];
+            ], $result);
         }
 
         return [
@@ -702,6 +705,39 @@ class InvoiceFieldValidator
                 ? $result['matched_id']
                 : (string) $matchedCustomer->id,
         ];
+    }
+
+    /**
+     * A city spelled differently or differing additional address lines never block a postal match; the
+     * corroborated entry carries the differing master-data values as information (#96).
+     *
+     * @param  array{status: string, source: string, matched_id: string}  $entry
+     * @param  array{divergence?: AddressDivergence}  $result
+     * @return array{
+     *     status: string,
+     *     source: string,
+     *     matched_id: string,
+     *     reason?: string,
+     *     master_data_city?: string,
+     *     master_data_additional_lines?: string
+     * }
+     */
+    private function withAddressDivergence(array $entry, array $result): array
+    {
+        $divergence = $result['divergence'] ?? [];
+        if ($divergence === []) {
+            return $entry;
+        }
+
+        $entry['reason'] = 'address_differs_from_master_data';
+        if (isset($divergence['city'])) {
+            $entry['master_data_city'] = $divergence['city'];
+        }
+        if (isset($divergence['additional_lines'])) {
+            $entry['master_data_additional_lines'] = $divergence['additional_lines'];
+        }
+
+        return $entry;
     }
 
     /**
@@ -740,22 +776,23 @@ class InvoiceFieldValidator
 
         if ($carriesBuyerName) {
             $match = $corroborator->findOwnSiteDeliveryAddress($consignee->address, $matchedCompany);
-
-            return [
+            $entry = [
                 'status' => ($match['exists'] ?? false) ? 'db_validated' : 'needs_review',
                 'source' => 'auto',
                 'matched_id' => ($match['matched_id'] ?? '') ?: (string) $matchedCustomer->getKey(),
             ];
+
+            return $this->withAddressDivergence($entry, $match ?? []);
         }
 
         $result = $corroborator->corroborateDeliveryParty($consignee, $matchedCustomer, $matchedCompany);
 
         if ($result['corroborates']) {
-            return [
+            return $this->withAddressDivergence([
                 'status' => 'db_validated',
                 'source' => 'auto',
                 'matched_id' => $result['matched_id'],
-            ];
+            ], $result);
         }
 
         return ['status' => 'parsed', 'reason' => 'consignee_not_in_master_data'];

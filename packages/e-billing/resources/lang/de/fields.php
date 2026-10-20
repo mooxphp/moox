@@ -438,6 +438,11 @@ return [
     'hint_info_buyer_email' => 'Empfänger für die Zustellung — nicht mit Stammdaten abgeglichen.',
     'hint_info_consignee_not_in_master_data' => 'Warenempfänger nicht in den Stammdaten des Käufers — '
         .'bei einer Lieferung an Dritte erwartet (blockiert nicht).',
+    'hint_info_address_differs' => 'Stammdaten weichen ab: :details (blockiert nicht).',
+    'hint_info_address_differs_city' => 'Ort „:city“',
+    'hint_info_address_differs_additional_lines' => 'Adresszusatz „:lines“',
+    'hint_info_address_differs_no_additional_lines' => 'kein Adresszusatz',
+    'hint_info_address_differs_separator' => ', ',
     'hint_warning_preceding_invoice_not_found' => 'Bezugsrechnung nicht im System gefunden — bitte prüfen '
         .'(blockiert nicht).',
     'hint_warning_preceding_invoice_date_mismatch' => 'Datum weicht von der gespeicherten Bezugsrechnung ab — '

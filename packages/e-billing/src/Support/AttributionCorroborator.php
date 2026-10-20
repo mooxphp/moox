@@ -18,6 +18,9 @@ use Moox\Invoice\Support\En16931\Party;
  *
  * Never clears or rewrites attribution — only produces field-validation verdicts.
  * No public seam — only {@see InvoiceFieldValidator} calls this.
+ *
+ * @phpstan-type AddressDivergence array{city?: string, additional_lines?: string}
+ * @phpstan-type AddressMatch array{exists: bool, matched_id: string, divergence?: AddressDivergence}
  */
 final class AttributionCorroborator
 {
@@ -57,7 +60,7 @@ final class AttributionCorroborator
      * Corroborate a delivery/consignee party: name token overlap and address fingerprint
      * must both pass.
      *
-     * @return array{corroborates: bool, matched_id: string}
+     * @return array{corroborates: bool, matched_id: string, divergence?: AddressDivergence}
      */
     public function corroborateDeliveryParty(
         Party $party,
@@ -76,10 +79,15 @@ final class AttributionCorroborator
         }
 
         if ($nameResult['corroborates'] && $addressResult['exists']) {
-            return [
+            $corroborated = [
                 'corroborates' => true,
                 'matched_id' => $addressResult['matched_id'],
             ];
+            if (isset($addressResult['divergence'])) {
+                $corroborated['divergence'] = $addressResult['divergence'];
+            }
+
+            return $corroborated;
         }
 
         $addressMatchedId = $addressResult['matched_id'];
@@ -150,7 +158,7 @@ final class AttributionCorroborator
     /**
      * Existence check of the parsed buyer address among buyer-role company addresses.
      *
-     * @return array{exists: bool, matched_id: string}|null null when invoice address is empty
+     * @return AddressMatch|null null when invoice address is empty
      */
     public function findMatchingAddress(?InvoiceAddress $invoiceAddress, ?Company $company): ?array
     {
@@ -164,7 +172,7 @@ final class AttributionCorroborator
     /**
      * Existence check of a delivery address: delivery role first, then postal/billing fallback.
      *
-     * @return array{exists: bool, matched_id: string}|null null when invoice address is empty
+     * @return AddressMatch|null null when invoice address is empty
      */
     public function findDeliveryMatchingAddress(?InvoiceAddress $invoiceAddress, ?Company $company): ?array
     {
@@ -180,7 +188,7 @@ final class AttributionCorroborator
     /**
      * Existence check of one of the buyer's own sites: the delivery role only, no postal/billing fallback.
      *
-     * @return array{exists: bool, matched_id: string}|null null when invoice address is empty
+     * @return AddressMatch|null null when invoice address is empty
      */
     public function findOwnSiteDeliveryAddress(?InvoiceAddress $invoiceAddress, ?Company $company): ?array
     {
@@ -192,8 +200,10 @@ final class AttributionCorroborator
     }
 
     /**
+     * A match without divergence in a later tier wins over an earlier tier's divergent one (#96).
+     *
      * @param  list<list<string>>  $roleTiers
-     * @return array{exists: bool, matched_id: string}|null
+     * @return AddressMatch|null
      */
     private function findAddressAmongRoleTiers(
         ?InvoiceAddress $invoiceAddress,
@@ -211,18 +221,25 @@ final class AttributionCorroborator
             ];
         }
 
+        $firstDivergentMatch = null;
         foreach ($roleTiers as $roles) {
             if ($roles === []) {
                 continue;
             }
 
             $match = $this->findFingerprintAmongRoles($invoiceAddress, $company, $roles);
-            if ($match !== null && $match['exists']) {
+            if ($match === null || ! $match['exists']) {
+                continue;
+            }
+
+            if (! isset($match['divergence'])) {
                 return $match;
             }
+
+            $firstDivergentMatch ??= $match;
         }
 
-        return [
+        return $firstDivergentMatch ?? [
             'exists' => false,
             'matched_id' => (string) $company->getKey(),
         ];
@@ -295,8 +312,14 @@ final class AttributionCorroborator
     }
 
     /**
+     * Street, postal code and country must match exactly; the city must match word for word, or one city must
+     * contain the other as whole words ("Town / Region" against "Town"); a city missing on either side is not
+     * compared (#25). A city that only contains the other and differing additional address lines never block the
+     * match: they are a master-data divergence, information only, returned in `divergence` (#96). An address
+     * without divergence is preferred over the first one with.
+     *
      * @param  list<string>  $roles
-     * @return array{exists: bool, matched_id: string}|null
+     * @return AddressMatch|null
      */
     private function findFingerprintAmongRoles(
         InvoiceAddress $invoiceAddress,
@@ -307,26 +330,131 @@ final class AttributionCorroborator
             return null;
         }
 
-        $invoiceFingerprint = AddressFingerprint::fromArray([
+        $invoiceFingerprint = $this->postalFingerprint(AddressFingerprint::fromArray([
             'street' => $invoiceAddress->line1,
-            'street2' => $invoiceAddress->line2,
             'postal_code' => $invoiceAddress->postal_code,
             'country_code' => $invoiceAddress->country_code,
-        ]);
+        ]));
+        $invoiceCityWords = $this->cityWords($invoiceAddress->city);
+        $invoiceLines = $this->normalizedAdditionalLines($invoiceAddress->line2);
 
+        $firstDivergentMatch = null;
         foreach ($this->roleFilteredAddresses($company, $roles) as $address) {
-            if (AddressFingerprint::fromAddress($address) === $invoiceFingerprint) {
-                return [
-                    'exists' => true,
-                    'matched_id' => (string) $address->getKey(),
-                ];
+            $fingerprint = AddressFingerprint::fromAddress($address);
+            if ($this->postalFingerprint($fingerprint) !== $invoiceFingerprint) {
+                continue;
             }
+
+            $divergence = [];
+
+            $masterCityWords = $this->cityWords($address->city);
+            if ($masterCityWords !== [] && $invoiceCityWords !== [] && $masterCityWords !== $invoiceCityWords) {
+                if (! $this->containsWords($invoiceCityWords, $masterCityWords)
+                    && ! $this->containsWords($masterCityWords, $invoiceCityWords)) {
+                    continue;
+                }
+                $divergence['city'] = trim($address->city);
+            }
+
+            if ($this->normalizedAdditionalLines($fingerprint['street2']) !== $invoiceLines) {
+                $divergence['additional_lines'] = implode(', ', $this->lines($fingerprint['street2'], trim(...)));
+            }
+
+            $match = [
+                'exists' => true,
+                'matched_id' => (string) $address->getKey(),
+            ];
+
+            if ($divergence === []) {
+                return $match;
+            }
+
+            $firstDivergentMatch ??= $match + ['divergence' => $divergence];
         }
 
-        return [
+        return $firstDivergentMatch ?? [
             'exists' => false,
             'matched_id' => '',
         ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function cityWords(?string $value): array
+    {
+        return preg_split('/[^\p{L}\p{N}]+/u', mb_strtolower($value ?? ''), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    }
+
+    /**
+     * Whether `$needle` occurs in `$haystack` as a contiguous run of whole words.
+     *
+     * @param  list<string>  $haystack
+     * @param  list<string>  $needle
+     */
+    private function containsWords(array $haystack, array $needle): bool
+    {
+        $length = count($needle);
+        if ($length === 0) {
+            return false;
+        }
+
+        for ($offset = 0; $offset + $length <= count($haystack); $offset++) {
+            if (array_slice($haystack, $offset, $length) === $needle) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param  array<string, ?string>  $fingerprint
+     * @return array<string, ?string>
+     */
+    private function postalFingerprint(array $fingerprint): array
+    {
+        unset($fingerprint['street2']);
+
+        return $fingerprint;
+    }
+
+    /**
+     * Additional lines compared case-, whitespace- and order-insensitively, ignoring surrounding punctuation and
+     * symbols such as the dashes in "-Accounts Payable-".
+     *
+     * @return list<string>
+     */
+    private function normalizedAdditionalLines(?string $lines): array
+    {
+        $normalized = $this->lines($lines, $this->normalizedLine(...));
+        sort($normalized);
+
+        return $normalized;
+    }
+
+    /**
+     * The non-empty lines of a multi-line value, each passed through `$transform`.
+     *
+     * @param  callable(string): string  $transform
+     * @return list<string>
+     */
+    private function lines(?string $value, callable $transform): array
+    {
+        return array_values(array_filter(
+            array_map($transform, preg_split('/\R/u', $value ?? '') ?: []),
+            static fn (string $line): bool => $line !== '',
+        ));
+    }
+
+    /**
+     * Lower-cased, whitespace collapsed, surrounding punctuation and symbols dropped; '' when empty.
+     */
+    private function normalizedLine(?string $line): string
+    {
+        $line = preg_replace('/^[\p{P}\p{S}\s]+|[\p{P}\p{S}\s]+$/u', '', mb_strtolower($line ?? '')) ?? '';
+
+        return preg_replace('/\s+/u', ' ', $line) ?? '';
     }
 
     /**
