@@ -482,9 +482,12 @@ class EbillingDocument extends BaseItemModel
             ->orderByDesc($validation->qualifyColumn('id'))
             ->limit(1);
 
-        return $query->whereHas('kositValidations', fn (Builder $validations): Builder => $validations
-            ->where($validation->qualifyColumn('passed'), $passed)
-            ->where($validation->qualifyColumn('id'), $latestValidationId));
+        return $query->whereHas(
+            'kositValidations',
+            fn (Builder $validations): Builder => $validations
+                ->where($validation->qualifyColumn('passed'), $passed)
+                ->where($validation->qualifyColumn('id'), $latestValidationId),
+        );
     }
 
     /**
@@ -1434,7 +1437,12 @@ class EbillingDocument extends BaseItemModel
 
             $statusQuery->orWhere(fn (Builder $missing): Builder => $missing
                 ->where($status, 'missing')
-                ->whereNot(fn (Builder $released): Builder => self::whereSeverityReleaseIsValid($released, "{$srColumn}->{$field}")));
+                ->whereNot(
+                    fn (Builder $released): Builder => self::whereSeverityReleaseIsValid(
+                        $released,
+                        "{$srColumn}->{$field}",
+                    ),
+                ));
         });
     }
 

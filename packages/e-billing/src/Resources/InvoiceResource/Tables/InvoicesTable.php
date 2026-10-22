@@ -237,7 +237,9 @@ final class InvoicesTable
             TextColumn::make('dispatch_status')
                 ->label(__('e-billing::fields.dispatch_status'))
                 ->badge()
-                ->getStateUsing(fn (Invoice $record): ?DispatchStatus => DispatchStatus::forDocument($record->ebillingDocument))
+                ->getStateUsing(
+                    fn (Invoice $record): ?DispatchStatus => DispatchStatus::forDocument($record->ebillingDocument),
+                )
                 ->formatStateUsing(fn (?DispatchStatus $state): string => $state?->label() ?? '—')
                 ->color(fn (?DispatchStatus $state): string => $state?->color() ?? 'gray')
                 ->toggleable(),
@@ -265,7 +267,10 @@ final class InvoicesTable
 
                     return $status === null
                         ? $query
-                        : $query->whereHas('ebillingDocument', fn ($documentQuery): Builder => $status->constrain($documentQuery));
+                        : $query->whereHas(
+                            'ebillingDocument',
+                            fn ($documentQuery): Builder => $status->constrain($documentQuery),
+                        );
                 }),
             SelectFilter::make('review_status')
                 ->label(__('e-billing::fields.status'))

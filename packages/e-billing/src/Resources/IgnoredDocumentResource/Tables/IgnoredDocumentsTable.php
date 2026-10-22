@@ -67,7 +67,11 @@ final class IgnoredDocumentsTable
                 ->placeholder('—'),
             TextColumn::make('invoice_number')
                 ->label(__('e-billing::fields.invoice_number_short'))
-                ->getStateUsing(fn (EbillingDocument $record): ?string => self::filledString($record->getAttribute('bill_invoice_number')))
+                ->getStateUsing(
+                    fn (EbillingDocument $record): ?string => self::filledString(
+                        $record->getAttribute('bill_invoice_number'),
+                    ),
+                )
                 ->searchable(query: fn (Builder $query, string $search): Builder => $query
                     ->where('bill_data->invoice_number', 'like', '%'.$search.'%'))
                 ->placeholder('—')
@@ -89,11 +93,15 @@ final class IgnoredDocumentsTable
                     }
 
                     return __(
-                        $attempt->success ? 'e-billing::fields.ignored_relay_success' : 'e-billing::fields.ignored_relay_failure',
+                        $attempt->success
+                            ? 'e-billing::fields.ignored_relay_success'
+                            : 'e-billing::fields.ignored_relay_failure',
                         ['recipient' => $attempt->recipient],
                     );
                 })
-                ->color(fn (EbillingDocument $record): string => match ($record->latestSourcePdfRelayAttempt?->success) {
+                ->color(fn (EbillingDocument $record): string => match (
+                    $record->latestSourcePdfRelayAttempt?->success
+                ) {
                     true => 'success',
                     false => 'danger',
                     null => 'gray',

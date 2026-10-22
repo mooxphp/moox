@@ -364,7 +364,8 @@ return [
     'notification_manual_upload_success_title' => 'PDF received',
     'notification_manual_upload_success_body' => 'Processing continues in the background.',
     'action_bulk_manual_upload' => 'Bulk upload',
-    'action_bulk_manual_upload_modal_description' => 'Each PDF becomes its own document and is processed like a single upload.',
+    'action_bulk_manual_upload_modal_description' => 'Each PDF becomes its own document'
+        .' and is processed like a single upload.',
     'bulk_upload_step_files' => 'Files',
     'bulk_upload_step_details' => 'Details per file',
     'bulk_upload_pdfs' => 'PDFs',
