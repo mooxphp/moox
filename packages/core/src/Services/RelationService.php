@@ -337,7 +337,18 @@ class RelationService
     {
         $kind = RelationKind::tryFrom((string) ($config['kind'] ?? '')) ?? RelationKind::MorphPivot;
         $perspective = RelationPerspective::tryFrom((string) ($config['perspective'] ?? '')) ?? RelationPerspective::Owner;
-        $presentation = RelationPresentation::tryFrom((string) ($config['presentation'] ?? '')) ?? RelationPresentation::Tab;
+
+        $presentationValue = (string) ($config['presentation'] ?? '');
+        if ($presentationValue === '') {
+            $presentation = RelationPresentation::Tab;
+        } else {
+            $presentation = RelationPresentation::tryFrom($presentationValue)
+                ?? throw RelationConfigurationException::invalidPresentation(
+                    (string) $this->currentResource,
+                    $key,
+                    $presentationValue,
+                );
+        }
 
         $pivotAttributes = self::listOfStrings($config['pivot_attributes'] ?? $config['pivot_columns'] ?? []);
         $displayColumns = self::listOfStrings($config['display_columns'] ?? ['display_name', 'name']);
