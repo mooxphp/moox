@@ -179,8 +179,7 @@ final class ManualUploadActions
         string $helperKey,
         array $settings,
         array $helperReplace = [],
-    ): FileUpload
-    {
+    ): FileUpload {
         return FileUpload::make($name)
             ->label($label)
             ->helperText(__($helperKey, [
@@ -459,8 +458,7 @@ final class ManualUploadActions
         array $existingRows,
         array $previousDefaults,
         array $defaults,
-    ): array
-    {
+    ): array {
         $existingByPath = [];
 
         foreach ($existingRows as $key => $row) {
