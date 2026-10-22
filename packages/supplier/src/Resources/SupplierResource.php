@@ -31,6 +31,7 @@ use Moox\Support\Archive\HasArchiveForm;
 use Moox\Support\Audit\HasAuditForm;
 use Moox\Support\Data\HasDataForm;
 use Moox\Support\External\HasExternalForm;
+use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Support\Filament\FeatureFields;
 use Moox\Support\Identity\HasIdentityForm;
 use Moox\Support\Relation\HasRelationForm;
@@ -45,6 +46,7 @@ class SupplierResource extends Resource
     use HasExternalForm;
     use HasIdentityForm;
     use HasRelationForm;
+    use HasResourceRelations;
     use HasSoftDeleteForm;
 
     protected static ?string $model = Supplier::class;
@@ -108,7 +110,6 @@ class SupplierResource extends Resource
                         'Producer' => 'Producer',
                         'Distributor' => 'Distributor',
                     ])
-                    ->required()
                     ->rules(static::featureRules('supplier_type')),
                 TextInput::make('supplier_name')
                     ->label(FeatureFields::label($translation, 'supplier_name'))
@@ -199,5 +200,10 @@ class SupplierResource extends Resource
             'view' => ViewSupplier::route('/{record}'),
             'edit' => EditSupplier::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return config('supplier.navigationgroup.label');
     }
 }

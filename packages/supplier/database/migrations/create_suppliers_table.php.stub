@@ -17,7 +17,7 @@ return new class extends Migration
 
             $table->boolean('is_active')->default(true);
 
-            $table->string('supplier_type');
+            $table->string('supplier_type')->nullable();
             $table->string('supplier_name');
             $table->string('supplier_number')->unique();
             $table->text('note')->nullable();
@@ -27,7 +27,7 @@ return new class extends Migration
             // Allowed enum values are unset in the concept, so this cannot be a native ENUM yet.
             $table->string('external_status')->nullable();
 
-            $table->unsignedBigInteger('contact_id')->unique();
+            $table->unsignedBigInteger('contact_id')->index();
             $table->unsignedBigInteger('language_id');
 
             $table->json('data')->nullable();

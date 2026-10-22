@@ -16,7 +16,7 @@ final class SupplierRules
     {
         return [
             'is_active' => ['boolean'],
-            'supplier_type' => ['required', 'string', Rule::in(['Producer', 'Distributor'])],
+            'supplier_type' => ['nullable', 'string', Rule::in(['Producer', 'Distributor'])],
             'supplier_name' => ['required', 'string', 'max:255'],
             'supplier_number' => ['required', 'string', 'max:255'],
             'note' => ['nullable', 'string'],
