@@ -18,7 +18,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
 
             $table->string('title');
-            $table->string('slug')->unique();
+            $table->string('slug');
 
             $table->text('note')->nullable();
 
@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('external_status')->nullable();
 
             $table->unsignedBigInteger('contact_id');
+            $table->unique(['contact_id', 'slug']);
 
             $table->json('data')->nullable();
 
