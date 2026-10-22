@@ -154,4 +154,9 @@ class CommunicationTypeResource extends Resource
             'edit' => EditCommunicationType::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationGroup(): string
+    {
+        return config('communication-type.navigationgroup.label');
+    }
 }

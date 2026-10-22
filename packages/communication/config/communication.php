@@ -11,4 +11,7 @@ return [
             'title_attribute' => 'title',
         ],
     ],
+    'navigationgroup' => [
+        'label' => 'CRM',
+    ],
 ];

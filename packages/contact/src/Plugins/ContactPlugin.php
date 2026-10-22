@@ -24,11 +24,11 @@ class ContactPlugin implements Plugin
     {
         $panel->resources([
             ContactResource::class,
-            ContactIdentifierResource::class,
-            ContactIdentifierRuleResource::class,
-            ContactIdentifierTypeResource::class,
-            ContactRelationshipResource::class,
-            ContactRelationshipTypeResource::class,
+            // ContactIdentifierResource::class,
+            // ContactIdentifierRuleResource::class,
+            // ContactIdentifierTypeResource::class,
+            // ContactRelationshipResource::class,
+            // ContactRelationshipTypeResource::class,
         ]);
     }
 

@@ -151,10 +151,6 @@ class ContactResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name_1')
-                    ->label(__('contact::fields.name_1'))
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('display_name')
                     ->label(__('contact::fields.display_name'))
                     ->searchable()
@@ -162,9 +158,6 @@ class ContactResource extends Resource
                 IconColumn::make('is_active')
                     ->label(__('contact::fields.is_active'))
                     ->boolean(),
-                TextColumn::make('external_reference')
-                    ->label(__('contact::fields.external_reference'))
-                    ->toggleable(),
                 TextColumn::make('updated_at')
                     ->label(__('contact::fields.updated_at'))
                     ->dateTime()
@@ -193,5 +186,10 @@ class ContactResource extends Resource
             'view' => ViewContact::route('/{record}'),
             'edit' => EditContact::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return config('contact.navigationgroup.label');
     }
 }

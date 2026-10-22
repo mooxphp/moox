@@ -125,4 +125,9 @@ class AddressUsageResource extends Resource
             'edit' => EditAddressUsage::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationGroup(): string
+    {
+        return config('address-usage.navigationgroup.label');
+    }
 }

@@ -87,4 +87,7 @@ return [
             ],
         ],
     ],
+    'navigationgroup' => [
+        'label' => 'CRM',
+    ],
 ];

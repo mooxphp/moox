@@ -22,7 +22,7 @@ class CommunicationPlugin implements Plugin
         $panel->resources([
             CommunicationResource::class,
             CommunicationTypeResource::class,
-            CommunicationRuleResource::class,
+            // CommunicationRuleResource::class,
         ]);
     }
 

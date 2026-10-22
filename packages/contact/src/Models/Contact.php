@@ -75,6 +75,10 @@ class Contact extends Model
         }
 
         $callingCode = $country->calling_code ?? null;
+        if (is_int($callingCode) || is_float($callingCode)) {
+            $callingCode = (string) $callingCode;
+        }
+
         if (! is_string($callingCode) || trim($callingCode) === '') {
             return null;
         }

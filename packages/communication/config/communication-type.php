@@ -2,4 +2,7 @@
 
 return [
     'relations' => [],
+    'navigationgroup' => [
+        'label' => 'CRM',
+    ],
 ];

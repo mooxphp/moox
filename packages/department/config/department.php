@@ -8,4 +8,7 @@ return [
             'foreign_key' => 'contact_id',
         ],
     ],
+    'navigationgroup' => [
+        'label' => 'CRM',
+    ],
 ];

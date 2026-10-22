@@ -19,8 +19,8 @@ class SalutationPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel->resources([
-            SalutationResource::class,
-            HonorificTitleResource::class,
+            // SalutationResource::class,
+            // HonorificTitleResource::class,
         ]);
     }
 

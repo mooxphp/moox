@@ -21,8 +21,8 @@ class AddressPlugin implements Plugin
     {
         $panel->resources([
             AddressResource::class,
-            AddressUsageResource::class,
-            AddressUsageTypeResource::class,
+            // AddressUsageResource::class,
+            // AddressUsageTypeResource::class,
         ]);
     }
 

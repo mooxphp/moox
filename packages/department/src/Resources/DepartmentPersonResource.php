@@ -136,4 +136,9 @@ class DepartmentPersonResource extends Resource
             'edit' => EditDepartmentPerson::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationGroup(): string
+    {
+        return config('department-person.navigationgroup.label');
+    }
 }

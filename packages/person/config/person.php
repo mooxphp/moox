@@ -32,4 +32,7 @@ return [
             'title_attribute' => 'common_name',
         ],
     ],
+    'navigationgroup' => [
+        'label' => 'CRM',
+    ],
 ];
