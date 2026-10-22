@@ -33,6 +33,7 @@ use Moox\Support\Data\HasDataForm;
 use Moox\Support\External\HasExternalForm;
 use Moox\Support\Filament\FeatureFields;
 use Moox\Support\Identity\HasIdentityForm;
+use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Support\Relation\HasRelationForm;
 use Moox\Support\SoftDelete\HasSoftDeleteForm;
 
@@ -45,6 +46,7 @@ class CustomerResource extends Resource
     use HasExternalForm;
     use HasIdentityForm;
     use HasRelationForm;
+    use HasResourceRelations;
     use HasSoftDeleteForm;
 
     protected static ?string $model = Customer::class;
@@ -203,5 +205,10 @@ class CustomerResource extends Resource
             'view' => ViewCustomer::route('/{record}'),
             'edit' => EditCustomer::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return config('customer.navigationgroup.label');
     }
 }

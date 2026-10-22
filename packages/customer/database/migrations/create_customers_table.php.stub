@@ -27,7 +27,7 @@ return new class extends Migration
             // Allowed enum values are unset in the concept, so this cannot be a native ENUM yet.
             $table->string('external_status')->nullable();
 
-            $table->unsignedBigInteger('contact_id')->unique();
+            $table->unsignedBigInteger('contact_id')->index();
             $table->unsignedBigInteger('language_id');
 
             $table->json('data')->nullable();
