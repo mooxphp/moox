@@ -20,6 +20,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Customer\Models\Customer;
 use Moox\Customer\Resources\Customer\Pages\CreateCustomer;
 use Moox\Customer\Resources\Customer\Pages\EditCustomer;
@@ -33,7 +34,6 @@ use Moox\Support\Data\HasDataForm;
 use Moox\Support\External\HasExternalForm;
 use Moox\Support\Filament\FeatureFields;
 use Moox\Support\Identity\HasIdentityForm;
-use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Support\Relation\HasRelationForm;
 use Moox\Support\SoftDelete\HasSoftDeleteForm;
 
