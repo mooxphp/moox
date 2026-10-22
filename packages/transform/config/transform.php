@@ -38,7 +38,7 @@ return [
     /*
     | User stored on created_by / updated_by when a transform runs.
     */
-    'actor_email' => env('TRANSFORM_ACTOR_EMAIL'),
+    'actor_email' => env('TRANSFORM_ACTOR_EMAIL', 'transform@heco.de'),
 
     /*
     | Class implementing Moox\Transform\Contracts\PreparesTransformSource.
