@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Support\Relation;
 
+use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -102,6 +104,21 @@ trait HasRelationForm
         if ($isTranslated) {
             $field->getOptionLabelFromRecordUsing(
                 fn (Model $record): string => (string) ($record->getAttribute($titleAttribute) ?? $record->getKey())
+            );
+        }
+
+        $relatedResource = $configured['related_resource'] ?? null;
+
+        if (is_string($relatedResource) && is_a($relatedResource, Resource::class, true)) {
+            $field->suffixAction(
+                Action::make('open_'.$relation)
+                    ->icon('heroicon-m-arrow-top-right-on-square')
+                    ->tooltip(FeatureFields::label($translation, $column))
+                    ->url(fn (mixed $state): ?string => filled($state)
+                        ? $relatedResource::getUrl('view', ['record' => $state])
+                        : null)
+                    ->visible(fn (mixed $state): bool => filled($state)),
+                true,
             );
         }
 
