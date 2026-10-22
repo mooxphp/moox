@@ -25,6 +25,10 @@ use Moox\Invoice\Support\En16931\Party;
 final class AttributionCorroborator
 {
     /**
+     * Names corroborate when they share a significant token. When either side has none ("ABC GmbH": every part is
+     * short or a legal form), the full names must be equal instead, short parts included and a trailing legal form
+     * ignored (#108).
+     *
      * @return array{corroborates: bool, matched_id: string}
      */
     public function corroborateName(
@@ -32,17 +36,23 @@ final class AttributionCorroborator
         Customer $customer,
         ?Company $company,
     ): array {
-        $invoiceTokens = $this->significantTokens($invoiceName ?? '');
+        $invoiceParts = $this->nameParts($invoiceName ?? '');
+        $invoiceTokens = $this->significantTokensOf($invoiceParts);
+        $invoiceFullName = $this->withoutLegalFormSuffix($invoiceParts);
 
         $candidates = $this->nameCandidates($customer, $company);
 
         foreach ($candidates as $candidate) {
-            $candidateTokens = $this->significantTokens($candidate['name']);
-            if ($invoiceTokens === [] || $candidateTokens === []) {
-                continue;
+            $candidateParts = $this->nameParts($candidate['name']);
+            $candidateTokens = $this->significantTokensOf($candidateParts);
+
+            if ($invoiceTokens !== [] && $candidateTokens !== []) {
+                $corroborates = array_intersect($invoiceTokens, $candidateTokens) !== [];
+            } else {
+                $corroborates = $invoiceFullName !== [] && $invoiceFullName === $this->withoutLegalFormSuffix($candidateParts);
             }
 
-            if (array_intersect($invoiceTokens, $candidateTokens) !== []) {
+            if ($corroborates) {
                 return [
                     'corroborates' => true,
                     'matched_id' => $candidate['id'],
@@ -250,32 +260,52 @@ final class AttributionCorroborator
      */
     public function significantTokens(string $name): array
     {
+        return $this->significantTokensOf($this->nameParts($name));
+    }
+
+    /**
+     * The lowercased ASCII words of a name in printed order, without punctuation.
+     *
+     * @return list<string>
+     */
+    private function nameParts(string $name): array
+    {
         $folded = Str::lower(Str::ascii($name));
         $stripped = preg_replace('/[^\p{L}\p{N}\s]+/u', ' ', $folded) ?? '';
-        $parts = preg_split('/\s+/u', trim($stripped), -1, PREG_SPLIT_NO_EMPTY);
 
-        if (! is_array($parts) || $parts === []) {
-            return [];
-        }
+        return preg_split('/\s+/u', trim($stripped), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    }
 
+    /**
+     * @param  list<string>  $parts
+     * @return list<string>
+     */
+    private function significantTokensOf(array $parts): array
+    {
         $minLength = (int) config('e-billing.corroboration.name_min_token_length', 4);
         $stopWords = $this->legalFormStopWords();
 
-        $tokens = [];
-        foreach ($parts as $part) {
-            if (! is_string($part)) {
-                continue;
-            }
-            if (mb_strlen($part) < $minLength) {
-                continue;
-            }
-            if (isset($stopWords[$part])) {
-                continue;
-            }
-            $tokens[] = $part;
+        return array_values(array_unique(array_filter(
+            $parts,
+            fn (string $part): bool => mb_strlen($part) >= $minLength && ! isset($stopWords[$part]),
+        )));
+    }
+
+    /**
+     * The parts without the trailing legal-form stop words ("abc gmbh co kg" → "abc"), keeping at least the first
+     * part: a short name may itself be a stop word ("AB GmbH").
+     *
+     * @param  list<string>  $parts
+     * @return list<string>
+     */
+    private function withoutLegalFormSuffix(array $parts): array
+    {
+        $stopWords = $this->legalFormStopWords();
+        while (count($parts) > 1 && isset($stopWords[$parts[count($parts) - 1]])) {
+            array_pop($parts);
         }
 
-        return array_values(array_unique($tokens));
+        return $parts;
     }
 
     /**
