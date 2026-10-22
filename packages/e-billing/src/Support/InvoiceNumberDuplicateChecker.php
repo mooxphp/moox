@@ -108,7 +108,11 @@ final class InvoiceNumberDuplicateChecker
 
         /** @var Collection<int, Invoice> $invoices */
         $invoices = $query->get()
-            ->filter(fn (EbillingDocument $document): bool => self::normalizeEmail($document->intakeRecipientEmail()) === $recipient)
+            ->filter(
+                fn (EbillingDocument $document): bool => self::normalizeEmail(
+                    $document->intakeRecipientEmail(),
+                ) === $recipient,
+            )
             ->pluck('invoice')
             ->filter(fn (mixed $invoice): bool => $invoice instanceof Invoice)
             ->values();

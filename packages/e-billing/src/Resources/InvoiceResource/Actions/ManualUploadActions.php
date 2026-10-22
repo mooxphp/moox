@@ -136,7 +136,16 @@ final class ManualUploadActions
     /**
      * Settings both manual upload actions share, or null when the resource has no manual upload.
      *
-     * @return array{config: array<string, mixed>, disk: string, directory: string, max_size_kb: int, scope: string, requires_letterhead_overlay: bool, resource: string, selectable_types: list<string>}|null
+     * @return array{
+     *     config: array<string, mixed>,
+     *     disk: string,
+     *     directory: string,
+     *     max_size_kb: int,
+     *     scope: string,
+     *     requires_letterhead_overlay: bool,
+     *     resource: string,
+     *     selectable_types: list<string>
+     * }|null
      */
     private static function manualUploadSettings(string $resourceKey): ?array
     {
@@ -164,7 +173,13 @@ final class ManualUploadActions
      * @param  array{disk: string, directory: string, max_size_kb: int}  $settings
      * @param  array<string, string>  $helperReplace
      */
-    private static function manualUploadPdfField(string $name, string $label, string $helperKey, array $settings, array $helperReplace = []): FileUpload
+    private static function manualUploadPdfField(
+        string $name,
+        string $label,
+        string $helperKey,
+        array $settings,
+        array $helperReplace = [],
+    ): FileUpload
     {
         return FileUpload::make($name)
             ->label($label)
@@ -183,7 +198,13 @@ final class ManualUploadActions
      * Document attributes that come from the resource and the uploader, not from the file.
      *
      * @param  array{disk: string, scope: string, requires_letterhead_overlay: bool, resource: string}  $settings
-     * @return array{source_pdf_disk: string, scope: string, resource: string, requires_letterhead_overlay: bool, uploader_user_id: ?string}
+     * @return array{
+     *     source_pdf_disk: string,
+     *     scope: string,
+     *     resource: string,
+     *     requires_letterhead_overlay: bool,
+     *     uploader_user_id: ?string
+     * }
      */
     private static function manualUploadSharedAttributes(array $settings): array
     {
@@ -204,7 +225,9 @@ final class ManualUploadActions
             return null;
         }
 
-        $label = is_string($settings['config']['label'] ?? null) ? $settings['config']['label'] : __('e-billing::fields.action_manual_upload');
+        $label = is_string($settings['config']['label'] ?? null)
+            ? $settings['config']['label']
+            : __('e-billing::fields.action_manual_upload');
 
         return Action::make('manualUpload')
             ->label($label)
@@ -213,7 +236,12 @@ final class ManualUploadActions
             ->modalDescription(__('e-billing::fields.action_manual_upload_modal_description'))
             ->modalSubmitActionLabel(__('e-billing::fields.action_manual_upload_submit'))
             ->form([
-                self::manualUploadPdfField('pdf', __('e-billing::fields.manual_upload_pdf'), 'e-billing::fields.manual_upload_pdf_helper', $settings)
+                self::manualUploadPdfField(
+                    'pdf',
+                    __('e-billing::fields.manual_upload_pdf'),
+                    'e-billing::fields.manual_upload_pdf_helper',
+                    $settings,
+                )
                     ->storeFileNamesIn('pdf_original_filename'),
                 ...self::manualUploadDocumentTypeComponents($settings['selectable_types']),
                 self::manualUploadRecipientEmailField($settings['selectable_types']),
@@ -281,7 +309,9 @@ final class ManualUploadActions
                             ->multiple()
                             ->maxFiles($maxFiles)
                             ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file): string => self::bulkStoredFileName($file->getFilename()),
+                                fn (TemporaryUploadedFile $file): string => self::bulkStoredFileName(
+                                    $file->getFilename(),
+                                ),
                             )
                             ->storeFileNamesIn('pdf_original_filenames'),
                         ...self::manualUploadDocumentTypeComponents($selectableTypes, required: false),
@@ -298,12 +328,15 @@ final class ManualUploadActions
                             'recipient_email' => $get('recipient_email'),
                         ];
 
-                        $set('files', self::mergeBulkUploadRows(
-                            self::bulkUploadFiles($get('pdfs'), $directory),
-                            (array) ($get('files') ?? []),
-                            (array) ($get('applied_defaults') ?? []),
-                            $defaults,
-                        ));
+                        $set(
+                            'files',
+                            self::mergeBulkUploadRows(
+                                self::bulkUploadFiles($get('pdfs'), $directory),
+                                (array) ($get('files') ?? []),
+                                (array) ($get('applied_defaults') ?? []),
+                                $defaults,
+                            ),
+                        );
                         $set('applied_defaults', $defaults);
                     }),
                 Step::make(__('e-billing::fields.bulk_upload_step_details'))
@@ -312,13 +345,17 @@ final class ManualUploadActions
                             ->hiddenLabel()
                             ->table([
                                 TableColumn::make(__('e-billing::fields.manual_upload_pdf')),
-                                ...($choosesType ? [TableColumn::make(__('e-billing::fields.document_type'))->markAsRequired()] : []),
+                                ...($choosesType
+                                    ? [TableColumn::make(__('e-billing::fields.document_type'))->markAsRequired()]
+                                    : []),
                                 TableColumn::make(__('e-billing::fields.buyer_email')),
                             ])
                             ->schema([
                                 Hidden::make('source_pdf_path'),
                                 TextInput::make('filename')->disabled()->dehydrated(false),
-                                ...($choosesType ? [self::manualUploadDocumentTypeSelect($selectableTypes)->required()->live()] : []),
+                                ...($choosesType
+                                    ? [self::manualUploadDocumentTypeSelect($selectableTypes)->required()->live()]
+                                    : []),
                                 self::manualUploadRecipientEmailField($selectableTypes)->helperText(null),
                             ])
                             ->addable(false)
@@ -417,7 +454,12 @@ final class ManualUploadActions
      * @param  array{document_type: mixed, recipient_email: mixed}  $defaults
      * @return array<array-key, array<string, mixed>>
      */
-    public static function mergeBulkUploadRows(array $files, array $existingRows, array $previousDefaults, array $defaults): array
+    public static function mergeBulkUploadRows(
+        array $files,
+        array $existingRows,
+        array $previousDefaults,
+        array $defaults,
+    ): array
     {
         $existingByPath = [];
 

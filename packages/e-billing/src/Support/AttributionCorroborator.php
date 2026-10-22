@@ -49,7 +49,8 @@ final class AttributionCorroborator
             if ($invoiceTokens !== [] && $candidateTokens !== []) {
                 $corroborates = array_intersect($invoiceTokens, $candidateTokens) !== [];
             } else {
-                $corroborates = $invoiceFullName !== [] && $invoiceFullName === $this->withoutLegalFormSuffix($candidateParts);
+                $corroborates = $invoiceFullName !== []
+                    && $invoiceFullName === $this->withoutLegalFormSuffix($candidateParts);
             }
 
             if ($corroborates) {

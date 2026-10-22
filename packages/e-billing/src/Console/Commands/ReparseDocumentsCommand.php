@@ -18,7 +18,8 @@ class ReparseDocumentsCommand extends Command
     protected $signature = 'e-billing:reparse
         {ids?* : E-billing document ids}
         {--kosit-failed : Select documents of current invoice versions whose latest KoSIT validation failed}
-        {--order-missing : Select documents of current invoice versions whose order number or order date validated as missing}
+        {--order-missing : Select documents of current invoice versions whose order number or order date
+            validated as missing}
         {--hold : Keep the reparsed documents from auto-approval until a person approves them}
         {--dry-run : List the selection without changing anything}';
 

@@ -20,8 +20,18 @@ final class CreateManualUploadBatchAction
     /**
      * @param  list<string>  $storedPaths  the files the upload actually stored; only these are processed
      * @param  array<string, string>  $originalFilenames  stored path => client file name
-     * @param  list<array{source_pdf_path: string, document_type?: string|int|null, recipient_email?: ?string}>  $rows  per-file details
-     * @param  array{source_pdf_disk: string, scope: string, resource: string, requires_letterhead_overlay: bool, uploader_user_id: ?string}  $shared
+     * @param  list<array{
+     *     source_pdf_path: string,
+     *     document_type?: string|int|null,
+     *     recipient_email?: ?string
+     * }>  $rows  per-file details
+     * @param  array{
+     *     source_pdf_disk: string,
+     *     scope: string,
+     *     resource: string,
+     *     requires_letterhead_overlay: bool,
+     *     uploader_user_id: ?string
+     * }  $shared
      * @return array{created: list<EbillingDocument>, failed: list<array{filename: string, reason: string}>}
      */
     public function execute(array $storedPaths, array $originalFilenames, array $rows, array $shared): array
