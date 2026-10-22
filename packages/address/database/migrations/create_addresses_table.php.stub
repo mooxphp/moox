@@ -16,14 +16,15 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
 
             $table->boolean('is_active')->default(true);
+            $table->string('name')->nullable();
 
             $table->string('street');
-            $table->string('house_number');
-            $table->string('address_line_2');
-            $table->string('po_box');
+            $table->string('house_number')->nullable();
+            $table->string('address_line_2')->nullable();
+            $table->string('po_box')->nullable();
             $table->string('postal_code');
             $table->string('city');
-            $table->string('state');
+            $table->string('state')->nullable();
             $table->text('note')->nullable();
 
             $table->string('external_reference')->nullable();

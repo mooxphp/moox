@@ -108,6 +108,10 @@ class AddressResource extends Resource
 
         return Section::make(FeatureFields::label($translation, 'domain'))
             ->schema([
+                TextInput::make('name')
+                    ->label(FeatureFields::label($translation, 'name'))
+                    ->maxLength(255)
+                    ->rules(static::featureRules('name')),
                 TextInput::make('street')
                     ->label(FeatureFields::label($translation, 'street'))
                     ->required()
@@ -115,17 +119,14 @@ class AddressResource extends Resource
                     ->rules(static::featureRules('street')),
                 TextInput::make('house_number')
                     ->label(FeatureFields::label($translation, 'house_number'))
-                    ->required()
                     ->maxLength(255)
                     ->rules(static::featureRules('house_number')),
                 TextInput::make('address_line_2')
                     ->label(FeatureFields::label($translation, 'address_line_2'))
-                    ->required()
                     ->maxLength(255)
                     ->rules(static::featureRules('address_line_2')),
                 TextInput::make('po_box')
                     ->label(FeatureFields::label($translation, 'po_box'))
-                    ->required()
                     ->maxLength(255)
                     ->rules(static::featureRules('po_box')),
                 TextInput::make('postal_code')
@@ -140,7 +141,6 @@ class AddressResource extends Resource
                     ->rules(static::featureRules('city')),
                 TextInput::make('state')
                     ->label(FeatureFields::label($translation, 'state'))
-                    ->required()
                     ->maxLength(255)
                     ->rules(static::featureRules('state')),
                 static::ownerSelect($translation),
@@ -205,7 +205,8 @@ class AddressResource extends Resource
     {
         return match ($field) {
             'is_active' => ['boolean'],
-            'street', 'house_number', 'address_line_2', 'po_box', 'postal_code', 'city', 'state' => ['required', 'string', 'max:255'],
+            'street', 'postal_code', 'city' => ['required', 'string', 'max:255'],
+            'name', 'house_number', 'address_line_2', 'po_box', 'state' => ['nullable', 'string', 'max:255'],
             'note' => ['nullable', 'string'],
             'external_reference', 'external_info', 'external_status' => ['nullable', 'string', 'max:255'],
             'owner_id' => ['required', 'integer'],
@@ -221,6 +222,10 @@ class AddressResource extends Resource
 
         return $table
             ->columns([
+                TextColumn::make('name')
+                    ->label(FeatureFields::label($translation, 'name'))
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('street')
                     ->label(FeatureFields::label($translation, 'street'))
                     ->searchable()
@@ -325,5 +330,10 @@ class AddressResource extends Resource
             'view' => ViewAddress::route('/{record}'),
             'edit' => EditAddress::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return config('address.navigationgroup.label');
     }
 }
