@@ -116,7 +116,6 @@ class PersonResource extends Resource
                     ->rules(static::featureRules('last_name')),
                 DatePicker::make('birth_date')
                     ->label(FeatureFields::label($translation, 'birth_date'))
-                    ->required()
                     ->rules(static::featureRules('birth_date')),
                 Textarea::make('note')
                     ->label(FeatureFields::label($translation, 'note'))
@@ -140,10 +139,11 @@ class PersonResource extends Resource
             'is_active' => ['boolean'],
             'first_name', 'last_name' => ['required', 'string', 'max:255'],
             'middle_name' => ['nullable', 'string', 'max:255'],
-            'birth_date' => ['required', 'date'],
+            'birth_date' => ['nullable', 'date'],
             'note' => ['nullable', 'string'],
             'external_reference', 'external_info', 'external_status' => ['nullable', 'string', 'max:255'],
-            'contact_id', 'nationality_id', 'language_id' => ['required', 'integer'],
+            'contact_id', 'language_id' => ['required', 'integer'],
+            'nationality_id' => ['nullable', 'integer'],
             'salutation_id', 'honorific_title_id' => ['nullable', 'integer'],
             default => [],
         };
@@ -197,5 +197,10 @@ class PersonResource extends Resource
             'view' => ViewPerson::route('/{record}'),
             'edit' => EditPerson::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return config('person.navigationgroup.label');
     }
 }

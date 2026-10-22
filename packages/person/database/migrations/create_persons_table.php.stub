@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name');
-            $table->date('birth_date');
+            $table->date('birth_date')->nullable();
             $table->text('note')->nullable();
 
             $table->string('external_reference')->nullable();
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->unsignedBigInteger('contact_id');
             $table->unsignedBigInteger('salutation_id')->nullable();
             $table->unsignedBigInteger('honorific_title_id')->nullable();
-            $table->unsignedBigInteger('nationality_id');
+            $table->unsignedBigInteger('nationality_id')->nullable();
             $table->unsignedBigInteger('language_id');
 
             $table->json('data')->nullable();
