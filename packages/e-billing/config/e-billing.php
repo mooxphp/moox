@@ -777,7 +777,10 @@ return [
 
         /*
         | Minimum length for a name token to count as significant (after
-        | lowercase + diacritic fold + punctuation strip).
+        | lowercase + diacritic fold + punctuation strip). If either name has
+        | no significant token (e.g. "ABC GmbH"), the full names must be equal
+        | instead (printed order, trailing legal-form words removed, first word
+        | kept; short-name fallback, mooxphp/e-billing#108).
         */
         'name_min_token_length' => 4,
 
