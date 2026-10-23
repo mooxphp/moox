@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('salutation_translations', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('salutation_id')
+                ->constrained('salutations')
+                ->cascadeOnDelete();
+            $table->string('locale');
+            $table->string('title');
+            $table->string('slug');
+            $table->string('salutation')->nullable();
+            $table->string('formal_salutation')->nullable();
+
+            $table->unique(['salutation_id', 'locale'], 'salutation_locale_unique');
+            $table->unique(['locale', 'slug'], 'salutation_locale_slug_unique');
+            $table->index('locale');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('salutation_translations');
+    }
+};

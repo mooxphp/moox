@@ -45,6 +45,10 @@ final class TransformProjectionExpander
             $projections = $this->expandNested($projections, $expand['nested']);
         }
 
+        if (is_array($expand['channels'] ?? null) && $expand['channels'] !== []) {
+            $projections = $this->expandChannels($projections, $expand['channels']);
+        }
+
         if (is_array($expand['locales'] ?? null) && $expand['locales'] !== []) {
             $projections = $this->expandLocales($projections, $expand['locales']);
         }
@@ -115,8 +119,15 @@ final class TransformProjectionExpander
                 }
             }
 
-            if ($chunk !== []) {
-                yield $chunk;
+            $channels = $this->expandConfig($definition)['channels'] ?? null;
+            if (is_array($channels) && $channels !== []) {
+                $chunk = $this->expandChannels($chunk, $channels);
+            }
+
+            foreach (array_chunk($chunk, $chunkSize) as $part) {
+                if ($part !== []) {
+                    yield $part;
+                }
             }
         }
     }
@@ -431,6 +442,79 @@ final class TransformProjectionExpander
         }
 
         return $expanded === [] ? ($skipWhenEmpty ? [] : $projections) : $expanded;
+    }
+
+    /**
+     * One source row becomes one projection per filled channel column.
+     *
+     * @param  list<array<string, mixed>>  $projections
+     * @param  list<mixed>  $channels
+     * @return list<array<string, mixed>>
+     */
+    private function expandChannels(array $projections, array $channels): array
+    {
+        $items = [];
+
+        foreach ($channels as $channel) {
+            if (! is_array($channel)) {
+                continue;
+            }
+
+            $column = $channel['column'] ?? null;
+            if (! is_string($column) || $column === '') {
+                continue;
+            }
+
+            $items[] = $channel;
+        }
+
+        if ($items === []) {
+            return $projections;
+        }
+
+        $expanded = [];
+
+        foreach ($projections as $projection) {
+            foreach ($items as $channel) {
+                $column = (string) $channel['column'];
+                $value = $this->channelValue($projection, $column);
+                if ($value === null) {
+                    continue;
+                }
+
+                $expanded[] = array_replace_recursive($projection, [
+                    'channel' => [
+                        'column' => $column,
+                        'label' => is_string($channel['label'] ?? null) ? $channel['label'] : $column,
+                        'value' => $value,
+                        'is_primary' => ($channel['primary'] ?? false) === true,
+                        'communication_type_id' => $channel['type_id'] ?? null,
+                        'external_info' => is_string($channel['external_info'] ?? null) ? $channel['external_info'] : null,
+                    ],
+                ]);
+            }
+        }
+
+        return $expanded;
+    }
+
+    /**
+     * @param  array<string, mixed>  $projection
+     */
+    private function channelValue(array $projection, string $column): ?string
+    {
+        $value = Arr::get($projection, 'legacy.'.$column);
+        if ($value === null) {
+            $value = Arr::get($projection, $column);
+        }
+
+        if (! is_scalar($value)) {
+            return null;
+        }
+
+        $trimmed = trim((string) $value);
+
+        return $trimmed === '' ? null : $trimmed;
     }
 
     /**

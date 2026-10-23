@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('address_usage_type_translations', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('address_usage_type_id');
+            $table->foreign('address_usage_type_id', 'aut_translations_type_id_foreign')
+                ->references('id')
+                ->on('address_usage_types')
+                ->cascadeOnDelete();
+            $table->string('locale');
+            $table->string('title');
+            $table->string('slug');
+
+            $table->unique(['address_usage_type_id', 'locale'], 'address_usage_type_locale_unique');
+            $table->unique(['locale', 'slug'], 'address_usage_type_locale_slug_unique');
+            $table->index('locale');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('address_usage_type_translations');
+    }
+};

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
@@ -167,10 +168,16 @@ final class RelationFactory
         );
     }
 
-    private static function hasMany(Model $owner, string $key, RelationService $service): HasMany
+    private static function hasMany(Model $owner, string $key, RelationService $service): HasMany|MorphMany
     {
         $relation = $service->get($key);
         $relatedModel = $relation->relatedModel ?? $owner::class;
+        $morphName = self::nullableString($relation->morphType)
+            ?? self::nullableString($relation->config['morph_name'] ?? null);
+
+        if ($morphName !== null) {
+            return $owner->morphMany($relatedModel, $morphName);
+        }
 
         return $owner->hasMany(
             $relatedModel,

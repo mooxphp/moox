@@ -102,16 +102,17 @@ final class ExpandTransformExecutor
             }
         }
 
-        $failed = (int) $stats['failed'];
         $stats['progress'] = BulkTransformSummaryFormatter::progressPercent($stats, completed: true);
+        BulkTransformSummaryFormatter::rememberDuration($stats, $parent);
+        $completion = BulkTransformSummaryFormatter::completion($stats);
 
         $parent->forceFill([
-            'status' => $failed === 0 ? 'processed' : 'failed',
-            'validation_status' => $failed === 0 ? 'valid' : 'invalid',
-            'degraded' => $failed > 0,
+            'status' => $completion['status'],
+            'validation_status' => $completion['validation_status'],
+            'degraded' => $completion['degraded'],
             'bulk_stats' => $stats,
             'error_message' => BulkTransformSummaryFormatter::formatMessage($stats),
-            'last_success_at' => $failed === 0 ? now() : null,
+            'last_success_at' => $completion['status'] === 'processed' ? now() : null,
         ])->save();
 
         return true;

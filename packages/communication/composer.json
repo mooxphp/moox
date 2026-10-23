@@ -1,0 +1,44 @@
+{
+    "name": "moox/communication",
+    "description": "Communication is a Moox Entity for communication channels with polymorphic owner.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package",
+        "ERP",
+        "Communication"
+    ],
+    "homepage": "https://moox.org/docs/communication",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "astrotomic/laravel-translatable": "^11.16",
+        "moox/core": "dev-main",
+        "moox/support": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Communication\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Communication\\CommunicationServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "stable"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

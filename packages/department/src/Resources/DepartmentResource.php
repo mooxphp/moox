@@ -4,217 +4,177 @@ declare(strict_types=1);
 
 namespace Moox\Department\Resources;
 
-use Filament\Forms\Components\Select;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Moox\Core\Entities\Items\Record\BaseRecordResource;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Moox\Department\Models\Department;
 use Moox\Department\Resources\Department\Pages\CreateDepartment;
 use Moox\Department\Resources\Department\Pages\EditDepartment;
 use Moox\Department\Resources\Department\Pages\ListDepartments;
 use Moox\Department\Resources\Department\Pages\ViewDepartment;
-use Moox\Department\Support\DepartmentRules;
+use Moox\Support\Active\HasActiveForm;
+use Moox\Support\Archive\HasArchiveForm;
+use Moox\Support\Audit\HasAuditForm;
+use Moox\Support\Data\HasDataForm;
+use Moox\Support\External\HasExternalForm;
+use Moox\Support\Filament\FeatureFields;
+use Moox\Support\Identity\HasIdentityForm;
+use Moox\Support\Relation\HasRelationForm;
+use Moox\Support\SoftDelete\HasSoftDeleteForm;
+use Moox\Support\Title\HasTitleSlugForm;
 
-class DepartmentResource extends BaseRecordResource
+class DepartmentResource extends Resource
 {
-    use HasResourceTabs;
-    use HasResourceTaxonomy;
+    use HasActiveForm;
+    use HasArchiveForm;
+    use HasAuditForm;
+    use HasDataForm;
+    use HasExternalForm;
+    use HasIdentityForm;
+    use HasRelationForm;
+    use HasSoftDeleteForm;
+    use HasTitleSlugForm;
 
     protected static ?string $model = Department::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-corporate-fare';
+    protected static ?string $recordTitleAttribute = 'title';
 
-    protected static function getEntityType(): string
-    {
-        return 'department';
-    }
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-corporate-fare';
 
     public static function getModelLabel(): string
     {
-        return config('department.resources.department.single');
+        return __('department::department.department');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('department.resources.department.plural');
+        return __('department::department.departments');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('department.resources.department.plural');
+        return __('department::department.departments');
     }
 
-    public static function getBreadcrumb(): string
+    public static function form(Schema $schema): Schema
     {
-        return config('department.resources.department.single');
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return config('department.navigation_group');
-    }
-
-    public static function form(Schema $form): Schema
-    {
-        $taxonomyFields = static::getTaxonomyFields();
-        $statusOptions = static::configOptions('department.statuses');
-
-        $schema = [
+        return $schema->components([
             Grid::make()
                 ->schema([
-                    Section::make(__('department::fields.identity'))
+                    Grid::make(1)
                         ->schema([
-                            Select::make('status')
-                                ->label(__('department::fields.status'))
-                                ->options($statusOptions)
-                                ->required()
-                                ->rules(DepartmentRules::for('status'))
-                                ->default('draft'),
-                            Toggle::make('is_active')
-                                ->label(__('department::fields.is_active'))
-                                ->default(true),
-                            TextInput::make('name')
-                                ->label(__('department::fields.name'))
-                                ->required()
-                                ->rules(DepartmentRules::for('name'))
-                                ->maxLength(160),
-                            TextInput::make('code')
-                                ->label(__('department::fields.code'))
-                                ->rules(DepartmentRules::for('code'))
-                                ->maxLength(40),
-                            Textarea::make('description')
-                                ->label(__('department::fields.description'))
-                                ->rules(DepartmentRules::for('description'))
-                                ->columnSpanFull(),
-                            TextInput::make('external_reference')
-                                ->label(__('department::fields.external_reference'))
-                                ->rules(DepartmentRules::for('external_reference'))
-                                ->maxLength(100),
-                            Textarea::make('data')
-                                ->label(__('department::fields.data'))
-                                ->columnSpanFull()
-                                ->cols(100)
-                                ->rows(10)
-                                ->formatStateUsing(function ($state) {
-                                    return json_encode((array) $state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                                }),
+                            static::activeSection(),
+                            static::titleSection(),
+                            static::domainSection(),
+                            static::externalSection(),
+                            static::dataSection(),
                         ])
                         ->columnSpan(2),
-                    Grid::make()
+                    Grid::make(1)
                         ->schema([
-                            Section::make()
-                                ->schema([
-                                    static::getFormActions(),
-                                ]),
-                            Section::make('')
-                                ->schema($taxonomyFields),
-                            Section::make('')
-                                ->schema([
-                                    Section::make('')
-                                        ->schema([
-                                            ...static::getStandardTimestampFields(),
-                                        ]),
-                                ])
-                                ->hidden(fn (?Department $record) => $record === null),
+                            static::relationSection()->columns(1),
+                            static::identitySection()->columns(1),
+                            static::auditSection()->columns(1),
+                            static::archiveSection()->columns(1),
+                            static::softDeleteSection()->columns(1),
                         ])
-                        ->columnSpan(1)
-                        ->columns(1),
+                        ->columnSpan(1),
                 ])
                 ->columns(3)
                 ->columnSpanFull(),
-        ];
+        ]);
+    }
 
-        return $form->components($schema);
+    protected static function titleSection(): Section
+    {
+        $translation = static::featureTranslation();
+
+        return Section::make(FeatureFields::label($translation, 'titles'))
+            ->schema(static::titleSlugFields())
+            ->columns(2);
+    }
+
+    protected static function domainSection(): Section
+    {
+        $translation = static::featureTranslation();
+
+        return Section::make(FeatureFields::label($translation, 'domain'))
+            ->schema([
+                Textarea::make('note')
+                    ->label(FeatureFields::label($translation, 'note'))
+                    ->rules(static::featureRules('note'))
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    protected static function featureTranslation(): string
+    {
+        return 'department::fields';
+    }
+
+    /**
+     * @return list<string|ValidationRule>
+     */
+    protected static function featureRules(string $field): array
+    {
+        return match ($field) {
+            'is_active' => ['boolean'],
+            'title', 'slug' => ['required', 'string', 'max:255'],
+            'note' => ['nullable', 'string'],
+            'external_reference', 'external_info', 'external_status' => ['nullable', 'string', 'max:255'],
+            'contact_id' => ['required', 'integer'],
+            default => [],
+        };
     }
 
     public static function table(Table $table): Table
     {
+        $translation = static::featureTranslation();
+
         return $table
             ->columns([
-                TextColumn::make('name')
-                    ->label(__('department::fields.name'))
+                TextColumn::make('title')
+                    ->label(FeatureFields::label($translation, 'title'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('code')
-                    ->label(__('department::fields.code'))
+                TextColumn::make('slug')
+                    ->label(FeatureFields::label($translation, 'slug'))
                     ->searchable()
                     ->toggleable(),
-                TextColumn::make('status')
-                    ->label(__('department::fields.status'))
-                    ->badge()
-                    ->color(
-                        fn (string $state): string => match ($state) {
-                            'draft' => 'info',
-                            'active' => 'success',
-                            'inactive' => 'warning',
-                            'approved' => 'success',
-                            'archived' => 'danger',
-                            default => 'gray',
-                        }
-                    )
-                    ->sortable(),
                 IconColumn::make('is_active')
-                    ->label(__('department::fields.is_active'))
+                    ->label(FeatureFields::label($translation, 'is_active'))
                     ->boolean(),
-                TextColumn::make('created_at')
+                TextColumn::make('external_reference')
+                    ->label(FeatureFields::label($translation, 'external_reference'))
+                    ->toggleable(),
+                TextColumn::make('updated_at')
+                    ->label(FeatureFields::label($translation, 'updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                ...static::getTaxonomyColumns(),
             ])
-            ->defaultSort('name')
-            ->recordActions([...static::getTableActions()])
-            ->toolbarActions([...static::getBulkActions()])
+            ->defaultSort('title')
             ->filters([
-                ...static::getDepartmentTableFilters(),
-                ...static::getTaxonomyFilters(),
+                TernaryFilter::make('is_active')
+                    ->label(FeatureFields::label($translation, 'is_active')),
             ])
-            ->deferFilters(false)
-            ->persistFiltersInSession();
-    }
-
-    /**
-     * @return array<SelectFilter|TernaryFilter>
-     */
-    protected static function getDepartmentTableFilters(): array
-    {
-        return [
-            SelectFilter::make('status')
-                ->label(__('department::fields.status'))
-                ->options(static::configOptions('department.statuses')),
-            TernaryFilter::make('is_active')
-                ->label(__('department::fields.is_active')),
-        ];
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    protected static function configOptions(string $configKey): array
-    {
-        /** @var mixed $configured */
-        $configured = config($configKey, []);
-        $values = is_array($configured) ? $configured : [];
-
-        $options = [];
-        foreach ($values as $value) {
-            if (is_string($value) && $value !== '') {
-                $options[$value] = $value;
-            }
-        }
-
-        return $options;
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                DeleteBulkAction::make(),
+            ]);
     }
 
     public static function getPages(): array
@@ -222,8 +182,13 @@ class DepartmentResource extends BaseRecordResource
         return [
             'index' => ListDepartments::route('/'),
             'create' => CreateDepartment::route('/create'),
-            'edit' => EditDepartment::route('/{record}/edit'),
             'view' => ViewDepartment::route('/{record}'),
+            'edit' => EditDepartment::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return config('department.navigationgroup.label');
     }
 }

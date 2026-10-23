@@ -27,4 +27,14 @@ class RelationConfigurationException extends InvalidArgumentException
             $model,
         ));
     }
+
+    public static function invalidPresentation(string $resource, string $key, string $presentation): self
+    {
+        return new self(sprintf(
+            'Relation [%s] on resource [%s] has invalid presentation [%s]. Allowed: tab, inline, hidden.',
+            $key,
+            $resource,
+            $presentation,
+        ));
+    }
 }

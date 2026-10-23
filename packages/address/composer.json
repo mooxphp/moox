@@ -1,12 +1,14 @@
 {
     "name": "moox/address",
-    "description": "Address is a simple Moox Entity, that can be used to create and manage addresses.",
+    "description": "Address is a Moox Entity for addresses with polymorphic owner.",
     "keywords": [
         "Moox",
         "Laravel",
         "Filament",
         "Moox package",
-        "Laravel package"
+        "Laravel package",
+        "ERP",
+        "Address"
     ],
     "homepage": "https://moox.org/docs/address",
     "license": "MIT",
@@ -18,13 +20,13 @@
         }
     ],
     "require": {
+        "astrotomic/laravel-translatable": "^11.16",
         "moox/core": "dev-main",
-        "moox/data": "dev-main"
+        "moox/support": "dev-main"
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Address\\": "src",
-            "Moox\\Address\\Database\\Factories\\": "database/factories"
+            "Moox\\Address\\": "src"
         }
     },
     "autoload-dev": {

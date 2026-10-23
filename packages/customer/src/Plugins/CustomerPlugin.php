@@ -6,7 +6,6 @@ namespace Moox\Customer\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
-use Moox\Core\Support\Resources\ChildResourceRegistrar;
 use Moox\Customer\Resources\CustomerResource;
 
 class CustomerPlugin implements Plugin
@@ -18,12 +17,9 @@ class CustomerPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        ChildResourceRegistrar::registerFromParentDefinition(
-            $panel,
+        $panel->resources([
             CustomerResource::class,
-            'customer',
-            config('customer.resources.customer', []),
-        );
+        ]);
     }
 
     public function boot(Panel $panel): void
