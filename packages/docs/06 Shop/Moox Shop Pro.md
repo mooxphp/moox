@@ -88,7 +88,7 @@ This solves our own problems to sell Moox ...
 
 - **Embargoed (blocked regardless of MoR)**:
 
-  - North Korea, Iran, Syria, Cuba, parts of Ukraine (Crimea, Donetsk, Luhansk), often Afghanistan.
+  - North Korea, Iran, Cuba, parts of Ukraine (Crimea, Donetsk, Luhansk), often Afghanistan.
   - Sanctions also apply to specific persons/orgs (OFAC/EU/UN lists).
 
   
