@@ -28,7 +28,7 @@ final class BillDataAllowanceChargeMapper
     ];
 
     /**
-     * Keeps rows of itemizable charge fields with a positive amount.
+     * Keeps rows of itemizable charge fields with a non-zero amount, signed as printed.
      *
      * @return list<array{field: string, amount: float, reason: ?string}>
      */
@@ -41,7 +41,7 @@ final class BillDataAllowanceChargeMapper
                 || ! is_string($row['field'] ?? null)
                 || ! isset(self::DOCUMENT_CHARGE_REASONS[$row['field']])
                 || ! is_numeric($row['amount'] ?? null)
-                || (float) $row['amount'] <= 0) {
+                || (float) $row['amount'] === 0.0) {
                 continue;
             }
 
@@ -86,33 +86,33 @@ final class BillDataAllowanceChargeMapper
     ): array {
         $items = [];
 
-        if ($shippingCost !== null && $shippingCost > 0) {
+        if (self::isNonZero($shippingCost)) {
             $items[] = new AllowanceCharge(isCharge: true, amount: $shippingCost, reasonText: 'Versand');
         }
 
-        if ($packagingCost !== null && $packagingCost > 0) {
+        if (self::isNonZero($packagingCost)) {
             $items[] = new AllowanceCharge(isCharge: true, amount: $packagingCost, reasonText: 'Verpackung');
         }
 
-        if ($minimumQuantitySurcharge !== null && $minimumQuantitySurcharge > 0) {
+        if (self::isNonZero($minimumQuantitySurcharge)) {
             $items[] = new AllowanceCharge(isCharge: true, amount: $minimumQuantitySurcharge, reasonText: 'Mindermengenzuschlag');
         }
 
-        if ($freightFlatRate !== null && $freightFlatRate > 0) {
+        if (self::isNonZero($freightFlatRate)) {
             $items[] = new AllowanceCharge(isCharge: true, amount: $freightFlatRate, reasonText: 'Frachtkostenpauschale');
         }
 
         // CAE "Certificate of conformance" as for line certificates (ADR 0012), here at document level.
-        if ($certificateCost !== null && $certificateCost > 0) {
+        if (self::isNonZero($certificateCost)) {
             $items[] = new AllowanceCharge(isCharge: true, amount: $certificateCost, reasonCode: 'CAE', reasonText: 'Attestkosten');
         }
 
         // No reason code: UNCL 7161 "ABW Customs duty charge" is outside the EN 16931 subset (BR-CL-20).
-        if ($customsCost !== null && $customsCost > 0) {
+        if (self::isNonZero($customsCost)) {
             $items[] = new AllowanceCharge(isCharge: true, amount: $customsCost, reasonText: 'Zollkosten');
         }
 
-        if ($discountAmount !== null && $discountAmount > 0) {
+        if (self::isNonZero($discountAmount)) {
             $printedReason = trim((string) $discountReason);
             $reasonText = $printedReason !== '' ? $printedReason : ($discountPercent
                 ? self::percentAsPrinted($discountPercent).' % vom Warenwert'
@@ -141,7 +141,7 @@ final class BillDataAllowanceChargeMapper
     ): array {
         $items = [];
 
-        if ($surchargeAmount !== null && $surchargeAmount > 0) {
+        if (self::isNonZero($surchargeAmount)) {
             $items[] = new AllowanceCharge(
                 isCharge: true,
                 amount: $surchargeAmount,
@@ -149,7 +149,7 @@ final class BillDataAllowanceChargeMapper
             );
         }
 
-        if ($materialTestCertificatePrice !== null && $materialTestCertificatePrice > 0) {
+        if (self::isNonZero($materialTestCertificatePrice)) {
             $items[] = new AllowanceCharge(
                 isCharge: true,
                 amount: $materialTestCertificatePrice,
@@ -159,6 +159,15 @@ final class BillDataAllowanceChargeMapper
         }
 
         return $items;
+    }
+
+    /**
+     * Every non-zero amount is emitted with its sign: a corrected invoice (384) as a delta carries negative
+     * charges and allowances, a credit note (381) positive ones (FeRD ZUGFeRD 2.5.2 ch. 7.1.6 / 7.1.11).
+     */
+    private static function isNonZero(?float $amount): bool
+    {
+        return $amount !== null && $amount !== 0.0;
     }
 
     /** A percentage as printed: decimal comma, only the decimals needed (25 → 25, 3.5 → 3,5). */

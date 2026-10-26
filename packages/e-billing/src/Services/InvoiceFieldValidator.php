@@ -873,8 +873,8 @@ class InvoiceFieldValidator
      * BT-109 must equal Σ BT-131 + document charges − document allowances (BR-CO-13), where BT-131 is the
      * line total plus line charges minus line allowances. A gap above one cent means the parsed amounts
      * cannot reproduce the printed net total; confirming cannot accept it
-     * ({@see EbillingDocument::missingMustFields()}). Like the ZUGFeRD converter, non-positive
-     * allowance/charge amounts are not emitted and therefore not counted.
+     * ({@see EbillingDocument::missingMustFields()}). Like the ZUGFeRD converter, every allowance/charge
+     * amount counts with its sign (a corrected invoice as a delta carries negative ones).
      *
      * @return array{status: string, reason?: string, difference?: string}
      */
@@ -882,7 +882,6 @@ class InvoiceFieldValidator
     {
         $cents = static fn (mixed $amount): int => (int) round((float) $amount * 100);
         $signed = static fn (iterable $charges): int => collect($charges)
-            ->filter(fn ($charge): bool => (float) $charge->amount > 0)
             ->sum(fn ($charge): int => ($charge->is_charge ? 1 : -1) * $cents($charge->amount));
 
         $calculated = $signed($invoice->allowanceCharges);
