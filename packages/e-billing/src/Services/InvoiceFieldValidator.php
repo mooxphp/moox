@@ -6,12 +6,15 @@ namespace Moox\EBilling\Services;
 
 use Moox\Company\Models\Company;
 use Moox\Customer\Models\Customer;
+use Moox\Data\Models\StaticAllowanceReason;
+use Moox\Data\Models\StaticChargeReason;
 use Moox\EBilling\Adapters\ZugferdAddressAdapter;
 use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
 use Moox\EBilling\Enums\AttributionSource;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceValidationCompleted;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\AllowanceChargeReasonCodes;
 use Moox\EBilling\Support\AttributionCorroborator;
 use Moox\EBilling\Support\CompanyNameMatcher;
 use Moox\EBilling\Support\CustomerMatcher;
@@ -26,6 +29,7 @@ use Moox\EBilling\Support\PrecedingInvoiceReferences;
 use Moox\EBilling\Support\UnrecognizedFields;
 use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Invoice\Models\Invoice;
+use Moox\Invoice\Models\InvoiceAllowanceCharge;
 use Moox\Invoice\Models\InvoiceLine;
 use Moox\Invoice\Support\En16931\Address;
 use Moox\Invoice\Support\En16931\Party;
@@ -104,6 +108,7 @@ class InvoiceFieldValidator
         }
 
         $invoiceValidations = $this->applyRequiredOneOfGroups($invoice, $invoiceValidations);
+        $invoiceValidations['allowance_charge_reason_codes'] = $this->validateAllowanceChargeReasonCodesField($invoice);
 
         foreach (
             UnrecognizedFields::normalize($document->bill_data['unrecognized_fields'] ?? null) as $field => $printed
@@ -900,6 +905,69 @@ class InvoiceFieldValidator
             'reason' => 'totals_mismatch',
             'difference' => number_format($difference / 100, 2, '.', ''),
         ];
+    }
+
+    /**
+     * Every allowance and charge, header and line, carries a reason code from its direction's codelist:
+     * UNCL 7161 for a charge, UNCL 5189 for an allowance (ADR 0014). A missing or wrong-list code is a
+     * fixed blocking finding that confirming cannot accept. An uncoded header charge of a field configured
+     * as text-only (customs) is exempt; once it carries a code, that code is checked like any other.
+     * Without any allowance or charge the check is not applicable.
+     *
+     * @return array{
+     *     status: string,
+     *     reason?: string,
+     *     charges?: list<array{line: ?int, reason_text: ?string, reason_code: ?string}>
+     * }
+     */
+    private function validateAllowanceChargeReasonCodesField(Invoice $invoice): array
+    {
+        $textOnlySpecs = array_filter(array_map(
+            HeaderChargeResolver::spec(...),
+            AllowanceChargeReasonCodes::textOnlyHeaderFields(),
+        ));
+        $isTextOnly = static fn (InvoiceAllowanceCharge $charge): bool => trim((string) $charge->reason_code) === ''
+            && array_any(
+                $textOnlySpecs,
+                static fn (array $spec): bool => HeaderChargeResolver::matches($charge, $spec, false),
+            );
+        $charges = [];
+
+        foreach ($invoice->allowanceCharges as $charge) {
+            if (! $isTextOnly($charge)) {
+                $charges[] = [null, $charge];
+            }
+        }
+
+        foreach ($invoice->lines as $line) {
+            foreach ($line->allowanceCharges as $charge) {
+                $charges[] = [(int) $line->position, $charge];
+            }
+        }
+
+        if ($charges === []) {
+            return ['status' => 'not_applicable'];
+        }
+
+        $chargeCodes = StaticChargeReason::query()->pluck('code')->all();
+        $allowanceCodes = StaticAllowanceReason::query()->pluck('code')->all();
+        $invalid = [];
+
+        foreach ($charges as [$position, $charge]) {
+            $code = trim((string) $charge->reason_code);
+
+            if ($code === '' || ! in_array($code, $charge->is_charge ? $chargeCodes : $allowanceCodes, true)) {
+                $invalid[] = [
+                    'line' => $position,
+                    'reason_text' => $charge->reason_text,
+                    'reason_code' => $code !== '' ? $code : null,
+                ];
+            }
+        }
+
+        return $invalid === []
+            ? ['status' => 'parsed']
+            : ['status' => 'needs_review', 'reason' => 'reason_code_missing', 'charges' => $invalid];
     }
 
     /**

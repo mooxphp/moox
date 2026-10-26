@@ -64,6 +64,8 @@ class ParsedInvoiceMapper
             );
         }
 
+        $this->codeResolver()->assertAllowanceChargeReasonCodesFromConfig();
+
         $invoice = DB::transaction(fn (): Invoice => $this->invoiceBuilder->build($this->buildDraftFromDto($dto)));
 
         $this->linkDocumentToInvoice($document, $invoice);

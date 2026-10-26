@@ -233,6 +233,37 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Allowance and charge reason codes (ADR 0014)
+    |--------------------------------------------------------------------------
+    |
+    | The reason code (BT-98 / BT-105) every payload-derived allowance and charge
+    | receives, keyed by payload field. Charges are checked against moox/data
+    | static_charge_reasons (UNCL 7161), the discount against
+    | static_allowance_reasons (UNCL 5189); an unknown code fails generation.
+    | null means "reason text only, on purpose": customs_cost, because UNCL 7161
+    | ABW is outside the EN 16931 subset (BR-CL-20). Every other allowance or
+    | charge without a valid code is a blocking finding.
+    |
+    */
+
+    'allowance_charge_reason_codes' => [
+        'header' => [
+            'shipping_cost' => 'SAA',
+            'freight_flat_rate' => 'FC',
+            'packaging_cost' => 'PC',
+            'minimum_quantity_surcharge' => 'DAN',
+            'certificate_cost' => 'CAE',
+            'customs_cost' => null,
+            'discount_amount' => '95',
+        ],
+        'line' => [
+            'surcharge_amount' => 'PRV',
+            'material_test_certificate_price' => 'CAE',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Preferred piece unit code (UN/ECE Rec 20)
     |--------------------------------------------------------------------------
     |

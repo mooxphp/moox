@@ -49,6 +49,7 @@ use Moox\EBilling\Resources\InvoiceResource;
 use Moox\EBilling\Support\CrossCheckedFields;
 use Moox\EBilling\Support\DocumentClassificationLabels;
 use Moox\EBilling\Support\InvoiceFieldLabels;
+use Moox\EBilling\Support\ReasonCodeOptions;
 use Moox\EBilling\Support\RecipientOverride;
 use Moox\EBilling\Support\ReviewEditField;
 use Moox\EBilling\Support\ReviewFieldCatalog;
@@ -619,6 +620,10 @@ class ViewInvoice extends ViewRecord
                 'decimal' => TextInput::make($name)->numeric(),
                 'integer' => TextInput::make($name)->integer(),
                 'email' => TextInput::make($name)->email(),
+                ReasonCodeOptions::CHARGE_INPUT, ReasonCodeOptions::ALLOWANCE_INPUT => Select::make($name)
+                    ->options(ReasonCodeOptions::forInputType($type))
+                    ->searchable()
+                    ->native(false),
                 default => TextInput::make($name),
             };
 
