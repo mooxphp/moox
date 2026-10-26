@@ -14,11 +14,22 @@
         "filament/schemas": "^5.0",
         "filament/tables": "^5.0",
         "illuminate/database": "^13.0",
-        "illuminate/support": "^13.0"
+        "illuminate/support": "^13.0",
+        "moox/core": "dev-main"
     },
     "autoload": {
         "psr-4": {
             "Moox\\Support\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Support\\SupportServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "minimum-stability": "stable",
