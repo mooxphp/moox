@@ -697,7 +697,7 @@ Documents the gateway deliberately does not turn into an invoice (`gateway_statu
 - **Tabs** (`e-billing.tabs.ignored_documents`): all, foreign, before cutoff, identical duplicate, and *relay failed*, where the latest Source-PDF relay attempt failed (a later successful attempt clears it). Every tab is limited to ignored documents.
 - **Columns**: received at (default sort, newest first), source filename, reason, reason detail (detected country or "net amount only" for foreign; invoice date against the cutoff; a link to the matched original invoice for an identical duplicate), invoice number and customer when known (toggleable), and the latest relay attempt (recipient, success or failure badge, failure reason as tooltip).
 - **Search and filters**: search by filename and invoice number; filter by received date range and by relay failed.
-- **Row actions**: view the source PDF (`ebilling.pdf.preview`) and open the inbox message (hidden for manual uploads).
+- **Row actions**: view the source PDF (the panel route `filament.{panel}.ebilling.pdf.preview`) and open the inbox message (hidden for manual uploads).
 
 An ignored document cannot be re-processed from this list.
 

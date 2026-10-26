@@ -105,11 +105,6 @@ class InvoiceResource extends BaseItemResource
         return true;
     }
 
-    public static function canView(Model $record): bool
-    {
-        return true;
-    }
-
     public static function canCreate(): bool
     {
         return false;

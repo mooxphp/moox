@@ -84,7 +84,6 @@ class EBillingServiceProvider extends MooxServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasRoutes('web')
             ->hasCommands([
                 BackfillValidationScoresCommand::class,
                 ReparseDocumentsCommand::class,
