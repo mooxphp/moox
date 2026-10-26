@@ -221,6 +221,12 @@ final class DocumentClassification
             }
         }
 
+        foreach ($data['document_charges'] ?? [] as $index => $row) {
+            if (is_array($row) && is_numeric($row['amount'] ?? null)) {
+                $data['document_charges'][$index]['amount'] = -(float) $row['amount'];
+            }
+        }
+
         foreach ($data['lines'] ?? [] as $index => $line) {
             foreach (self::LINE_AMOUNTS as $key) {
                 if (is_array($line) && is_numeric($line[$key] ?? null)) {
