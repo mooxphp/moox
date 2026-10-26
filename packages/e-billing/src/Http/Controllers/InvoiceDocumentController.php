@@ -28,10 +28,16 @@ final class InvoiceDocumentController
         IgnoredDocumentResource::class,
     ];
 
+    /**
+     * Stream the preview PDF: hybrid when present, otherwise the stored
+     * XRechnung copy (watermarked), otherwise the source. Generated PDFs are only
+     * shown while the document is deliverable; otherwise they may be stale.
      */
     public function previewOriginal(EbillingDocument $document): Response
     {
-        $generated = $this->previewStoredPdf($document);
+        $this->authorizeDocument($document);
+
+        $generated = $document->isDeliverable() ? $this->previewStoredPdf($document) : null;
         if ($generated !== null) {
             return $this->streamPdf($generated['contents'], $generated['filename']);
         }
