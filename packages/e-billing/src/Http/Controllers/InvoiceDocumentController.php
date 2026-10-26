@@ -4,17 +4,30 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Http\Controllers;
 
+use Filament\Facades\Filament;
+use Filament\Resources\Resource as FilamentResource;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Resources\CreditNoteResource;
+use Moox\EBilling\Resources\IgnoredDocumentResource;
+use Moox\EBilling\Resources\InvoiceResource;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class InvoiceDocumentController
 {
     /**
-     * Stream the admin preview PDF: hybrid when present, otherwise the stored
-     * XRechnung copy (watermarked), otherwise the source.
+     * E-billing resources that can show a document, checked in this order.
+     *
+     * @var list<class-string<FilamentResource>>
+     */
+    private const DOCUMENT_RESOURCES = [
+        InvoiceResource::class,
+        CreditNoteResource::class,
+        IgnoredDocumentResource::class,
+    ];
+
      */
     public function previewOriginal(EbillingDocument $document): Response
     {
@@ -39,6 +52,7 @@ final class InvoiceDocumentController
      */
     public function downloadZugferd(EbillingDocument $document): StreamedResponse
     {
+        $this->authorizeDocument($document);
         $this->guardDeliverableArtifact($document);
 
         $disk = $document->storage_disk
@@ -61,6 +75,7 @@ final class InvoiceDocumentController
      */
     public function downloadXml(EbillingDocument $document): StreamedResponse
     {
+        $this->authorizeDocument($document);
         $this->guardDeliverableArtifact($document);
 
         $disk = $document->storage_disk
@@ -83,6 +98,7 @@ final class InvoiceDocumentController
      */
     public function downloadCopy(EbillingDocument $document): StreamedResponse
     {
+        $this->authorizeDocument($document);
         $this->guardDeliverableArtifact($document);
 
         $disk = $document->storage_disk
@@ -142,6 +158,38 @@ final class InvoiceDocumentController
         }
 
         return $filesystem->download($path, $filename);
+    }
+
+    /**
+     * Same check as a Filament view page: one of the current panel's e-billing resources
+     * must find the record in its own query and pass canView(). 404 otherwise, so a
+     * guessed id does not reveal that the document exists.
+     */
+    private function authorizeDocument(EbillingDocument $document): void
+    {
+        $panelResources = Filament::getCurrentOrDefaultPanel()->getResources();
+
+        foreach (self::DOCUMENT_RESOURCES as $resource) {
+            if (! in_array($resource, $panelResources, true)) {
+                continue;
+            }
+
+            $key = is_a($resource::getModel(), EbillingDocument::class, true)
+                ? $document->getKey()
+                : $document->invoice_id;
+
+            if ($key === null) {
+                continue;
+            }
+
+            $record = $resource::resolveRecordRouteBinding($key);
+
+            if ($record !== null && $resource::canView($record)) {
+                return;
+            }
+        }
+
+        abort(404);
     }
 
     private function guardDeliverableArtifact(EbillingDocument $document): void

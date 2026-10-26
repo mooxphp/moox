@@ -14,7 +14,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\EBilling\Enums\AttributionRole;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
-use Moox\EBilling\Http\Middleware\SetFilamentPanelFromRequest;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Models\UploadedPdfSource;
 use Moox\EBilling\Support\DeliveryFailureReasonLabels;
@@ -154,11 +153,8 @@ final class IgnoredDocumentsTable
             Action::make('preview_pdf')
                 ->label(__('e-billing::fields.action_preview_source_pdf'))
                 ->icon(Heroicon::OutlinedDocumentText)
-                ->url(fn (EbillingDocument $record): string => route('ebilling.pdf.preview', [
-                    'document' => $record,
-                    SetFilamentPanelFromRequest::QUERY_KEY => Filament::getCurrentPanel()?->getId()
-                        ?? Filament::getDefaultPanel()->getId(),
-                ]))
+                ->url(fn (EbillingDocument $record): string => Filament::getCurrentOrDefaultPanel()
+                    ->route('ebilling.pdf.preview', ['document' => $record]))
                 ->openUrlInNewTab()
                 ->visible(fn (EbillingDocument $record): bool => filled($record->sourceStoragePath())),
             Action::make('open_inbox_message')

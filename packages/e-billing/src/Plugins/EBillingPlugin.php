@@ -24,6 +24,10 @@ final class EBillingPlugin implements Plugin
             CreditNoteResource::class,
             IgnoredDocumentResource::class,
         ]);
+
+        $panel->authenticatedRoutes(function (): void {
+            require dirname(__DIR__, 2).'/routes/panel.php';
+        });
     }
 
     public function boot(Panel $panel): void
