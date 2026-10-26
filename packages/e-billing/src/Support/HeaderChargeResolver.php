@@ -9,18 +9,20 @@ use Moox\Invoice\Models\InvoiceAllowanceCharge;
 final class HeaderChargeResolver
 {
     /**
-     * @var array<string, array{reason_text?: string, reason_code?: string, is_charge?: bool}>
+     * Header fields with their reason text; the reason code is added from
+     * {@see AllowanceChargeReasonCodes} by {@see spec()}.
+     *
+     * @var array<string, array{reason_text?: string, is_charge: bool}>
      */
     public const FIELD_SPECS = [
         'shipping_cost' => ['reason_text' => 'Versand', 'is_charge' => true],
         'packaging_cost' => ['reason_text' => 'Verpackung', 'is_charge' => true],
         'minimum_quantity_surcharge' => ['reason_text' => 'Mindermengenzuschlag', 'is_charge' => true],
         'freight_flat_rate' => ['reason_text' => 'Frachtkostenpauschale', 'is_charge' => true],
-        // Matched by text only: CAE is shared with line-level certificate charges.
         'certificate_cost' => ['reason_text' => 'Attestkosten', 'is_charge' => true],
         'customs_cost' => ['reason_text' => 'Zollkosten', 'is_charge' => true],
-        'discount_amount' => ['reason_code' => '95', 'is_charge' => false],
-        'discount_percent' => ['reason_code' => '95', 'is_charge' => false],
+        'discount_amount' => ['is_charge' => false],
+        'discount_percent' => ['is_charge' => false],
     ];
 
     /**
@@ -28,7 +30,37 @@ final class HeaderChargeResolver
      */
     public static function spec(string $field): ?array
     {
-        return self::FIELD_SPECS[$field] ?? null;
+        $spec = self::FIELD_SPECS[$field] ?? null;
+
+        if ($spec === null) {
+            return null;
+        }
+
+        $code = AllowanceChargeReasonCodes::header(
+            $field === 'discount_percent' ? AllowanceChargeReasonCodes::DISCOUNT_FIELD : $field,
+        );
+
+        return $code !== null ? [...$spec, 'reason_code' => $code] : $spec;
+    }
+
+    /**
+     * The codes configured for the header fields of one direction, upper-cased.
+     *
+     * @return list<string>
+     */
+    private static function configuredCodes(bool $isCharge): array
+    {
+        $codes = [];
+
+        foreach (self::FIELD_SPECS as $field => $spec) {
+            $code = AllowanceChargeReasonCodes::header($field);
+
+            if ($spec['is_charge'] === $isCharge && $code !== null) {
+                $codes[] = strtoupper($code);
+            }
+        }
+
+        return $codes;
     }
 
     public static function hasMatchingCharge(iterable $allowanceCharges, string $field): bool
@@ -118,7 +150,7 @@ final class HeaderChargeResolver
      */
     public static function discountCharge(iterable $allowanceCharges): ?InvoiceAllowanceCharge
     {
-        return self::firstMatchingCharge($allowanceCharges, self::FIELD_SPECS['discount_amount'], true);
+        return self::firstMatchingCharge($allowanceCharges, (array) self::spec('discount_amount'), true);
     }
 
     public static function hasDiscountPercentSignal(iterable $allowanceCharges): bool
@@ -142,6 +174,10 @@ final class HeaderChargeResolver
     }
 
     /**
+     * Code first (ADR 0014): the field's configured code matches; a code configured for another header field
+     * belongs to that field. An uncoded charge, or one whose code no field is configured with (e.g. a wrong-list
+     * code still to be corrected), is recognised by its reason text as before.
+     *
      * @param  array{reason_text?: string, reason_code?: string, is_charge?: bool}  $spec
      */
     public static function matches(
@@ -153,10 +189,14 @@ final class HeaderChargeResolver
             return false;
         }
 
-        $reasonCode = $charge->reason_code;
-        if (isset($spec['reason_code']) && $spec['reason_code'] !== null && $spec['reason_code'] !== '') {
-            if ($reasonCode !== null && $reasonCode !== '' && $reasonCode === $spec['reason_code']) {
+        $reasonCode = strtoupper(self::normalizeString($charge->reason_code));
+        if ($reasonCode !== '') {
+            if ($reasonCode === strtoupper($spec['reason_code'] ?? '')) {
                 return true;
+            }
+
+            if (in_array($reasonCode, self::configuredCodes((bool) $charge->is_charge), true)) {
+                return false;
             }
         }
 

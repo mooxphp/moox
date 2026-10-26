@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\EBilling\Adapters;
 
 use Moox\EBilling\Support\DeliveryDateTransmission;
-use Moox\EBilling\Support\LineAllowanceChargeResolver;
 use Moox\EBilling\Support\LineItemAttributeMapper;
 use Moox\EBilling\Support\PartialDeliveries;
 use Moox\EBilling\Support\UnitCodeResolver;
@@ -160,9 +159,6 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
     private static function mapAllowanceCharge(InvoiceAllowanceCharge $charge): AllowanceCharge
     {
         $reasonCode = $charge->reason_code !== null ? trim((string) $charge->reason_code) : '';
-        if ($reasonCode === '' && LineAllowanceChargeResolver::isMaterialTestCertificateCharge($charge)) {
-            $reasonCode = 'CAE';
-        }
 
         return new AllowanceCharge(
             isCharge: (bool) $charge->is_charge,

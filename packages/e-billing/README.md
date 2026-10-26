@@ -323,7 +323,7 @@ Changing a field's configured priority changes its behaviour with no code change
 
 **Totals reconciliation:** the invoice-level field `totals_reconciliation` (priority `must` in all three field profiles) checks that the sum of (line total + line charges - line allowances) + document charges - document allowances equals `net_total` (BT-109) within 0.01 (BR-CO-13). A mismatch sets `needs_review` with reason `totals_mismatch` and a `difference` (EUR, two decimals). It is never releasable, so the document cannot reach `validated`, and confirming does not accept it: `EbillingDocument::missingMustFields()` lists it, so confirm, manual approval and dispatch stay blocked until the amounts are corrected. The review amounts group shows it as "Totals reconciliation" with the difference and a hint.
 
-**Document-level certificate and customs charges:** `certificate_cost` (reason code `CAE`, reason text "Attestkosten") and `customs_cost` (reason text "Zollkosten", no reason code) are emitted as BG-21 charges; priority `could` by default. `customs_cost` has no code because UNCL 7161 `ABW` is not in the EN 16931 code-list subset and fails BR-CL-20; a reason text alone satisfies BR-38 / BR-CO-22.
+**Document-level certificate and customs charges:** `certificate_cost` (default reason code `CAE`, reason text "Attestkosten") and `customs_cost` (reason text "Zollkosten", no reason code; see [Allowance and charge reason codes](#allowance-and-charge-reason-codes)) are emitted as BG-21 charges; priority `could` by default. `customs_cost` has no code because UNCL 7161 `ABW` is not in the EN 16931 code-list subset and fails BR-CL-20; a reason text alone satisfies BR-38 / BR-CO-22.
 
 ### Document-type profiles (credit notes, corrected invoices)
 
@@ -615,6 +615,49 @@ The MIT License (MIT). Please see [our license and copyright information](https:
 | `e-billing.vat_category_code` | `S` (standard) | UNTDID 5305 via `moox/data` |
 
 `ConfiguredEn16931CodeResolver` validates these at stamp/resolve time (fail fast if the code is blank, unknown, or the static table is empty — run `php artisan moox:data:import-codelists`). The values are stamped onto each mapped invoice (`payment_means.payment_means_code`, `vat_category`); lines inherit the header VAT category for MoSCoW BT-151.
+
+## Allowance and charge reason codes
+
+Every allowance and charge in the artifact carries a reason code (BT-98 / BT-105): a UNCL 7161 code for a charge, a UNCL 5189 code for an allowance. EN 16931 accepts a reason text alone; this package requires the code (ADR 0014). The code each payload-derived allowance or charge receives comes from `e-billing.allowance_charge_reason_codes`. No code is hard-coded in the mapping path.
+
+| Key | Default | Meaning |
+|---|---|---|
+| `header.shipping_cost` | `SAA` | Shipping |
+| `header.freight_flat_rate` | `FC` | Freight flat rate |
+| `header.packaging_cost` | `PC` | Packaging |
+| `header.minimum_quantity_surcharge` | `DAN` | Minimum-quantity surcharge |
+| `header.certificate_cost` | `CAE` | Certificate costs |
+| `header.customs_cost` | `null` | Reason text only, on purpose (see below) |
+| `header.discount_amount` | `95` | Document discount, the only allowance (UNCL 5189) |
+| `line.surcharge_amount` | `PRV` | Line surcharge |
+| `line.material_test_certificate_price` | `CAE` | Line material test certificate charge |
+
+**Customs exception.** `customs_cost` is `null`: its charge goes out with a reason text only. Its natural code, UNCL 7161 `ABW`, is outside the EN 16931 code-list subset and fails BR-CL-20. Only an uncoded header charge of a field configured as `null` is exempt from the finding below; once such a charge carries a code, that code is checked like any other.
+
+**Fail-fast check.** Before a parsed invoice is mapped (`ParsedInvoiceMapper::createFromDto()`), when a parsed `Invoice` DTO is converted (`ZugferdInvoiceDtoAdapter`) and on every artifact generation run before field validation (`GenerateArtifactJob`, so regenerating an already-mapped invoice after a leave-edit or a config change also fails on a misconfigured code), `ConfiguredEn16931CodeResolver::assertAllowanceChargeReasonCodesFromConfig()` checks every configured code against the imported `moox/data` codelists: charges against `static_charge_reasons` (UNCL 7161), the discount against `static_allowance_reasons` (UNCL 5189). An unknown code or a code from the wrong direction throws `UnresolvedCodelistLabelException`. A codelist that is not imported throws `CodelistNotImportedException`. Import both lists before use:
+
+```bash
+php artisan moox:data:import-codelists uncl7161
+php artisan moox:data:import-codelists uncl5189
+```
+
+**Blocking finding.** The field validation `allowance_charge_reason_codes` (label "Allowance and charge reason codes", BT-98 / BT-105) is always evaluated. It is not a MoSCoW profile entry (`EbillingDocument::FIXED_INVOICE_FIELDS`), so no priority setting turns it off. It covers header and line allowances and charges:
+
+- A code is missing or not in the list for its direction: status `needs_review`, reason `reason_code_missing`, with the offending charges listed (`line`, `reason_text`, `reason_code`). Confirming cannot accept this reason (`NON_ACCEPTABLE_REVIEW_REASONS`) and approval is refused.
+- Every charge is coded correctly: `parsed`.
+- The invoice has no allowances or charges: `not_applicable`.
+
+The invoice view shows the finding in the amounts section with the number of uncoded charges and a hint listing them.
+
+**Fixing it as a reviewer.** In the review workspace, every charge row in edit mode (the single header charge fields, itemized charge rows, the discount amount, the line surcharge amount and the line certificate charge) also edits `reason_code`. The input is a searchable select of the codes for the charge's direction (`ReasonCodeOptions`, input types `charge_reason_code` and `allowance_reason_code`). The change is stored as a value correction (`allowance_charges.reason_code` for header rows, `lines.allowance_charges.reason_code` for line rows).
+
+**Recognising stored charges.** `HeaderChargeResolver::matches` assigns a coded header charge to the field whose configured code it carries; a code configured for another header field of the same direction assigns it to that field. An uncoded charge, or one whose code no header field of its direction is configured with (for example a wrong-list code waiting for correction, or an unconfigured code), is recognised by its reason text as before, so a wrong-list code does not hide a charge from its review row. `LineAllowanceChargeResolver::isMaterialTestCertificateCharge` follows the same rule: the configured certificate code is a certificate, the configured surcharge code is not, and any other code falls back to the label.
+
+**Upgrading.**
+
+- Import `uncl7161` and `uncl5189` (commands above).
+- Run `php artisan config:clear`, or re-cache the config, so the new `allowance_charge_reason_codes` key is present. If you published `config/e-billing.php`, add the key.
+- Existing drafts are not changed: there is no migration and no fallback at emission. A draft with an uncoded charge becomes blocked at its next validation until a reviewer adds the code. The adapter no longer adds `CAE` at emission to an uncoded certificate charge.
 
 ## Invoice ViewInvoice UI
 

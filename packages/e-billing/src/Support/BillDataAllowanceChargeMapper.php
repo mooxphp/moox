@@ -13,18 +13,18 @@ use Moox\Zugferd\Data\AllowanceCharge;
 final class BillDataAllowanceChargeMapper
 {
     /**
-     * Document charge fields that may be itemized: default reason text and UNCL 7161 reason code,
-     * as {@see fromHeaderScalars()} emits them.
+     * Document charge fields with their default reason text, as {@see fromHeaderScalars()} emits them;
+     * the reason code comes from {@see AllowanceChargeReasonCodes}.
      *
-     * @var array<string, array{0: string, 1: ?string}>
+     * @var array<string, string>
      */
     private const DOCUMENT_CHARGE_REASONS = [
-        'shipping_cost' => ['Versand', null],
-        'packaging_cost' => ['Verpackung', null],
-        'minimum_quantity_surcharge' => ['Mindermengenzuschlag', null],
-        'freight_flat_rate' => ['Frachtkostenpauschale', null],
-        'certificate_cost' => ['Attestkosten', 'CAE'],
-        'customs_cost' => ['Zollkosten', null],
+        'shipping_cost' => 'Versand',
+        'packaging_cost' => 'Verpackung',
+        'minimum_quantity_surcharge' => 'Mindermengenzuschlag',
+        'freight_flat_rate' => 'Frachtkostenpauschale',
+        'certificate_cost' => 'Attestkosten',
+        'customs_cost' => 'Zollkosten',
     ];
 
     /**
@@ -58,16 +58,14 @@ final class BillDataAllowanceChargeMapper
      */
     public static function fromDocumentChargeRows(array $rows): array
     {
-        return array_map(static function (array $row): AllowanceCharge {
-            [$defaultText, $reasonCode] = self::DOCUMENT_CHARGE_REASONS[$row['field']];
-
-            return new AllowanceCharge(
-                isCharge: true,
-                amount: $row['amount'],
-                reasonCode: $reasonCode,
-                reasonText: $row['reason'] ?? $defaultText,
-            );
-        }, self::documentChargeRows($rows));
+        return array_map(
+            static fn (array $row): AllowanceCharge => self::documentCharge(
+                $row['field'],
+                $row['amount'],
+                $row['reason'],
+            ),
+            self::documentChargeRows($rows),
+        );
     }
 
     /**
@@ -84,32 +82,21 @@ final class BillDataAllowanceChargeMapper
         ?float $customsCost = null,
         ?string $discountReason = null,
     ): array {
+        $amounts = [
+            'shipping_cost' => $shippingCost,
+            'packaging_cost' => $packagingCost,
+            'minimum_quantity_surcharge' => $minimumQuantitySurcharge,
+            'freight_flat_rate' => $freightFlatRate,
+            'certificate_cost' => $certificateCost,
+            'customs_cost' => $customsCost,
+        ];
+
         $items = [];
 
-        if (self::isNonZero($shippingCost)) {
-            $items[] = new AllowanceCharge(isCharge: true, amount: $shippingCost, reasonText: 'Versand');
-        }
-
-        if (self::isNonZero($packagingCost)) {
-            $items[] = new AllowanceCharge(isCharge: true, amount: $packagingCost, reasonText: 'Verpackung');
-        }
-
-        if (self::isNonZero($minimumQuantitySurcharge)) {
-            $items[] = new AllowanceCharge(isCharge: true, amount: $minimumQuantitySurcharge, reasonText: 'Mindermengenzuschlag');
-        }
-
-        if (self::isNonZero($freightFlatRate)) {
-            $items[] = new AllowanceCharge(isCharge: true, amount: $freightFlatRate, reasonText: 'Frachtkostenpauschale');
-        }
-
-        // CAE "Certificate of conformance" as for line certificates (ADR 0012), here at document level.
-        if (self::isNonZero($certificateCost)) {
-            $items[] = new AllowanceCharge(isCharge: true, amount: $certificateCost, reasonCode: 'CAE', reasonText: 'Attestkosten');
-        }
-
-        // No reason code: UNCL 7161 "ABW Customs duty charge" is outside the EN 16931 subset (BR-CL-20).
-        if (self::isNonZero($customsCost)) {
-            $items[] = new AllowanceCharge(isCharge: true, amount: $customsCost, reasonText: 'Zollkosten');
+        foreach ($amounts as $field => $amount) {
+            if (self::isNonZero($amount)) {
+                $items[] = self::documentCharge($field, $amount, null);
+            }
         }
 
         if (self::isNonZero($discountAmount)) {
@@ -121,7 +108,7 @@ final class BillDataAllowanceChargeMapper
             $items[] = new AllowanceCharge(
                 isCharge: false,
                 amount: $discountAmount,
-                reasonCode: '95',
+                reasonCode: AllowanceChargeReasonCodes::header(AllowanceChargeReasonCodes::DISCOUNT_FIELD),
                 reasonText: $reasonText,
                 percentage: $discountPercent,
             );
@@ -145,6 +132,7 @@ final class BillDataAllowanceChargeMapper
             $items[] = new AllowanceCharge(
                 isCharge: true,
                 amount: $surchargeAmount,
+                reasonCode: AllowanceChargeReasonCodes::line('surcharge_amount'),
                 reasonText: $surchargeDescription ?? 'Legierungszuschlag',
             );
         }
@@ -153,12 +141,22 @@ final class BillDataAllowanceChargeMapper
             $items[] = new AllowanceCharge(
                 isCharge: true,
                 amount: $materialTestCertificatePrice,
-                reasonCode: 'CAE',
+                reasonCode: AllowanceChargeReasonCodes::line('material_test_certificate_price'),
                 reasonText: $materialTestCertificate ?? DocumentEmissionLabels::materialTestCertificate(),
             );
         }
 
         return $items;
+    }
+
+    private static function documentCharge(string $field, float $amount, ?string $reason): AllowanceCharge
+    {
+        return new AllowanceCharge(
+            isCharge: true,
+            amount: $amount,
+            reasonCode: AllowanceChargeReasonCodes::header($field),
+            reasonText: $reason ?? self::DOCUMENT_CHARGE_REASONS[$field],
+        );
     }
 
     /**
