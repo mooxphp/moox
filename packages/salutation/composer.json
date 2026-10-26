@@ -1,0 +1,34 @@
+{
+    "name": "moox/salutation",
+    "description": "Salutations and honorific titles.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "astrotomic/laravel-translatable": "^11.16",
+        "moox/core": "dev-main",
+        "moox/support": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Salutation\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Salutation\\SalutationServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "stable"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

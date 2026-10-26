@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Customer;
 
-use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -18,8 +17,6 @@ class CustomerServiceProvider extends MooxServiceProvider
             ->hasTranslations()
             ->hasMigrations([
                 'create_customers_table',
-                'create_customer_assignments_table',
-                'add_ebilling_preferences_to_customers_table',
             ])
             ->hasCommands();
 
@@ -29,19 +26,19 @@ class CustomerServiceProvider extends MooxServiceProvider
             ->stability('stable')
             ->category('development')
             ->usedFor([
-                'ERP customer profiles linked to company master data',
+                'Customer records belonging to a contact',
             ])
             ->alternatePackages([
                 '',
             ])
             ->templateFor([
-                'creating ERP-style customer entities with configurable company relation',
+                'creating customer entities',
             ])
             ->templateReplace([
                 'Customer' => '%%PackageName%%',
                 'customer' => '%%PackageSlug%%',
-                'Customer is a Moox Entity for ERP customer profiles linked to companies.' => '%%Description%%',
-                'ERP customer profiles linked to company master data' => '%%UsedFor%%',
+                'Customer is a Moox Entity for customer profiles belonging to a contact.' => '%%Description%%',
+                'Customer records belonging to a contact' => '%%UsedFor%%',
                 'released(true)' => 'released(false)',
                 'stability(stable)' => 'stability(dev)',
                 'category(development)' => 'category(unknown)',
@@ -56,14 +53,10 @@ class CustomerServiceProvider extends MooxServiceProvider
             ])
             ->templateEntityFiles([
                 'config/customer.php',
-                'database/factories/CustomerFactory.php',
                 'database/migrations/create_customers_table.php.stub',
-                'database/migrations/create_customer_assignments_table.php.stub',
-                'database/migrations/add_ebilling_preferences_to_customers_table.php.stub',
                 'resources/lang/en/customer.php',
                 'resources/lang/en/fields.php',
                 'src/Models/Customer.php',
-                'src/Models/CustomerAssignment.php',
                 'src/Resources/Customer/Pages/CreateCustomer.php',
                 'src/Resources/Customer/Pages/EditCustomer.php',
                 'src/Resources/Customer/Pages/ListCustomers.php',
@@ -76,16 +69,5 @@ class CustomerServiceProvider extends MooxServiceProvider
             ->templateRemove([
                 '',
             ]);
-    }
-
-    public function packageBooted(): void
-    {
-        if (
-            class_exists(AuditPackageRegistry::class)
-            && config('audit.enabled', true)
-            && config('customer.audit.enabled', true)
-        ) {
-            AuditPackageRegistry::register('customer', config('customer.audit', []));
-        }
     }
 }

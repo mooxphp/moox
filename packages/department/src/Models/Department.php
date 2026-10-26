@@ -4,70 +4,77 @@ declare(strict_types=1);
 
 namespace Moox\Department\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Core\Entities\Items\Record\BaseRecordModel;
-use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
-use Moox\Department\Database\Factories\DepartmentFactory;
+use Moox\Core\Traits\Relations\HasRelations;
+use Moox\Support\Audit\HasAudit;
+use Moox\Support\Identity\HasIdentifier;
 
-/**
- * @method \Illuminate\Database\Eloquent\Relations\HasMany<DepartmentAssignment, $this> departmentAssignments()
- */
-class Department extends BaseRecordModel
+class Department extends Model
 {
-    /** @use HasFactory<DepartmentFactory> */
-    use HasFactory;
-
-    use HasModelTaxonomy;
-    use HasUuids;
+    use HasAudit;
+    use HasIdentifier;
+    use HasRelations;
     use SoftDeletes;
 
     protected $table = 'departments';
 
-    protected $keyType = 'string';
-
-    public $incrementing = false;
-
+    /**
+     * @var list<string>
+     */
     protected $fillable = [
-        'status',
         'is_active',
-        'name',
-        'code',
-        'description',
+        'title',
+        'slug',
+        'note',
         'external_reference',
+        'external_info',
+        'external_status',
+        'contact_id',
         'data',
+        'created_by_id',
+        'created_by_type',
+        'updated_by_id',
+        'updated_by_type',
+        'archived_at',
+        'archived_by_id',
+        'archived_by_type',
+        'deleted_at',
+        'deleted_by_id',
+        'deleted_by_type',
+        'restored_at',
+        'restored_by_id',
+        'restored_by_type',
     ];
 
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'is_active' => 'boolean',
-            'data' => 'array',
-        ];
-    }
+    /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'is_active' => true,
+    ];
 
     public static function getResourceName(): string
     {
         return 'department';
     }
 
-    public static function newFactory(): DepartmentFactory
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
     {
-        return DepartmentFactory::new();
-    }
-
-    public function displayLabel(): string
-    {
-        if ($this->name) {
-            return $this->name;
-        }
-
-        if ($this->code) {
-            return $this->code;
-        }
-
-        return (string) $this->getKey();
+        return [
+            'is_active' => 'boolean',
+            'data' => 'array',
+            'contact_id' => 'integer',
+            'created_by_id' => 'integer',
+            'updated_by_id' => 'integer',
+            'archived_by_id' => 'integer',
+            'deleted_by_id' => 'integer',
+            'restored_by_id' => 'integer',
+            'archived_at' => 'datetime',
+            'restored_at' => 'datetime',
+        ];
     }
 }

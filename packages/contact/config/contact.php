@@ -1,188 +1,93 @@
 <?php
 
-use Moox\Company\Models\Company;
-use Moox\Company\Resources\CompanyResource;
-use Moox\Contact\Models\Contact;
-use Moox\Contact\Models\ContactAssignment;
-use Moox\Contact\Resources\ContactResource;
-
-/*
-|--------------------------------------------------------------------------
-| Moox Configuration
-|--------------------------------------------------------------------------
-|
-| Relations are resolved by moox/core (RelationService + ConfigRelationManager).
-| Wire pivot models and morph address relations in config/contact.php.
-|
-*/
 return [
-    'readonly' => false,
-
-    'statuses' => [
-        'draft',
-        'active',
-        'inactive',
-        'approved',
-        'archived',
-    ],
-
-    'genders' => [
-        'unknown',
-        'male',
-        'female',
-        'other',
-    ],
-
-    'contact_types' => [
-        'external',
-        'internal',
-    ],
-
-    'resources' => [
-        'contact' => [
-
-            'single' => 'trans//contact::contact.contact',
-            'plural' => 'trans//contact::contact.contacts',
-
-            'tabs' => [
-                'all' => [
-                    'label' => 'trans//core::core.all',
-                    'icon' => 'gmdi-filter-list',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'active' => [
-                    'label' => 'trans//contact::fields.active',
-                    'icon' => 'gmdi-check-circle-o',
-                    'query' => [
-                        [
-                            'field' => 'is_active',
-                            'operator' => '=',
-                            'value' => true,
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'deleted' => [
-                    'label' => 'trans//core::core.deleted',
-                    'icon' => 'gmdi-delete',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '!=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-            ],
-
-            'scopes' => [
-                'registry' => [
-                    'sources' => [
-                        'contact' => Contact::class,
-                    ],
-                ],
-            ],
-        ],
-    ],
-
     'relations' => [
-        'contact_assignments' => [
-            'kind' => 'morph_pivot',
-            'perspective' => 'related',
+        'language' => [
+            'kind' => 'belongs_to',
+            'presentation' => 'hidden',
+            'model' => 'Moox\\Data\\Models\\StaticLanguage',
+            'foreign_key' => 'language_id',
+            'title_attribute' => 'common_name',
+        ],
+        'country' => [
+            'kind' => 'belongs_to',
+            'presentation' => 'hidden',
+            'model' => 'Moox\\Data\\Models\\StaticCountry',
+            'foreign_key' => 'country_id',
+            'title_attribute' => 'common_name',
+        ],
+        'organizationType' => [
+            'kind' => 'belongs_to',
+            'presentation' => 'hidden',
+            'model' => 'Moox\\Organization\\Models\\OrganizationType',
+            'foreign_key' => 'organization_type_id',
+            'title_attribute' => 'title',
+        ],
+        'legalForm' => [
+            'kind' => 'belongs_to',
+            'presentation' => 'hidden',
+            'model' => 'Moox\\Organization\\Models\\LegalForm',
+            'foreign_key' => 'legal_form_id',
+            'title_attribute' => 'title',
+        ],
+        'identifiers' => [
+            'kind' => 'has_many',
             'presentation' => 'tab',
-            'label' => 'trans//contact::fields.companies',
-            'inverse_label' => 'trans//contact::fields.contacts',
-            'relationship' => 'companies',
-            'inverse_relationship' => 'contacts',
-            'model' => Company::class,
-            'related_resource' => CompanyResource::class,
-            'pivot_model' => ContactAssignment::class,
-            'pivot_table' => 'contact_assignments',
-            'morph_name' => 'assignable',
-            'related_key' => 'contact_id',
-            'pivot_columns' => [
-                'role',
-                'is_primary',
-            ],
-            'actions' => [
-                'header' => ['attach'],
-                'record' => ['edit_pivot', 'detach'],
-                'toolbar' => ['detach_bulk'],
+            'label' => 'trans//contact::contact.contact_identifiers',
+            'relationship' => 'identifiers',
+            'inverse_relationship' => 'contact',
+            'model' => 'Moox\\Contact\\Models\\ContactIdentifier',
+            'related_resource' => 'Moox\\Contact\\Resources\\ContactIdentifierResource',
+            'foreign_key' => 'contact_id',
+            'translation_prefix' => 'contact::fields',
+            'display_columns' => ['value'],
+            'record_select_search_columns' => ['value'],
+            'create_prefill' => [
+                'contact_id' => 'owner.id',
             ],
         ],
-        'address_assignments' => [
-            'kind' => 'morph_pivot',
-            'perspective' => 'owner',
+        'relationships' => [
+            'kind' => 'has_many',
             'presentation' => 'tab',
-            'label' => 'trans//contact::fields.addresses',
-            'translation_prefix' => 'address::fields',
-            'relationship' => 'addresses',
-            'primary_relationship' => 'address',
+            'label' => 'trans//contact::contact.contact_relationships',
+            'relationship' => 'relationships',
+            'inverse_relationship' => 'contact',
+            'model' => 'Moox\\Contact\\Models\\ContactRelationship',
+            'related_resource' => 'Moox\\Contact\\Resources\\ContactRelationshipResource',
+            'foreign_key' => 'contact_id',
+            'translation_prefix' => 'contact::fields',
+            'display_columns' => ['note', 'external_reference', 'related_contact_id'],
+            'record_select_search_columns' => ['note', 'external_reference'],
+            'create_prefill' => [
+                'contact_id' => 'owner.id',
+            ],
             'actions' => [
-                'header' => ['attach', 'create'],
-                'record' => ['edit_related', 'edit_pivot', 'detach'],
-                'toolbar' => ['detach_bulk'],
+                'header' => ['associate', 'create'],
+                'record' => ['view', 'edit'],
+            ],
+        ],
+        'incomingRelationships' => [
+            'kind' => 'has_many',
+            'presentation' => 'tab',
+            'label' => 'trans//contact::contact.incoming_contact_relationships',
+            'relationship' => 'incomingRelationships',
+            'inverse_relationship' => 'relatedContact',
+            'model' => 'Moox\\Contact\\Models\\ContactRelationship',
+            'related_resource' => 'Moox\\Contact\\Resources\\ContactRelationshipResource',
+            'foreign_key' => 'related_contact_id',
+            'translation_prefix' => 'contact::fields',
+            'display_columns' => ['note', 'external_reference', 'contact_id'],
+            'record_select_search_columns' => ['note', 'external_reference'],
+            'create_prefill' => [
+                'related_contact_id' => 'owner.id',
+            ],
+            'actions' => [
+                'header' => ['associate', 'create'],
+                'record' => ['view', 'edit'],
             ],
         ],
     ],
-
-    'taxonomies' => [
-    ],
-
-    'navigation_group' => 'Portal',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Audit defaults
-    |--------------------------------------------------------------------------
-    |
-    | Registered with moox/audit when installed. Override in config/audit.php.
-    | Disable this package: set enabled => false (or AUDIT_ENABLED=false globally).
-    | Passwords are masked by moox/audit; they are omitted from attributes here.
-    |
-    */
-
-    'audit' => [
-        'enabled' => true,
-        'models' => [
-            Contact::class => [
-                'log_name' => 'contact',
-                'attributes' => [
-                    'status',
-                    'gender',
-                    'salutation_code',
-                    'academic_title',
-                    'first_name',
-                    'last_name',
-                    'display_name',
-                    'job_title',
-                    'email',
-                    'username',
-                    'email_verified_at',
-                    'phone',
-                    'mobile',
-                    'language_id',
-                    'contact_type',
-                    'note',
-                    'external_reference',
-                    'is_active',
-                ],
-            ],
-        ],
-        'filament' => [
-            ContactResource::class => [
-                'owner_model' => Contact::class,
-            ],
-        ],
+    'navigationgroup' => [
+        'label' => 'CRM',
     ],
 ];

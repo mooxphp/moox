@@ -15,13 +15,32 @@ final class DbTableSourceQuery
      */
     public static function table(?string $connection, array $reference): Builder
     {
+        $connectionName = self::resolveConnectionName($connection);
+        $sourceSql = $reference['source_sql'] ?? null;
+
+        if (is_string($sourceSql) && trim($sourceSql) !== '') {
+            if (str_contains($sourceSql, ';')) {
+                throw new \InvalidArgumentException('db_table source_sql must be a single select.');
+            }
+
+            $alias = is_string($reference['alias'] ?? null) && $reference['alias'] !== ''
+                ? $reference['alias']
+                : 'src';
+
+            if (preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $alias) !== 1) {
+                throw new \InvalidArgumentException('db_table source_sql alias must be a plain identifier.');
+            }
+
+            return DB::connection($connectionName)->query()->fromRaw('('.$sourceSql.') as '.$alias);
+        }
+
         $table = $reference['table'] ?? null;
 
         if (! is_string($table) || $table === '') {
             throw new \InvalidArgumentException('db_table reference requires a table name.');
         }
 
-        return DB::connection(self::resolveConnectionName($connection))->table($table);
+        return DB::connection($connectionName)->table($table);
     }
 
     /**

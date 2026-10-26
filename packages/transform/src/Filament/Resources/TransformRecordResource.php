@@ -240,7 +240,7 @@ class TransformRecordResource extends BaseRecordResource
                     ->icon('heroicon-o-play')
                     ->color('success')
                     ->action(function (TransformRecord $record): void {
-                        RunTransformRecordJob::dispatch((int) $record->getKey());
+                        RunTransformRecordJob::dispatchForActor((int) $record->getKey());
 
                         Notification::make()
                             ->title('Run queued')

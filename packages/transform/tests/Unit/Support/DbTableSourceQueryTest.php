@@ -10,6 +10,29 @@ use Tests\TestCase;
 
 uses(TestCase::class);
 
+test('db table source query reads a single select from source_sql', function (): void {
+    Schema::dropIfExists('db_table_source_rows');
+    Schema::create('db_table_source_rows', function (Blueprint $table): void {
+        $table->id();
+        $table->string('name');
+    });
+
+    DB::table('db_table_source_rows')->insert([
+        ['id' => 1, 'name' => 'alpha'],
+        ['id' => 2, 'name' => 'beta'],
+    ]);
+
+    $query = DbTableSourceQuery::table(null, [
+        'table' => 'db_table_source_rows',
+        'alias' => 'src',
+        'source_sql' => 'select id as row_key, name as row_name from db_table_source_rows',
+    ]);
+
+    expect($query->orderBy('row_key')->pluck('row_name')->all())->toBe(['alpha', 'beta']);
+
+    Schema::dropIfExists('db_table_source_rows');
+});
+
 test('db table source query applies datetime_gte as greater-than-or-equal on default drivers', function (): void {
     Schema::dropIfExists('db_table_source_rows');
     Schema::create('db_table_source_rows', function (Blueprint $table): void {

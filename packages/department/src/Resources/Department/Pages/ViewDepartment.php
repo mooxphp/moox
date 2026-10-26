@@ -4,10 +4,18 @@ declare(strict_types=1);
 
 namespace Moox\Department\Resources\Department\Pages;
 
-use Moox\Core\Entities\Items\Record\Pages\BaseViewRecord;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 use Moox\Department\Resources\DepartmentResource;
 
-class ViewDepartment extends BaseViewRecord
+class ViewDepartment extends ViewRecord
 {
     protected static string $resource = DepartmentResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            EditAction::make(),
+        ];
+    }
 }

@@ -29,6 +29,7 @@ final class BulkTransformExecutor
         $writeStrategy = $this->writeStrategy($definition);
         $persistEvery = max(1, (int) Config::get('transform.bulk.progress_persist_every', 1));
 
+        $existingStats = is_array($parent->bulk_stats) ? $parent->bulk_stats : [];
         $stats = [
             'total' => 0,
             'expected_total' => $expectedTotal,
@@ -38,7 +39,13 @@ final class BulkTransformExecutor
             'failed' => 0,
             'failures' => [],
             'progress' => 0,
+            'external_id_count' => 0,
+            'matched_external_id_count' => 0,
+            'external_ids' => [],
         ];
+        if (is_array($existingStats['delta'] ?? null)) {
+            $stats['delta'] = $existingStats['delta'];
+        }
 
         $this->persistIntermediateStats($parent, $stats);
 
@@ -68,9 +75,10 @@ final class BulkTransformExecutor
                         $processRecord($child);
                         $child->refresh();
 
+                        $childProjection = is_array($child->source_projection) ? $child->source_projection : [];
                         $failureContext = BulkTransformSummaryFormatter::failureContext(
                             $definition,
-                            is_array($child->source_projection) ? $child->source_projection : [],
+                            $childProjection,
                         );
 
                         $this->accumulateResult(
@@ -81,6 +89,10 @@ final class BulkTransformExecutor
                                 destinationKey: $child->destination_key !== null ? (string) $child->destination_key : null,
                                 sourceLabel: $failureContext['source_label'],
                                 sourceReference: $failureContext['source_reference'],
+                                externalId: BulkTransformSummaryFormatter::externalId(
+                                    $childProjection,
+                                    $this->destinationMatch($definition),
+                                ),
                             ),
                             (int) $child->id,
                         );
@@ -106,16 +118,17 @@ final class BulkTransformExecutor
             }
         }
 
-        $failed = $stats['failed'];
         $stats['progress'] = BulkTransformSummaryFormatter::progressPercent($stats, completed: true);
+        BulkTransformSummaryFormatter::rememberDuration($stats, $parent);
+        $completion = BulkTransformSummaryFormatter::completion($stats);
 
         $parent->forceFill([
-            'status' => $failed === 0 ? 'processed' : 'failed',
-            'validation_status' => $failed === 0 ? 'valid' : 'invalid',
-            'degraded' => $failed > 0,
+            'status' => $completion['status'],
+            'validation_status' => $completion['validation_status'],
+            'degraded' => $completion['degraded'],
             'bulk_stats' => $stats,
             'error_message' => BulkTransformSummaryFormatter::formatMessage($stats),
-            'last_success_at' => $failed === 0 ? now() : null,
+            'last_success_at' => $completion['status'] === 'processed' ? now() : null,
         ])->save();
     }
 
@@ -156,10 +169,22 @@ final class BulkTransformExecutor
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    private function destinationMatch(TransformDefinition $definition): array
+    {
+        $match = $definition->getAttribute('destination_match');
+
+        return is_array($match) ? $match : [];
+    }
+
+    /**
      * @param  array<string, mixed>  $stats
      */
     private function accumulateResult(array &$stats, BulkItemResult $result, ?int $transformRecordId = null): void
     {
+        $this->accumulateExternalId($stats, $result);
+
         if ($result->status === 'processed') {
             $stats['processed']++;
 
@@ -202,5 +227,38 @@ final class BulkTransformExecutor
         }
 
         $stats['failures'][] = $failure;
+    }
+
+    /**
+     * @param  array<string, mixed>  $stats
+     */
+    private function accumulateExternalId(array &$stats, BulkItemResult $result): void
+    {
+        $externalId = $result->externalId;
+        if (! is_string($externalId) || $externalId === '') {
+            return;
+        }
+
+        $stats['external_id_count'] = (int) ($stats['external_id_count'] ?? 0) + 1;
+        if ($result->status === 'updated') {
+            $stats['matched_external_id_count'] = (int) ($stats['matched_external_id_count'] ?? 0) + 1;
+        }
+
+        $maxSamples = (int) Config::get('transform.bulk.max_external_id_samples', 50);
+        $samples = is_array($stats['external_ids'] ?? null) ? $stats['external_ids'] : [];
+        if ($maxSamples <= 0 || count($samples) >= $maxSamples) {
+            return;
+        }
+
+        $sample = [
+            'id' => $externalId,
+            'status' => $result->status,
+        ];
+        if (is_string($result->sourceLabel) && $result->sourceLabel !== '') {
+            $sample['label'] = $result->sourceLabel;
+        }
+
+        $samples[] = $sample;
+        $stats['external_ids'] = $samples;
     }
 }

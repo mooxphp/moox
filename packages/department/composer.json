@@ -1,6 +1,6 @@
 {
     "name": "moox/department",
-    "description": "Department is a Moox Entity for organizational units assignable to companies and contacts.",
+    "description": "Department is a Moox Entity for organizational units belonging to a contact.",
     "keywords": [
         "Moox",
         "Laravel",
@@ -21,14 +21,11 @@
     ],
     "require": {
         "moox/core": "dev-main",
-        "moox/data": "dev-main",
-        "moox/company": "dev-main",
-        "moox/contact": "dev-main"
+        "moox/support": "dev-main"
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Department\\": "src",
-            "Moox\\Department\\Database\\Factories\\": "database/factories"
+            "Moox\\Department\\": "src"
         }
     },
     "autoload-dev": {
