@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Fixed
+- `ZugferdConverter` negative allowances and charges (mooxphp/e-billing#101): document and line allowances and charges skip only zero amounts instead of all non-positive ones, and the document totals BT-107 / BT-108 and the line net amount BT-131 count every amount with its sign. A negative charge or allowance (for example on a corrected invoice 384 issued as a delta) is emitted with its sign (FeRD ZUGFeRD 2.5.2 ch. 7.1.6 / 7.1.11; EN 16931 has no rule against it). Positive amounts, and so 380 and 381 documents, are emitted as before.
 - `ZugferdConverter` payment terms (BT-20): the invoice's `paymentTerms` are written as given and the converter no longer composes payment terms text. Before, a due date appended the German `; zahlbar ohne Abzug bis zum <date>` to the terms (or wrote it alone, starting with `; `). An invoice with a due date but no payment terms now gets only the due date (BT-9, `ram:DueDateDateTime`), which satisfies BR-CO-25; payment terms without a due date are still written.
 - `ZugferdConverter` line net amount (BT-131, `ram:LineTotalAmount`) is now line total (quantity x net price) + line-level charges (BG-28) - line-level allowances (BG-27). BT-106 is the sum of BT-131; BT-107 / BT-108 cover document-level allowances and charges only. Previously line charges were added to BT-108 and missing from BT-131, which violated BR-CO-12, BR-CO-13 and BR-S-08.
 
