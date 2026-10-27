@@ -2,9 +2,17 @@
     $notes = $viewModel->notesGroup($editing ?? false);
 @endphp
 @if($notes !== null)
-    <details
-        @if($notes['open']) open="open" @endif
-        class="group mb-3 rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800/40">
+    @php
+        $sectionOpen = $notes['open'];
+        if (isset($this) && method_exists($this, 'syncAndGetCollapsibleOpen')) {
+            $sectionOpen = $this->syncAndGetCollapsibleOpen('notes', $notes['open']);
+        }
+    @endphp
+    <x-e-billing::collapsible-details
+        wire-key="notes"
+        :open="$sectionOpen"
+        class="group mb-3 rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800/40"
+    >
         <summary
             class="cursor-pointer list-none px-4 py-3 [&::-webkit-details-marker]:hidden [&::marker]:hidden">
             @include('e-billing::filament.partials.invoice-details-summary', [
@@ -21,5 +29,5 @@
                 @endforeach
             </dl>
         </div>
-    </details>
+    </x-e-billing::collapsible-details>
 @endif
