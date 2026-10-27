@@ -19,6 +19,10 @@
 - Sync-state `catch_up_in_progress` column, set by `FetchMailsJob` when a poll defers continuation and cleared when a resume cursor is stored
 - English and German translations for Filament resource titles and field labels (`resources/lang/{en,de}/`)
 
+### Fixed
+
+- **Security:** `StoreAttachmentsJob` reduces the sender-supplied attachment name to a single path segment before storing it (invalid UTF-8 bytes become `?`, control and format characters such as NUL, line breaks or U+202E are removed, backslashes become `/`, then `basename()`; empty, `.` or `..` become `attachment`). Names such as `../../other/file.pdf` can no longer write outside the message's `msg-{id}/` folder, and names with control characters no longer fail the job with `CorruptedPathDetected`. The stored `filename` and `extension` use the sanitized name, so the record matches the file on disk. Existing stored attachments are not renamed.
+
 ### Changed
 
 - Filament config shape follows Moox address-style resources: `resources.*.single` / `plural`, tabs nested under each resource, top-level `navigation_group`
