@@ -72,7 +72,9 @@ class InvoiceLine implements ZugferdInvoiceLine
     ) {
         $this->partialDeliveries = PartialDeliveries::normalize($this->partialDeliveries);
 
-        if ($this->weightKgNet === null && $this->weightKgTotal !== null && $this->quantity > 0) {
+        // A quantity in kilograms is the weight itself: there is no weight per unit to derive.
+        if ($this->weightKgNet === null && $this->weightKgTotal !== null && $this->quantity > 0
+            && strtoupper($this->unitCode) !== 'KGM') {
             $this->weightKgNet = round($this->weightKgTotal / $this->quantity, 3);
         }
 
