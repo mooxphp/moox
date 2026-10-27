@@ -123,7 +123,7 @@ class StoreAttachmentsJob implements ShouldQueue
                 continue;
             }
 
-            $filename = $attachmentMeta['name'] !== '' ? $attachmentMeta['name'] : 'attachment';
+            $filename = $this->safeAttachmentFilename($attachmentMeta['name']);
             $mimeType = $attachmentMeta['content_type'] !== ''
                 ? $attachmentMeta['content_type']
                 : 'application/octet-stream';
@@ -216,6 +216,20 @@ class StoreAttachmentsJob implements ShouldQueue
     private function applyMemoryLimit(): void
     {
         ini_set('memory_limit', (string) config('mail-inbox.memory_limit', '512M'));
+    }
+
+    /**
+     * The sender controls the attachment name. Reduce it to one path segment so it
+     * cannot write outside the message folder. Flysystem rejects invalid UTF-8 and
+     * control or format characters (\p{C}) with CorruptedPathDetected, so invalid bytes
+     * become `?` and \p{C} is removed. After mb_scrub() the /u pattern cannot fail.
+     */
+    private function safeAttachmentFilename(string $name): string
+    {
+        $printable = (string) preg_replace('/\p{C}/u', '', mb_scrub($name, 'UTF-8'));
+        $segment = basename(str_replace('\\', '/', $printable));
+
+        return in_array($segment, ['', '.', '..'], true) ? 'attachment' : $segment;
     }
 
     private function mimeLooksLikeXml(string $mimeType): bool
