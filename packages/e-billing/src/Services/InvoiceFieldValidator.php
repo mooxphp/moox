@@ -1078,6 +1078,7 @@ class InvoiceFieldValidator
             'vat_category' => $this->validateGenericInvoiceField($invoice, 'vat_category', $priority),
             'surcharge_amount', 'surcharge_description' => $this->validateLineSurchargeField($line, $field, $priority),
             'material_test_certificate_price' => $this->validateLineMaterialTestCertificatePriceField($line, $priority),
+            'quantity' => $this->validateLineQuantityField($line, $priority),
             default => $this->validateGenericInvoiceLineField($line, $field, $priority),
         };
 
@@ -1111,6 +1112,20 @@ class InvoiceFieldValidator
         }
 
         return $this->entryForEmptyField('material_test_certificate_price', $priority, true);
+    }
+
+    /**
+     * A goods line always delivers something, so a zero quantity means the parser could not read it.
+     *
+     * @return array{status: string, source?: string, matched_id?: string}
+     */
+    private function validateLineQuantityField(InvoiceLine $line, string $priority): array
+    {
+        if ($line->is_non_goods !== true && (float) $line->quantity === 0.0) {
+            return $this->entryForEmptyField('quantity', $priority, true);
+        }
+
+        return $this->validateGenericInvoiceLineField($line, 'quantity', $priority);
     }
 
     /**
