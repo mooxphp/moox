@@ -17,6 +17,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Department\Models\Department;
 use Moox\Department\Resources\Department\Pages\CreateDepartment;
 use Moox\Department\Resources\Department\Pages\EditDepartment;
@@ -42,6 +43,7 @@ class DepartmentResource extends Resource
     use HasExternalForm;
     use HasIdentityForm;
     use HasRelationForm;
+    use HasResourceRelations;
     use HasSoftDeleteForm;
     use HasTitleSlugForm;
 
@@ -147,6 +149,7 @@ class DepartmentResource extends Resource
                     ->label(FeatureFields::label($translation, 'title'))
                     ->searchable()
                     ->sortable(),
+                ...static::configuredRelationColumns(),
                 TextColumn::make('slug')
                     ->label(FeatureFields::label($translation, 'slug'))
                     ->searchable()
@@ -154,9 +157,6 @@ class DepartmentResource extends Resource
                 IconColumn::make('is_active')
                     ->label(FeatureFields::label($translation, 'is_active'))
                     ->boolean(),
-                TextColumn::make('external_reference')
-                    ->label(FeatureFields::label($translation, 'external_reference'))
-                    ->toggleable(),
                 TextColumn::make('updated_at')
                     ->label(FeatureFields::label($translation, 'updated_at'))
                     ->dateTime()

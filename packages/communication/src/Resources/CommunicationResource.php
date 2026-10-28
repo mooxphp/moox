@@ -250,6 +250,7 @@ class CommunicationResource extends Resource
             ])
             ->defaultSort('value')
             ->filters([
+                ...static::configuredRelationFilters(),
                 TernaryFilter::make('is_active')
                     ->label(FeatureFields::label($translation, 'is_active')),
                 TernaryFilter::make('is_primary')

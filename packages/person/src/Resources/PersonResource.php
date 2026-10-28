@@ -163,12 +163,10 @@ class PersonResource extends Resource
                     ->label(FeatureFields::label($translation, 'last_name'))
                     ->searchable()
                     ->sortable(),
+                ...static::configuredRelationColumns(),
                 IconColumn::make('is_active')
                     ->label(FeatureFields::label($translation, 'is_active'))
                     ->boolean(),
-                TextColumn::make('external_reference')
-                    ->label(FeatureFields::label($translation, 'external_reference'))
-                    ->toggleable(),
                 TextColumn::make('updated_at')
                     ->label(FeatureFields::label($translation, 'updated_at'))
                     ->dateTime()
@@ -177,6 +175,7 @@ class PersonResource extends Resource
             ])
             ->defaultSort('last_name')
             ->filters([
+                ...static::configuredRelationFilters(),
                 TernaryFilter::make('is_active')
                     ->label(FeatureFields::label($translation, 'is_active')),
             ])

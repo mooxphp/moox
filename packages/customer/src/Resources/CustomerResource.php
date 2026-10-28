@@ -159,6 +159,7 @@ class CustomerResource extends Resource
                     ->label(FeatureFields::label($translation, 'customer_name'))
                     ->searchable()
                     ->sortable(),
+                ...static::configuredRelationColumns(),
                 TextColumn::make('customer_type')
                     ->label(FeatureFields::label($translation, 'customer_type'))
                     ->badge()
@@ -166,9 +167,6 @@ class CustomerResource extends Resource
                 IconColumn::make('is_active')
                     ->label(FeatureFields::label($translation, 'is_active'))
                     ->boolean(),
-                TextColumn::make('external_reference')
-                    ->label(FeatureFields::label($translation, 'external_reference'))
-                    ->toggleable(),
                 TextColumn::make('updated_at')
                     ->label(FeatureFields::label($translation, 'updated_at'))
                     ->dateTime()
