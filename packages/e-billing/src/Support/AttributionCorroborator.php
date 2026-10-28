@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Support;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Moox\Address\Models\Address;
-use Moox\Address\Support\AddressFingerprint;
-use Moox\Company\Models\Company;
-use Moox\Customer\Models\Customer;
+use Moox\EBilling\Data\BuyerMasterData;
+use Moox\EBilling\Data\BuyerMasterDataAddress;
+use Moox\EBilling\Services\InvoiceFieldValidator;
 use Moox\Invoice\Support\En16931\Address as InvoiceAddress;
 use Moox\Invoice\Support\En16931\Party;
 
 /**
- * Corroborates an attributed {@see Customer} against buyer name, VAT, country and address.
+ * Corroborates the matched {@see BuyerMasterData} against buyer name, VAT, country and address.
  *
  * Never clears or rewrites attribution — only produces field-validation verdicts.
  * No public seam — only {@see InvoiceFieldValidator} calls this.
@@ -28,22 +26,19 @@ final class AttributionCorroborator
      * Names corroborate when they share a significant token. When either side has none ("ABC GmbH": every part is
      * short or a legal form), the full names must be equal instead, short parts included and a trailing legal form
      * ignored (#108).
-     *
-     * @return array{corroborates: bool, matched_id: string}
      */
-    public function corroborateName(
-        ?string $invoiceName,
-        Customer $customer,
-        ?Company $company,
-    ): array {
+    public function corroborateName(?string $invoiceName, BuyerMasterData $buyer): bool
+    {
         $invoiceParts = $this->nameParts($invoiceName ?? '');
         $invoiceTokens = $this->significantTokensOf($invoiceParts);
         $invoiceFullName = $this->withoutLegalFormSuffix($invoiceParts);
 
-        $candidates = $this->nameCandidates($customer, $company);
+        foreach ([$buyer->name, ...$buyer->alternativeNames] as $candidate) {
+            if (! is_string($candidate) || trim($candidate) === '') {
+                continue;
+            }
 
-        foreach ($candidates as $candidate) {
-            $candidateParts = $this->nameParts($candidate['name']);
+            $candidateParts = $this->nameParts($candidate);
             $candidateTokens = $this->significantTokensOf($candidateParts);
 
             if ($invoiceTokens !== [] && $candidateTokens !== []) {
@@ -54,17 +49,11 @@ final class AttributionCorroborator
             }
 
             if ($corroborates) {
-                return [
-                    'corroborates' => true,
-                    'matched_id' => $candidate['id'],
-                ];
+                return true;
             }
         }
 
-        return [
-            'corroborates' => false,
-            'matched_id' => (string) $customer->getKey(),
-        ];
+        return false;
     }
 
     /**
@@ -73,23 +62,19 @@ final class AttributionCorroborator
      *
      * @return array{corroborates: bool, matched_id: string, divergence?: AddressDivergence}
      */
-    public function corroborateDeliveryParty(
-        Party $party,
-        Customer $customer,
-        ?Company $company,
-    ): array {
-        $invoiceName = is_string($party->name) && trim($party->name) !== '' ? $party->name : null;
-        $nameResult = $this->corroborateName($invoiceName, $customer, $company);
-        $addressResult = $this->findDeliveryMatchingAddress($party->address, $company);
+    public function corroborateDeliveryParty(Party $party, BuyerMasterData $buyer): array
+    {
+        $invoiceName = trim($party->name) !== '' ? $party->name : null;
+        $addressResult = $this->findDeliveryMatchingAddress($party->address, $buyer);
 
         if ($addressResult === null) {
             return [
                 'corroborates' => false,
-                'matched_id' => $nameResult['matched_id'],
+                'matched_id' => $buyer->reference,
             ];
         }
 
-        if ($nameResult['corroborates'] && $addressResult['exists']) {
+        if ($this->corroborateName($invoiceName, $buyer) && $addressResult['exists']) {
             $corroborated = [
                 'corroborates' => true,
                 'matched_id' => $addressResult['matched_id'],
@@ -101,12 +86,9 @@ final class AttributionCorroborator
             return $corroborated;
         }
 
-        $addressMatchedId = $addressResult['matched_id'];
-        $fallbackId = $addressMatchedId !== '' ? $addressMatchedId : $nameResult['matched_id'];
-
         return [
             'corroborates' => false,
-            'matched_id' => $addressResult['exists'] ? $addressMatchedId : $fallbackId,
+            'matched_id' => $addressResult['matched_id'],
         ];
     }
 
@@ -115,10 +97,10 @@ final class AttributionCorroborator
      *
      * @return bool|null true = agree, false = diverge, null = not comparable
      */
-    public function compareVat(?string $invoiceVat, ?string $companyVat): ?bool
+    public function compareVat(?string $invoiceVat, ?string $masterDataVat): ?bool
     {
         $left = VatIdNormalizer::normalize($invoiceVat);
-        $right = VatIdNormalizer::normalize($companyVat);
+        $right = VatIdNormalizer::normalize($masterDataVat);
 
         if ($left === null || $right === null) {
             return null;
@@ -130,36 +112,28 @@ final class AttributionCorroborator
     /**
      * Compare country codes when both sides are present.
      *
-     * Invoice country must appear on at least one role-filtered company address.
+     * Invoice country must appear on at least one billing address of the buyer.
      *
      * @return bool|null true = agree, false = diverge, null = not comparable
      */
-    public function compareCountry(?string $invoiceCountry, ?Company $company): ?bool
+    public function compareCountry(?string $invoiceCountry, BuyerMasterData $buyer): ?bool
     {
         $invoice = $this->normalizeCountryCode($invoiceCountry);
 
-        if ($invoice === null || $company === null) {
-            return null;
-        }
-
-        $addresses = $this->roleFilteredAddresses($company, $this->buyerAddressRoles());
-
-        if ($addresses->isEmpty()) {
-            // No master-data country to compare — not a divergence (#25).
+        if ($invoice === null) {
             return null;
         }
 
         $knownCountries = [];
-        foreach ($addresses as $address) {
-            $known = $this->normalizeCountryCode(
-                is_string($address->country_code) ? $address->country_code : null,
-            );
+        foreach ($buyer->billingAddresses as $address) {
+            $known = $this->normalizeCountryCode($address->countryCode);
             if ($known !== null) {
                 $knownCountries[$known] = true;
             }
         }
 
         if ($knownCountries === []) {
+            // No master-data country to compare — not a divergence (#25).
             return null;
         }
 
@@ -167,79 +141,58 @@ final class AttributionCorroborator
     }
 
     /**
-     * Existence check of the parsed buyer address among buyer-role company addresses.
+     * Existence check of the parsed buyer address among the buyer's billing addresses.
      *
      * @return AddressMatch|null null when invoice address is empty
      */
-    public function findMatchingAddress(?InvoiceAddress $invoiceAddress, ?Company $company): ?array
+    public function findMatchingAddress(?InvoiceAddress $invoiceAddress, BuyerMasterData $buyer): ?array
     {
-        return $this->findAddressAmongRoleTiers(
+        return $this->findAddressAmongTiers($invoiceAddress, $buyer, [$buyer->billingAddresses]);
+    }
+
+    /**
+     * Existence check of a delivery address: delivery addresses first, then the billing addresses.
+     *
+     * @return AddressMatch|null null when invoice address is empty
+     */
+    public function findDeliveryMatchingAddress(?InvoiceAddress $invoiceAddress, BuyerMasterData $buyer): ?array
+    {
+        return $this->findAddressAmongTiers(
             $invoiceAddress,
-            $company,
-            [$this->buyerAddressRoles()],
+            $buyer,
+            [$buyer->deliveryAddresses, $buyer->billingAddresses],
         );
     }
 
     /**
-     * Existence check of a delivery address: delivery role first, then postal/billing fallback.
+     * Existence check of one of the buyer's own sites: the delivery addresses only, no billing fallback.
      *
      * @return AddressMatch|null null when invoice address is empty
      */
-    public function findDeliveryMatchingAddress(?InvoiceAddress $invoiceAddress, ?Company $company): ?array
+    public function findOwnSiteDeliveryAddress(?InvoiceAddress $invoiceAddress, BuyerMasterData $buyer): ?array
     {
-        $roles = $this->deliveryAddressRoles();
-
-        return $this->findAddressAmongRoleTiers(
-            $invoiceAddress,
-            $company,
-            [array_slice($roles, 0, 1), array_slice($roles, 1)],
-        );
-    }
-
-    /**
-     * Existence check of one of the buyer's own sites: the delivery role only, no postal/billing fallback.
-     *
-     * @return AddressMatch|null null when invoice address is empty
-     */
-    public function findOwnSiteDeliveryAddress(?InvoiceAddress $invoiceAddress, ?Company $company): ?array
-    {
-        return $this->findAddressAmongRoleTiers(
-            $invoiceAddress,
-            $company,
-            [array_slice($this->deliveryAddressRoles(), 0, 1)],
-        );
+        return $this->findAddressAmongTiers($invoiceAddress, $buyer, [$buyer->deliveryAddresses]);
     }
 
     /**
      * A match without divergence in a later tier wins over an earlier tier's divergent one (#96).
      *
-     * @param  list<list<string>>  $roleTiers
+     * @param  list<list<BuyerMasterDataAddress>>  $tiers
      * @return AddressMatch|null
      */
-    private function findAddressAmongRoleTiers(
+    private function findAddressAmongTiers(
         ?InvoiceAddress $invoiceAddress,
-        ?Company $company,
-        array $roleTiers,
+        BuyerMasterData $buyer,
+        array $tiers,
     ): ?array {
         if ($invoiceAddress === null || $invoiceAddress->isEmpty()) {
             return null;
         }
 
-        if ($company === null) {
-            return [
-                'exists' => false,
-                'matched_id' => '',
-            ];
-        }
-
         $firstDivergentMatch = null;
-        foreach ($roleTiers as $roles) {
-            if ($roles === []) {
-                continue;
-            }
-
-            $match = $this->findFingerprintAmongRoles($invoiceAddress, $company, $roles);
-            if ($match === null || ! $match['exists']) {
+        foreach ($tiers as $addresses) {
+            $match = $this->findFingerprintAmong($invoiceAddress, $buyer, $addresses);
+            if ($match === null) {
                 continue;
             }
 
@@ -252,16 +205,8 @@ final class AttributionCorroborator
 
         return $firstDivergentMatch ?? [
             'exists' => false,
-            'matched_id' => (string) $company->getKey(),
+            'matched_id' => $buyer->reference,
         ];
-    }
-
-    /**
-     * @return list<string>
-     */
-    public function significantTokens(string $name): array
-    {
-        return $this->significantTokensOf($this->nameParts($name));
     }
 
     /**
@@ -310,69 +255,32 @@ final class AttributionCorroborator
     }
 
     /**
-     * @return list<array{name: string, id: string}>
-     */
-    private function nameCandidates(Customer $customer, ?Company $company): array
-    {
-        $candidates = [];
-
-        $customerName = $customer->customer_name;
-        if (is_string($customerName) && trim($customerName) !== '') {
-            $candidates[] = [
-                'name' => $customerName,
-                'id' => (string) $customer->getKey(),
-            ];
-        }
-
-        if ($company === null) {
-            return $candidates;
-        }
-
-        foreach (['name', 'display_name', 'legal_name'] as $attribute) {
-            $value = $company->getAttribute($attribute);
-            if (! is_string($value) || trim($value) === '') {
-                continue;
-            }
-            $candidates[] = [
-                'name' => $value,
-                'id' => (string) $company->getKey(),
-            ];
-        }
-
-        return $candidates;
-    }
-
-    /**
      * Street, postal code and country must match exactly; the city must match word for word, or one city must
      * contain the other as whole words ("Town / Region" against "Town"); a city missing on either side is not
      * compared (#25). A city that only contains the other and differing additional address lines never block the
      * match: they are a master-data divergence, information only, returned in `divergence` (#96). An address
-     * without divergence is preferred over the first one with.
+     * without divergence is preferred over the first one with. Null when no address matches.
      *
-     * @param  list<string>  $roles
+     * @param  list<BuyerMasterDataAddress>  $addresses
      * @return AddressMatch|null
      */
-    private function findFingerprintAmongRoles(
+    private function findFingerprintAmong(
         InvoiceAddress $invoiceAddress,
-        Company $company,
-        array $roles,
+        BuyerMasterData $buyer,
+        array $addresses,
     ): ?array {
-        if ($roles === []) {
-            return null;
-        }
-
-        $invoiceFingerprint = $this->postalFingerprint(AddressFingerprint::fromArray([
-            'street' => $invoiceAddress->line1,
-            'postal_code' => $invoiceAddress->postal_code,
-            'country_code' => $invoiceAddress->country_code,
-        ]));
+        $invoiceFingerprint = $this->postalFingerprint(
+            $invoiceAddress->line1,
+            $invoiceAddress->postal_code,
+            $invoiceAddress->country_code,
+        );
         $invoiceCityWords = $this->cityWords($invoiceAddress->city);
         $invoiceLines = $this->normalizedAdditionalLines($invoiceAddress->line2);
 
         $firstDivergentMatch = null;
-        foreach ($this->roleFilteredAddresses($company, $roles) as $address) {
-            $fingerprint = AddressFingerprint::fromAddress($address);
-            if ($this->postalFingerprint($fingerprint) !== $invoiceFingerprint) {
+        foreach ($addresses as $address) {
+            $fingerprint = $this->postalFingerprint($address->line1, $address->postalCode, $address->countryCode);
+            if ($fingerprint !== $invoiceFingerprint) {
                 continue;
             }
 
@@ -384,16 +292,16 @@ final class AttributionCorroborator
                     && ! $this->containsWords($masterCityWords, $invoiceCityWords)) {
                     continue;
                 }
-                $divergence['city'] = trim($address->city);
+                $divergence['city'] = trim((string) $address->city);
             }
 
-            if ($this->normalizedAdditionalLines($fingerprint['street2']) !== $invoiceLines) {
-                $divergence['additional_lines'] = implode(', ', $this->lines($fingerprint['street2'], trim(...)));
+            if ($this->normalizedAdditionalLines($address->line2) !== $invoiceLines) {
+                $divergence['additional_lines'] = implode(', ', $this->lines($address->line2, trim(...)));
             }
 
             $match = [
                 'exists' => true,
-                'matched_id' => (string) $address->getKey(),
+                'matched_id' => $address->reference ?? $buyer->reference,
             ];
 
             if ($divergence === []) {
@@ -403,10 +311,19 @@ final class AttributionCorroborator
             $firstDivergentMatch ??= $match + ['divergence' => $divergence];
         }
 
-        return $firstDivergentMatch ?? [
-            'exists' => false,
-            'matched_id' => '',
-        ];
+        return $firstDivergentMatch;
+    }
+
+    /**
+     * Street and postal code trimmed, country upper-cased; empty parts are null.
+     *
+     * @return array{0: ?string, 1: ?string, 2: ?string}
+     */
+    private function postalFingerprint(?string $street, ?string $postalCode, ?string $countryCode): array
+    {
+        $trimmed = static fn (?string $value): ?string => trim((string) $value) !== '' ? trim((string) $value) : null;
+
+        return [$trimmed($street), $trimmed($postalCode), $this->normalizeCountryCode($countryCode)];
     }
 
     /**
@@ -437,17 +354,6 @@ final class AttributionCorroborator
         }
 
         return false;
-    }
-
-    /**
-     * @param  array<string, ?string>  $fingerprint
-     * @return array<string, ?string>
-     */
-    private function postalFingerprint(array $fingerprint): array
-    {
-        unset($fingerprint['street2']);
-
-        return $fingerprint;
     }
 
     /**
@@ -486,74 +392,6 @@ final class AttributionCorroborator
         $line = preg_replace('/^[\p{P}\p{S}\s]+|[\p{P}\p{S}\s]+$/u', '', mb_strtolower($line ?? '')) ?? '';
 
         return preg_replace('/\s+/u', ' ', $line) ?? '';
-    }
-
-    /**
-     * @param  list<string>  $roles
-     * @return Collection<int, Address>
-     */
-    public function roleFilteredAddresses(Company $company, array $roles): Collection
-    {
-        if ($roles === []) {
-            return collect();
-        }
-
-        try {
-            $company->loadMissing('addresses');
-        } catch (\BadMethodCallException) {
-            return collect();
-        }
-
-        if (! $company->relationLoaded('addresses')) {
-            return collect();
-        }
-
-        /** @var Collection<int, Address> $addresses */
-        $addresses = $company->getRelation('addresses');
-
-        return $addresses->filter(function (Address $address) use ($roles): bool {
-            foreach ($roles as $role) {
-                if (! is_string($role) || $role === '') {
-                    continue;
-                }
-                if ((bool) $address->pivot?->getAttribute($role)) {
-                    return true;
-                }
-            }
-
-            return false;
-        })->values();
-    }
-
-    /**
-     * @return list<string>
-     */
-    public function buyerAddressRoles(): array
-    {
-        $roles = config('e-billing.corroboration.buyer_address_roles');
-        if (is_array($roles) && $roles !== []) {
-            return array_values(array_filter($roles, is_string(...)));
-        }
-
-        $legacy = config('e-billing.corroboration.address_roles');
-        if (is_array($legacy) && $legacy !== []) {
-            return array_values(array_filter($legacy, is_string(...)));
-        }
-
-        return ['billing_address', 'postal_address'];
-    }
-
-    /**
-     * @return list<string>
-     */
-    public function deliveryAddressRoles(): array
-    {
-        $roles = config('e-billing.corroboration.delivery_address_roles');
-        if (is_array($roles) && $roles !== []) {
-            return array_values(array_filter($roles, is_string(...)));
-        }
-
-        return ['delivery_address', 'postal_address', 'billing_address'];
     }
 
     /**

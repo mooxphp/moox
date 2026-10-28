@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Support;
 
+use Illuminate\Support\Facades\Log;
 use Moox\EBilling\Contracts\RecipientFormatPreferenceResolverInterface;
 use Moox\EBilling\Data\EffectiveFormat;
 use Moox\EBilling\Data\FormatPreference;
 use Moox\EBilling\Formats\ArtifactKind;
+use Moox\EBilling\Formats\Exceptions\FormatPreferenceUnavailableException;
 use Moox\EBilling\Formats\Exceptions\InvalidFormatPreferenceException;
 use Moox\EBilling\Formats\Exceptions\UnknownFormatException;
 use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Models\EbillingDocument;
+use Throwable;
 
 final class EBillingFormatResolver
 {
@@ -25,6 +28,8 @@ final class EBillingFormatResolver
      * Once an artifact has been generated (xml_storage_path is set), format and
      * profile are frozen — retries use document.format + document.profile
      * (preference port is not consulted again). Both columns are required.
+     *
+     * @throws FormatPreferenceUnavailableException when the preference port fails (ADR 0020)
      */
     public function resolveForGeneration(EbillingDocument $document): EffectiveFormat
     {
@@ -41,13 +46,17 @@ final class EBillingFormatResolver
             return new EffectiveFormat($format, $profile);
         }
 
-        $preference = $this->preferenceResolver->resolve($document);
+        try {
+            $preference = $this->preferenceResolver->resolve($document);
+        } catch (Throwable $exception) {
+            throw new FormatPreferenceUnavailableException(
+                "Recipient format preference for e-billing document [{$document->getKey()}] could not be looked up.",
+                previous: $exception,
+            );
+        }
 
         if ($preference === null) {
-            $format = (string) config('e-billing.default.format', 'zugferd');
-            $definition = $this->registry->get($format);
-
-            return new EffectiveFormat($format, $definition->profile);
+            return $this->resolveDefault();
         }
 
         if (! $this->registry->has($preference->format)) {
@@ -65,14 +74,32 @@ final class EBillingFormatResolver
     }
 
     /**
+     * The configured default (`e-billing.default.format`) with its definition's profile.
+     */
+    public function resolveDefault(): EffectiveFormat
+    {
+        $format = (string) config('e-billing.default.format', 'zugferd');
+
+        return new EffectiveFormat($format, $this->registry->get($format)->profile);
+    }
+
+    /**
      * Whether the human-readable XRechnung copy PDF should be attached to outbound mail.
      * The copy is always produced and downloadable; this only gates the mail attachment.
      *
-     * Preference chain: customer column → config (default true).
+     * Preference chain: customer column → config (default true). A failing customer lookup falls back to config.
      */
     public function resolveSendVisualCopy(EbillingDocument $document): bool
     {
-        $customer = $document->customer ?? (new CustomerMatcher)->forDocument($document);
+        try {
+            $customer = $document->customer ?? (new CustomerMatcher)->forDocument($document);
+        } catch (Throwable $exception) {
+            Log::error('[EBilling] Customer lookup for the visual copy failed; using the configured default', [
+                'ebilling_document_id' => $document->getKey(),
+                'exception' => $exception,
+            ]);
+            $customer = null;
+        }
 
         if ($customer !== null && $customer->send_visual_copy !== null) {
             return (bool) $customer->send_visual_copy;

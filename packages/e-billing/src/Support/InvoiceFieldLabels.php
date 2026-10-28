@@ -279,6 +279,10 @@ final class InvoiceFieldLabels
             return __('e-billing::fields.hint_review_consignee_address_missing');
         }
 
+        if ($status === 'needs_review' && ($validation['reason'] ?? null) === 'master_data_unavailable') {
+            return __('e-billing::fields.hint_review_master_data_unavailable');
+        }
+
         if ($status === 'needs_review') {
             return match ($field) {
                 'customer_number' => self::hasMatchedId($validation)

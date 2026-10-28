@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Services;
 
-use Moox\Company\Models\Company;
-use Moox\Customer\Models\Customer;
 use Moox\Data\Models\StaticAllowanceReason;
 use Moox\Data\Models\StaticChargeReason;
 use Moox\EBilling\Adapters\ZugferdAddressAdapter;
+use Moox\EBilling\Data\BuyerLookup;
+use Moox\EBilling\Data\BuyerMasterData;
+use Moox\EBilling\Data\BuyerMasterDataResult;
 use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
 use Moox\EBilling\Enums\AttributionSource;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
@@ -16,8 +17,6 @@ use Moox\EBilling\Events\InvoiceValidationCompleted;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\AllowanceChargeReasonCodes;
 use Moox\EBilling\Support\AttributionCorroborator;
-use Moox\EBilling\Support\CompanyNameMatcher;
-use Moox\EBilling\Support\CustomerMatcher;
 use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\DocumentClassification;
 use Moox\EBilling\Support\FieldValidationProfile;
@@ -27,7 +26,6 @@ use Moox\EBilling\Support\LineAllowanceChargeResolver;
 use Moox\EBilling\Support\PaymentDiscounts;
 use Moox\EBilling\Support\PrecedingInvoiceReferences;
 use Moox\EBilling\Support\UnrecognizedFields;
-use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceAllowanceCharge;
 use Moox\Invoice\Models\InvoiceLine;
@@ -45,9 +43,9 @@ class InvoiceFieldValidator
     private ?string $profileDocumentType = null;
 
     /**
-     * Populate field_validations on the document (invoice-level + lines sub-structure),
-     * attribute the document to a {@see Customer} via buyer identifier when present,
-     * and set company_id by derivation (or name fallback when no identifier match).
+     * Populate field_validations on the document (invoice-level + lines sub-structure) and,
+     * when the buyer resolver matched, attribute the document to the returned reference (ADR 0020).
+     * Without a match an existing attribution is left alone.
      *
      * Does NOT change review_status or fire events.
      */
@@ -64,34 +62,7 @@ class InvoiceFieldValidator
         $invoice->loadMissing(['allowanceCharges', 'lines.allowanceCharges']);
 
         $isManualAttribution = $document->attribution_source === AttributionSource::Manual;
-
-        if ($isManualAttribution) {
-            $matchedCustomer = $document->customer_id !== null
-                ? Customer::query()->withTrashed()->find($document->customer_id)
-                : null;
-            $derivedCompanyId = $document->company_id;
-            $matchedCompany = $derivedCompanyId !== null
-                ? Company::query()->find($derivedCompanyId)
-                : null;
-        } else {
-            $hasIdentifier = ! $this->isScalarEmpty($invoice->customer_number);
-            $matchedCustomer = $hasIdentifier
-                ? $this->resolveCustomerMatch($invoice)
-                : null;
-
-            $derivedCompanyId = null;
-            $matchedCompany = null;
-            if ($matchedCustomer !== null) {
-                $derivedCompanyId = (new CustomerMatcher)->resolveCompanyId($matchedCustomer);
-                if ($derivedCompanyId !== null) {
-                    $matchedCompany = Company::query()->find($derivedCompanyId);
-                }
-            } else {
-                // Name fallback when no identifier, or identifier present but unmatched (#21).
-                $matchedCompany = $this->resolveCompanyMatch($invoice);
-                $derivedCompanyId = $matchedCompany?->id;
-            }
-        }
+        $masterData = $this->resolveBuyer($invoice, $document, $isManualAttribution);
 
         $invoiceValidations = [];
         foreach ($invoiceFields as $field => $priority) {
@@ -99,9 +70,7 @@ class InvoiceFieldValidator
                 $invoice,
                 $field,
                 $priority,
-                $matchedCompany,
-                $matchedCustomer,
-                $derivedCompanyId,
+                $masterData,
                 $isManualAttribution,
                 $document,
             );
@@ -129,8 +98,7 @@ class InvoiceFieldValidator
                 $invoice,
                 $line,
                 $lineFields,
-                $matchedCustomer,
-                $matchedCompany,
+                $masterData->buyer,
                 $unrecognizedByPosition[(int) $line->position] ?? [],
             );
         }
@@ -139,12 +107,9 @@ class InvoiceFieldValidator
 
         $document->field_validations = $invoiceValidations;
 
-        if (! $isManualAttribution) {
-            $document->customer_id = $matchedCustomer?->id;
-            $document->company_id = $derivedCompanyId;
-            $document->attribution_source = $matchedCustomer !== null
-                ? AttributionSource::Auto
-                : null;
+        if (! $isManualAttribution && $masterData->buyer instanceof BuyerMasterData) {
+            $document->customer_id = $masterData->buyer->reference;
+            $document->attribution_source = AttributionSource::Auto;
         }
 
         $document->validation_score = $document->calculateValidationScore();
@@ -222,16 +187,35 @@ class InvoiceFieldValidator
         return $invoice;
     }
 
-    private function resolveCompanyMatch(Invoice $invoice): ?Company
-    {
-        return (new CompanyNameMatcher)->match($invoice->buyer?->name);
+    /**
+     * A manual attribution is resolved by its reference; otherwise the resolver finds the buyer.
+     */
+    private function resolveBuyer(
+        Invoice $invoice,
+        EbillingDocument $document,
+        bool $isManualAttribution,
+    ): BuyerMasterDataResult {
+        $text = fn (mixed $value): ?string => $this->isScalarEmpty($value) ? null : trim((string) $value);
+
+        return app(BuyerMasterDataLookup::class)->resolve(new BuyerLookup(
+            customerNumber: $text($invoice->customer_number),
+            name: $text($invoice->buyer?->name),
+            vatId: $text($invoice->buyer?->vat_id),
+            reference: $isManualAttribution ? $text($document->customer_id) : null,
+        ), $document);
     }
 
-    private function resolveCustomerMatch(Invoice $invoice): ?Customer
+    /**
+     * A parsed buyer field when no master data could be consulted: a review hint (`review`, the default) or
+     * accepted as parsed (`trust_parsed`). Never blocks generation (ADR 0020).
+     *
+     * @return array{status: string, reason?: string}
+     */
+    private function masterDataUnavailableEntry(): array
     {
-        return (new CustomerMatcher)->match(
-            is_string($invoice->customer_number) ? $invoice->customer_number : null,
-        );
+        return config('e-billing.master_data.when_unavailable', 'review') === 'trust_parsed'
+            ? ['status' => 'parsed']
+            : ['status' => 'needs_review', 'reason' => 'master_data_unavailable'];
     }
 
     /**
@@ -292,53 +276,33 @@ class InvoiceFieldValidator
         Invoice $invoice,
         string $field,
         string $priority,
-        ?Company $matchedCompany,
-        ?Customer $matchedCustomer = null,
-        ?string $derivedCompanyId = null,
+        BuyerMasterDataResult $masterData,
         bool $isManualAttribution = false,
         ?EbillingDocument $document = null,
     ): array {
+        $buyer = $masterData->buyer;
+
         return match ($field) {
             'invoice_number' => $this->validateInvoiceNumberField($invoice, $priority),
             'document_type' => $this->validateDocumentTypeField($invoice, $priority, $document),
-            'customer_number' => $this->validateCustomerNumberField(
+            'customer_number',
+            'customer_name',
+            'customer_vat_id',
+            'country',
+            'customer_address' => $this->validateBuyerField(
                 $invoice,
+                $field,
                 $priority,
-                $matchedCustomer,
-                $derivedCompanyId,
+                $masterData,
                 $isManualAttribution,
-            ),
-            'customer_name' => $this->validateCustomerNameField(
-                $invoice,
-                $priority,
-                $matchedCompany,
-                $matchedCustomer,
-            ),
-            'customer_vat_id' => $this->validateCustomerVatField(
-                $invoice,
-                $priority,
-                $matchedCompany,
-                $matchedCustomer,
-            ),
-            'country' => $this->validateCountryField(
-                $invoice,
-                $priority,
-                $matchedCompany,
-                $matchedCustomer,
-            ),
-            'customer_address' => $this->validateCustomerAddressField(
-                $invoice,
-                $priority,
-                $matchedCompany,
-                $matchedCustomer,
+                $document,
             ),
             'buyer_email' => $this->validateBuyerEmailField($document, $priority),
             'delivery_address' => $this->validateDeliveryAddressField(
                 $invoice->delivery,
                 null,
                 $invoice->buyer,
-                $matchedCustomer,
-                $matchedCompany,
+                $buyer,
             ),
             'shipping_cost', 'packaging_cost', 'minimum_quantity_surcharge', 'freight_flat_rate',
             'certificate_cost', 'customs_cost',
@@ -486,172 +450,137 @@ class InvoiceFieldValidator
     }
 
     /**
-     * @return array{status: string, source?: string, matched_id?: string}
+     * The buyer fields checked against master data (ADR 0020). Empty → MoSCoW; master data unavailable → review
+     * hint or parsed ({@see self::masterDataUnavailableEntry()}); no match → only an unknown customer number needs
+     * review; a match is corroborated field by field. A manual attribution always reports its customer number.
+     *
+     * @return array<string, mixed>
      */
-    private function validateCustomerNumberField(
+    private function validateBuyerField(
         Invoice $invoice,
+        string $field,
         string $priority,
-        ?Customer $matchedCustomer,
-        ?string $derivedCompanyId = null,
-        bool $isManualAttribution = false,
+        BuyerMasterDataResult $masterData,
+        bool $isManualAttribution,
+        ?EbillingDocument $document,
     ): array {
-        if ($isManualAttribution && $matchedCustomer !== null) {
-            return [
-                'status' => (new CustomerMatcher)->isReviewableMatch($matchedCustomer, $derivedCompanyId)
-                    ? 'needs_review'
-                    : 'db_validated',
-                'source' => AttributionSource::Manual->value,
-                'matched_id' => (string) $matchedCustomer->id,
-            ];
+        $buyer = $masterData->buyer;
+        $address = $invoice->buyer?->address;
+        $value = match ($field) {
+            'customer_number' => $invoice->customer_number,
+            'customer_name' => $invoice->buyer?->name,
+            'customer_vat_id' => $invoice->buyer?->vat_id,
+            'country' => $address?->country_code,
+            default => null,
+        };
+
+        if ($field === 'customer_number' && $isManualAttribution && $document?->customer_id !== null) {
+            return $this->validateManualCustomerNumberField($value, $masterData, (string) $document->customer_id);
         }
 
-        $raw = $invoice->customer_number;
-        if ($this->isScalarEmpty($raw)) {
-            return $this->entryForEmptyField('customer_number', $priority, false);
+        $isEmpty = $field === 'customer_address'
+            ? $this->isEn16931AddressEmpty($address)
+            : $this->isScalarEmpty($value);
+        if ($isEmpty) {
+            return $this->entryForEmptyField($field, $priority, false);
         }
 
-        if ($matchedCustomer === null) {
-            return ['status' => 'needs_review'];
+        if ($masterData->isUnavailable()) {
+            return $this->masterDataUnavailableEntry();
         }
 
+        if (! $buyer instanceof BuyerMasterData) {
+            return $field === 'customer_number' ? ['status' => 'needs_review'] : ['status' => 'parsed'];
+        }
+
+        $corroborator = new AttributionCorroborator;
+
+        return match ($field) {
+            'customer_number' => $this->matchedEntry(
+                ! $buyer->isReviewable && ! $this->customerNumberDiffers($value, $buyer),
+                $buyer->reference,
+            ),
+            'customer_name' => $this->matchedEntry(
+                $corroborator->corroborateName((string) $value, $buyer),
+                $buyer->reference,
+            ),
+            'customer_vat_id' => $this->comparedEntry(
+                $corroborator->compareVat((string) $value, $buyer->vatId),
+                $buyer->reference,
+                'validated',
+            ),
+            'country' => $this->comparedEntry(
+                $corroborator->compareCountry((string) $value, $buyer),
+                $buyer->reference,
+                'db_validated',
+            ),
+            default => $this->validateCustomerAddressField($address, $priority, $buyer),
+        };
+    }
+
+    /**
+     * A person attributed the document: the attribution is reported even without a printed customer number.
+     *
+     * @return array{status: string, source: string, matched_id: string, reason?: string}
+     */
+    private function validateManualCustomerNumberField(
+        mixed $value,
+        BuyerMasterDataResult $masterData,
+        string $reference,
+    ): array {
+        $buyer = $masterData->buyer;
+        $manual = ['source' => AttributionSource::Manual->value, 'matched_id' => $reference];
+
+        if ($masterData->isUnavailable()) {
+            return $this->masterDataUnavailableEntry() + $manual;
+        }
+
+        if (! $buyer instanceof BuyerMasterData) {
+            return ['status' => 'needs_review'] + $manual;
+        }
+
+        $corroborates = ! $buyer->isReviewable && ! $this->customerNumberDiffers($value, $buyer);
+
+        return ['status' => $corroborates ? 'db_validated' : 'needs_review', 'matched_id' => $buyer->reference]
+            + $manual;
+    }
+
+    private function customerNumberDiffers(mixed $parsed, BuyerMasterData $buyer): bool
+    {
+        if ($this->isScalarEmpty($parsed) || $this->isScalarEmpty($buyer->customerNumber)) {
+            return false;
+        }
+
+        $normalize = fn (string $value): string => mb_strtoupper($this->normalizeString($value));
+
+        return $normalize((string) $parsed) !== $normalize((string) $buyer->customerNumber);
+    }
+
+    /**
+     * @return array{status: string, source: string, matched_id: string}
+     */
+    private function matchedEntry(
+        bool $corroborates,
+        string $matchedId,
+        string $corroboratedStatus = 'db_validated',
+    ): array {
         return [
-            'status' => (new CustomerMatcher)->isReviewableMatch($matchedCustomer, $derivedCompanyId)
-                ? 'needs_review'
-                : 'db_validated',
+            'status' => $corroborates ? $corroboratedStatus : 'needs_review',
             'source' => AttributionSource::Auto->value,
-            'matched_id' => (string) $matchedCustomer->id,
+            'matched_id' => $matchedId,
         ];
     }
 
     /**
+     * A value absent on the master-data side is not a divergence (#25).
+     *
      * @return array{status: string, source?: string, matched_id?: string}
      */
-    private function validateCustomerNameField(
-        Invoice $invoice,
-        string $priority,
-        ?Company $matchedCompany,
-        ?Customer $matchedCustomer = null,
-    ): array {
-        $raw = $invoice->buyer?->name;
-        if ($this->isScalarEmpty($raw)) {
-            return $this->entryForEmptyField('customer_name', $priority, false);
-        }
-
-        if ($matchedCustomer !== null) {
-            $result = (new AttributionCorroborator)->corroborateName(
-                is_string($raw) ? $raw : null,
-                $matchedCustomer,
-                $matchedCompany,
-            );
-
-            return [
-                'status' => $result['corroborates'] ? 'db_validated' : 'needs_review',
-                'source' => 'auto',
-                'matched_id' => $result['matched_id'],
-            ];
-        }
-
-        // Name-fallback path (no customer attribution): exact/loose company name match.
-        if ($matchedCompany !== null) {
-            if ($this->stringsLooselyMatch($raw, $matchedCompany->name)) {
-                return [
-                    'status' => 'db_validated',
-                    'source' => 'auto',
-                    'matched_id' => $matchedCompany->id,
-                ];
-            }
-
-            return ['status' => 'needs_review', 'source' => 'auto', 'matched_id' => $matchedCompany->id];
-        }
-
-        return ['status' => 'parsed'];
-    }
-
-    /**
-     * @return array{status: string, source?: string, matched_id?: string}
-     */
-    private function validateCustomerVatField(
-        Invoice $invoice,
-        string $priority,
-        ?Company $matchedCompany,
-        ?Customer $matchedCustomer = null,
-    ): array {
-        $raw = $invoice->buyer?->vat_id;
-        if ($this->isScalarEmpty($raw)) {
-            return $this->entryForEmptyField('customer_vat_id', $priority, false);
-        }
-
-        if ($matchedCustomer !== null) {
-            $comparison = (new AttributionCorroborator)->compareVat(
-                is_string($raw) ? $raw : null,
-                $matchedCompany?->vat_number,
-            );
-
-            if ($comparison === null) {
-                // Absent on master-data side is not a divergence (#25).
-                return ['status' => 'parsed'];
-            }
-
-            return [
-                'status' => $comparison ? 'validated' : 'needs_review',
-                'source' => 'auto',
-                'matched_id' => (string) ($matchedCompany?->id ?? $matchedCustomer->id),
-            ];
-        }
-
-        if ($matchedCompany !== null) {
-            $expected = $matchedCompany->vat_number;
-            if ($this->isScalarEmpty($expected)) {
-                return ['status' => 'parsed'];
-            }
-
-            if ($this->normalizeVat($raw) === $this->normalizeVat($expected)) {
-                return [
-                    'status' => 'validated',
-                    'source' => 'auto',
-                    'matched_id' => $matchedCompany->id,
-                ];
-            }
-
-            return ['status' => 'needs_review', 'source' => 'auto', 'matched_id' => $matchedCompany->id];
-        }
-
-        return ['status' => 'parsed'];
-    }
-
-    /**
-     * @return array{status: string, source?: string, matched_id?: string}
-     */
-    private function validateCountryField(
-        Invoice $invoice,
-        string $priority,
-        ?Company $matchedCompany,
-        ?Customer $matchedCustomer,
-    ): array {
-        $raw = $invoice->buyer?->address?->country_code;
-        if ($this->isScalarEmpty($raw)) {
-            return $this->entryForEmptyField('country', $priority, false);
-        }
-
-        // Address/country corroboration runs only after a successful customer match.
-        if ($matchedCustomer === null) {
-            return ['status' => 'parsed'];
-        }
-
-        $comparison = (new AttributionCorroborator)->compareCountry(
-            is_string($raw) ? $raw : null,
-            $matchedCompany,
-        );
-
-        if ($comparison === null) {
-            return ['status' => 'parsed'];
-        }
-
-        return [
-            'status' => $comparison ? 'db_validated' : 'needs_review',
-            'source' => 'auto',
-            'matched_id' => (string) ($matchedCompany?->id ?? $matchedCustomer->id),
-        ];
+    private function comparedEntry(?bool $comparison, string $matchedId, string $corroboratedStatus): array
+    {
+        return $comparison === null
+            ? ['status' => 'parsed']
+            : $this->matchedEntry($comparison, $matchedId, $corroboratedStatus);
     }
 
     /**
@@ -673,43 +602,20 @@ class InvoiceFieldValidator
         return $this->entryForEmptyField('buyer_email', $priority, false);
     }
 
-    private function validateCustomerAddressField(
-        Invoice $invoice,
-        string $priority,
-        ?Company $matchedCompany,
-        ?Customer $matchedCustomer,
-    ): array {
-        $address = $invoice->buyer?->address;
-        if ($this->isEn16931AddressEmpty($address)) {
-            return $this->entryForEmptyField('customer_address', $priority, false);
-        }
-
-        // Address check runs only after a successful customer match (#25).
-        if ($matchedCustomer === null) {
-            return ['status' => 'parsed'];
-        }
-
-        $result = (new AttributionCorroborator)->findMatchingAddress($address, $matchedCompany);
+    /**
+     * @return array<string, mixed>
+     */
+    private function validateCustomerAddressField(?Address $address, string $priority, BuyerMasterData $buyer): array
+    {
+        $result = (new AttributionCorroborator)->findMatchingAddress($address, $buyer);
 
         if ($result === null) {
             return $this->entryForEmptyField('customer_address', $priority, false);
         }
 
-        if ($result['exists']) {
-            return $this->withAddressDivergence([
-                'status' => 'db_validated',
-                'source' => 'auto',
-                'matched_id' => $result['matched_id'],
-            ], $result);
-        }
+        $entry = $this->matchedEntry($result['exists'], $result['matched_id']);
 
-        return [
-            'status' => 'needs_review',
-            'source' => 'auto',
-            'matched_id' => $result['matched_id'] !== ''
-                ? $result['matched_id']
-                : (string) $matchedCustomer->id,
-        ];
+        return $result['exists'] ? $this->withAddressDivergence($entry, $result) : $entry;
     }
 
     /**
@@ -757,8 +663,7 @@ class InvoiceFieldValidator
         ?Party $consignee,
         ?Party $headerConsignee,
         ?Party $buyer,
-        ?Customer $matchedCustomer,
-        ?Company $matchedCompany,
+        ?BuyerMasterData $masterDataBuyer,
     ): array {
         if (! $consignee instanceof Party
             || $this->isDeliveryPartyEmpty($consignee)
@@ -773,24 +678,23 @@ class InvoiceFieldValidator
             return ['status' => 'needs_review', 'reason' => 'consignee_address_missing'];
         }
 
-        if ($matchedCustomer === null) {
+        if (! $masterDataBuyer instanceof BuyerMasterData) {
             return ['status' => 'parsed'];
         }
 
         $corroborator = new AttributionCorroborator;
 
         if ($carriesBuyerName) {
-            $match = $corroborator->findOwnSiteDeliveryAddress($consignee->address, $matchedCompany);
-            $entry = [
-                'status' => ($match['exists'] ?? false) ? 'db_validated' : 'needs_review',
-                'source' => 'auto',
-                'matched_id' => ($match['matched_id'] ?? '') ?: (string) $matchedCustomer->getKey(),
-            ];
+            $match = $corroborator->findOwnSiteDeliveryAddress($consignee->address, $masterDataBuyer);
+            $entry = $this->matchedEntry(
+                $match['exists'] ?? false,
+                $match['matched_id'] ?? $masterDataBuyer->reference,
+            );
 
             return $this->withAddressDivergence($entry, $match ?? []);
         }
 
-        $result = $corroborator->corroborateDeliveryParty($consignee, $matchedCustomer, $matchedCompany);
+        $result = $corroborator->corroborateDeliveryParty($consignee, $masterDataBuyer);
 
         if ($result['corroborates']) {
             return $this->withAddressDivergence([
@@ -1085,8 +989,7 @@ class InvoiceFieldValidator
         Invoice $invoice,
         InvoiceLine $line,
         array $lineFields,
-        ?Customer $matchedCustomer,
-        ?Company $matchedCompany,
+        ?BuyerMasterData $masterDataBuyer,
         array $unrecognizedFields,
     ): array {
         $line->loadMissing('allowanceCharges');
@@ -1103,8 +1006,7 @@ class InvoiceFieldValidator
                 $line,
                 $field,
                 $priority,
-                $matchedCustomer,
-                $matchedCompany,
+                $masterDataBuyer,
             );
 
             if ($validations[$field]['status'] === 'missing' && isset($unrecognizedFields[$field])) {
@@ -1145,16 +1047,14 @@ class InvoiceFieldValidator
         InvoiceLine $line,
         string $field,
         string $priority,
-        ?Customer $matchedCustomer,
-        ?Company $matchedCompany,
+        ?BuyerMasterData $masterDataBuyer,
     ): array {
         $validation = match ($field) {
             'delivery_address' => $this->validateDeliveryAddressField(
                 $line->delivery,
                 $invoice->delivery,
                 $invoice->buyer,
-                $matchedCustomer,
-                $matchedCompany,
+                $masterDataBuyer,
             ),
             'vat_category' => $this->validateGenericInvoiceField($invoice, 'vat_category', $priority),
             'surcharge_amount', 'surcharge_description' => $this->validateLineSurchargeField($line, $field, $priority),
@@ -1270,18 +1170,6 @@ class InvoiceFieldValidator
         return is_string($status) ? $status : null;
     }
 
-    private function stringsLooselyMatch(mixed $a, mixed $b): bool
-    {
-        $left = $this->normalizeString(is_string($a) ? $a : (is_scalar($a) ? (string) $a : ''));
-        $right = $this->normalizeString(is_string($b) ? $b : (is_scalar($b) ? (string) $b : ''));
-
-        if ($left === '' && $right === '') {
-            return true;
-        }
-
-        return strcasecmp($left, $right) === 0;
-    }
-
     private function normalizeString(?string $value): string
     {
         if ($value === null) {
@@ -1291,11 +1179,6 @@ class InvoiceFieldValidator
         $trimmed = trim(preg_replace('/\s+/u', ' ', $value) ?? '');
 
         return $trimmed;
-    }
-
-    private function normalizeVat(?string $value): string
-    {
-        return strtoupper(VatIdNormalizer::normalize($value) ?? '');
     }
 
     private function isScalarEmpty(mixed $value): bool

@@ -1069,12 +1069,13 @@ class EbillingDocument extends BaseItemModel
 
     /**
      * Keep the document from auto-approval until a person approves it, e.g. after an operator
-     * re-ran a parser or validation change on documents that were already imported.
+     * re-ran a parser or validation change on documents that were already imported, or because
+     * generation had to fall back (`reason`, e.g. `format_preference_unavailable`).
      */
-    public function holdForApproval(): void
+    public function holdForApproval(?string $reason = null): void
     {
         $flags = is_array($this->approval_flags) ? $this->approval_flags : [];
-        $flags['held'] = ['held_at' => now()->toIso8601String()];
+        $flags['held'] = array_filter(['held_at' => now()->toIso8601String(), 'reason' => $reason]);
 
         $this->approval_flags = $flags;
     }
@@ -1084,6 +1085,13 @@ class EbillingDocument extends BaseItemModel
         $flags = is_array($this->approval_flags) ? $this->approval_flags : [];
 
         return isset($flags['held']) && is_array($flags['held']);
+    }
+
+    public function heldForApprovalReason(): ?string
+    {
+        $reason = $this->isHeldForApproval() ? ($this->approval_flags['held']['reason'] ?? null) : null;
+
+        return is_string($reason) ? $reason : null;
     }
 
     /**

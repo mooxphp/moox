@@ -7,15 +7,16 @@ namespace Moox\EBilling\Support;
 use Moox\Company\Models\Company;
 use Moox\Customer\Models\Customer;
 use Moox\Customer\Models\CustomerAssignment;
+use Moox\EBilling\Actions\SetInvoiceAttributionAction;
 use Moox\EBilling\Models\EbillingDocument;
-use Moox\EBilling\Services\InvoiceFieldValidator;
 
 /**
  * Resolves a {@see Customer} from a buyer identifier (invoice customer_number)
  * or from an {@see EbillingDocument} attribution.
  *
- * Used by {@see InvoiceFieldValidator}, {@see EBillingFormatResolver},
- * and {@see CustomerFormatPreferenceResolver}.
+ * Used by {@see EBillingFormatResolver}, {@see CustomerFormatPreferenceResolver} and
+ * {@see SetInvoiceAttributionAction}; never by field validation, which goes through the
+ * buyer master-data resolver (ADR 0020).
  */
 final class CustomerMatcher
 {
@@ -68,19 +69,6 @@ final class CustomerMatcher
         $companyId = (string) $companyIds->first();
 
         return Company::query()->find($companyId) !== null ? $companyId : null;
-    }
-
-    /**
-     * Soft-deleted, inactive, or missing/ambiguous company derivation ⇒ needs review.
-     * Attribution is still kept; corroboration never clears it.
-     */
-    public function isReviewableMatch(Customer $customer, ?string $derivedCompanyId = null): bool
-    {
-        if ($customer->trashed() || $customer->is_active === false) {
-            return true;
-        }
-
-        return $derivedCompanyId === null;
     }
 
     private function normalizeIdentifier(string $value): string
