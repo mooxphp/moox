@@ -37,7 +37,7 @@ The pipeline then runs in order:
 | 1 | `ProcessInboxAttachmentListener` | Creates or finds an `EbillingDocument` for the attachment and dispatches `StoreBillDataJob`. Only processes attachments from Scopes listed in `e-billing.intake.scopes` (a required allowlist: `null` / `[]` processes nothing); PDFs from any other Scope are marked Skipped and get no document. |
 | 2 | `StoreBillDataJob` | Reads parsed `bill_data` on the document (populated upstream by the host parser) and dispatches `FilterForeignInvoiceJob`. |
 | 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign invoices. Foreign disposition (`e-billing.foreign.disposition`): `ignore` (default) settles as `Ignored` / `IgnoredForeign`; `forward` runs Source-PDF relay to inbox To then settles the same way (ADR 0006). Domestic invoices advance to artifact generation, unless the **intake cutoff** (`e-billing.intake.invoice_date_from`, `Y-m-d`) applies: a mail-sourced invoice whose parsed invoice date (BT-2) lies before that day settles as `Ignored` / `IgnoredBeforeCutoff`, after a Source-PDF relay when `e-billing.intake.before_cutoff_disposition` is `forward` (default `ignore`). The cutoff day is processed; a missing or unparseable invoice date, foreign invoices and manual uploads are not affected. An invalid date value throws. |
-| 4 | `GenerateArtifactJob` | Maps `bill_data` to a persisted `Invoice` once (only when the document has none yet; later runs use the existing Invoice rows), generates the format-specific artifact (XML only or hybrid PDF with embedded XML), runs field validation, and dispatches `ValidateArtifactJob`. |
+| 4 | `GenerateArtifactJob` | Maps `bill_data` to a persisted `Invoice` once (only when the document has none yet; later runs use the existing Invoice rows), generates the format-specific artifact (XML only or hybrid PDF with embedded XML), runs field validation, and dispatches `ValidateArtifactJob`. Generation does not depend on master data: see [Buyer master data](#buyer-master-data). If the recipient format preference lookup fails, the job is retried with its backoff; on the last attempt it generates the default format and holds the document (`approval_flags.held.reason = format_preference_unavailable`). |
 | 5 | `ValidateArtifactJob` | Runs KoSIT validation on the XML that will be delivered (loose XML or XML extracted from the hybrid PDF). For hybrid formats, also runs veraPDF PDF/A-3 validation. A hybrid passes only when both succeed; if veraPDF is missing the document is retained and flagged, never `Validated`. On pass, stores a SHA-256 hash of the deliverable. |
 
 There is no `HandleFailedJob`. Failure handling uses each job's `failed()` method plus `InboxMessagePipelineFinalizer` to update attachment and message status.
@@ -94,7 +94,8 @@ Published as `config/e-billing.php`.
 | `zugferd` | ZUGFeRD filesystem disk (`storage_disk`, `storage_root`). Hybrid profiles come from `default.profile`, not `moox/zugferd` config |
 | `default_customer_country` | Transitional fallback buyer country when the parser derives none (default `DE`); removed in a future master-data phase |
 | `supplier` | Central supplier master data copied onto invoices as a snapshot at creation time |
-| `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length` (a name with no token that long, such as "ABC GmbH", requires equal full names instead, ignoring trailing legal forms; also applies to the consignee name), `name_legal_form_stop_words`, `buyer_address_roles` (billing + postal), `delivery_address_roles` (delivery first, then postal/billing fallback; a consignee with the buyer's name is checked against the first role only) |
+| `master_data` | Buyer master data (ADR 0020, see [Buyer master data](#buyer-master-data)): `resolver` (class implementing `BuyerMasterDataResolver`, default `null` = the null resolver, always unavailable) and `when_unavailable` (`EBILLING_MASTER_DATA_WHEN_UNAVAILABLE`: `review` default, or `trust_parsed`) |
+| `corroboration` | Post-attribution master-data checks against the buyer the resolver returned (never clears `customer_id`; `buyer_address_roles` / `delivery_address_roles` now only feed the review workspace's cross-check options, not corroboration): `name_min_token_length` (a name with no token that long, such as "ABC GmbH", requires equal full names instead, ignoring trailing legal forms; also applies to the consignee name), `name_legal_form_stop_words`, `buyer_address_roles` (billing + postal), `delivery_address_roles` (delivery first, then postal/billing fallback; a consignee with the buyer's name is checked against the first role only) |
 | `cross_checked` | Fields checked against master data, shared by the review workspace pickers and the divergence report: `strict` (`EBILLING_CROSS_CHECKED_STRICT`, default `false`) and `fields` (see [Cross-checked fields](#cross-checked-fields)) |
 | `field_validation` | MoSCoW priority rules for invoice and line fields. `credit_note_*` siblings (fields, line fields, contextual-should lists) apply to BT-3 `381` documents; a host that omits a `credit_note_*` key falls back to the `invoice_*` key (ADR 0009) |
 | `field_validation.invoice_fields_satisfied_by_lines` | Header fields (default `[]`) that count as present when every invoice line carries its own value, e.g. `order_number` / `order_date` on a collective invoice. Profile-scoped like the other keys: `credit_note_fields_satisfied_by_lines`, `corrected_invoice_fields_satisfied_by_lines` (a profile falls back to the invoice list unless it defines its own, which may be empty). See [Header fields satisfied by lines](#header-fields-satisfied-by-lines) |
@@ -166,6 +167,73 @@ $this->app->bind(InvoiceParserInterface::class, YourParser::class);
 ```
 
 The parser receives extracted PDF text (from `moox/pdf-parser`) and returns a `Moox\EBilling\Data\Invoice` DTO. The host is responsible for persisting `bill_data` on the `EbillingDocument` before the pipeline jobs run.
+
+## Buyer master data
+
+Generation does not depend on master data. Only missing `bill_data` or an unresolvable format/profile can block it; buyer matching, the uploaded recipient email and the recipient format preference degrade to review hints (ADR 0020).
+
+Field validation asks a `Moox\EBilling\Contracts\BuyerMasterDataResolver` for the buyer. The resolver **finds** the buyer; the package **corroborates** name, VAT id, country and addresses against the `BuyerMasterData` it returns. By default the package binds a null resolver that always reports `unavailable`.
+
+Bind your own resolver:
+
+```php
+// config/e-billing.php
+'master_data' => [
+    'resolver' => App\EBilling\MyBuyerResolver::class,
+    'when_unavailable' => 'review', // or 'trust_parsed'
+],
+```
+
+```php
+namespace App\EBilling;
+
+use Moox\EBilling\Contracts\BuyerMasterDataResolver;
+use Moox\EBilling\Data\BuyerLookup;
+use Moox\EBilling\Data\BuyerMasterData;
+use Moox\EBilling\Data\BuyerMasterDataAddress;
+use Moox\EBilling\Data\BuyerMasterDataResult;
+
+final class MyBuyerResolver implements BuyerMasterDataResolver
+{
+    public function resolve(BuyerLookup $lookup): BuyerMasterDataResult
+    {
+        // $lookup->reference is set for a manual attribution: resolve exactly that record.
+        // Otherwise find the buyer by customer number first, then by name.
+        $customer = null; // your lookup here
+
+        if ($customer === null) {
+            return BuyerMasterDataResult::noMatch(); // or ::ambiguous() / ::unavailable()
+        }
+
+        return BuyerMasterDataResult::matched(new BuyerMasterData(
+            reference: (string) $customer->id,
+            name: $customer->name,
+            vatId: $customer->vat_id,
+            customerNumber: $customer->number,
+            billingAddresses: [
+                new BuyerMasterDataAddress(
+                    reference: null,
+                    line1: 'Example Street 1',
+                    postalCode: '12345',
+                    city: 'Example City',
+                    countryCode: 'DE',
+                ),
+            ],
+        ));
+    }
+}
+```
+
+| Result | Effect |
+| --- | --- |
+| `matched` | Corroboration runs against the returned `BuyerMasterData`. The document's `customer_id` is set to its `reference` (attribution source `auto`). A buyer whose `customerNumber` differs from the parsed one, or with `isReviewable: true` (for example deleted or inactive), puts `customer_number` into review |
+| `no_match` / `ambiguous` | No corroboration; `ambiguous` is treated like `no_match`. An existing `customer_id` is left untouched |
+| `unavailable` | Governed by `master_data.when_unavailable` (below). An existing `customer_id` is left untouched |
+
+- Billing addresses corroborate the buyer address and country. A consignee is matched against delivery addresses first, then billing addresses; an own site (a consignee with the buyer's name) only against delivery addresses. Mapping your address roles to billing or delivery is the resolver's job.
+- A resolver that throws is logged as an error and treated as `unavailable`; it is not retried (a later revalidation catches up).
+- `when_unavailable = review` (default): the non-empty `customer_number`, `customer_name`, `customer_address`, `customer_vat_id` and `country` become `needs_review` with reason `master_data_unavailable`; customer number, name and address are must fields, so the document is not auto-approved. `trust_parsed` marks them `parsed` instead. `delivery_address` is unaffected. There is no option to block generation.
+- A manual attribution is looked up by its reference (`BuyerLookup::$reference`) and reported with source `manual`. Field validation never writes `company_id`.
 
 ## Recipient format preference
 

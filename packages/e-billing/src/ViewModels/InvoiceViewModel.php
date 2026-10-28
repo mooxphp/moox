@@ -237,7 +237,9 @@ final class InvoiceViewModel
         if ($approval === DocumentApprovalStatus::Pending && $this->document?->isHeldForApproval()) {
             return [
                 'color' => 'yellow',
-                'text' => __('e-billing::fields.banner_held_for_approval'),
+                'text' => $this->document->heldForApprovalReason() === 'format_preference_unavailable'
+                    ? __('e-billing::fields.banner_held_format_preference_unavailable')
+                    : __('e-billing::fields.banner_held_for_approval'),
             ];
         }
 

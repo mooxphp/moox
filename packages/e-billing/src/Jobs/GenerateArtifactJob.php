@@ -17,11 +17,13 @@ use Moox\EBilling\Actions\DiscardIdenticalContentDuplicateAction;
 use Moox\EBilling\Adapters\ZugferdInvoiceAdapter;
 use Moox\EBilling\Contracts\PdfaNormalizerInterface;
 use Moox\EBilling\Contracts\SourcePdfPreparerInterface;
+use Moox\EBilling\Data\EffectiveFormat;
 use Moox\EBilling\Data\Invoice as InvoiceDto;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Events\ArtifactGenerated;
 use Moox\EBilling\Formats\ArtifactKind;
 use Moox\EBilling\Formats\Contracts\HybridArtifactGeneratorStrategyInterface;
+use Moox\EBilling\Formats\Exceptions\FormatPreferenceUnavailableException;
 use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\CopyPdfComposer;
@@ -170,7 +172,7 @@ class GenerateArtifactJob implements ShouldQueue
         }
 
         $document = $document->fresh(['source', 'invoice']) ?? $document;
-        $applyUploadedRecipientEmail->execute($document);
+        $this->applyUploadedRecipientEmail($applyUploadedRecipientEmail, $document);
         $invoice = $document->fresh(['invoice'])->invoice ?? $document->invoice;
 
         if (! $invoice instanceof Invoice) {
@@ -189,7 +191,11 @@ class GenerateArtifactJob implements ShouldQueue
         $invoiceFieldValidator->fillFieldValidations($document);
         $document->refresh();
 
-        $effective = $formatResolver->resolveForGeneration($document);
+        $effective = $this->resolveFormat($formatResolver, $document);
+        if ($effective === null) {
+            return;
+        }
+
         $formatId = $effective->format;
         $definition = $formatRegistry->get($formatId);
         $xml = $definition->strategy->generateXml(new ZugferdInvoiceAdapter($invoice), $effective->profile);
@@ -313,6 +319,61 @@ class GenerateArtifactJob implements ShouldQueue
                 ]);
             }
         }
+    }
+
+    /**
+     * The uploader's recipient address is a review aid: a failure is logged, never fails generation (ADR 0020).
+     */
+    private function applyUploadedRecipientEmail(
+        ApplyUploadedRecipientEmailAction $action,
+        EbillingDocument $document,
+    ): void {
+        try {
+            $action->execute($document);
+        } catch (Throwable $exception) {
+            Log::error('[EBilling] GenerateArtifactJob: uploaded recipient email could not be applied', [
+                'ebilling_document_id' => $document->getKey(),
+                'exception' => $exception,
+            ]);
+        }
+    }
+
+    /**
+     * Format and profile freeze with the first artifact, so a failing preference lookup must not silently ship the
+     * default to a recipient who asked for another format (ADR 0020): earlier attempts are released for a retry, the
+     * last one generates the default and holds the document for a person. Null when released.
+     */
+    private function resolveFormat(EBillingFormatResolver $formatResolver, EbillingDocument $document): ?EffectiveFormat
+    {
+        try {
+            return $formatResolver->resolveForGeneration($document);
+        } catch (FormatPreferenceUnavailableException $exception) {
+            $context = ['ebilling_document_id' => $document->getKey(), 'exception' => $exception->getPrevious()];
+
+            if ($this->canRetry()) {
+                Log::warning('[EBilling] GenerateArtifactJob: format preference unavailable, retrying', $context);
+                $this->release($this->backoff[$this->attempts() - 1] ?? end($this->backoff));
+
+                return null;
+            }
+
+            Log::error(
+                '[EBilling] GenerateArtifactJob: format preference unavailable, default format generated and held',
+                $context,
+            );
+            $document->holdForApproval('format_preference_unavailable');
+            $document->save();
+
+            return $formatResolver->resolveDefault();
+        }
+    }
+
+    /**
+     * A queued attempt before the last one; a synchronous run has nothing to release to and counts as the last.
+     */
+    protected function canRetry(): bool
+    {
+        return $this->job !== null && $this->attempts() < $this->tries;
     }
 
     private function cleanupTemporaryPdf(?string $path, EbillingDocument $document): void

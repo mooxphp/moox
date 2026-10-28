@@ -38,6 +38,7 @@ use Moox\EBilling\Console\Commands\FlushReviewNotificationBatchCommand;
 use Moox\EBilling\Console\Commands\ReparseDocumentsCommand;
 use Moox\EBilling\Console\Commands\RevalidateDocumentsCommand;
 use Moox\EBilling\Console\Commands\ScanOverdueApprovalEscalationCommand;
+use Moox\EBilling\Contracts\BuyerMasterDataResolver;
 use Moox\EBilling\Contracts\DeliveryRecipientResolverInterface;
 use Moox\EBilling\Contracts\InvoiceParserInterface;
 use Moox\EBilling\Contracts\PdfaNormalizerInterface;
@@ -60,6 +61,7 @@ use Moox\EBilling\Support\DocumentNoteLabels;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\EBilling\Support\InvoiceRelationsConfig;
 use Moox\EBilling\Support\LetterheadSourcePdfPreparer;
+use Moox\EBilling\Support\NullBuyerMasterDataResolver;
 use Moox\EBilling\Support\NullReviewNotificationRecorder;
 use Moox\EBilling\Support\PassthroughPdfaNormalizer;
 use Moox\EBilling\Support\UnitCodeResolver;
@@ -141,6 +143,7 @@ class EBillingServiceProvider extends MooxServiceProvider
         $this->app->singleton(InvalidateDocumentApprovalAction::class);
 
         $this->registerReviewNotificationRecorder();
+        $this->registerBuyerMasterDataResolver();
 
         $this->app->bind(ReviewNotificationStrategyInterface::class, function ($app): ReviewNotificationStrategyInterface {
             $strategy = (string) config('e-billing.notification.strategy', 'immediate');
@@ -313,6 +316,31 @@ class EBillingServiceProvider extends MooxServiceProvider
         }
 
         $this->app->bind(ReviewNotificationRecorderInterface::class, $recorder);
+    }
+
+    /**
+     * Bind the buyer master-data resolver from config. Default is {@see NullBuyerMasterDataResolver} (always
+     * unavailable): generation never depends on master data (ADR 0020). Hosts set
+     * `e-billing.master_data.resolver` to a {@see BuyerMasterDataResolver} implementation.
+     */
+    private function registerBuyerMasterDataResolver(): void
+    {
+        $this->app->bind(BuyerMasterDataResolver::class, NullBuyerMasterDataResolver::class);
+
+        $resolver = config('e-billing.master_data.resolver');
+
+        if (! is_string($resolver) || $resolver === '') {
+            return;
+        }
+
+        if (! is_a($resolver, BuyerMasterDataResolver::class, true)) {
+            throw new InvalidArgumentException(
+                "config('e-billing.master_data.resolver') must implement "
+                .BuyerMasterDataResolver::class.": {$resolver}"
+            );
+        }
+
+        $this->app->bind(BuyerMasterDataResolver::class, $resolver);
     }
 
     /**

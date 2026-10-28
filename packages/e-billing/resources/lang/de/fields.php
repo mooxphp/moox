@@ -164,6 +164,8 @@ return [
     'banner_human_confirmed' => 'Manuell bestätigt — Warte auf finale Freigabe',
     'banner_validated' => '✓ Freigegeben',
     'banner_held_for_approval' => 'Angehalten – wartet auf manuelle Freigabe (nach Neuverarbeitung)',
+    'banner_held_format_preference_unavailable' => 'Angehalten – das Wunschformat des Empfängers war nicht '
+        .'abrufbar, erzeugt wurde das Standardformat. Bitte vor der Freigabe prüfen.',
 
     // Tabs
     'tab_all' => 'Alle',
@@ -440,6 +442,7 @@ return [
         .'als das Dokument trägt – bitte prüfen.',
     'hint_review_consignee_address_missing' => 'Der Warenempfänger ist nicht der Käufer und ohne Anschrift gedruckt '
         .'– bitte seine Lieferadresse ermitteln und eintragen.',
+    'hint_review_master_data_unavailable' => 'Stammdaten waren nicht abrufbar — bitte den Wert prüfen.',
     'hint_review_unrecognized' => 'Gedruckt steht „:printed“, das wurde nicht als Wert erkannt — bitte prüfen.',
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 

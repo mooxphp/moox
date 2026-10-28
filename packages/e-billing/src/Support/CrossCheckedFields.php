@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Support;
 
+use Illuminate\Support\Collection;
 use Moox\Address\Models\Address;
 use Moox\Company\Models\Company;
 use Moox\Customer\Models\Customer;
@@ -68,11 +69,12 @@ final class CrossCheckedFields
             return [];
         }
 
-        $corroborator = new AttributionCorroborator;
-        $roleFlags = $roles === 'delivery' ? $corroborator->deliveryAddressRoles() : $corroborator->buyerAddressRoles();
+        $roleFlags = $roles === 'delivery'
+            ? self::addressRoles('delivery_address_roles', ['delivery_address', 'postal_address', 'billing_address'])
+            : self::addressRoles('buyer_address_roles', ['billing_address', 'postal_address']);
 
         $options = [];
-        foreach ($corroborator->roleFilteredAddresses($company, $roleFlags) as $address) {
+        foreach (self::roleFilteredAddresses($company, $roleFlags) as $address) {
             $parts = self::addressParts($address);
             $options[(string) $address->getKey()] = [
                 'label' => implode(', ', array_filter([$parts['line1'], $parts['line2'], trim($parts['postal_code'].' '.$parts['city']), $parts['country_code']])),
@@ -128,6 +130,34 @@ final class CrossCheckedFields
         }
 
         return false;
+    }
+
+    /**
+     * @param  list<string>  $default
+     * @return list<string>
+     */
+    private static function addressRoles(string $key, array $default): array
+    {
+        $roles = config('e-billing.corroboration.'.$key);
+
+        return is_array($roles) && $roles !== [] ? array_values(array_filter($roles, is_string(...))) : $default;
+    }
+
+    /**
+     * The company's addresses carrying one of the pivot role flags.
+     *
+     * @param  list<string>  $roles
+     * @return Collection<int, Address>
+     */
+    private static function roleFilteredAddresses(Company $company, array $roles): Collection
+    {
+        /** @var Collection<int, Address> $addresses */
+        $addresses = $company->addresses()->get();
+
+        return $addresses->filter(static fn (Address $address): bool => array_any(
+            $roles,
+            static fn (string $role): bool => $role !== '' && (bool) $address->getRelation('pivot')?->getAttribute($role),
+        ))->values();
     }
 
     /**

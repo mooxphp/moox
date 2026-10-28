@@ -164,6 +164,8 @@ return [
     'banner_human_confirmed' => 'Manually confirmed — awaiting final approval',
     'banner_validated' => '✓ Approved',
     'banner_held_for_approval' => 'Held – waits for a manual approval (after re-processing)',
+    'banner_held_format_preference_unavailable' => 'Held – the recipient\'s preferred format could not be looked up, '
+        .'the default format was generated. Please check before approving.',
 
     // Tabs
     'tab_all' => 'All',
@@ -438,6 +440,7 @@ return [
         .'– please check.',
     'hint_review_consignee_address_missing' => 'The consignee is not the buyer and is printed without an address '
         .'– please look up and enter its delivery address.',
+    'hint_review_master_data_unavailable' => 'Master data could not be consulted — please check the value.',
     'hint_review_unrecognized' => 'Printed as “:printed”, which was not recognised as a value — please check.',
     'hint_review_default' => 'This field should be reviewed manually.',
 

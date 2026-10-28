@@ -795,12 +795,37 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Buyer master data
+    |--------------------------------------------------------------------------
+    |
+    | Generation never depends on master data (ADR 0020). The buyer is looked up
+    | through a Moox\EBilling\Contracts\BuyerMasterDataResolver; the package
+    | ships only a null resolver (always "unavailable"). Point `resolver` at your
+    | own class to plug in any source: your models, an external API, nothing.
+    | A resolver that throws is logged and treated as unavailable.
+    |
+    | when_unavailable:
+    | - review (default): the parsed buyer fields (customer number, name,
+    |   address, VAT id, country) need review with reason
+    |   master_data_unavailable, so the document is never auto-approved.
+    | - trust_parsed: the parsed buyer values are accepted; auto-approval is
+    |   possible.
+    |
+    */
+
+    'master_data' => [
+        'resolver' => null,
+        'when_unavailable' => env('EBILLING_MASTER_DATA_WHEN_UNAVAILABLE', 'review'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Attribution corroboration
     |--------------------------------------------------------------------------
     |
-    | After a customer is attributed via buyer identifier, name / VAT / country /
-    | address are checked against master data. Divergences only flag needs_review;
-    | they never clear or rewrite the customer attribution.
+    | After the buyer resolver matched, name / VAT / country / address are
+    | checked against the returned master data. Divergences only flag
+    | needs_review; they never clear or rewrite the customer attribution.
     |
     */
 
@@ -850,8 +875,9 @@ return [
         ],
 
         /*
-        | Address-assignment pivot flags for buyer-address corroboration
-        | (customer_address, country).
+        | Company address pivot flags offered as master-data options in the
+        | review workspace (`cross_checked`). Corroboration itself uses the
+        | billing / delivery addresses the buyer resolver returns.
         */
         'buyer_address_roles' => [
             'billing_address',
@@ -859,9 +885,8 @@ return [
         ],
 
         /*
-        | Ordered roles for delivery-address corroboration. The first role is
-        | tried alone; remaining roles are the fallback tier when no delivery
-        | address fingerprint matches.
+        | Company address pivot flags offered for delivery fields in the
+        | review workspace (`cross_checked`).
         */
         'delivery_address_roles' => [
             'delivery_address',
