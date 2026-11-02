@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\DB;
 use Moox\Core\Models\Concerns\HasScopedModel;
 use Moox\Core\Support\Scopes\ScopeValue;
+use Moox\Media\Support\MediaDeliveryConversions;
 use Moox\Media\Support\MediaLocaleResolver;
 use Moox\Media\Traits\HasMediaUsable;
 use Spatie\Image\Enums\Fit;
@@ -96,6 +97,8 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
             ->nonQueued()
             ->width(2048)
             ->quality(80);
+
+        MediaDeliveryConversions::register($this, $media);
     }
 
     protected static function booted()

@@ -24,4 +24,5 @@ Route::middleware($middleware)
     ->group(function (): void {
         Route::get('', [MediaController::class, 'index'])->name('media.index');
         Route::post('', [MediaController::class, 'store'])->name('media.store');
+        Route::get('{media}', [MediaController::class, 'show'])->name('media.show');
     });

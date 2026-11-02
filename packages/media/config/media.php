@@ -40,6 +40,44 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Delivery conversions (responsive <picture>)
+    |--------------------------------------------------------------------------
+    |
+    | Widths × formats for public delivery. Optimizer, image driver and queue
+    | settings come from config/media-library.php (Spatie).
+    |
+    */
+
+    /*
+    |--------------------------------------------------------------------------
+    | Image driver preference
+    |--------------------------------------------------------------------------
+    |
+    | Applied to media-library.image_driver at boot. Use "auto" to pick
+    | vips → imagick → gd. Or set IMAGE_DRIVER / this value explicitly.
+    |
+    */
+
+    'image_driver' => env('IMAGE_DRIVER', 'auto'),
+
+    'delivery' => [
+        'widths' => [480, 960, 1440],
+        'formats' => ['avif', 'webp', 'jpg'],
+        'quality' => [
+            'jpg' => 85,
+            'webp' => 80,
+            'avif' => 50,
+        ],
+        'raster_mime_types' => [
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'image/avif',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Title
     |--------------------------------------------------------------------------
     |
