@@ -38,17 +38,16 @@ The trust mail uses `USER_DEVICE_MAILER` when set, otherwise the application def
    - If the record is **new**, the user receives an email with a **signed “Trust this device” link**.
 
 2. **Device is untrusted (`whitelisted = false`)**
-   - Panel access is blocked: the user is logged out and returned to the **login screen** with a toast (check email / confirm device).
+   - Panel access is blocked for **every** authenticated user (roles do not bypass the gate): logout + redirect to the **login screen** with a toast (check email / confirm device).
    - The user must click the **email trust link** before they can sign in.
 
 3. **Trusting a device**
    - The signed link marks the device as `whitelisted = true`.
    - After that, the user can sign in and use Filament normally.
 
-4. **Admin actions**
-   - If Filament Shield / Spatie Permission is available, **super_admin** can:
-     - **Trust / Untrust** devices from the resource table
-     - **Delete** a device (and sessions for that device are revoked)
+4. **Ops actions (Shield permissions / roles — UI only, not the login gate)**
+   - Who may **list / trust / untrust / delete** devices in the Filament resource is controlled by Shield permissions (e.g. `ViewAll:UserDevice`) and roles.
+   - That AuthZ does **not** skip device trust on login.
 
 ### Track-only mode (`enforce_trust=false`)
 
@@ -93,6 +92,13 @@ The trust mail uses `USER_DEVICE_MAILER` when set, otherwise the application def
 - `allow_all_devices_without_shield` (bool): allow viewing all devices if Shield is not installed
 - `resource_panels` (array): panel IDs that get the devices resource when enabled (default: `['admin']`)
 - `mail_logo_url` (string): logo URL or public path for the email
+
+### Shield (Admin)
+
+- `ViewAny:UserDevice` — Devices menu / list access
+- `View` / `Update` / `Delete:UserDevice` — own device (scoped by `user_id` + `user_type`)
+- `ViewAll:UserDevice` (custom) — see and manage **all** devices (ops / “finance admin”)
+- Without `ViewAll`, the list is scoped to the authenticated user; with `ViewAll`, tabs and whitelist actions stay available.
 
 ### Notes
 

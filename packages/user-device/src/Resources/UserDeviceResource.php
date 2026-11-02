@@ -17,7 +17,6 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema as DbSchema;
 use Illuminate\Support\Str;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
@@ -25,9 +24,9 @@ use Moox\Core\Support\Resources\ScopedResourceContext;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ListPage;
+use Moox\UserDevice\Support\UserDeviceAuthorization;
 use Moox\UserDevice\Support\UserDevicePanel;
 use Override;
-use Spatie\Permission\PermissionRegistrar;
 
 class UserDeviceResource extends BaseItemResource
 {
@@ -106,31 +105,22 @@ class UserDeviceResource extends BaseItemResource
             return true;
         }
 
-        if (! static::permissionSystemAvailable()) {
+        if (! UserDeviceAuthorization::permissionSystemAvailable()) {
             return ! config('user-device.allow_all_devices_without_shield', false);
         }
 
-        return ! static::isShieldAdmin($authUser);
+        // ViewAll (or Shield super_admin) → all devices; otherwise own only.
+        return ! UserDeviceAuthorization::canViewAll($authUser);
     }
 
     protected static function permissionSystemAvailable(): bool
     {
-        if (! class_exists(PermissionRegistrar::class)) {
-            return false;
-        }
-
-        return DbSchema::hasTable('permissions') && DbSchema::hasTable('roles');
+        return UserDeviceAuthorization::permissionSystemAvailable();
     }
 
     protected static function isShieldAdmin(object $user): bool
     {
-        if (! method_exists($user, 'hasRole')) {
-            return false;
-        }
-
-        $roleName = (string) config('filament-shield.super_admin.name', 'super_admin');
-
-        return (bool) $user->hasRole($roleName);
+        return UserDeviceAuthorization::canViewAll($user);
     }
 
     public static function shouldShowTabsForUser(?object $user): bool
@@ -323,7 +313,8 @@ class UserDeviceResource extends BaseItemResource
     }
 
     /**
-     * Admin ops only (Shield super_admin, or admin panel without Shield when allow_all is on).
+     * Ops (whitelist / tabs / delete): ViewAll:UserDevice (or Shield super_admin),
+     * or admin panel without Shield when allow_all is on.
      * Portal users trust via the signed mail link — no self-service Trust button.
      */
     public static function canManageDevicesAsAdmin(?object $user = null): bool
@@ -334,14 +325,14 @@ class UserDeviceResource extends BaseItemResource
             return false;
         }
 
-        if (static::permissionSystemAvailable() && static::isShieldAdmin($user)) {
+        if (UserDeviceAuthorization::permissionSystemAvailable() && UserDeviceAuthorization::canViewAll($user)) {
             return true;
         }
 
         $panelId = filament()->getCurrentPanel()?->getId();
 
         return $panelId === 'admin'
-            && ! static::permissionSystemAvailable()
+            && ! UserDeviceAuthorization::permissionSystemAvailable()
             && (bool) config('user-device.allow_all_devices_without_shield', false);
     }
 
