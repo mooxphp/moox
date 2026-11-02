@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Moox\Media\Support\MediaDeliveryConversions;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Tests\TestCase;
 
 uses(TestCase::class);
@@ -31,12 +32,12 @@ it('builds delivery conversion names for each width and format', function (): vo
 });
 
 it('only supports configured raster mime types', function (): void {
-    $jpeg = new class extends \Spatie\MediaLibrary\MediaCollections\Models\Media
+    $jpeg = new class extends Media
     {
         public $mime_type = 'image/jpeg';
     };
 
-    $svg = new class extends \Spatie\MediaLibrary\MediaCollections\Models\Media
+    $svg = new class extends Media
     {
         public $mime_type = 'image/svg+xml';
     };
