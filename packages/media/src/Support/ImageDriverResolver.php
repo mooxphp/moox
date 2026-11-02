@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Media\Support;
 
+use Spatie\Image\Drivers\Vips\VipsDriver;
+
 final class ImageDriverResolver
 {
     /**
@@ -67,7 +69,7 @@ final class ImageDriverResolver
             return false;
         }
 
-        return class_exists(\Spatie\Image\Drivers\Vips\VipsDriver::class);
+        return class_exists(VipsDriver::class);
     }
 
     private static function normalize(string $driver): string
