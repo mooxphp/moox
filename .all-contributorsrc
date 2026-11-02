@@ -423,6 +423,15 @@
         "code",
         "infra"
       ]
+    },
+    {
+      "login": "omaralbeik",
+      "name": "Omar Albeik",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8127757?v=4",
+      "profile": "https://omaralbeik.com",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
