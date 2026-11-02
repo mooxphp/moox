@@ -30,13 +30,33 @@
       ]
     },
     {
-      "login": "KimSpeer",
-      "name": "KimSpeer",
-      "avatar_url": "https://avatars.githubusercontent.com/u/98323532?v=4",
-      "profile": "https://github.com/KimSpeer",
+      "login": "Kim-the-Diamond",
+      "name": "Kim Speer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/93331309?v=4",
+      "profile": "https://github.com/Kim-the-Diamond",
       "contributions": [
         "code",
-        "security"
+        "security",
+        "test"
+      ]
+    },
+    {
+      "login": "jbagsik",
+      "name": "jbagsik",
+      "avatar_url": "https://avatars.githubusercontent.com/u/234342240?v=4",
+      "profile": "https://github.com/jbagsik",
+      "contributions": [
+        "code",
+        "infra"
+      ]
+    },
+    {
+      "login": "Reinhold-Jesse",
+      "name": "Reinhold Jesse",
+      "avatar_url": "https://avatars.githubusercontent.com/u/88349887?v=4",
+      "profile": "https://design-developer.de/",
+      "contributions": [
+        "code"
       ]
     },
     {
@@ -58,25 +78,6 @@
       ]
     },
     {
-      "login": "Reinhold-Jesse",
-      "name": "Reinhold Jesse",
-      "avatar_url": "https://avatars.githubusercontent.com/u/88349887?v=4",
-      "profile": "https://design-developer.de/",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
-      "login": "FMorlock",
-      "name": "FMorlock",
-      "avatar_url": "https://avatars.githubusercontent.com/u/99252924?v=4",
-      "profile": "https://github.com/FMorlock",
-      "contributions": [
-        "content",
-        "data"
-      ]
-    },
-    {
       "login": "wp1111",
       "name": "Sam Bola",
       "avatar_url": "https://avatars.githubusercontent.com/u/42349383?v=4",
@@ -87,14 +88,13 @@
       ]
     },
     {
-      "login": "Kim-the-Diamond",
-      "name": "Kim Speer",
-      "avatar_url": "https://avatars.githubusercontent.com/u/93331309?v=4",
-      "profile": "https://github.com/Kim-the-Diamond",
+      "login": "KimSpeer",
+      "name": "KimSpeer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/98323532?v=4",
+      "profile": "https://github.com/KimSpeer",
       "contributions": [
         "code",
-        "security",
-        "test"
+        "security"
       ]
     },
     {
@@ -415,13 +415,13 @@
       ]
     },
     {
-      "login": "jbagsik",
-      "name": "jbagsik",
-      "avatar_url": "https://avatars.githubusercontent.com/u/234342240?v=4",
-      "profile": "https://github.com/jbagsik",
+      "login": "FMorlock",
+      "name": "FMorlock",
+      "avatar_url": "https://avatars.githubusercontent.com/u/99252924?v=4",
+      "profile": "https://github.com/FMorlock",
       "contributions": [
-        "code",
-        "infra"
+        "content",
+        "data"
       ]
     },
     {
