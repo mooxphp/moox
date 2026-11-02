@@ -1,105 +1,36 @@
 <?php
 
-use App\Models\User;
-use Moox\UserDevice\Models\UserDevice;
-
-/*
-|--------------------------------------------------------------------------
-| Moox Configuration
-|--------------------------------------------------------------------------
-|
-| This configuration file uses translatable strings. If you want to
-| translate the strings, you can do so in the language files
-| published from moox_core. Example:
-|
-| 'trans//core::core.all',
-| loads from common.php
-| outputs 'All'
-|
-*/
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Enabled
+    |--------------------------------------------------------------------------
+    |
+    | Master switch for passkey integration. When false, PasskeyPlugin is a
+    | no-op even if listed on a panel.
+    |
+    */
+    'enabled' => env('MOOX_PASSKEY_ENABLED', false),
 
     /*
     |--------------------------------------------------------------------------
-    | Resources
+    | Passwordless login
     |--------------------------------------------------------------------------
     |
-    | The following configuration is done per Filament resource.
+    | When true, registers FilamentPasskeysPlugin with passwordlessLogin().
+    | Phase 1 default: passwordless sign-in; passkeys as MFA challenge is Phase 2.
     |
     */
-
-    'resources' => [
-        'passkey' => [
-
-            /*
-            |--------------------------------------------------------------------------
-            | Title
-            |--------------------------------------------------------------------------
-            |
-            | The translatable title of the Resource in singular and plural.
-            |
-            */
-
-            'single' => 'trans//core::passkey.passkey',
-            'plural' => 'trans//core::passkey.passkeys',
-
-            /*
-            |--------------------------------------------------------------------------
-            | Tabs
-            |--------------------------------------------------------------------------
-            |
-            | Define the tabs for the Resource table. They are optional, but
-            | pretty awesome to filter the table by certain values.
-            | You may simply do a 'tabs' => [], to disable them.
-            |
-            */
-
-            'tabs' => [
-                'all' => [
-                    'label' => 'trans//core::core.all',
-                    'icon' => 'gmdi-filter-list',
-                    'query' => [],
-                ],
-            ],
-        ],
-    ],
+    'passwordless_login' => env('MOOX_PASSKEY_PASSWORDLESS', true),
 
     /*
     |--------------------------------------------------------------------------
-    | Navigation Group
+    | Panels
     |--------------------------------------------------------------------------
     |
-    | The translatable title of the navigation group in the
-    | Filament Admin Panel. Instead of a translatable
-    | string, you may also use a simple string.
+    | Allowlist of Filament panel IDs that may register passkeys.
+    | Phase 1: admin only.
     |
     */
-
-    'navigation_group' => 'trans//core::user.users',
-
-    /*
-    |--------------------------------------------------------------------------
-    | User Models
-    |--------------------------------------------------------------------------
-    |
-    | Add your user models here. You can add as many as you want.
-    |
-    */
-
-    'user_models' => [
-        'App Users' => User::class,
-        'Moox Users' => Moox\User\Models\User::class,
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Device Model
-    |--------------------------------------------------------------------------
-    |
-    | This is the model used to store the user devices.
-    |
-    */
-
-    'device_model' => UserDevice::class,
-
+    'panels' => ['admin'],
 ];

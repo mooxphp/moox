@@ -1,11 +1,13 @@
 {
     "name": "moox/passkey",
-    "description": "This is my package passkey",
+    "description": "Passkeys for Moox panels via laravel/passkeys and adriaanzon/filament-passkeys",
     "keywords": [
         "Laravel",
         "Filament",
         "Filament plugin",
-        "Laravel package"
+        "Laravel package",
+        "Passkeys",
+        "WebAuthn"
     ],
     "homepage": "https://moox.org/",
     "license": "MIT",
@@ -18,7 +20,8 @@
     ],
     "require": {
         "moox/core": "dev-main",
-        "web-auth/webauthn-lib": "^5.0"
+        "adriaanzon/filament-passkeys": "^0.3",
+        "laravel/passkeys": "^0.2.1"
     },
     "require-dev": {
         "moox/devtools": "dev-main"
@@ -35,7 +38,12 @@
             ]
         },
         "moox": {
-            "stability": "stable"
+            "stability": "dev",
+            "install": {
+                "plugins": [
+                    "Moox\\Passkey\\Plugins\\PasskeyPlugin"
+                ]
+            }
         }
     },
     "prefer-stable": true

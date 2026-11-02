@@ -1,0 +1,57 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        if (! Schema::hasTable('users')) {
+            return;
+        }
+
+        $hasSecret = Schema::hasColumn('users', 'app_authentication_secret');
+        $hasRecovery = Schema::hasColumn('users', 'app_authentication_recovery_codes');
+
+        if ($hasSecret && $hasRecovery) {
+            return;
+        }
+
+        Schema::table('users', function (Blueprint $table) use ($hasSecret, $hasRecovery): void {
+            if (! $hasSecret) {
+                $table->text('app_authentication_secret')->nullable();
+            }
+
+            if (! $hasRecovery) {
+                $table->text('app_authentication_recovery_codes')->nullable();
+            }
+        });
+    }
+
+    public function down(): void
+    {
+        if (! Schema::hasTable('users')) {
+            return;
+        }
+
+        $columns = [];
+
+        if (Schema::hasColumn('users', 'app_authentication_secret')) {
+            $columns[] = 'app_authentication_secret';
+        }
+
+        if (Schema::hasColumn('users', 'app_authentication_recovery_codes')) {
+            $columns[] = 'app_authentication_recovery_codes';
+        }
+
+        if ($columns === []) {
+            return;
+        }
+
+        Schema::table('users', function (Blueprint $table) use ($columns): void {
+            $table->dropColumn($columns);
+        });
+    }
+};
