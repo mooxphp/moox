@@ -48,6 +48,7 @@ return [
     'certificate_cost' => 'Attestkosten',
     'customs_cost' => 'Zollkosten',
     'totals_reconciliation' => 'Summenabgleich',
+    'allowance_charge_reason_codes' => 'Grund-Codes der Zu-/Abschläge',
     'packaging_cost' => 'Verpackungskosten',
     'notes' => 'Bemerkungen',
     'position' => 'Position',
@@ -317,6 +318,10 @@ return [
         'iban' => 'IBAN',
         'bic' => 'BIC',
         'bank_name' => 'Bank',
+        'amount' => 'Betrag',
+        'percentage' => 'Prozentsatz',
+        'reason_text' => 'Begründung',
+        'reason_code' => 'Grund-Code',
     ],
     'approval_blocked_prefix' => 'Freigabe noch nicht möglich:',
     'approval_blocked' => [
@@ -426,6 +431,8 @@ return [
         .'bei innergemeinschaftlicher Lieferung nicht, ohne sie zu einem Zeitraum zusammenzuziehen.',
     'hint_review_totals_reconciliation' => 'Positionen und Zu-/Abschläge ergeben nicht den Nettobetrag '
         .'(Differenz :difference €). Positionsbeträge und Zuschläge mit dem PDF abgleichen.',
+    'hint_review_allowance_charge_reason_codes' => 'Zu-/Abschläge ohne gültigen Grund-Code: :charges. '
+        .'Im Bearbeitungsmodus je Zu-/Abschlag den Grund-Code wählen (UNCL 7161 bzw. 5189).',
     'hint_review_payment_discount' => 'Der gedruckte Skontobetrag (€ :printed) passt nicht zu Prozentsatz und Basis '
         .'(erwartet € :expected). Skonto und Zahlbetrag mit dem PDF abgleichen.',
     'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits und muss geprüft werden.',

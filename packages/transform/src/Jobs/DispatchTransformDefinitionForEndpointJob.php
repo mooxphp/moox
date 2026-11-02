@@ -27,6 +27,7 @@ final class DispatchTransformDefinitionForEndpointJob implements ShouldQueue
         private readonly int $transformDefinitionId,
         private readonly int $endpointId,
         private readonly ?int $startingAfterId = null,
+        private readonly ?int $actorId = null,
     ) {
         $timeout = config('transform.job_timeout', 0);
         $this->timeout = is_int($timeout) ? $timeout : 0;
@@ -75,13 +76,13 @@ final class DispatchTransformDefinitionForEndpointJob implements ShouldQueue
                 'validation_status' => 'pending',
             ]);
 
-            RunTransformRecordJob::dispatch((int) $transformRecord->getKey());
+            RunTransformRecordJob::dispatch((int) $transformRecord->getKey(), $this->actorId);
             $processedInChunk++;
             $lastId = (int) $importRecord->getKey();
         });
 
         if ($processedInChunk === $chunkSize && $lastId !== null) {
-            self::dispatch($this->transformDefinitionId, $this->endpointId, $lastId);
+            self::dispatch($this->transformDefinitionId, $this->endpointId, $lastId, $this->actorId);
         }
     }
 

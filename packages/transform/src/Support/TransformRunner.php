@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Moox\Transform\Enums\TransformExecutionMode;
 use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
@@ -757,11 +758,21 @@ class TransformRunner
 
     public function processProjectionInline(TransformDefinition $definition, array $projection): BulkItemResult
     {
+        $destinationMatch = $this->resolveArrayAttribute($definition, 'destination_match');
+        $sourceReferences = $this->resolveArrayAttribute($definition, 'source_references');
+        $sourceLabel = BulkTransformSummaryFormatter::projectionSourceLabel(
+            $projection,
+            $destinationMatch,
+            $sourceReferences,
+        );
+        $externalId = BulkTransformSummaryFormatter::externalId($projection, $destinationMatch)
+            ?? BulkTransformSummaryFormatter::sourceKeyValue($projection, $sourceReferences);
+
         try {
             /** @var class-string<Model> $destinationClass */
             $destinationClass = $definition->destination_model;
             if (! class_exists($destinationClass)) {
-                return new BulkItemResult('failed', 'Destination model class does not exist.');
+                return new BulkItemResult('failed', 'Destination model class does not exist.', sourceLabel: $sourceLabel, externalId: $externalId);
             }
 
             $resolvedRow = $this->resolvedTransformDataFactory->make(
@@ -790,6 +801,8 @@ class TransformRunner
                 return new BulkItemResult(
                     'failed_validation',
                     $this->formatValidationFailureMessage($validation['errors']),
+                    sourceLabel: $sourceLabel,
+                    externalId: $externalId,
                 );
             }
 
@@ -807,15 +820,19 @@ class TransformRunner
                 status: $isExistingDestination ? 'updated' : 'processed',
                 errorMessage: $assignment['warnings'] !== [] ? implode("\n", $assignment['warnings']) : null,
                 destinationKey: $destination->getKey() !== null ? (string) $destination->getKey() : null,
+                sourceLabel: $sourceLabel,
+                externalId: $externalId,
             );
+        } catch (ValidationException $exception) {
+            return $this->validationFailureResult($exception, $sourceLabel, $externalId);
         } catch (TransformDestinationConflictException $exception) {
             if ($exception->isIncompleteDestinationMatch()) {
-                return new BulkItemResult('skipped', $exception->getMessage());
+                return new BulkItemResult('skipped', $exception->getMessage(), sourceLabel: $sourceLabel, externalId: $externalId);
             }
 
-            return new BulkItemResult('failed', $exception->getMessage());
+            return new BulkItemResult('failed', $exception->getMessage(), sourceLabel: $sourceLabel, externalId: $externalId);
         } catch (\Throwable $throwable) {
-            return new BulkItemResult('failed', $throwable->getMessage());
+            return new BulkItemResult('failed', $throwable->getMessage(), sourceLabel: $sourceLabel, externalId: $externalId);
         }
     }
 
@@ -841,9 +858,12 @@ class TransformRunner
         /** @var Model $prototype */
         $prototype = new $destinationClass;
         $destinationMatch = $this->resolveArrayAttribute($definition, 'destination_match');
+        $sourceReferences = $this->resolveArrayAttribute($definition, 'source_references');
 
         foreach ($projections as $index => $projection) {
-            $sourceLabel = BulkTransformSummaryFormatter::projectionSourceLabel($projection, $destinationMatch);
+            $sourceLabel = BulkTransformSummaryFormatter::projectionSourceLabel($projection, $destinationMatch, $sourceReferences);
+            $externalId = BulkTransformSummaryFormatter::externalId($projection, $destinationMatch)
+                ?? BulkTransformSummaryFormatter::sourceKeyValue($projection, $sourceReferences);
 
             try {
                 $resolvedRow = $this->resolvedTransformDataFactory->make(
@@ -858,6 +878,7 @@ class TransformRunner
                         'failed_validation',
                         $this->formatValidationFailureMessage($validation['errors']),
                         sourceLabel: $sourceLabel,
+                        externalId: $externalId,
                     );
 
                     continue;
@@ -865,14 +886,17 @@ class TransformRunner
 
                 $existingByIndex[$index] = $this->destinationExistsByMatch($destinationClass, $resolvedRow->destinationMatch);
                 $validRows[$index] = $resolvedRow;
+            } catch (ValidationException $exception) {
+                $results[$index] = $this->validationFailureResult($exception, $sourceLabel, $externalId);
             } catch (TransformDestinationConflictException $exception) {
                 $results[$index] = new BulkItemResult(
                     $exception->isIncompleteDestinationMatch() ? 'skipped' : 'failed',
                     $exception->getMessage(),
                     sourceLabel: $sourceLabel,
+                    externalId: $externalId,
                 );
             } catch (\Throwable $throwable) {
-                $results[$index] = new BulkItemResult('failed', $throwable->getMessage(), sourceLabel: $sourceLabel);
+                $results[$index] = new BulkItemResult('failed', $throwable->getMessage(), sourceLabel: $sourceLabel, externalId: $externalId);
             }
         }
 
@@ -903,7 +927,10 @@ class TransformRunner
                     sourceLabel: BulkTransformSummaryFormatter::projectionSourceLabel(
                         $projections[$index],
                         $destinationMatch,
+                        $sourceReferences,
                     ),
+                    externalId: BulkTransformSummaryFormatter::externalId($projections[$index], $destinationMatch)
+                        ?? BulkTransformSummaryFormatter::sourceKeyValue($projections[$index], $sourceReferences),
                 );
             }
 
@@ -917,6 +944,8 @@ class TransformRunner
             $results[$index] = new BulkItemResult(
                 status: ($existingByIndex[$index] ?? false) ? 'updated' : 'processed',
                 destinationKey: $destinationKeys[$position] ?? null,
+                externalId: BulkTransformSummaryFormatter::externalId($projections[$index], $destinationMatch)
+                    ?? BulkTransformSummaryFormatter::sourceKeyValue($projections[$index], $sourceReferences),
             );
         }
 
@@ -980,6 +1009,16 @@ class TransformRunner
         }
 
         return $query->exists();
+    }
+
+    private function validationFailureResult(ValidationException $exception, ?string $sourceLabel, ?string $externalId): BulkItemResult
+    {
+        return new BulkItemResult(
+            'failed_validation',
+            $this->formatValidationFailureMessage($exception->errors()),
+            sourceLabel: $sourceLabel,
+            externalId: $externalId,
+        );
     }
 
     /**

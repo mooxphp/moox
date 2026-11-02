@@ -84,13 +84,25 @@ final class LineAllowanceChargeResolver
         return null;
     }
 
+    /**
+     * Code first (ADR 0014): the configured certificate code is a certificate charge, the configured surcharge
+     * code is not. An uncoded charge, or one with a code neither is configured with, is recognised by its label.
+     */
     public static function isMaterialTestCertificateCharge(
         InvoiceAllowanceCharge $charge,
         ?InvoiceLine $line = null,
     ): bool {
-        $reasonCode = self::normalizeString($charge->reason_code);
-        if (strcasecmp($reasonCode, 'CAE') === 0) {
-            return true;
+        $reasonCode = strtoupper(self::normalizeString($charge->reason_code));
+        $certificateCode = strtoupper((string) AllowanceChargeReasonCodes::line('material_test_certificate_price'));
+        $surchargeCode = strtoupper((string) AllowanceChargeReasonCodes::line('surcharge_amount'));
+        if ($reasonCode !== '') {
+            if ($reasonCode === $certificateCode) {
+                return true;
+            }
+
+            if ($reasonCode === $surchargeCode) {
+                return false;
+            }
         }
 
         $label = self::normalizeString($charge->reason_text);

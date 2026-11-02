@@ -4,104 +4,80 @@ declare(strict_types=1);
 
 namespace Moox\Supplier\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Moox\Core\Entities\Items\Record\BaseRecordModel;
-use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
-use Moox\Data\Models\StaticLanguage;
-use Moox\Supplier\Database\Factories\SupplierFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Moox\Core\Traits\Relations\HasRelations;
+use Moox\Support\Audit\HasAudit;
+use Moox\Support\Identity\HasIdentifier;
 
-/**
- * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany<Model, $this> companies()
- * @method \Illuminate\Database\Eloquent\Relations\HasMany<SupplierAssignment, $this> supplierAssignments()
- */
-class Supplier extends BaseRecordModel
+class Supplier extends Model
 {
-    /** @use HasFactory<SupplierFactory> */
-    use HasFactory;
-
-    use HasModelTaxonomy;
-    use HasUuids;
+    use HasAudit;
+    use HasIdentifier;
+    use HasRelations;
+    use SoftDeletes;
 
     protected $table = 'suppliers';
 
+    /**
+     * @var list<string>
+     */
     protected $fillable = [
-        'status',
-        'supplier_number',
-        'external_reference',
-        'supplier_name',
-        'search_terms',
-        'discount_percent',
-        'lead_time_days',
-        'minimum_order_value',
-        'language_id',
-        'is_preferred',
-        'note',
-        'sort',
         'is_active',
-        'approved_at',
-        'approved_by_type',
-        'approved_by_id',
+        'supplier_type',
+        'supplier_name',
+        'supplier_number',
+        'note',
+        'external_reference',
+        'external_info',
+        'external_status',
+        'contact_id',
+        'language_id',
         'data',
-        // Needed so transform field_map can persist soft-deletes via mass assignment.
+        'created_by_id',
+        'created_by_type',
+        'updated_by_id',
+        'updated_by_type',
+        'archived_at',
+        'archived_by_id',
+        'archived_by_type',
         'deleted_at',
+        'deleted_by_id',
+        'deleted_by_type',
+        'restored_at',
+        'restored_by_id',
+        'restored_by_type',
     ];
 
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'discount_percent' => 'decimal:2',
-            'lead_time_days' => 'integer',
-            'minimum_order_value' => 'decimal:2',
-            'language_id' => 'integer',
-            'is_preferred' => 'boolean',
-            'sort' => 'integer',
-            'is_active' => 'boolean',
-            'approved_at' => 'datetime',
-            'data' => 'array',
-        ];
-    }
+    /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'is_active' => true,
+    ];
 
     public static function getResourceName(): string
     {
         return 'supplier';
     }
 
-    public static function newFactory(): SupplierFactory
-    {
-        return SupplierFactory::new();
-    }
-
     /**
-     * @return BelongsTo<StaticLanguage, $this>
+     * @return array<string, string>
      */
-    public function language(): BelongsTo
+    protected function casts(): array
     {
-        return $this->belongsTo(StaticLanguage::class, 'language_id');
-    }
-
-    /**
-     * @return MorphTo<Model, $this>
-     */
-    public function approvedBy(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
-    public function displayLabel(): string
-    {
-        if (filled($this->supplier_name)) {
-            return (string) $this->supplier_name;
-        }
-
-        if (filled($this->supplier_number)) {
-            return (string) $this->supplier_number;
-        }
-
-        return (string) $this->getKey();
+        return [
+            'is_active' => 'boolean',
+            'data' => 'array',
+            'contact_id' => 'integer',
+            'language_id' => 'integer',
+            'created_by_id' => 'integer',
+            'updated_by_id' => 'integer',
+            'archived_by_id' => 'integer',
+            'deleted_by_id' => 'integer',
+            'restored_by_id' => 'integer',
+            'archived_at' => 'datetime',
+            'restored_at' => 'datetime',
+        ];
     }
 }

@@ -1,0 +1,32 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('honorific_title_translations', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('honorific_title_id')
+                ->constrained('honorific_titles')
+                ->cascadeOnDelete();
+            $table->string('locale');
+            $table->string('title');
+            $table->string('slug');
+
+            $table->unique(['honorific_title_id', 'locale'], 'honorific_title_locale_unique');
+            $table->unique(['locale', 'slug'], 'honorific_title_locale_slug_unique');
+            $table->index('locale');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('honorific_title_translations');
+    }
+};

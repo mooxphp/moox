@@ -657,12 +657,17 @@ class EbillingDocument extends BaseItemModel
     }
 
     /**
+     * Invoice-level findings that are not MoSCoW configuration: they block in every profile (ADR 0014).
+     */
+    public const FIXED_INVOICE_FIELDS = ['allowance_charge_reason_codes' => 'must'];
+
+    /**
      * @return array{0: array<string, string>, 1: array<string, string>}
      */
     private static function configuredPriorityMaps(?string $documentType): array
     {
         return [
-            FieldValidationProfile::invoiceFields($documentType),
+            [...FieldValidationProfile::invoiceFields($documentType), ...self::FIXED_INVOICE_FIELDS],
             FieldValidationProfile::lineFields($documentType),
         ];
     }
@@ -1115,9 +1120,10 @@ class EbillingDocument extends BaseItemModel
 
     /**
      * Review reasons a person cannot accept by confirming: the parsed amounts do not reproduce the printed
-     * net total, so confirmation would release an e-invoice that fails BR-CO-13 (ADR 0012 amendment 2026-10-01).
+     * net total, so confirmation would release an e-invoice that fails BR-CO-13 (ADR 0012 amendment 2026-10-01);
+     * an allowance or charge without a reason code from its direction's codelist (ADR 0014).
      */
-    private const NON_ACCEPTABLE_REVIEW_REASONS = ['totals_mismatch'];
+    private const NON_ACCEPTABLE_REVIEW_REASONS = ['totals_mismatch', 'reason_code_missing'];
 
     /**
      * Configured must fields whose stored status is missing (invoice + lines), plus invoice-level must

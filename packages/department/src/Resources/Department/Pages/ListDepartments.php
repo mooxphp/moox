@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace Moox\Department\Resources\Department\Pages;
 
-use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
-use Moox\Core\Traits\Tabs\HasListPageTabs;
-use Moox\Department\Models\Department;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
 use Moox\Department\Resources\DepartmentResource;
 
-class ListDepartments extends BaseListRecords
+class ListDepartments extends ListRecords
 {
-    use HasListPageTabs;
-
     protected static string $resource = DepartmentResource::class;
 
-    public function getTabs(): array
+    protected function getHeaderActions(): array
     {
-        return $this->getDynamicTabs('department.resources.department.tabs', Department::class);
+        return [
+            CreateAction::make(),
+        ];
     }
 }

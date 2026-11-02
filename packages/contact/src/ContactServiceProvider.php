@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Contact;
 
-use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -14,11 +13,17 @@ class ContactServiceProvider extends MooxServiceProvider
     {
         $package
             ->name('contact')
-            ->hasConfigFile()
+            ->hasConfigFile(['contact', 'contact-identifier-rule', 'contact-identifier', 'contact-relationship', 'contact-relationship-type'])
             ->hasTranslations()
             ->hasMigrations([
                 'create_contacts_table',
-                'create_contact_assignments_table',
+                'create_contact_identifier_rules_table',
+                'create_contact_identifiers_table',
+                'create_contact_identifier_types_table',
+                'create_contact_identifier_type_translations_table',
+                'create_contact_relationships_table',
+                'create_contact_relationship_types_table',
+                'create_contact_relationship_type_translations_table',
             ])
             ->hasCommands();
 
@@ -28,19 +33,19 @@ class ContactServiceProvider extends MooxServiceProvider
             ->stability('stable')
             ->category('development')
             ->usedFor([
-                'ERP contact records linked to companies',
+                'Contact records',
             ])
             ->alternatePackages([
                 '',
             ])
             ->templateFor([
-                'creating ERP-style contact entities with pivot-based addresses',
+                'creating contact entities',
             ])
             ->templateReplace([
                 'Contact' => '%%PackageName%%',
                 'contact' => '%%PackageSlug%%',
-                'Contact is a Moox Entity for ERP-style contact records linked to companies.' => '%%Description%%',
-                'ERP contact records linked to companies' => '%%UsedFor%%',
+                'Contact records.' => '%%Description%%',
+                'Contact records' => '%%UsedFor%%',
                 'released(true)' => 'released(false)',
                 'stability(stable)' => 'stability(dev)',
                 'category(development)' => 'category(unknown)',
@@ -55,9 +60,7 @@ class ContactServiceProvider extends MooxServiceProvider
             ])
             ->templateEntityFiles([
                 'config/contact.php',
-                'database/factories/ContactFactory.php',
                 'database/migrations/create_contacts_table.php.stub',
-                'database/migrations/create_contact_assignments_table.php.stub',
                 'resources/lang/en/contact.php',
                 'resources/lang/en/fields.php',
                 'src/Models/Contact.php',
@@ -66,23 +69,11 @@ class ContactServiceProvider extends MooxServiceProvider
                 'src/Resources/Contact/Pages/ListContacts.php',
                 'src/Resources/Contact/Pages/ViewContact.php',
                 'src/Resources/ContactResource.php',
-                'src/Support/ContactRules.php',
                 'src/Plugins/ContactPlugin.php',
                 'resources/lang/de/fields.php',
             ])
             ->templateRemove([
                 '',
             ]);
-    }
-
-    public function packageBooted(): void
-    {
-        if (
-            class_exists(AuditPackageRegistry::class)
-            && config('audit.enabled', true)
-            && config('contact.audit.enabled', true)
-        ) {
-            AuditPackageRegistry::register('contact', config('contact.audit', []));
-        }
     }
 }

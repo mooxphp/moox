@@ -55,6 +55,7 @@ final class InvoiceFieldLabels
             'freight_flat_rate' => __('e-billing::fields.freight_flat_rate'),
             'certificate_cost' => __('e-billing::fields.certificate_cost'),
             'totals_reconciliation' => __('e-billing::fields.totals_reconciliation'),
+            'allowance_charge_reason_codes' => __('e-billing::fields.allowance_charge_reason_codes'),
             'customs_cost' => __('e-billing::fields.customs_cost'),
             'packaging_cost' => __('e-billing::fields.packaging_cost'),
             'notes' => __('e-billing::fields.notes'),
@@ -206,6 +207,7 @@ final class InvoiceFieldLabels
             'certificate_cost' => 'BG-21 / BT-99',
             'customs_cost' => 'BG-21 / BT-99',
             'totals_reconciliation' => 'BR-CO-13',
+            'allowance_charge_reason_codes' => 'BT-98 / BT-105',
             'packaging_cost' => 'BG-21 / BT-99',
             'vat_rate' => 'BT-119',
             'position' => 'BT-126',
@@ -233,7 +235,8 @@ final class InvoiceFieldLabels
      *     expected?: string,
      *     printed?: string,
      *     master_data_city?: string,
-     *     master_data_additional_lines?: string
+     *     master_data_additional_lines?: string,
+     *     charges?: list<array{line: ?int, reason_text: ?string, reason_code: ?string}>
      * }|null  $validation
      */
     public static function hint(string $field, string $status, ?array $validation = null): ?string
@@ -296,6 +299,16 @@ final class InvoiceFieldLabels
                 ]),
                 'totals_reconciliation' => __('e-billing::fields.hint_review_totals_reconciliation', [
                     'difference' => (string) ($validation['difference'] ?? ''),
+                ]),
+                'allowance_charge_reason_codes' => __('e-billing::fields.hint_review_allowance_charge_reason_codes', [
+                    'charges' => implode(', ', array_map(
+                        static fn (array $charge): string => trim(implode('', [
+                            $charge['line'] !== null ? '#'.$charge['line'].' ' : '',
+                            $charge['reason_text'] ?? '',
+                            $charge['reason_code'] !== null ? ' ('.$charge['reason_code'].')' : '',
+                        ])),
+                        $validation['charges'] ?? [],
+                    )),
                 ]),
                 'document_type' => ($validation['reason'] ?? null) === 'declared_document_type_mismatch'
                     ? __('e-billing::fields.hint_review_declared_document_type')

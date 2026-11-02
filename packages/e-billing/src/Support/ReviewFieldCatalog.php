@@ -142,7 +142,24 @@ final class ReviewFieldCatalog
             return $this->notEditable($key, $key, 'unknown_field');
         }
 
-        return $this->valueField($invoice, $key, (string) $charge->reason_text, $charge, ['amount' => 'decimal']);
+        return $this->valueField(
+            $invoice,
+            $key,
+            (string) $charge->reason_text,
+            $charge,
+            self::withReasonCode($charge, ['amount' => 'decimal']),
+        );
+    }
+
+    /**
+     * A charge row also edits its reason code (ADR 0014), chosen from its direction's codelist.
+     *
+     * @param  array<string, string>  $inputs
+     * @return array<string, string>
+     */
+    private static function withReasonCode(InvoiceAllowanceCharge $charge, array $inputs): array
+    {
+        return [...$inputs, 'reason_code' => ReasonCodeOptions::inputType((bool) $charge->is_charge)];
     }
 
     /**
@@ -199,7 +216,9 @@ final class ReviewFieldCatalog
 
             return $charge === null
                 ? $this->notEditable($key, $label, 'no_charge_row')
-                : $this->valueField($invoice, $key, $label, $charge, [$field === 'discount_percent' ? 'percentage' : 'amount' => 'decimal']);
+                : $this->valueField($invoice, $key, $label, $charge, $field === 'discount_percent'
+                    ? ['percentage' => 'decimal']
+                    : self::withReasonCode($charge, ['amount' => 'decimal']));
         }
 
         $inputs = match ($field) {
@@ -237,7 +256,9 @@ final class ReviewFieldCatalog
         if ($charge !== false) {
             return $charge === null
                 ? $this->notEditable($key, $label, 'no_charge_row')
-                : $this->valueField($invoice, $key, $label, $charge, [$field === 'surcharge_description' ? 'reason_text' : 'amount' => $field === 'surcharge_description' ? 'text' : 'decimal']);
+                : $this->valueField($invoice, $key, $label, $charge, $field === 'surcharge_description'
+                    ? ['reason_text' => 'text']
+                    : self::withReasonCode($charge, ['amount' => 'decimal']));
         }
 
         $inputs = $field === 'delivery_address'
@@ -339,7 +360,11 @@ final class ReviewFieldCatalog
         foreach ($invoice->allowanceCharges as $charge) {
             $matches = $field === 'discount_percent'
                 ? ! $charge->is_charge && (float) $charge->percentage > 0
-                : HeaderChargeResolver::matches($charge, HeaderChargeResolver::FIELD_SPECS[$field], $field === 'discount_amount');
+                : HeaderChargeResolver::matches(
+                    $charge,
+                    (array) HeaderChargeResolver::spec($field),
+                    $field === 'discount_amount',
+                );
 
             if ($matches) {
                 return $charge;

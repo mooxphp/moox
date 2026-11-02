@@ -134,7 +134,7 @@ Header, parties, totals, `lines`, `bankAccounts`, and `allowanceCharges`.
 
 ### `ZugferdAllowanceCharge`
 
-`isCharge`, `amount`, `reasonCode`, `reasonText`. `basisAmount` and `percentage` are on the contract but ignored by the converter. Items with `amount <= 0` are skipped.
+`isCharge`, `amount`, `reasonCode`, `reasonText`. `basisAmount` and `percentage` are on the contract but ignored by the converter. Items with `amount` 0 are skipped; negative amounts are emitted with their sign.
 
 ### `AllowanceCharge` data class
 

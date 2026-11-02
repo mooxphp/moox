@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Schema;
 use Jenssegers\Agent\Agent;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Services\UserDeviceTracker;
-use Spatie\Permission\PermissionRegistrar;
 use STS\FilamentImpersonate\Facades\Impersonation;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -38,10 +37,6 @@ class EnsureTrustedDevice
         $user = filament()->auth()->user() ?? Auth::user();
 
         if (! $user instanceof Authenticatable) {
-            return $next($request);
-        }
-
-        if ($this->isShieldAdmin($user)) {
             return $next($request);
         }
 
@@ -125,29 +120,5 @@ class EnsureTrustedDevice
         } catch (Throwable) {
             return '/';
         }
-    }
-
-    private function isShieldAdmin(object $user): bool
-    {
-        if (! $this->permissionSystemAvailable()) {
-            return false;
-        }
-
-        if (! method_exists($user, 'hasRole')) {
-            return false;
-        }
-
-        $roleName = (string) config('filament-shield.super_admin.name', 'super_admin');
-
-        return (bool) $user->hasRole($roleName);
-    }
-
-    private function permissionSystemAvailable(): bool
-    {
-        if (! class_exists(PermissionRegistrar::class)) {
-            return false;
-        }
-
-        return Schema::hasTable('permissions') && Schema::hasTable('roles');
     }
 }

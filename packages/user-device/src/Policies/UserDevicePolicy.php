@@ -6,23 +6,23 @@ namespace Moox\UserDevice\Policies;
 
 use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
-use Spatie\Permission\PermissionRegistrar;
+use Moox\UserDevice\Support\UserDeviceAuthorization;
 
 class UserDevicePolicy
 {
     public function viewAny(Authorizable $user): bool
     {
-        return true;
+        return UserDeviceAuthorization::canViewAny($user);
     }
 
     public function view(Authorizable $user, Model $record): bool
     {
-        if ($this->isShieldAdmin($user)) {
+        if (UserDeviceAuthorization::canViewAll($user)) {
             return true;
         }
 
-        return $this->ownsRecord($user, $record);
+        return UserDeviceAuthorization::can($user, UserDeviceAuthorization::VIEW)
+            && UserDeviceAuthorization::ownsRecord($user, $record);
     }
 
     public function create(Authorizable $user): bool
@@ -32,64 +32,34 @@ class UserDevicePolicy
 
     public function update(Authorizable $user, Model $record): bool
     {
-        if ($this->isShieldAdmin($user)) {
+        if (UserDeviceAuthorization::canViewAll($user)) {
             return true;
         }
 
-        return $this->ownsRecord($user, $record);
+        return UserDeviceAuthorization::can($user, UserDeviceAuthorization::UPDATE)
+            && UserDeviceAuthorization::ownsRecord($user, $record);
     }
 
     public function delete(Authorizable $user, Model $record): bool
     {
-        if ($this->isShieldAdmin($user)) {
+        if (UserDeviceAuthorization::canViewAll($user)) {
             return true;
         }
 
-        // Without Shield, Filament Admin still needs delete for ops. Portal
-        // never shows the delete action (canManageDevicesAsAdmin is admin-only).
-        return $this->allowOpsWithoutShield();
-    }
-
-    protected function allowOpsWithoutShield(): bool
-    {
-        return ! $this->permissionSystemAvailable()
-            && (bool) config('user-device.allow_all_devices_without_shield', false);
-    }
-
-    protected function permissionSystemAvailable(): bool
-    {
-        if (! class_exists(PermissionRegistrar::class)) {
-            return false;
+        if (UserDeviceAuthorization::allowOpsWithoutShield()) {
+            return true;
         }
 
-        return Schema::hasTable('permissions') && Schema::hasTable('roles');
+        return UserDeviceAuthorization::can($user, UserDeviceAuthorization::DELETE)
+            && UserDeviceAuthorization::ownsRecord($user, $record);
     }
 
-    protected function ownsRecord(Authorizable $user, Model $record): bool
+    public function deleteAny(Authorizable $user): bool
     {
-        if (! method_exists($user, 'getAuthIdentifier')) {
-            return false;
+        if (UserDeviceAuthorization::allowOpsWithoutShield()) {
+            return true;
         }
 
-        /** @var mixed $userId */
-        $userId = $user->getAuthIdentifier();
-
-        return ((string) $record->getAttribute('user_id') === (string) $userId)
-            && ((string) $record->getAttribute('user_type') === $user::class);
-    }
-
-    protected function isShieldAdmin(Authorizable $user): bool
-    {
-        if (! $this->permissionSystemAvailable()) {
-            return false;
-        }
-
-        if (! method_exists($user, 'hasRole')) {
-            return false;
-        }
-
-        $roleName = (string) config('filament-shield.super_admin.name', 'super_admin');
-
-        return (bool) $user->hasRole($roleName);
+        return UserDeviceAuthorization::canViewAll($user);
     }
 }

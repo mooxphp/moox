@@ -4,21 +4,18 @@ declare(strict_types=1);
 
 namespace Moox\Address\Resources\Address\Pages;
 
-use Moox\Address\Models\Address;
-use Moox\Address\Resources\Address\Pages\Concerns\InitializesValidationBag;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
 use Moox\Address\Resources\AddressResource;
-use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
-use Moox\Core\Traits\Tabs\HasListPageTabs;
 
-class ListAddresses extends BaseListRecords
+class ListAddresses extends ListRecords
 {
-    use HasListPageTabs;
-    use InitializesValidationBag;
-
     protected static string $resource = AddressResource::class;
 
-    public function getTabs(): array
+    protected function getHeaderActions(): array
     {
-        return $this->getDynamicTabs('address.resources.address.tabs', Address::class);
+        return [
+            CreateAction::make(),
+        ];
     }
 }

@@ -58,10 +58,13 @@ trait HasResourceRelations
                 continue;
             }
 
-            $managers[] = RelationGroup::make(
+            // Key by relation name so Filament/Livewire get unique component keys.
+            // A numeric `0` inside every RelationGroup would collide across tabs
+            // (all resolve to ConfigRelationManager-0) and nested RMs fail to remount.
+            $managers[$key] = RelationGroup::make(
                 $relation->label(),
                 [
-                    ConfigRelationManager::make([
+                    $key => ConfigRelationManager::make([
                         'relationKey' => $key,
                     ]),
                 ],

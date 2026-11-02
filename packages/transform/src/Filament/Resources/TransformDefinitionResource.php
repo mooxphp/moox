@@ -673,6 +673,8 @@ class TransformDefinitionResource extends BaseItemResource
                         DispatchTransformDefinitionForEndpointJob::dispatch(
                             (int) $record->getKey(),
                             $endpointId,
+                            null,
+                            RunTransformRecordJob::configuredActorId() ?? RunTransformRecordJob::currentActorId(),
                         );
 
                         Notification::make()
@@ -695,7 +697,7 @@ class TransformDefinitionResource extends BaseItemResource
                             'validation_status' => 'pending',
                         ]);
 
-                        RunTransformRecordJob::dispatch((int) $transformRecord->getKey());
+                        RunTransformRecordJob::dispatchForActor((int) $transformRecord->getKey());
 
                         Notification::make()
                             ->title(__('transform::fields.run_queued_title'))
@@ -917,7 +919,7 @@ class TransformDefinitionResource extends BaseItemResource
                         'validation_status' => 'pending',
                     ]);
 
-                    RunTransformRecordJob::dispatch((int) $transformRecord->getKey());
+                    RunTransformRecordJob::dispatchForActor((int) $transformRecord->getKey());
                     $dispatched++;
                 }
             });

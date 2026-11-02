@@ -46,9 +46,11 @@ use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\InvoiceResource;
+use Moox\EBilling\Support\CollapsibleOpen;
 use Moox\EBilling\Support\CrossCheckedFields;
 use Moox\EBilling\Support\DocumentClassificationLabels;
 use Moox\EBilling\Support\InvoiceFieldLabels;
+use Moox\EBilling\Support\ReasonCodeOptions;
 use Moox\EBilling\Support\RecipientOverride;
 use Moox\EBilling\Support\ReviewEditField;
 use Moox\EBilling\Support\ReviewFieldCatalog;
@@ -74,6 +76,20 @@ class ViewInvoice extends ViewRecord
     public bool $reviewEditing = false;
 
     /**
+     * User open/closed preference for ViewInvoice `<details>` (page session only).
+     *
+     * @var array<string, bool>
+     */
+    public array $collapsibleOpen = [];
+
+    /**
+     * Keys that already received a soft force-open seed for the current serverOpen spell.
+     *
+     * @var array<string, bool>
+     */
+    public array $collapsibleForceSeeded = [];
+
+    /**
      * Custom Blade view only — skip {@see ViewRecord::fillForm()} which would push
      * EN16931 Party value objects into Livewire's public {@see ViewRecord::$data}.
      *
@@ -86,6 +102,28 @@ class ViewInvoice extends ViewRecord
         $this->record = $this->resolveRecord($record);
 
         $this->authorizeAccess();
+    }
+
+    /**
+     * Apply soft force-open rules and return whether the section should render open.
+     */
+    public function syncAndGetCollapsibleOpen(string $key, bool $serverOpen): bool
+    {
+        $result = CollapsibleOpen::resolve(
+            $key,
+            $serverOpen,
+            $this->collapsibleOpen,
+            $this->collapsibleForceSeeded,
+        );
+        $this->collapsibleOpen = $result['userOpen'];
+        $this->collapsibleForceSeeded = $result['forceSeeded'];
+
+        return $result['open'];
+    }
+
+    public function setCollapsibleOpen(string $key, bool $open): void
+    {
+        $this->collapsibleOpen = CollapsibleOpen::userSet($key, $open, $this->collapsibleOpen);
     }
 
     public function content(Schema $schema): Schema
@@ -619,6 +657,10 @@ class ViewInvoice extends ViewRecord
                 'decimal' => TextInput::make($name)->numeric(),
                 'integer' => TextInput::make($name)->integer(),
                 'email' => TextInput::make($name)->email(),
+                ReasonCodeOptions::CHARGE_INPUT, ReasonCodeOptions::ALLOWANCE_INPUT => Select::make($name)
+                    ->options(ReasonCodeOptions::forInputType($type))
+                    ->searchable()
+                    ->native(false),
                 default => TextInput::make($name),
             };
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Transform\Support\Operations;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Moox\Transform\Support\Operations\Concerns\ResolvesPayloadPaths;
 
@@ -42,7 +43,7 @@ final class LookupModelIdInlineValueOperation implements PayloadAwareInlineValue
         array &$warnings,
         array $payload,
     ): mixed {
-        [$modelClass, $matchColumn, $valuePath] = $this->parseLookupConfig($operationSegment);
+        [$modelClass, $matchColumn, $valuePath, $withTrashed] = $this->parseLookupConfig($operationSegment);
         if ($modelClass === null || $matchColumn === null || $valuePath === null) {
             $warnings[] = "Invalid lookup_id operation for destination field [{$destinationField}].";
 
@@ -61,12 +62,17 @@ final class LookupModelIdInlineValueOperation implements PayloadAwareInlineValue
         }
 
         /** @var class-string<Model> $modelClass */
-        $cacheKey = 'lookup_id:'.$modelClass.':'.$matchColumn.':'.json_encode($matchValue, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $cacheKey = 'lookup_id:'.$modelClass.':'.$matchColumn.':'.($withTrashed ? 'trashed:' : '').json_encode($matchValue, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-        return $this->lookupCache->remember($cacheKey, function () use ($modelClass, $matchColumn, $matchValue, &$warnings): mixed {
-            $id = $modelClass::query()
+        return $this->lookupCache->remember($cacheKey, function () use ($modelClass, $matchColumn, $matchValue, $withTrashed, &$warnings): mixed {
+            $query = $modelClass::query();
+            if ($withTrashed && in_array(SoftDeletes::class, class_uses_recursive($modelClass), true)) {
+                $query->withTrashed();
+            }
+
+            $id = $query
                 ->where($matchColumn, $matchValue)
-                ->value($modelClass::query()->getModel()->getKeyName());
+                ->value($query->getModel()->getKeyName());
 
             if ($id === null) {
                 $warnings[] = "No [{$modelClass}] record found for [{$matchColumn}={$matchValue}].";
@@ -98,17 +104,17 @@ final class LookupModelIdInlineValueOperation implements PayloadAwareInlineValue
     }
 
     /**
-     * @return array{0: ?string, 1: ?string, 2: ?string}
+     * @return array{0: ?string, 1: ?string, 2: ?string, 3: bool}
      */
     private function parseLookupConfig(string $operationSegment): array
     {
         if (! str_starts_with(strtolower($operationSegment), self::PREFIX)) {
-            return [null, null, null];
+            return [null, null, null, false];
         }
 
         $config = substr($operationSegment, strlen(self::PREFIX));
         if ($config === false || $config === '') {
-            return [null, null, null];
+            return [null, null, null, false];
         }
 
         $parts = array_values(array_filter(
@@ -116,11 +122,20 @@ final class LookupModelIdInlineValueOperation implements PayloadAwareInlineValue
             static fn (string $part): bool => $part !== '',
         ));
 
-        if (count($parts) !== 3) {
-            return [null, null, null];
+        if (count($parts) !== 3 && count($parts) !== 4) {
+            return [null, null, null, false];
         }
 
-        return [$parts[0], $parts[1], $parts[2]];
+        $withTrashed = false;
+        if (count($parts) === 4) {
+            if (strtolower($parts[3]) !== 'with_trashed') {
+                return [null, null, null, false];
+            }
+
+            $withTrashed = true;
+        }
+
+        return [$parts[0], $parts[1], $parts[2], $withTrashed];
     }
 
     private function isEmptyLookupValue(mixed $value): bool

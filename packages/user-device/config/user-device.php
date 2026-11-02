@@ -37,8 +37,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | When true (default), untrusted devices are hard-blocked in Filament until
-    | confirmed via email trust link or admin Trust action, and the new-device
-    | mail includes a trust CTA.
+    | confirmed via email trust link or an ops Trust action in the Devices
+    | resource. Applies to every authenticated user — roles do not bypass.
     | When false, devices are tracked only — no login gate; new-device mail is
     | still sent without a trust CTA (notify-only).
     |

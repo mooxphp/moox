@@ -4,166 +4,107 @@ declare(strict_types=1);
 
 namespace Moox\Contact\Models;
 
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Models\Contracts\HasName;
-use Filament\Panel;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Foundation\Auth\Access\Authorizable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
-use Laravel\Sanctum\HasApiTokens;
-use Moox\Contact\Database\Factories\ContactFactory;
-use Moox\Core\Entities\Items\Record\BaseRecordModel;
-use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
-use Moox\Data\Models\StaticLanguage;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Moox\Core\Traits\Relations\HasRelations;
+use Moox\Support\Audit\HasAudit;
+use Moox\Support\Identity\HasIdentifier;
 
-/**
- * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany<Model, $this> companies()
- * @method \Illuminate\Database\Eloquent\Relations\MorphToMany<Model, $this> addresses()
- * @method \Illuminate\Database\Eloquent\Relations\MorphToMany<Model, $this> address()
- */
-class Contact extends BaseRecordModel implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, FilamentUser, HasName
+class Contact extends Model
 {
-    /** @use HasFactory<ContactFactory> */
-    use Authenticatable;
-
-    use Authorizable;
-    use CanResetPassword;
-    use HasApiTokens;
-    use HasFactory;
-    use HasModelTaxonomy;
-    use HasUuids;
-    use Notifiable;
+    use HasAudit;
+    use HasIdentifier;
+    use HasRelations;
+    use SoftDeletes;
 
     protected $table = 'contacts';
 
-    protected $keyType = 'string';
-
-    public $incrementing = false;
-
+    /**
+     * @var list<string>
+     */
     protected $fillable = [
-        'status',
-        'gender',
-        'salutation_code',
-        'academic_title',
-        'first_name',
-        'last_name',
-        'display_name',
-        'job_title',
-        'email',
-        'username',
-        'email_verified_at',
-        'password',
-        'phone',
-        'mobile',
-        'language_id',
-        'contact_type',
+        'is_active',
+        'name_1',
+        'name_2',
+        'name_3',
         'note',
         'external_reference',
-        'is_active',
+        'external_info',
+        'external_status',
+        'language_id',
+        'country_id',
+        'organization_type_id',
+        'legal_form_id',
         'data',
-        // Needed so transform field_map can persist soft-deletes via mass assignment.
+        'created_by_id',
+        'created_by_type',
+        'updated_by_id',
+        'updated_by_type',
+        'archived_at',
+        'archived_by_id',
+        'archived_by_type',
         'deleted_at',
+        'deleted_by_id',
+        'deleted_by_type',
+        'restored_at',
+        'restored_by_id',
+        'restored_by_type',
     ];
 
-    protected $hidden = [
-        'password',
-        'remember_token',
+    /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'is_active' => true,
     ];
-
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'data' => 'array',
-            'language_id' => 'integer',
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_active' => 'boolean',
-        ];
-    }
 
     public static function getResourceName(): string
     {
         return 'contact';
     }
 
-    public static function newFactory(): ContactFactory
+    public function callingCode(): ?string
     {
-        return ContactFactory::new();
+        if ($this->country_id === null) {
+            return null;
+        }
+
+        $country = $this->relationLoaded('country') ? $this->getRelation('country') : $this->country()->first();
+        if (! is_object($country)) {
+            return null;
+        }
+
+        $callingCode = $country->calling_code ?? null;
+        if (is_int($callingCode) || is_float($callingCode)) {
+            $callingCode = (string) $callingCode;
+        }
+
+        if (! is_string($callingCode) || trim($callingCode) === '') {
+            return null;
+        }
+
+        return trim($callingCode);
     }
 
     /**
-     * @return BelongsTo<StaticLanguage, $this>
+     * @return array<string, string>
      */
-    public function language(): BelongsTo
+    protected function casts(): array
     {
-        return $this->belongsTo(StaticLanguage::class, 'language_id');
-    }
-
-    public function displayLabel(): string
-    {
-        $displayName = trim((string) ($this->display_name ?? ''));
-        if ($displayName !== '' && ! Str::isUuid($displayName)) {
-            return $displayName;
-        }
-
-        $name = trim(implode(' ', array_filter([$this->first_name, $this->last_name])));
-
-        if ($name !== '') {
-            return $name;
-        }
-
-        if (filled($this->email)) {
-            return (string) $this->email;
-        }
-
-        $username = trim((string) ($this->username ?? ''));
-        if ($username !== '' && ! Str::isUuid($username)) {
-            return $username;
-        }
-
-        return '';
-    }
-
-    public function canAuthenticate(): bool
-    {
-        return filled($this->username) && filled($this->getAuthPassword());
-    }
-
-    public function canAccessPanel(Panel $panel): bool
-    {
-        if (! $this->canAuthenticate() || ! $this->is_active) {
-            return false;
-        }
-
-        // Contacts authenticate for portal panels, not the admin panel.
-        return $panel->getId() !== 'admin';
-    }
-
-    public function getFilamentName(): string
-    {
-        return $this->displayLabel();
-    }
-
-    protected static function booted(): void
-    {
-        static::saving(function (Contact $contact): void {
-            if ($contact->display_name === null || $contact->display_name === '') {
-                $generated = trim(implode(' ', array_filter([$contact->first_name, $contact->last_name])));
-
-                if ($generated !== '') {
-                    $contact->display_name = $generated;
-                }
-            }
-        });
+        return [
+            'is_active' => 'boolean',
+            'data' => 'array',
+            'language_id' => 'integer',
+            'country_id' => 'integer',
+            'organization_type_id' => 'integer',
+            'legal_form_id' => 'integer',
+            'created_by_id' => 'integer',
+            'updated_by_id' => 'integer',
+            'archived_by_id' => 'integer',
+            'deleted_by_id' => 'integer',
+            'restored_by_id' => 'integer',
+            'archived_at' => 'datetime',
+            'restored_at' => 'datetime',
+        ];
     }
 }

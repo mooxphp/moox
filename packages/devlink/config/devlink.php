@@ -550,6 +550,11 @@ return [
             'path' => $public_base_path.'/staff',
             'type' => 'public',
         ],
+        'support' => [
+            'active' => false,
+            'path' => $public_base_path.'/support',
+            'type' => 'public',
+        ],
         'static' => [
             'active' => false,
             'path' => $public_base_path.'/static',

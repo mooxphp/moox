@@ -6,7 +6,6 @@ namespace Moox\Supplier\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
-use Moox\Core\Support\Resources\ChildResourceRegistrar;
 use Moox\Supplier\Resources\SupplierResource;
 
 class SupplierPlugin implements Plugin
@@ -18,12 +17,9 @@ class SupplierPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        ChildResourceRegistrar::registerFromParentDefinition(
-            $panel,
+        $panel->resources([
             SupplierResource::class,
-            'supplier',
-            config('supplier.resources.supplier', []),
-        );
+        ]);
     }
 
     public function boot(Panel $panel): void

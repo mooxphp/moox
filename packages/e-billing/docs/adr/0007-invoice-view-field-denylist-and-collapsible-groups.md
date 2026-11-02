@@ -36,7 +36,7 @@ MoSCoW stays a flat `field => must|should|could` map under `field_validation`.
 ### 3. Collapsible groups
 
 - Header groups and notes use the same `<details>` pattern as line items.
-- **Force-open** when the group (or line) has at least one **visible** blocking must-finding: status in `missing` / `invalid` / `unmatched` / `needs_review` for a field whose MoSCoW priority is `must`.
+- **Force-open (soft)** when the group (or line) has at least one **visible** blocking must-finding: status in `missing` / `invalid` / `unmatched` / `needs_review` for a field whose MoSCoW priority is `must`. Soft means: when that server signal goes from false→true, the section opens once for this ViewInvoice visit; the reviewer may close it afterward; when findings clear, the section stays as the reviewer left it (usually open). Open/closed for the visit lives in Livewire page state (`ViewInvoice::$collapsibleOpen` via `Support\CollapsibleOpen`), not browser storage, so Livewire remorphs (e.g. `wire:poll.5s`) do not snap sections shut.
 - **Marker** on the `<summary>`: text + colour (e.g. issue count / “Must missing”) — not colour-only.
 - **Denylisted fields do not count** toward marker or force-open (opening a section for a problem the UI deliberately hides is worse than relying on the status banner / score).
 - Line `<details>` use the same force-open + marker rules per line.

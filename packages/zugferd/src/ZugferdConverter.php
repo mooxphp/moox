@@ -687,7 +687,7 @@ class ZugferdConverter
     private function emitLineAllowanceCharges(ZugferdDocumentBuilder $doc, ZugferdInvoiceLine $line): void
     {
         foreach ($line->allowanceCharges as $item) {
-            if ($item->amount <= 0) {
+            if ($item->amount === 0.0) {
                 continue;
             }
             $doc->addDocumentPositionAllowanceCharge(
@@ -831,7 +831,7 @@ class ZugferdConverter
     private function addAllowanceCharges(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
     {
         foreach ($this->collectAllowanceCharges($invoice) as $item) {
-            if ($item->amount <= 0) {
+            if ($item->amount === 0.0) {
                 continue;
             }
 
@@ -875,10 +875,6 @@ class ZugferdConverter
         $allowanceTotal = 0.0;
 
         foreach ($this->collectAllowanceCharges($invoice) as $item) {
-            if ($item->amount <= 0) {
-                continue;
-            }
-
             if ($item->isCharge) {
                 $chargeTotal += $item->amount;
             } else {
@@ -910,10 +906,6 @@ class ZugferdConverter
         $amount = $line->lineTotal;
 
         foreach ($line->allowanceCharges as $item) {
-            if ($item->amount <= 0) {
-                continue;
-            }
-
             $amount += $item->isCharge ? $item->amount : -$item->amount;
         }
 

@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema as DatabaseSchema;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
@@ -932,6 +933,11 @@ class ConfigRelationManager extends RelationManager
         $resource = $this->getResolvedRelatedResource();
 
         if ($resource === null || ! $resource::hasPage($page)) {
+            return null;
+        }
+
+        // The class can declare the page while the panel leaves the resource unregistered.
+        if (! Route::has($resource::getRouteBaseName().'.'.$page)) {
             return null;
         }
 

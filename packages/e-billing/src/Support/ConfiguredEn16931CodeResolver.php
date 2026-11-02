@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Moox\EBilling\Support;
 
 use Illuminate\Database\Eloquent\Model;
+use Moox\Data\Models\StaticAllowanceReason;
+use Moox\Data\Models\StaticChargeReason;
 use Moox\Data\Models\StaticPaymentMean;
 use Moox\Data\Models\StaticVatCategory;
 use Moox\EBilling\Exceptions\CodelistNotImportedException;
@@ -51,6 +53,21 @@ final class ConfiguredEn16931CodeResolver
     public function assertVatCategoryCode(string $code, string $codelist = 'vat_category_code'): string
     {
         return $this->assertCode($code, $codelist, StaticVatCategory::class, 'static_vat_categories');
+    }
+
+    /**
+     * Every configured allowance/charge reason code against the codelist of its direction (ADR 0014):
+     * charges against UNCL 7161, the discount against UNCL 5189.
+     */
+    public function assertAllowanceChargeReasonCodesFromConfig(): void
+    {
+        foreach (AllowanceChargeReasonCodes::configured() as $configured) {
+            [$modelClass, $table] = $configured['is_charge']
+                ? [StaticChargeReason::class, 'static_charge_reasons']
+                : [StaticAllowanceReason::class, 'static_allowance_reasons'];
+
+            $this->assertCode($configured['code'], $configured['key'], $modelClass, $table);
+        }
     }
 
     /**

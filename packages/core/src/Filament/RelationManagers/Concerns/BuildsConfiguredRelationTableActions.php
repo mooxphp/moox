@@ -388,6 +388,10 @@ trait BuildsConfiguredRelationTableActions
             if ($value === 'owner.id') {
                 $params[$field] = $this->getOwnerRecord()->getKey();
             }
+
+            if ($value === 'owner.class') {
+                $params[$field] = $this->getOwnerRecord()::class;
+            }
         }
 
         return $relatedResource::getUrl('create', $params);

@@ -159,6 +159,7 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
         $this->paymentMeansCode = $invoice->paymentMeansCode
             ?? app(ConfiguredEn16931CodeResolver::class)->paymentMeansCodeFromConfig();
         $this->vatCategoryCode = app(ConfiguredEn16931CodeResolver::class)->vatCategoryCodeFromConfig();
+        app(ConfiguredEn16931CodeResolver::class)->assertAllowanceChargeReasonCodesFromConfig();
         $this->vatRate = $invoice->vatRate;
         $this->netTotal = $invoice->netTotal;
         $this->vatAmount = $invoice->vatAmount;

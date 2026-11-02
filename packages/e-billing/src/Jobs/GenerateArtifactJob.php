@@ -28,6 +28,7 @@ use Moox\EBilling\Services\CopyPdfComposer;
 use Moox\EBilling\Services\InboxMessagePipelineFinalizer;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 use Moox\EBilling\Services\ParsedInvoiceMapper;
+use Moox\EBilling\Support\ConfiguredEn16931CodeResolver;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\EBilling\Support\EBillingArtifactNaming;
 use Moox\EBilling\Support\EBillingFormatResolver;
@@ -181,6 +182,9 @@ class GenerateArtifactJob implements ShouldQueue
         $documentType = $invoice->document_type;
 
         $this->setProgress(40);
+
+        // Every run generates from the Invoice rows; a code configured after mapping is checked here (ADR 0014).
+        app(ConfiguredEn16931CodeResolver::class)->assertAllowanceChargeReasonCodesFromConfig();
 
         $invoiceFieldValidator->fillFieldValidations($document);
         $document->refresh();

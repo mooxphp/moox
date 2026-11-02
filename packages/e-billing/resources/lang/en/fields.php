@@ -48,6 +48,7 @@ return [
     'certificate_cost' => 'Certificate cost',
     'customs_cost' => 'Customs cost',
     'totals_reconciliation' => 'Totals reconciliation',
+    'allowance_charge_reason_codes' => 'Allowance and charge reason codes',
     'packaging_cost' => 'Packaging cost',
     'notes' => 'Notes',
     'position' => 'Line item',
@@ -316,6 +317,10 @@ return [
         'iban' => 'IBAN',
         'bic' => 'BIC',
         'bank_name' => 'Bank',
+        'amount' => 'Amount',
+        'percentage' => 'Percentage',
+        'reason_text' => 'Reason',
+        'reason_code' => 'Reason code',
     ],
     'approval_blocked_prefix' => 'Approval not possible yet:',
     'approval_blocked' => [
@@ -424,6 +429,8 @@ return [
         .'actual delivery date rule without aggregating them into a period.',
     'hint_review_totals_reconciliation' => 'Lines, charges and allowances do not add up to the net total '
         .'(difference €:difference). Compare line amounts and charges with the PDF.',
+    'hint_review_allowance_charge_reason_codes' => 'Allowances and charges without a valid reason code: :charges. '
+        .'In edit mode, choose the reason code of each one (UNCL 7161 or 5189).',
     'hint_review_payment_discount' => 'The printed early-payment discount (€:printed) does not match '
         .'its percent and base (expected €:expected). Compare the discount and the amount due with the PDF.',
     'hint_review_duplicate_invoice_number' => 'This document number already exists and needs review.',

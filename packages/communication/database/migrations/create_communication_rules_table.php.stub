@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('communication_rules', function (Blueprint $table): void {
+            $table->id();
+            $table->ulid('ulid')->unique();
+            $table->uuid('uuid')->unique();
+
+            $table->boolean('is_active')->default(true);
+
+            $table->string('owner_type');
+            $table->unsignedBigInteger('communication_type_id');
+
+            $table->timestamp('created_at');
+            $table->unsignedBigInteger('created_by_id');
+            $table->string('created_by_type');
+            $table->timestamp('updated_at');
+            $table->unsignedBigInteger('updated_by_id');
+            $table->string('updated_by_type');
+
+            $table->unique(['owner_type', 'communication_type_id'], 'communication_rule_owner_type_unique');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('communication_rules');
+    }
+};
