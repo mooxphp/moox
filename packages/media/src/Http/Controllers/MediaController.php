@@ -80,6 +80,32 @@ class MediaController extends Controller
         });
     }
 
+    public function show(Request $request, Media $media): MediaItemResource
+    {
+        $this->authorize('view', $media);
+
+        $resolver = app(MediaLocaleResolver::class);
+
+        $lang = $request->query('lang');
+        $lang = is_string($lang) && preg_match('/^[A-Za-z0-9_-]+$/', trim($lang)) === 1
+            ? trim($lang)
+            : null;
+
+        $effectiveLocale = $lang
+            ?? $this->getLangFromReferer($request)
+            ?? $resolver->adminDefaultLocale();
+
+        return $resolver->withLocale($effectiveLocale, function () use ($media): MediaItemResource {
+            $media->load(['translations', 'collection.translations']);
+
+            return (new MediaItemResource($media))->additional([
+                'context' => [
+                    'locale' => app()->getLocale(),
+                ],
+            ]);
+        });
+    }
+
     public function store(MediaStoreRequest $request)
     {
         $this->authorize('create', Media::class);
@@ -119,8 +145,8 @@ class MediaController extends Controller
             $model->exists = true;
 
             $fileAdder = FileAdderFactory::create($model, $file);
-            $fileSize = method_exists($file, 'getSize') ? $file->getSize() : null;
-            if (is_int($fileSize) && $fileSize > 0) {
+            $fileSize = $file->getSize();
+            if ($fileSize > 0) {
                 $fileAdder->setFileSize($fileSize);
             }
 

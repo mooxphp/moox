@@ -9,6 +9,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Support\MediaLocaleResolver;
+use Moox\Media\Support\MediaPictureBuilder;
 
 /**
  * @property Media $resource
@@ -40,6 +41,7 @@ class MediaItemResource extends JsonResource
             'name' => $metadata['name'],
             'title' => $metadata['title'],
             'alt' => $metadata['alt'],
+            'picture' => app(MediaPictureBuilder::class)->toArray($media),
             'collection' => $collection ? [
                 'id' => $collection->getKey(),
                 'name' => $resolver->collectionName($collection->loadMissing('translations')),
