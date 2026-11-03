@@ -45,5 +45,5 @@ Field validation runs inside `GenerateArtifactJob`, before the XML is generated.
 - Generation succeeds without any master data; the package works with the null resolver.
 - Hosts that relied on the built-in Customer/Company matching must bind a resolver to keep corroboration. Until then documents go to review (`master_data_unavailable`) and are not auto-approved.
 - Stored statuses change only on revalidation.
-- Out of scope, tracked in mooxphp/e-billing#120: the `company_id` / `customer_id` columns stay; UI usages of `Customer` (`ViewInvoice`, `ReviewWorkspace`, `CrossCheckedFields` options, `SetInvoiceAttributionAction` including `CustomerMatcher::resolveCompanyId`) and `EbillingDocument::company()` (still used by the delivery recipient resolver's master-data mode) are untouched; `moox/company` and `moox/customer` stay in `composer require`; an optional Moox-based resolver is a follow-up.
+- The follow-up tracked in mooxphp/e-billing#120 (columns, UI usages, recipient preferences, delivery recipient strategy) is resolved by [ADR 0021](0021-recipient-preferences-port-and-contact-attribution.md). Where recipient preferences are stored is still open (#120 Part B).
 - Glossary: *Buyer master-data resolver* and *Master data unavailable* in this package's `CONTEXT.md`.

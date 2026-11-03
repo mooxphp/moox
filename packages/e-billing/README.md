@@ -53,7 +53,6 @@ This package composes the other Moox e-billing packages. Composer requires:
 | Package | Role |
 | --- | --- |
 | `moox/address` | Address fingerprints / company billing addresses for attribution corroboration |
-| `moox/company` | Company FK on `EbillingDocument` (reporting-only; derived from customer) |
 | `moox/core` | Base model, Filament resource, Moox installer |
 | `moox/customer` | Customer FK on `EbillingDocument` (document identity / visibility gate) |
 | `moox/invoice` | Invoice domain models (`Invoice`, lines, parties) |
@@ -91,11 +90,12 @@ Published as `config/e-billing.php`.
 | `tabs` | List-page tab filters (`all`, `needs_review`, `confirmed`, `awaiting_approval`, `sent`, `deleted`); the pseudo fields `approval_status` and `delivered` filter on the e-billing document. `tabs.ignored_documents`: `all`, `foreign`, `before_cutoff`, `identical_duplicate`, `relay_failed`; conditions use `gateway_status` (in) and the pseudo field `relay_failed` (true) |
 | `default` | Single default when the preference port returns null: `format` (FormatRegistry key, default `zugferd`) + `profile` (hybrid library profile, default `EN16931`, must be in `allowed_profiles`). XRechnung ignores `profile` and always uses `XRECHNUNG` |
 | `allowed_profiles` | Hybrid profiles a recipient preference may request for `zugferd` / `factur-x` (default `['EN16931']`). XRechnung never takes a preference profile |
+| `settings.contact_model` | Model class whose morph class is stored as `owner_type` in `ebilling_settings` and matched against `ebilling_documents.contact_id` by `SettingsRecipientPreferenceResolver` (default `null` = no settings are read; e.g. `Moox\Contact\Models\Contact`). See [Recipient preferences](#recipient-preferences) |
 | `zugferd` | ZUGFeRD filesystem disk (`storage_disk`, `storage_root`). Hybrid profiles come from `default.profile`, not `moox/zugferd` config |
 | `default_customer_country` | Transitional fallback buyer country when the parser derives none (default `DE`); removed in a future master-data phase |
 | `supplier` | Central supplier master data copied onto invoices as a snapshot at creation time |
 | `master_data` | Buyer master data (ADR 0020, see [Buyer master data](#buyer-master-data)): `resolver` (class implementing `BuyerMasterDataResolver`, default `null` = the null resolver, always unavailable) and `when_unavailable` (`EBILLING_MASTER_DATA_WHEN_UNAVAILABLE`: `review` default, or `trust_parsed`) |
-| `corroboration` | Post-attribution master-data checks against the buyer the resolver returned (never clears `customer_id`; `buyer_address_roles` / `delivery_address_roles` now only feed the review workspace's cross-check options, not corroboration): `name_min_token_length` (a name with no token that long, such as "ABC GmbH", requires equal full names instead, ignoring trailing legal forms; also applies to the consignee name), `name_legal_form_stop_words`, `buyer_address_roles` (billing + postal), `delivery_address_roles` (delivery first, then postal/billing fallback; a consignee with the buyer's name is checked against the first role only) |
+| `corroboration` | Post-attribution master-data checks against the buyer the resolver returned (never clears `customer_id`; which host address roles count as billing or delivery is the resolver's job): `name_min_token_length` (a name with no token that long, such as "ABC GmbH", requires equal full names instead, ignoring trailing legal forms; also applies to the consignee name), `name_legal_form_stop_words` |
 | `cross_checked` | Fields checked against master data, shared by the review workspace pickers and the divergence report: `strict` (`EBILLING_CROSS_CHECKED_STRICT`, default `false`) and `fields` (see [Cross-checked fields](#cross-checked-fields)) |
 | `field_validation` | MoSCoW priority rules for invoice and line fields. `credit_note_*` siblings (fields, line fields, contextual-should lists) apply to BT-3 `381` documents; a host that omits a `credit_note_*` key falls back to the `invoice_*` key (ADR 0009) |
 | `field_validation.invoice_fields_satisfied_by_lines` | Header fields (default `[]`) that count as present when every invoice line carries its own value, e.g. `order_number` / `order_date` on a collective invoice. Profile-scoped like the other keys: `credit_note_fields_satisfied_by_lines`, `corrected_invoice_fields_satisfied_by_lines` (a profile falls back to the invoice list unless it defines its own, which may be empty). See [Header fields satisfied by lines](#header-fields-satisfied-by-lines) |
@@ -206,7 +206,8 @@ final class MyBuyerResolver implements BuyerMasterDataResolver
         }
 
         return BuyerMasterDataResult::matched(new BuyerMasterData(
-            reference: (string) $customer->id,
+            reference: (string) $customer->id, // key of an existing `customers` row (digits)
+            contactReference: (string) $customer->contact_id, // optional, digits
             name: $customer->name,
             vatId: $customer->vat_id,
             customerNumber: $customer->number,
@@ -226,30 +227,47 @@ final class MyBuyerResolver implements BuyerMasterDataResolver
 
 | Result | Effect |
 | --- | --- |
-| `matched` | Corroboration runs against the returned `BuyerMasterData`. The document's `customer_id` is set to its `reference` (attribution source `auto`). A buyer whose `customerNumber` differs from the parsed one, or with `isReviewable: true` (for example deleted or inactive), puts `customer_number` into review |
+| `matched` | Corroboration runs against the returned `BuyerMasterData`. The document's `customer_id` is set to its `reference` and `contact_id` to its `contactReference` (attribution source `auto`). A buyer whose `customerNumber` differs from the parsed one, or with `isReviewable: true` (for example deleted or inactive), puts `customer_number` into review |
 | `no_match` / `ambiguous` | No corroboration; `ambiguous` is treated like `no_match`. An existing `customer_id` is left untouched |
 | `unavailable` | Governed by `master_data.when_unavailable` (below). An existing `customer_id` is left untouched |
 
 - Billing addresses corroborate the buyer address and country. A consignee is matched against delivery addresses first, then billing addresses; an own site (a consignee with the buyer's name) only against delivery addresses. Mapping your address roles to billing or delivery is the resolver's job.
+- `reference` must be the key of an existing `customers` row (a soft-deleted customer counts as existing); `contactReference` must be digits. A match that breaks this is logged as an error and treated as `unavailable`.
 - A resolver that throws is logged as an error and treated as `unavailable`; it is not retried (a later revalidation catches up).
 - `when_unavailable = review` (default): the non-empty `customer_number`, `customer_name`, `customer_address`, `customer_vat_id` and `country` become `needs_review` with reason `master_data_unavailable`; customer number, name and address are must fields, so the document is not auto-approved. `trust_parsed` marks them `parsed` instead. `delivery_address` is unaffected. There is no option to block generation.
-- A manual attribution is looked up by its reference (`BuyerLookup::$reference`) and reported with source `manual`. Field validation never writes `company_id`.
+- A manual attribution is looked up by its reference (`BuyerLookup::$reference`) and reported with source `manual`. Manual attribution (`SetInvoiceAttributionAction`) sets `customer_id`, `contact_id` (the customer's `contact_id`) and `attribution_source = manual`; clearing nulls all three.
 
-## Recipient format preference
+## Recipient preferences
 
-Before generation, `EBillingFormatResolver` asks a host-bound port for the recipient's preference, then returns an `EffectiveFormat` (`format` + `profile`) that `GenerateArtifactJob` uses for `generateXml`.
+Before generation, `EBillingFormatResolver` asks a host-bound port for the recipient's preferences, then returns an `EffectiveFormat` (`format` + `profile`) that `GenerateArtifactJob` uses for `generateXml`. The same port supplies the visual-copy flag (`resolveSendVisualCopy()`).
 
 ```php
-use Moox\EBilling\Contracts\RecipientFormatPreferenceResolverInterface;
+use Moox\EBilling\Contracts\RecipientPreferenceResolver;
+use Moox\EBilling\Data\RecipientPreferences;
+use Moox\EBilling\Models\EbillingDocument;
 
-// Optional — package auto-binds CustomerFormatPreferenceResolver when unbound
-$this->app->bind(RecipientFormatPreferenceResolverInterface::class, YourResolver::class);
+final class YourResolver implements RecipientPreferenceResolver
+{
+    public function resolve(EbillingDocument $document): RecipientPreferences
+    {
+        return new RecipientPreferences(format: 'xrechnung', profile: null, sendVisualCopy: false);
+    }
+}
+
+// Optional — package binds SettingsRecipientPreferenceResolver when unbound
+$this->app->bind(RecipientPreferenceResolver::class, YourResolver::class);
 ```
 
-- **Default binding:** `CustomerFormatPreferenceResolver` reads `Customer.preferred_ebilling_format` (`customer_id` with trashed, else `CustomerMatcher` on the invoice customer number). Always `profile: null`. Empty/missing → `null`.
-- **Null preference:** `config('e-billing.default')` (`format` + `profile`) via the registry bake-in.
+`RecipientPreferences` has `?string $format`, `?string $profile` and `?bool $sendVisualCopy`. `null` means no preference.
+
+- **Default binding:** `Support\SettingsRecipientPreferenceResolver`, bound only when the host has not bound the interface. It reads the `ebilling_settings` row whose owner is the document's contact (`owner_id = ebilling_documents.contact_id`, `owner_type` = morph class of `e-billing.settings.contact_model`). No contact, no row or no choice gives empty preferences, so the defaults below apply. Bind `NullRecipientPreferenceResolver` to read no preferences at all.
+- **Stored choice:** the row's `preferred_ebilling_format` is a `RecipientFormatChoice`: `zugferd` (ZUGFeRD / Factur-X), `xrechnung` (XRechnung, no visual copy) or `xrechnung_with_pdf` (XRechnung with a separate PDF). One value sets format and visual copy, so a contradicting pair cannot be stored. `ebilling_recipients` (JSON) is reserved for a later portal role model and is not read yet.
+- **Table:** run the `create_ebilling_settings_table` migration (publish or copy it). Columns: `owner_type` + `owner_id` (morph, unique together), `preferred_ebilling_format`, `ebilling_recipients`, timestamps. Read and write rows through `Models\EbillingSetting` (`for(Model)`, `forReference(type, id)`, `owner()`).
+- **Portal settings:** `Moox\EBilling\Portal\InvoiceSettingsSection` takes any `Model $owner` in `fill()` / `persist()` and shows one required select `preferred_ebilling_format` with the three choices. `persist()` upserts the owner's row and throws `ValueError` for an unknown value; `fill()` preselects the choice matching the config defaults. The host decides which model is the owner (the default resolver expects the contact).
+- **Null preference:** `config('e-billing.default')` (`format` + `profile`) for the format and `config('e-billing.send_visual_copy')` for the visual copy. A profile without a format is ignored.
+- **Throwing port:** for the format, `FormatPreferenceUnavailableException` (job release with backoff; on the last attempt the default is generated and the document held with `format_preference_unavailable`, ADR 0020). For the visual-copy flag the failure is logged and the config default is used.
 - **Unknown format or disallowed profile:** throws (`UnknownFormatException` / `InvalidFormatPreferenceException`) — no silent fallback.
-- **Why one `FormatPreference`:** the ZUGFeRD library derives attachment filename, guideline id, and XMP name from the profile; separate knobs would fight the library. Preference is `{ format, profile? }` only — profile applies to hybrids and must be in `allowed_profiles` when set; `xrechnung` must keep `profile` null.
+- **Why format and profile travel together:** the ZUGFeRD library derives attachment filename, guideline id, and XMP name from the profile; separate knobs would fight the library. The format preference is `{ format, profile? }` only — profile applies to hybrids and must be in `allowed_profiles` when set; `xrechnung` must keep `profile` null.
 - **Freeze:** once `xml_storage_path` is set, retries use frozen `document.format` and frozen `document.profile` (port not re-consulted; both columns required — empty format or profile throws). Preference changes apply to future documents only.
 
 See ADR `docs/adr/0003-recipient-format-preference-four-layer-model.md`.
@@ -472,10 +490,9 @@ Final pipeline stage after approval: get an approved document to its recipients 
 | --- | --- |
 | `inbox_to` | The address a reviewer set on the document (`buyer.contact.email`) when there is one, else the validated `InboxMessage.to_email` (optional `to_name`); empty or invalid → no recipients |
 | `document` | Only the address a reviewer set on the document (`buyer.contact.email`, BT-58); none set → no recipients |
-| `master` | Validated attributed `company.email` (optional company name); empty or invalid → no recipients |
 | `none` | Empty list |
 
-Hosts may still bind their own `DeliveryRecipientResolverInterface` to replace this policy.
+An unknown value (including the removed `master`) yields no recipients. Hosts may still bind their own `DeliveryRecipientResolverInterface` to replace this policy.
 
 **Manual upload:** the upload dialog collects `recipient_email` when enabled (required when MoSCoW `buyer_email` is `must` for the declared document type). It is stored on `UploadedPdfSource` (`uploader_user_id`, `recipient_email_applied_at`) and applied once to `buyer.contact.email` during `GenerateArtifactJob` via `ApplyUploadedRecipientEmailAction` (audited `recipient_set`, origin `upload`).
 
@@ -491,8 +508,8 @@ Hosts may still bind their own `DeliveryRecipientResolverInterface` to replace t
 | --- | --- | --- |
 | `delivery.enabled` | `false` | When `false`, approve does not queue dispatch and `DispatchDocumentAction` writes no records (gate still asserted) |
 | `delivery.mailer` | `null` | Optional Laravel mailer name (`EBILLING_DELIVERY_MAILER`) for host senders |
-| `delivery.recipients.mail_source` | `inbox_to` | Recipient strategy for mail-sourced documents (`inbox_to` \| `document` \| `master` \| `none`) |
-| `delivery.recipients.manual_upload` | `none` | Recipient strategy for manual uploads (`inbox_to` \| `document` \| `master` \| `none`) |
+| `delivery.recipients.mail_source` | `inbox_to` | Recipient strategy for mail-sourced documents (`inbox_to` \| `document` \| `none`) |
+| `delivery.recipients.manual_upload` | `none` | Recipient strategy for manual uploads (`inbox_to` \| `document` \| `none`) |
 | `delivery.channels` | `[]` | FQCNs implementing `DeliveryChannelInterface` |
 
 ### Review notification announce
@@ -587,8 +604,8 @@ Scheduled scan for documents still `approval_status = pending` past configured t
 | `error_message` | `text` | nullable | Last pipeline error |
 | `created_at` | `timestamp` | NOT NULL | |
 | `updated_at` | `timestamp` | NOT NULL | |
-| `company_id` | `uuid` FK | nullable | References `companies.id` (`nullOnDelete`). Reporting only — derived from the matched customer; never an access boundary |
-| `customer_id` | `uuid` FK | nullable | References `customers.id` (`nullOnDelete`). Document identity (matched customer); gate visibility on this |
+| `contact_id` | `unsignedBigInteger` | nullable | Indexed, no foreign key. The attributed customer's contact; reporting and (later) recipient preferences only, never an access boundary. Cast to string |
+| `customer_id` | `unsignedBigInteger` FK | nullable | References `customers.id` (`nullOnDelete`). Document identity (matched customer); gate visibility on this. Cast to string |
 | `attribution_source` | `string` | nullable | `auto` (matcher) or `manual` (operator). Indexed. Manual attributions survive rematch |
 | `invoice_id` | `uuid` FK | nullable | References `invoices.id` (`nullOnDelete`) |
 | `scope` | `string` | nullable | Tenant / mailbox scope (indexed) |
@@ -598,7 +615,6 @@ Scheduled scan for documents still `approval_status = pending` past configured t
 - `source()` — `MorphTo` (typically `InboxAttachment`)
 - `invoice()` — `BelongsTo` `Moox\Invoice\Models\Invoice`
 - `customer()` — `BelongsTo` `Moox\Customer\Models\Customer`
-- `company()` — `BelongsTo` `Moox\Company\Models\Company` (reporting only)
 - `kositValidations()` — `MorphToMany` via `kosit_validatables`
 - `veraPdfValidations()` — `MorphToMany` via `verapdf_validatables` (hybrid formats when veraPDF is configured)
 
@@ -793,16 +809,16 @@ An attribute must also be audited by its model to be correctable: the `invoice.a
 'cross_checked' => [
     'strict' => (bool) env('EBILLING_CROSS_CHECKED_STRICT', false),
     'fields' => [
-        'customer_number' => ['record' => 'customer', 'attribute' => 'customer_number'],
-        'customer_name' => ['record' => 'company', 'attribute' => 'name'],
-        'customer_vat_id' => ['record' => 'company', 'attribute' => 'vat_number'],
-        'customer_address' => ['record' => 'company', 'addresses' => 'buyer'],
-        'delivery_address' => ['record' => 'company', 'addresses' => 'delivery'],
+        'customer_number' => ['value' => 'customer_number'],
+        'customer_name' => ['value' => 'name'],
+        'customer_vat_id' => ['value' => 'vat_id'],
+        'customer_address' => ['addresses' => 'buyer'],
+        'delivery_address' => ['addresses' => 'delivery'],
     ],
 ],
 ```
 
-Each field names the matched `record` (`customer` or `company`) and either an `attribute` of it or its `addresses` filtered by the `corroboration` role config (`buyer` or `delivery`). `CrossCheckedFields` scopes the options to the attributed customer:
+The options come from what `BuyerMasterDataResolver` returns for the attributed customer (looked up by reference = `customer_id`), the same data field validation corroborates against, so the customer number shown in review is the one the attribution was checked with. Each field names either a `value` (`customer_number`, `name` with the alternative names, `vat_id`) or `addresses` (`buyer`: the billing addresses; `delivery`: the delivery addresses, then the billing addresses). There is no mapping for `customer_tax_number` (the buyer has no source for it). The review workspace looks the buyer up once (`ReviewWorkspace::buyer()`, via `CrossCheckedFields::buyerFor()`) and passes it to `options()`, `addressOptions()` and `isKnown()`. Without a resolver or attribution there are no options and nothing is flagged:
 
 | Mode | Behaviour |
 |---|---|
