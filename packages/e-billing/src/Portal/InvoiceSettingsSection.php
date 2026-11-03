@@ -4,27 +4,21 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Portal;
 
-use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
-use Moox\Customer\Models\Customer;
-use Moox\EBilling\Formats\FormatRegistry;
+use Illuminate\Database\Eloquent\Model;
+use Moox\EBilling\Enums\RecipientFormatChoice;
+use Moox\EBilling\Models\EbillingSetting;
 
 /**
- * Domain logic for portal invoice settings (format + visual-copy preference).
+ * Domain logic for portal invoice settings: the recipient's format choice, stored in `ebilling_settings` on the
+ * model the portal passes as owner (the buyer's contact).
  *
- * Does not implement portal contracts or self-register — heco/portal owns registration.
+ * Does not implement portal contracts or self-register — the portal owns registration.
  */
 final class InvoiceSettingsSection
 {
-    public function __construct(
-        private FormatRegistry $formats,
-    ) {
-    }
-
     public function id(): string
     {
         return 'invoice-settings';
@@ -45,95 +39,34 @@ final class InvoiceSettingsSection
                 ->description(__('e-billing::ebilling.invoice_settings_description'))
                 ->icon(Heroicon::OutlinedDocumentText)
                 ->schema([
-                    Grid::make(['default' => 1, 'md' => 2])
-                        ->schema([
-                            Select::make('preferred_ebilling_format')
-                                ->label(__('e-billing::ebilling.preferred_ebilling_format'))
-                                ->options(fn (): array => $this->formatOptions())
-                                ->required()
-                                ->live()
-                                ->columnSpan(fn (Get $get): array => $get('preferred_ebilling_format') === 'xrechnung'
-                                    ? ['default' => 1, 'md' => 1]
-                                    : ['default' => 1, 'md' => 2]),
-                            Radio::make('send_visual_copy')
-                                ->label(__('e-billing::ebilling.send_visual_copy'))
-                                ->options([
-                                    'with_pdf' => __('e-billing::ebilling.send_visual_copy_with_pdf'),
-                                    'xml_only' => __('e-billing::ebilling.send_visual_copy_xml_only'),
-                                ])
-                                ->required()
-                                ->visible(fn (Get $get): bool => $get('preferred_ebilling_format') === 'xrechnung'),
-                        ]),
+                    Select::make('preferred_ebilling_format')
+                        ->label(__('e-billing::ebilling.preferred_ebilling_format'))
+                        ->options(RecipientFormatChoice::options())
+                        ->required(),
                 ]),
         ];
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array{preferred_ebilling_format: string}
      */
-    public function fill(Customer $customer): array
+    public function fill(Model $owner): array
     {
-        $defaultFormat = (string) config('e-billing.default.format', 'zugferd');
-        $format = is_string($customer->preferred_ebilling_format) && $customer->preferred_ebilling_format !== ''
-            ? $customer->preferred_ebilling_format
-            : $defaultFormat;
+        $choice = EbillingSetting::for($owner)->preferred_ebilling_format ?? RecipientFormatChoice::fromDefaults();
 
-        $sendVisualCopy = $customer->send_visual_copy;
-        if ($sendVisualCopy === null) {
-            $sendVisualCopy = (bool) config('e-billing.send_visual_copy', true);
-        }
-
-        return [
-            'preferred_ebilling_format' => $format,
-            'send_visual_copy' => $sendVisualCopy ? 'with_pdf' : 'xml_only',
-        ];
+        return ['preferred_ebilling_format' => $choice->value];
     }
 
     /**
      * @param  array<string, mixed>  $state
      */
-    public function persist(array $state, Customer $customer): void
+    public function persist(array $state, Model $owner): void
     {
-        $format = is_string($state['preferred_ebilling_format'] ?? null)
-            ? $state['preferred_ebilling_format']
-            : null;
+        $choice = RecipientFormatChoice::from((string) ($state['preferred_ebilling_format'] ?? ''));
 
-        $allowed = array_keys($this->formatOptions());
-        if ($format === null || ! in_array($format, $allowed, true)) {
-            $format = (string) config('e-billing.default.format', 'zugferd');
-        }
-
-        $sendVisualCopy = null;
-        if ($format === 'xrechnung') {
-            $copyChoice = $state['send_visual_copy'] ?? null;
-            $sendVisualCopy = $copyChoice !== 'xml_only';
-        }
-
-        $customer->forceFill([
-            'preferred_ebilling_format' => $format,
-            'send_visual_copy' => $sendVisualCopy,
-        ])->save();
-    }
-
-    /**
-     * Registry labels are the UI source of truth; customer config is the generic fallback.
-     *
-     * @return array<string, string>
-     */
-    private function formatOptions(): array
-    {
-        $labels = $this->formats->labels();
-
-        if ($labels !== []) {
-            return $labels;
-        }
-
-        /** @var list<string> $configured */
-        $configured = config('customer.preferred_ebilling_formats', []);
-
-        return collect($configured)
-            ->filter(fn (mixed $id): bool => is_string($id) && $id !== '')
-            ->mapWithKeys(fn (string $id): array => [$id => $id])
-            ->all();
+        EbillingSetting::query()->updateOrCreate(
+            ['owner_type' => $owner->getMorphClass(), 'owner_id' => (string) $owner->getKey()],
+            ['preferred_ebilling_format' => $choice],
+        );
     }
 }

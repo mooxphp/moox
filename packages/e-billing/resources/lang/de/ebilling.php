@@ -10,9 +10,11 @@ return [
     'invoice_settings' => 'Rechnungseinstellungen',
     'invoice_settings_description' => 'Format und Kopie für zukünftige Rechnungen. Änderungen gelten nicht rückwirkend.',
     'preferred_ebilling_format' => 'E-Rechnungsformat',
-    'send_visual_copy' => 'Mail-Anhang',
-    'send_visual_copy_with_pdf' => 'XML mit PDF-Kopie',
-    'send_visual_copy_xml_only' => 'Nur XML',
+    'format_choice' => [
+        'zugferd' => 'ZUGFeRD / Factur-X',
+        'xrechnung' => 'XRechnung',
+        'xrechnung_with_pdf' => 'XRechnung mit separatem PDF',
+    ],
     'ignored_document' => 'Ignorierter Beleg',
     'ignored_documents' => 'Ignorierte Belege',
 ];

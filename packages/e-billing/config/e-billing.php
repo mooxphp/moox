@@ -178,12 +178,30 @@ return [
     |
     | When true (default), the human-readable copy PDF is attached alongside the
     | XRechnung XML. The copy is always produced and downloadable in the portal;
-    | this flag only gates the mail attachment. Overridable per customer column
-    | `send_visual_copy`, then this config default.
+    | this flag only gates the mail attachment. Overridable per recipient via
+    | `RecipientPreferences::$sendVisualCopy` (RecipientPreferenceResolver port);
+    | without a preference this config default applies.
     |
     */
 
     'send_visual_copy' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Recipient settings (`ebilling_settings`)
+    |--------------------------------------------------------------------------
+    |
+    | The default RecipientPreferenceResolver reads the settings row of the
+    | document's contact (`ebilling_documents.contact_id`). `contact_model` is
+    | the model that id belongs to; its morph class keys the row. Null (the
+    | default) reads no settings. Without a contact, a row or a format choice
+    | the defaults above apply.
+    |
+    */
+
+    'settings' => [
+        'contact_model' => null,
+    ],
 
     /*
     |--------------------------------------------------------------------------
