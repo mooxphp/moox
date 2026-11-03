@@ -16,16 +16,15 @@ use Moox\MailInbox\Models\InboxAttachment;
  * Strategies (`e-billing.delivery.recipients.*`):
  * - `inbox_to` — the address a reviewer set on the document, else InboxMessage.to_email for mail-sourced documents
  * - `document` — only the address a reviewer set on the document (`buyer.contact.email`)
- * - `master` — attributed company.email
  * - `none` — no recipients (channel records no_recipient)
+ *
+ * Recipients from master data need a host-bound {@see DeliveryRecipientResolverInterface}.
  */
 final class ConfigurableDeliveryRecipientResolver implements DeliveryRecipientResolverInterface
 {
     public const STRATEGY_INBOX_TO = 'inbox_to';
 
     public const STRATEGY_DOCUMENT = 'document';
-
-    public const STRATEGY_MASTER = 'master';
 
     public const STRATEGY_NONE = 'none';
 
@@ -39,7 +38,6 @@ final class ConfigurableDeliveryRecipientResolver implements DeliveryRecipientRe
         return match ($strategy) {
             self::STRATEGY_INBOX_TO => $this->fromDocument($document) ?: $this->fromInboxTo($document),
             self::STRATEGY_DOCUMENT => $this->fromDocument($document),
-            self::STRATEGY_MASTER => $this->fromMaster($document),
             default => [],
         };
     }
@@ -95,35 +93,6 @@ final class ConfigurableDeliveryRecipientResolver implements DeliveryRecipientRe
         }
 
         $name = trim((string) ($message->to_name ?? ''));
-
-        return [
-            new DeliveryRecipient(
-                address: $email,
-                name: $name !== '' ? $name : null,
-                kind: 'to',
-            ),
-        ];
-    }
-
-    /**
-     * @return list<DeliveryRecipient>
-     */
-    private function fromMaster(EbillingDocument $document): array
-    {
-        $document->loadMissing('company');
-        $company = $document->company;
-
-        if ($company === null) {
-            return [];
-        }
-
-        $email = trim((string) ($company->email ?? ''));
-
-        if ($email === '' || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return [];
-        }
-
-        $name = trim((string) ($company->name ?? ''));
 
         return [
             new DeliveryRecipient(
