@@ -135,7 +135,7 @@ final class ReviewWorkspace
 
     public static function customerOptionLabel(Customer $customer): string
     {
-        return $customer->displayLabel().(filled($customer->customer_number) ? " ({$customer->customer_number})" : '');
+        return $customer->customer_name.(filled($customer->customer_number) ? " ({$customer->customer_number})" : '');
     }
 
     /**
