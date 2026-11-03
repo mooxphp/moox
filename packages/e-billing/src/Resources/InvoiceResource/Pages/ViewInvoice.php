@@ -606,9 +606,10 @@ class ViewInvoice extends ViewRecord
         }
 
         $document = $this->reviewDocument();
+        $buyer = $this->reviewWorkspace->buyer();
         $strict = $edit->crossChecked !== null && CrossCheckedFields::isStrict();
         $addressOptions = $edit->crossChecked !== null && CrossCheckedFields::isAddressField($edit->crossChecked)
-            ? CrossCheckedFields::addressOptions($edit->crossChecked, $document)
+            ? CrossCheckedFields::addressOptions($edit->crossChecked, $buyer)
             : null;
 
         $components = [];
@@ -642,7 +643,7 @@ class ViewInvoice extends ViewRecord
             $isAddressPart = $addressOptions !== null && str_contains($attribute, '.address.');
 
             if ($edit->crossChecked !== null && $addressOptions === null) {
-                $options = CrossCheckedFields::options($edit->crossChecked, $document);
+                $options = CrossCheckedFields::options($edit->crossChecked, $buyer);
                 $components[] = $strict
                     ? Select::make($name)->label($label)->options($options)->searchable()->native(false)
                     : TextInput::make($name)->label($label)->datalist(array_values($options))
@@ -739,8 +740,10 @@ class ViewInvoice extends ViewRecord
         $strictAddress = $edit->crossChecked !== null
             && CrossCheckedFields::isStrict()
             && CrossCheckedFields::isAddressField($edit->crossChecked);
+        $chosenAddress = (string) ($data['master_address'] ?? '');
+        $buyer = $this->reviewWorkspace->buyer();
         $parts = $strictAddress
-            ? CrossCheckedFields::addressOptions($edit->crossChecked, $this->reviewDocument())[(string) ($data['master_address'] ?? '')]['parts'] ?? []
+            ? CrossCheckedFields::addressOptions($edit->crossChecked, $buyer)[$chosenAddress]['parts'] ?? []
             : null;
 
         $values = [];

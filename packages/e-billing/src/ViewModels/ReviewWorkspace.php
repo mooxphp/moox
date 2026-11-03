@@ -10,6 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Moox\Customer\Models\Customer;
 use Moox\EBilling\Approval\DocumentEditGuard;
+use Moox\EBilling\Data\BuyerMasterData;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\CrossCheckedFields;
 use Moox\EBilling\Support\ParsedValueHistory;
@@ -29,6 +30,10 @@ final class ReviewWorkspace
 
     /** @var array<string, mixed>|null */
     private ?array $correctedFields = null;
+
+    private ?BuyerMasterData $buyer = null;
+
+    private bool $isBuyerLoaded = false;
 
     public function __construct(
         private readonly Invoice $invoice,
@@ -92,7 +97,20 @@ final class ReviewWorkspace
             ? $this->addressParts($edit)
             : self::currentValue($edit->target, (string) array_key_first($edit->inputs));
 
-        return CrossCheckedFields::isKnown($edit->crossChecked, $value, $this->document) === false;
+        return CrossCheckedFields::isKnown($edit->crossChecked, $value, $this->buyer()) === false;
+    }
+
+    /**
+     * The attributed customer's master data, looked up once per workspace.
+     */
+    public function buyer(): ?BuyerMasterData
+    {
+        if (! $this->isBuyerLoaded) {
+            $this->buyer = CrossCheckedFields::buyerFor($this->document);
+            $this->isBuyerLoaded = true;
+        }
+
+        return $this->buyer;
     }
 
     public function inputLabel(ReviewEditField $edit, string $attribute): string
