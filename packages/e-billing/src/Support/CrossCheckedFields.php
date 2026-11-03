@@ -4,27 +4,32 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Support;
 
-use Illuminate\Support\Collection;
-use Moox\Address\Models\Address;
-use Moox\Company\Models\Company;
 use Moox\Customer\Models\Customer;
+use Moox\EBilling\Data\BuyerLookup;
+use Moox\EBilling\Data\BuyerMasterData;
+use Moox\EBilling\Data\BuyerMasterDataAddress;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Services\BuyerMasterDataLookup;
 
 /**
- * The configured cross-checked fields (`e-billing.cross_checked`) and their master-data options,
- * scoped to the customer the document is attributed to (ADR 0004). Read-only: review never writes
- * master data.
+ * The configured cross-checked fields (`e-billing.cross_checked`) and their master-data options: what the buyer
+ * master-data resolver returns for the customer the document is attributed to (ADR 0004, ADR 0020). Callers load
+ * that buyer once with {@see buyerFor()} and pass it in. Read-only: review never writes master data.
  */
 final class CrossCheckedFields
 {
     /**
-     * @return array{record: string, attribute?: string, addresses?: string}|null
+     * @return array{value?: string, addresses?: string}|null
      */
     public static function mapping(string $field): ?array
     {
         $mapping = config("e-billing.cross_checked.fields.{$field}");
 
-        return is_array($mapping) && in_array($mapping['record'] ?? null, ['customer', 'company'], true) ? $mapping : null;
+        if (! is_array($mapping)) {
+            return null;
+        }
+
+        return is_string($mapping['value'] ?? null) || is_string($mapping['addresses'] ?? null) ? $mapping : null;
     }
 
     public static function isAddressField(string $field): bool
@@ -38,62 +43,91 @@ final class CrossCheckedFields
     }
 
     /**
-     * Scalar options of the attributed customer or company, value => value.
-     *
-     * @return array<string, string>
+     * The master data the resolver returns for the attributed customer, looked up by reference.
      */
-    public static function options(string $field, ?EbillingDocument $document): array
+    public static function buyerFor(?EbillingDocument $document): ?BuyerMasterData
     {
-        $mapping = self::mapping($field);
-        $attribute = $mapping['attribute'] ?? null;
-        if ($mapping === null || ! is_string($attribute)) {
-            return [];
+        if ($document?->customer_id === null) {
+            return null;
         }
 
-        $value = trim((string) (self::record($mapping['record'], $document)?->getAttribute($attribute) ?? ''));
-
-        return $value === '' ? [] : [$value => $value];
+        return app(BuyerMasterDataLookup::class)
+            ->resolve(new BuyerLookup(null, null, null, reference: $document->customer_id), $document)
+            ->buyer;
     }
 
     /**
-     * Addresses of the attributed company in the field's roles, keyed by address id, as the parts of
-     * an invoice address (`line1`, `line2`, `postal_code`, `city`, `subdivision`, `country_code`).
+     * Scalar options of the buyer, value => value.
      *
-     * @return array<string, array{label: string, parts: array<string, ?string>}>
+     * @return array<string, string>
      */
-    public static function addressOptions(string $field, ?EbillingDocument $document): array
+    public static function options(string $field, ?BuyerMasterData $buyer): array
     {
-        $roles = self::mapping($field)['addresses'] ?? null;
-        $company = self::record('company', $document);
-        if (! is_string($roles) || ! $company instanceof Company) {
+        $masterDataValue = self::mapping($field)['value'] ?? null;
+        if ($buyer === null || $masterDataValue === null) {
             return [];
         }
 
-        $roleFlags = $roles === 'delivery'
-            ? self::addressRoles('delivery_address_roles', ['delivery_address', 'postal_address', 'billing_address'])
-            : self::addressRoles('buyer_address_roles', ['billing_address', 'postal_address']);
+        $values = match ($masterDataValue) {
+            'customer_number' => [$buyer->customerNumber],
+            'name' => [$buyer->name, ...$buyer->alternativeNames],
+            'vat_id' => [$buyer->vatId],
+            default => [],
+        };
 
         $options = [];
-        foreach (self::roleFilteredAddresses($company, $roleFlags) as $address) {
-            $parts = self::addressParts($address);
-            $options[(string) $address->getKey()] = [
-                'label' => implode(', ', array_filter([$parts['line1'], $parts['line2'], trim($parts['postal_code'].' '.$parts['city']), $parts['country_code']])),
-                'parts' => $parts,
-            ];
+        foreach ($values as $value) {
+            $value = trim((string) $value);
+            if ($value !== '') {
+                $options[$value] = $value;
+            }
         }
 
         return $options;
     }
 
     /**
-     * Whether a document value is among the options, so a value the new customer does not know is flagged.
-     * Null when there is nothing to compare: no value, no attributed customer, no mapping or no master-data value.
+     * The buyer's addresses for the field, keyed by address reference, as the parts of an invoice address
+     * (`line1`, `line2`, `postal_code`, `city`, `subdivision`, `country_code`). `buyer` fields offer the
+     * billing addresses; `delivery` fields the delivery addresses, then the billing addresses.
+     *
+     * @return array<string, array{label: string, parts: array<string, ?string>}>
+     */
+    public static function addressOptions(string $field, ?BuyerMasterData $buyer): array
+    {
+        $kind = self::mapping($field)['addresses'] ?? null;
+        if ($buyer === null || $kind === null) {
+            return [];
+        }
+
+        $addresses = $kind === 'delivery'
+            ? [...$buyer->deliveryAddresses, ...$buyer->billingAddresses]
+            : $buyer->billingAddresses;
+
+        $options = [];
+        foreach ($addresses as $index => $address) {
+            $parts = self::addressParts($address);
+            $label = array_filter([
+                $parts['line1'],
+                $parts['line2'],
+                trim($parts['postal_code'].' '.$parts['city']),
+                $parts['country_code'],
+            ]);
+            $options[$address->reference ?? (string) $index] ??= ['label' => implode(', ', $label), 'parts' => $parts];
+        }
+
+        return $options;
+    }
+
+    /**
+     * Whether a document value is among the buyer's options, so a value the new customer does not know is flagged.
+     * Null when there is nothing to compare: no value, no buyer, no mapping or no master-data value.
      *
      * @param  array<string, ?string>|string|null  $value  a scalar, or the parts of an address
      */
-    public static function isKnown(string $field, mixed $value, ?EbillingDocument $document): ?bool
+    public static function isKnown(string $field, mixed $value, ?BuyerMasterData $buyer): ?bool
     {
-        if (self::mapping($field) === null || $document?->customer_id === null) {
+        if (self::mapping($field) === null || $buyer === null) {
             return null;
         }
 
@@ -102,7 +136,7 @@ final class CrossCheckedFields
                 return null;
             }
 
-            $options = self::addressOptions($field, $document);
+            $options = self::addressOptions($field, $buyer);
             if ($options === []) {
                 return null;
             }
@@ -118,7 +152,7 @@ final class CrossCheckedFields
         }
 
         $value = trim((string) $value);
-        $options = self::options($field, $document);
+        $options = self::options($field, $buyer);
         if ($value === '' || $options === []) {
             return null;
         }
@@ -133,45 +167,25 @@ final class CrossCheckedFields
     }
 
     /**
-     * @param  list<string>  $default
-     * @return list<string>
+     * The attributed customer, also when soft-deleted: attribution keeps a deleted customer.
      */
-    private static function addressRoles(string $key, array $default): array
+    public static function findCustomer(?string $customerId): ?Customer
     {
-        $roles = config('e-billing.corroboration.'.$key);
-
-        return is_array($roles) && $roles !== [] ? array_values(array_filter($roles, is_string(...))) : $default;
-    }
-
-    /**
-     * The company's addresses carrying one of the pivot role flags.
-     *
-     * @param  list<string>  $roles
-     * @return Collection<int, Address>
-     */
-    private static function roleFilteredAddresses(Company $company, array $roles): Collection
-    {
-        /** @var Collection<int, Address> $addresses */
-        $addresses = $company->addresses()->get();
-
-        return $addresses->filter(static fn (Address $address): bool => array_any(
-            $roles,
-            static fn (string $role): bool => $role !== '' && (bool) $address->getRelation('pivot')?->getAttribute($role),
-        ))->values();
+        return $customerId !== null && $customerId !== '' ? Customer::query()->withTrashed()->find($customerId) : null;
     }
 
     /**
      * @return array<string, ?string>
      */
-    private static function addressParts(Address $address): array
+    private static function addressParts(BuyerMasterDataAddress $address): array
     {
         return [
-            'line1' => $address->street,
-            'line2' => $address->street2,
-            'postal_code' => $address->postal_code,
+            'line1' => $address->line1,
+            'line2' => $address->line2,
+            'postal_code' => $address->postalCode,
             'city' => $address->city,
-            'subdivision' => $address->state,
-            'country_code' => $address->country_code,
+            'subdivision' => $address->subdivision,
+            'country_code' => $address->countryCode,
         ];
     }
 
@@ -184,24 +198,5 @@ final class CrossCheckedFields
             static fn (string $key): string => mb_strtolower(trim((string) ($parts[$key] ?? ''))),
             ['line1', 'line2', 'postal_code', 'city', 'country_code'],
         ));
-    }
-
-    /**
-     * The attributed customer, also when soft-deleted: attribution keeps a deleted customer.
-     */
-    public static function findCustomer(?string $customerId): ?Customer
-    {
-        return $customerId !== null && $customerId !== '' ? Customer::query()->withTrashed()->find($customerId) : null;
-    }
-
-    private static function record(string $record, ?EbillingDocument $document): Customer|Company|null
-    {
-        if ($document === null) {
-            return null;
-        }
-
-        return $record === 'customer'
-            ? self::findCustomer($document->customer_id)
-            : ($document->company_id !== null ? Company::query()->find($document->company_id) : null);
     }
 }

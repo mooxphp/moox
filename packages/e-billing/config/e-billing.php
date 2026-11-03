@@ -891,26 +891,6 @@ return [
             'srl',
             'sas',
         ],
-
-        /*
-        | Company address pivot flags offered as master-data options in the
-        | review workspace (`cross_checked`). Corroboration itself uses the
-        | billing / delivery addresses the buyer resolver returns.
-        */
-        'buyer_address_roles' => [
-            'billing_address',
-            'postal_address',
-        ],
-
-        /*
-        | Company address pivot flags offered for delivery fields in the
-        | review workspace (`cross_checked`).
-        */
-        'delivery_address_roles' => [
-            'delivery_address',
-            'postal_address',
-            'billing_address',
-        ],
     ],
 
     /*
@@ -1413,10 +1393,12 @@ return [
     |
     | The one catalogue of fields checked against master data: the review
     | workspace offers these as pickers scoped to the attributed customer, and
-    | the divergence report (#46) derives from the same mapping. Each field
-    | names the matched record (`customer` or `company`) and either an
-    | `attribute` of it or its `addresses` filtered by the corroboration
-    | roles (`buyer` or `delivery`). Review never writes master data.
+    | the divergence report (#46) derives from the same mapping. The options
+    | come from what the buyer master-data resolver returns for the attributed
+    | customer, the same data field validation corroborates against. Each
+    | field names a `value` (`customer_number`, `name`, `vat_id`) or
+    | `addresses` (`buyer` for the billing addresses, `delivery` for the
+    | delivery then the billing addresses). Review never writes master data.
     |
     | strict: false = picker plus free text on the document (default);
     | true = select-only for these fields.
@@ -1426,12 +1408,11 @@ return [
     'cross_checked' => [
         'strict' => (bool) env('EBILLING_CROSS_CHECKED_STRICT', false),
         'fields' => [
-            'customer_number' => ['record' => 'customer', 'attribute' => 'customer_number'],
-            'customer_name' => ['record' => 'company', 'attribute' => 'name'],
-            'customer_vat_id' => ['record' => 'company', 'attribute' => 'vat_number'],
-            'customer_tax_number' => ['record' => 'company', 'attribute' => 'tax_number'],
-            'customer_address' => ['record' => 'company', 'addresses' => 'buyer'],
-            'delivery_address' => ['record' => 'company', 'addresses' => 'delivery'],
+            'customer_number' => ['value' => 'customer_number'],
+            'customer_name' => ['value' => 'name'],
+            'customer_vat_id' => ['value' => 'vat_id'],
+            'customer_address' => ['addresses' => 'buyer'],
+            'delivery_address' => ['addresses' => 'delivery'],
         ],
     ],
 
