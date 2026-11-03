@@ -40,10 +40,10 @@ class CustomImageColumn extends ImageColumn
             ->all();
     }
 
-    public function getImageUrl(?string $state = null): ?string
+    public function getImageUrl(?string $state = null, ?Model $relatedRecord = null): ?string
     {
         /** @var Model|Media|null $record */
-        $record = $this->getRecord();
+        $record = $relatedRecord ?? $this->getRecord();
 
         if (! $record) {
             return null;

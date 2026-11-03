@@ -22,6 +22,47 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | User model
+    |--------------------------------------------------------------------------
+    |
+    | Eloquent model used by Auth, UserResource, and related features.
+    | Host apps typically keep Moox\User\Models\User (no App subclass required).
+    |
+    */
+
+    'model' => User::class,
+
+    /*
+    |--------------------------------------------------------------------------
+    | User factory
+    |--------------------------------------------------------------------------
+    |
+    | Host apps may point this at their Database\Factories\UserFactory.
+    | When null, HasFactory falls back to Laravel's factory name guessing.
+    |
+    */
+
+    'factory' => null, // host may set Database\\Factories\\UserFactory::class
+
+    /*
+    |--------------------------------------------------------------------------
+    | Panel access
+    |--------------------------------------------------------------------------
+    |
+    | panel id => rules|false
+    | When a panel id is missing, deny access (safer than open) once this
+    | array is non-empty. When empty/unset, the model keeps the legacy default
+    | (valid email TLD + verified; deny thomas.herrmann@wilo.com on admin).
+    | Host apps override. Example for heco admin is in web config.
+    |
+    */
+
+    'panel_access' => [
+        // panel id => rules|false
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Readonly
     |--------------------------------------------------------------------------
     |
