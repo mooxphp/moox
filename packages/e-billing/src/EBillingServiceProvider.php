@@ -42,7 +42,7 @@ use Moox\EBilling\Contracts\BuyerMasterDataResolver;
 use Moox\EBilling\Contracts\DeliveryRecipientResolverInterface;
 use Moox\EBilling\Contracts\InvoiceParserInterface;
 use Moox\EBilling\Contracts\PdfaNormalizerInterface;
-use Moox\EBilling\Contracts\RecipientFormatPreferenceResolverInterface;
+use Moox\EBilling\Contracts\RecipientPreferenceResolver;
 use Moox\EBilling\Contracts\ReviewNotificationRecorderInterface;
 use Moox\EBilling\Contracts\ReviewNotificationStrategyInterface;
 use Moox\EBilling\Contracts\SourcePdfPreparerInterface;
@@ -56,7 +56,6 @@ use Moox\EBilling\Models\EbillingDeliveryAttempt;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 use Moox\EBilling\Support\AllowedProfiles;
-use Moox\EBilling\Support\CustomerFormatPreferenceResolver;
 use Moox\EBilling\Support\DocumentNoteLabels;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\EBilling\Support\InvoiceRelationsConfig;
@@ -64,6 +63,7 @@ use Moox\EBilling\Support\LetterheadSourcePdfPreparer;
 use Moox\EBilling\Support\NullBuyerMasterDataResolver;
 use Moox\EBilling\Support\NullReviewNotificationRecorder;
 use Moox\EBilling\Support\PassthroughPdfaNormalizer;
+use Moox\EBilling\Support\SettingsRecipientPreferenceResolver;
 use Moox\EBilling\Support\UnitCodeResolver;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\InvoiceModels;
@@ -101,6 +101,7 @@ class EBillingServiceProvider extends MooxServiceProvider
                 'create_ebilling_uploaded_pdf_sources_table',
                 'add_profile_to_ebilling_documents_table',
                 'create_ebilling_delivery_attempts_table',
+                'create_ebilling_settings_table',
                 'add_document_type_to_ebilling_uploaded_pdf_sources_table',
                 'add_review_changed_at_to_ebilling_documents_table',
                 'add_recipient_email_to_ebilling_uploaded_pdf_sources_table',
@@ -162,8 +163,8 @@ class EBillingServiceProvider extends MooxServiceProvider
             $this->app->bind(SourcePdfPreparerInterface::class, LetterheadSourcePdfPreparer::class);
         }
 
-        if (! $this->app->bound(RecipientFormatPreferenceResolverInterface::class)) {
-            $this->app->bind(RecipientFormatPreferenceResolverInterface::class, CustomerFormatPreferenceResolver::class);
+        if (! $this->app->bound(RecipientPreferenceResolver::class)) {
+            $this->app->bind(RecipientPreferenceResolver::class, SettingsRecipientPreferenceResolver::class);
         }
 
         if (! $this->app->bound(PdfaNormalizerInterface::class)) {

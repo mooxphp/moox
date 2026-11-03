@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('ebilling_settings', function (Blueprint $table): void {
+            $table->id();
+            $table->string('owner_type');
+            $table->string('owner_id');
+            $table->string('preferred_ebilling_format')->nullable();
+            $table->json('ebilling_recipients')->nullable();
+            $table->timestamps();
+
+            $table->unique(['owner_type', 'owner_id']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('ebilling_settings');
+    }
+};
