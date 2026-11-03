@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Schema;
 use Jenssegers\Agent\Agent;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Services\UserDeviceTracker;
+use Moox\UserDevice\Support\UserDeviceAuthorization;
 use STS\FilamentImpersonate\Facades\Impersonation;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -63,9 +64,11 @@ class EnsureTrustedDevice
             $deviceId = DB::table('sessions')->where('id', $sessionId)->value('device_id');
         }
 
+        $device = $this->ownedDevice((int) $deviceId, $user);
+
         // Fallback: resolve device by user+ip (covers session-regeneration edge cases).
         // Use the Filament-authenticated user id — Auth::id() is the wrong guard on portal.
-        if (blank($deviceId)) {
+        if ($device === null) {
             $userId = $user->getAuthIdentifier();
 
             if (filled($userId)) {
@@ -75,29 +78,50 @@ class EnsureTrustedDevice
                     ->where('ip_address', $request->ip())
                     ->latest('updated_at')
                     ->value('id');
+
+                $device = $this->ownedDevice((int) $deviceId, $user);
             }
         }
 
         // Last resort: track/create for this request. Never fail-open under enforce_trust —
         // production behind a proxy often loses session device_id and sees a different IP
         // than the login request, which previously skipped the gate entirely.
-        if (blank($deviceId)) {
+        if ($device === null) {
+            session()->forget('user_device_id');
             app(UserDeviceTracker::class)->addUserDevice($request, $user, app(Agent::class));
-            $deviceId = session()->get('user_device_id');
+            $device = $this->ownedDevice((int) session()->get('user_device_id'), $user);
         }
 
-        if (blank($deviceId)) {
+        if ($device === null) {
             return null;
         }
 
-        $deviceId = (int) $deviceId;
-        session()->put('user_device_id', $deviceId);
+        session()->put('user_device_id', $device->getKey());
 
         if (filled($sessionId) && Schema::hasTable('sessions') && Schema::hasColumn('sessions', 'device_id')) {
-            DB::table('sessions')->where('id', $sessionId)->update(['device_id' => $deviceId]);
+            DB::table('sessions')->where('id', $sessionId)->update(['device_id' => $device->getKey()]);
         }
 
-        return UserDevice::query()->find($deviceId);
+        return $device;
+    }
+
+    /**
+     * Only accept device rows that belong to the authenticated user.
+     * Rejects poisoned session/device_id values pointing at another account.
+     */
+    private function ownedDevice(int $deviceId, Authenticatable $user): ?UserDevice
+    {
+        if ($deviceId <= 0) {
+            return null;
+        }
+
+        $device = UserDevice::query()->find($deviceId);
+
+        if ($device === null || ! UserDeviceAuthorization::ownsRecord($user, $device)) {
+            return null;
+        }
+
+        return $device;
     }
 
     private function blockUntrusted(): Response
