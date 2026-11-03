@@ -19,7 +19,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
-use Moox\Company\Models\Company;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Core\Traits\MorphPivot\HasMorphPivotRelations;
 use Moox\Customer\Models\Customer;
@@ -68,7 +67,7 @@ use Throwable;
  * @property array<string, mixed>|null $severity_releases
  * @property string|null $invoice_id
  * @property string|null $customer_id Identity of the document (matched customer). Gate visibility on this, resolved live.
- * @property string|null $company_id Reporting only — derived from the matched customer; never an access boundary.
+ * @property string|null $contact_id The matched customer's contact. Reporting only; never an access boundary.
  * @property AttributionSource|null $attribution_source How customer_id was set (`auto` matcher vs `manual` operator). Manual survives rematch.
  * @property int|null $validation_score
  * @property string|null $scope
@@ -118,7 +117,7 @@ class EbillingDocument extends BaseItemModel
         'processed_at',
         'error_message',
         'invoice_id',
-        'company_id',
+        'contact_id',
         'customer_id',
         'attribution_source',
         'scope',
@@ -135,6 +134,8 @@ class EbillingDocument extends BaseItemModel
             'gateway_status' => EBillingAttachmentProcessingStatus::class,
             'review_status' => InvoiceProcessingStatus::class,
             'approval_status' => DocumentApprovalStatus::class,
+            'customer_id' => 'string',
+            'contact_id' => 'string',
             'attribution_source' => AttributionSource::class,
             'field_validations' => 'array',
             // severity_releases and latest approval actor columns are not in $fillable.
@@ -583,14 +584,6 @@ class EbillingDocument extends BaseItemModel
         }
 
         return null;
-    }
-
-    /**
-     * @return BelongsTo<Company, $this>
-     */
-    public function company(): BelongsTo
-    {
-        return $this->belongsTo(Company::class, 'company_id');
     }
 
     /**

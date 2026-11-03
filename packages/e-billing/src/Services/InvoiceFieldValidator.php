@@ -109,6 +109,7 @@ class InvoiceFieldValidator
 
         if (! $isManualAttribution && $masterData->buyer instanceof BuyerMasterData) {
             $document->customer_id = $masterData->buyer->reference;
+            $document->contact_id = $masterData->buyer->contactReference;
             $document->attribution_source = AttributionSource::Auto;
         }
 

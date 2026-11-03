@@ -11,7 +11,6 @@ use Moox\EBilling\Approval\DocumentEditGuard;
 use Moox\EBilling\Enums\AttributionSource;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
-use Moox\EBilling\Support\CustomerMatcher;
 
 /**
  * Operator-set customer attribution. Survives automatic rematch.
@@ -45,7 +44,7 @@ final class SetInvoiceAttributionAction
     {
         if ($customerId === null || $customerId === '') {
             $document->customer_id = null;
-            $document->company_id = null;
+            $document->contact_id = null;
             $document->attribution_source = null;
         } else {
             $customer = Customer::query()->withTrashed()->find($customerId);
@@ -55,11 +54,11 @@ final class SetInvoiceAttributionAction
             }
 
             $document->customer_id = (string) $customer->getKey();
-            $document->company_id = (new CustomerMatcher)->resolveCompanyId($customer);
+            $document->contact_id = (string) $customer->contact_id;
             $document->attribution_source = AttributionSource::Manual;
         }
 
-        if ($document->isDirty(['customer_id', 'company_id', 'attribution_source'])) {
+        if ($document->isDirty(['customer_id', 'contact_id', 'attribution_source'])) {
             $document->forceFill(['review_changed_at' => now()]);
         }
 

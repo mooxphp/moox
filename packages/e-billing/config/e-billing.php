@@ -1770,7 +1770,7 @@ return [
                     'validation_score',
                     'artifact_content_hash',
                     'customer_id',
-                    'company_id',
+                    'contact_id',
                     'attribution_source',
                     'invoice_id',
                     'ignored_reason',
