@@ -1527,7 +1527,7 @@ return [
         'mailer' => env('EBILLING_DELIVERY_MAILER'),
         'from_name' => env('EBILLING_DELIVERY_FROM_NAME'),
         'recipients' => [
-            // inbox_to | master | none
+            // inbox_to | document | none
             'mail_source' => env('EBILLING_DELIVERY_RECIPIENTS_MAIL_SOURCE', 'inbox_to'),
             'manual_upload' => env('EBILLING_DELIVERY_RECIPIENTS_MANUAL_UPLOAD', 'none'),
         ],
