@@ -90,12 +90,11 @@ Published as `config/e-billing.php`.
 | `tabs` | List-page tab filters (`all`, `needs_review`, `confirmed`, `awaiting_approval`, `sent`, `deleted`); the pseudo fields `approval_status` and `delivered` filter on the e-billing document. `tabs.ignored_documents`: `all`, `foreign`, `before_cutoff`, `identical_duplicate`, `relay_failed`; conditions use `gateway_status` (in) and the pseudo field `relay_failed` (true) |
 | `default` | Single default when the preference port returns null: `format` (FormatRegistry key, default `zugferd`) + `profile` (hybrid library profile, default `EN16931`, must be in `allowed_profiles`). XRechnung ignores `profile` and always uses `XRECHNUNG` |
 | `allowed_profiles` | Hybrid profiles a recipient preference may request for `zugferd` / `factur-x` (default `['EN16931']`). XRechnung never takes a preference profile |
-| `settings.contact_model` | Model class whose morph class is stored as `owner_type` in `ebilling_settings` and matched against `ebilling_documents.contact_id` by `SettingsRecipientPreferenceResolver` (default `null` = no settings are read; e.g. `Moox\Contact\Models\Contact`). See [Recipient preferences](#recipient-preferences) |
 | `zugferd` | ZUGFeRD filesystem disk (`storage_disk`, `storage_root`). Hybrid profiles come from `default.profile`, not `moox/zugferd` config |
 | `default_customer_country` | Transitional fallback buyer country when the parser derives none (default `DE`); removed in a future master-data phase |
 | `supplier` | Central supplier master data copied onto invoices as a snapshot at creation time |
 | `master_data` | Buyer master data (ADR 0020, see [Buyer master data](#buyer-master-data)): `resolver` (class implementing `BuyerMasterDataResolver`, default `null` = the null resolver, always unavailable) and `when_unavailable` (`EBILLING_MASTER_DATA_WHEN_UNAVAILABLE`: `review` default, or `trust_parsed`) |
-| `corroboration` | Post-attribution master-data checks against the buyer the resolver returned (never clears `customer_id`; which host address roles count as billing or delivery is the resolver's job): `name_min_token_length` (a name with no token that long, such as "ABC GmbH", requires equal full names instead, ignoring trailing legal forms; also applies to the consignee name), `name_legal_form_stop_words` |
+| `corroboration` | Post-attribution master-data checks against the buyer the resolver returned (never ends an attribution; which host address roles count as billing or delivery is the resolver's job): `name_min_token_length` (a name with no token that long, such as "ABC GmbH", requires equal full names instead, ignoring trailing legal forms; also applies to the consignee name), `name_legal_form_stop_words` |
 | `cross_checked` | Fields checked against master data, shared by the review workspace pickers and the divergence report: `strict` (`EBILLING_CROSS_CHECKED_STRICT`, default `false`) and `fields` (see [Cross-checked fields](#cross-checked-fields)) |
 | `field_validation` | MoSCoW priority rules for invoice and line fields. `credit_note_*` siblings (fields, line fields, contextual-should lists) apply to BT-3 `381` documents; a host that omits a `credit_note_*` key falls back to the `invoice_*` key (ADR 0009) |
 | `field_validation.invoice_fields_satisfied_by_lines` | Header fields (default `[]`) that count as present when every invoice line carries its own value, e.g. `order_number` / `order_date` on a collective invoice. Profile-scoped like the other keys: `credit_note_fields_satisfied_by_lines`, `corrected_invoice_fields_satisfied_by_lines` (a profile falls back to the invoice list unless it defines its own, which may be empty). See [Header fields satisfied by lines](#header-fields-satisfied-by-lines) |
@@ -192,12 +191,13 @@ use Moox\EBilling\Data\BuyerLookup;
 use Moox\EBilling\Data\BuyerMasterData;
 use Moox\EBilling\Data\BuyerMasterDataAddress;
 use Moox\EBilling\Data\BuyerMasterDataResult;
+use Moox\EBilling\Data\PartyReference;
 
 final class MyBuyerResolver implements BuyerMasterDataResolver
 {
     public function resolve(BuyerLookup $lookup): BuyerMasterDataResult
     {
-        // $lookup->reference is set for a manual attribution: resolve exactly that record.
+        // $lookup->reference (?PartyReference) is set for a manual attribution: resolve exactly that record.
         // Otherwise find the buyer by customer number first, then by name.
         $customer = null; // your lookup here
 
@@ -206,8 +206,8 @@ final class MyBuyerResolver implements BuyerMasterDataResolver
         }
 
         return BuyerMasterDataResult::matched(new BuyerMasterData(
-            reference: (string) $customer->id, // key of an existing `customers` row (digits)
-            contactReference: (string) $customer->contact_id, // optional, digits
+            party: PartyReference::of($customer), // an existing Eloquent model
+            contact: PartyReference::of($customer->contact), // optional
             name: $customer->name,
             vatId: $customer->vat_id,
             customerNumber: $customer->number,
@@ -227,15 +227,26 @@ final class MyBuyerResolver implements BuyerMasterDataResolver
 
 | Result | Effect |
 | --- | --- |
-| `matched` | Corroboration runs against the returned `BuyerMasterData`. The document's `customer_id` is set to its `reference` and `contact_id` to its `contactReference` (attribution source `auto`). A buyer whose `customerNumber` differs from the parsed one, or with `isReviewable: true` (for example deleted or inactive), puts `customer_number` into review |
-| `no_match` / `ambiguous` | No corroboration; `ambiguous` is treated like `no_match`. An existing `customer_id` is left untouched |
-| `unavailable` | Governed by `master_data.when_unavailable` (below). An existing `customer_id` is left untouched |
+| `matched` | Corroboration runs against the returned `BuyerMasterData`. Field validation records the `buyer` attribution as its `party` and the `buyer_contact` attribution as its `contact` (a null `contact` ends the active contact attribution), both with source `auto`. A buyer whose `customerNumber` differs from the parsed one, or with `isReviewable: true` (for example deleted or inactive), puts `customer_number` into review |
+| `no_match` / `ambiguous` | No corroboration; `ambiguous` is treated like `no_match`. Existing attributions are left untouched |
+| `unavailable` | Governed by `master_data.when_unavailable` (below). Existing attributions are left untouched |
 
 - Billing addresses corroborate the buyer address and country. A consignee is matched against delivery addresses first, then billing addresses; an own site (a consignee with the buyer's name) only against delivery addresses. Mapping your address roles to billing or delivery is the resolver's job.
-- `reference` must be the key of an existing `customers` row (a soft-deleted customer counts as existing); `contactReference` must be digits. A match that breaks this is logged as an error and treated as `unavailable`.
+- `party` and `contact` must name existing Eloquent models: the type is resolved through the morph map or as a class name, and a soft-deleted row counts as existing. A match that breaks this is logged as an error and treated as `unavailable`. `matched_id` in the field validations is the party id.
 - A resolver that throws is logged as an error and treated as `unavailable`; it is not retried (a later revalidation catches up).
 - `when_unavailable = review` (default): the non-empty `customer_number`, `customer_name`, `customer_address`, `customer_vat_id` and `country` become `needs_review` with reason `master_data_unavailable`; customer number, name and address are must fields, so the document is not auto-approved. `trust_parsed` marks them `parsed` instead. `delivery_address` is unaffected. There is no option to block generation.
-- A manual attribution is looked up by its reference (`BuyerLookup::$reference`) and reported with source `manual`. Manual attribution (`SetInvoiceAttributionAction`) sets `customer_id`, `contact_id` (the customer's `contact_id`) and `attribution_source = manual`; clearing nulls all three.
+- A manual buyer attribution (active `buyer` row with source `manual`) is resolved by its party (`BuyerLookup::$reference`, `BuyerLookup::byReference()`), reported with source `manual` and survives rematch. Manual attribution (`SetInvoiceAttributionAction`) records the chosen customer as `buyer` and the customer's `contact` relation as `buyer_contact`, both `manual`; clearing ends both. It sets `review_changed_at` only when an attribution changed.
+
+### Attributions
+
+Who a document is attributed to lives in `ebilling_attributions` (run the `create_ebilling_attributions_table` migration; publish or copy it). One row per attribution: `ebilling_document_id` (uuid FK, cascade delete), `role` (`buyer` or `buyer_contact`, enum `Enums\AttributionRole`), `party_type` + `party_id` (strings, a morph to any model), `attribution_source` (`auto` or `manual`, nullable), `ended_at` (nullable) and timestamps. A document has at most one active row (no `ended_at`) per role.
+
+- **Single writer:** `Actions\RecordAttributionAction::execute(document, role, ?PartyReference, ?AttributionSource): bool`. The same party with the same source is a no-op; otherwise it ends the active row and inserts a new one. A null party only ends the active row. It returns whether anything changed.
+- **Model:** `Models\EbillingAttribution` has `document()`, `party()` (morphTo), `partyReference()`, the scope `active()` and the read-only labels `role_label`, `party_label`, `attribution_source_label`.
+- **On the document:** `attributions()` (ended rows included), `activeAttribution(AttributionRole)`, `activeParty(AttributionRole): ?PartyReference` and the static `whereAttributedTo(Builder, role, partyType, list partyIds)` to filter document queries by active attribution.
+- **`Data\PartyReference`:** `string $type`, `string $id`, `of(Model)`, `equals()`.
+- **Admin:** the invoice view has a read-only tab "Attributions" (`e-billing.invoice_relations.attributions`: has_many tab with `role_label`, `party_label`, `attribution_source_label`, `created_at`, `ended_at`; no actions) backed by the invoice relation `attributions` (hasManyThrough the document). Lang keys: `e-billing::fields.section_attributions`, `role_label`, `party_label`, `attribution_source_label`, `ended_at`, `attribution_role.{buyer,buyer_contact}`, `attribution_source.{auto,manual}`.
+- **Audit:** the audit attribute list of `EbillingDocument` does not contain the removed columns `customer_id`, `contact_id`, `company_id` and `attribution_source`. Instead `EbillingAttribution` (`ebilling_document_id`, `role`, `party_type`, `party_id`, `attribution_source`, `ended_at`) and `EbillingSetting` (`owner_type`, `owner_id`, `preferred_ebilling_format`, `ebilling_recipients`) are audited models (log name `e-billing`). A re-attribution therefore leaves a `created` activity for the new row and an `updated` one for the ended row. The invoice and credit-note activity tabs aggregate the attributions via `aggregate_subjects` (`attributions`); the owner model needs `attributions()` as a real method, because the audit tab only follows relations that exist as methods (a relation registered with `resolveRelationUsing` is not enough).
 
 ## Recipient preferences
 
@@ -260,7 +271,7 @@ $this->app->bind(RecipientPreferenceResolver::class, YourResolver::class);
 
 `RecipientPreferences` has `?string $format`, `?string $profile` and `?bool $sendVisualCopy`. `null` means no preference.
 
-- **Default binding:** `Support\SettingsRecipientPreferenceResolver`, bound only when the host has not bound the interface. It reads the `ebilling_settings` row whose owner is the document's contact (`owner_id = ebilling_documents.contact_id`, `owner_type` = morph class of `e-billing.settings.contact_model`). No contact, no row or no choice gives empty preferences, so the defaults below apply. Bind `NullRecipientPreferenceResolver` to read no preferences at all.
+- **Default binding:** `Support\SettingsRecipientPreferenceResolver`, bound only when the host has not bound the interface. It reads the `ebilling_settings` row owned by the party of the document's active `buyer_contact` attribution (`owner_type` and `owner_id` are the attribution's `party_type` and `party_id`). No active `buyer_contact`, no row or no choice gives empty preferences, so the defaults below apply. Bind `NullRecipientPreferenceResolver` to read no preferences at all.
 - **Stored choice:** the row's `preferred_ebilling_format` is a `RecipientFormatChoice`: `zugferd` (ZUGFeRD / Factur-X), `xrechnung` (XRechnung, no visual copy) or `xrechnung_with_pdf` (XRechnung with a separate PDF). One value sets format and visual copy, so a contradicting pair cannot be stored. `ebilling_recipients` (JSON) is reserved for a later portal role model and is not read yet.
 - **Table:** run the `create_ebilling_settings_table` migration (publish or copy it). Columns: `owner_type` + `owner_id` (morph, unique together), `preferred_ebilling_format`, `ebilling_recipients`, timestamps. Read and write rows through `Models\EbillingSetting` (`for(Model)`, `forReference(type, id)`, `owner()`).
 - **Portal settings:** `Moox\EBilling\Portal\InvoiceSettingsSection` takes any `Model $owner` in `fill()` / `persist()` and shows one required select `preferred_ebilling_format` with the three choices. `persist()` upserts the owner's row and throws `ValueError` for an unknown value; `fill()` preselects the choice matching the config defaults. The host decides which model is the owner (the default resolver expects the contact).
@@ -604,9 +615,6 @@ Scheduled scan for documents still `approval_status = pending` past configured t
 | `error_message` | `text` | nullable | Last pipeline error |
 | `created_at` | `timestamp` | NOT NULL | |
 | `updated_at` | `timestamp` | NOT NULL | |
-| `contact_id` | `unsignedBigInteger` | nullable | Indexed, no foreign key. The attributed customer's contact; reporting and (later) recipient preferences only, never an access boundary. Cast to string |
-| `customer_id` | `unsignedBigInteger` FK | nullable | References `customers.id` (`nullOnDelete`). Document identity (matched customer); gate visibility on this. Cast to string |
-| `attribution_source` | `string` | nullable | `auto` (matcher) or `manual` (operator). Indexed. Manual attributions survive rematch |
 | `invoice_id` | `uuid` FK | nullable | References `invoices.id` (`nullOnDelete`) |
 | `scope` | `string` | nullable | Tenant / mailbox scope (indexed) |
 
@@ -614,7 +622,7 @@ Scheduled scan for documents still `approval_status = pending` past configured t
 
 - `source()` — `MorphTo` (typically `InboxAttachment`)
 - `invoice()` — `BelongsTo` `Moox\Invoice\Models\Invoice`
-- `customer()` — `BelongsTo` `Moox\Customer\Models\Customer`
+- `attributions()` — `HasMany` `EbillingAttribution` (ended rows included); the buyer and buyer contact live there, see [Attributions](#attributions)
 - `kositValidations()` — `MorphToMany` via `kosit_validatables`
 - `veraPdfValidations()` — `MorphToMany` via `verapdf_validatables` (hybrid formats when veraPDF is configured)
 
@@ -767,7 +775,7 @@ Edit mode is available only while the document awaits an approval decision (`Doc
 
 - **Edit** (`start_review_edit`) turns on edit mode. **Confirm** and **approve** are hidden while you edit.
 - Each row gets a pencil action (`editField`) that opens a slide-over on the start side, so the PDF preview stays visible. It saves exactly that row as a value correction. The note is optional.
-- Customer attribution changes through `editAttribution` inside the edit banner (`SetInvoiceAttributionAction`, `attribution_source = manual`).
+- Customer attribution changes through `editAttribution` inside the edit banner (`SetInvoiceAttributionAction`, recorded as `manual` attributions).
 - **Finish editing** (`finish_review_edit`, with confirmation) leaves edit mode and runs `LeaveEditAction`. It always re-runs matching and field checks synchronously (manual attribution preserved), so fixed master data is picked up. If a reviewer changed anything since the last successful validation, it also sets `gateway_status = generating` and queues `GenerateArtifactJob`, which regenerates the e-invoice from the corrected rows and then validates it. Per-field saves never start this pipeline.
 - **Approve** is hidden while you edit. Outside edit mode it shows for every pending document (when approval is required) and is disabled with the reason as tooltip; the status banner repeats it. Reason codes (`DocumentApprovalGuard::blockReason()`): `not_pending`, `pipeline_running`, `artifact_failed`, `artifact_not_validated`, `must_field_missing`, `human_review_required`, `credit_note_negative_total` (checked in this order). Confirming the document accepts open review findings; a leave-edit rematch or an attribution change resets the confirmation. A document a reviewer changed is never auto-approved (`review_changed`).
 - The view shows `generating` / `validating` in the status banner and polls (`wire:poll.5s`) only while the pipeline runs. Hosts that override `filament/partials/invoice-status-banner.blade.php` must port the gateway and approval-block rows.
@@ -818,7 +826,7 @@ An attribute must also be audited by its model to be correctable: the `invoice.a
 ],
 ```
 
-The options come from what `BuyerMasterDataResolver` returns for the attributed customer (looked up by reference = `customer_id`), the same data field validation corroborates against, so the customer number shown in review is the one the attribution was checked with. Each field names either a `value` (`customer_number`, `name` with the alternative names, `vat_id`) or `addresses` (`buyer`: the billing addresses; `delivery`: the delivery addresses, then the billing addresses). There is no mapping for `customer_tax_number` (the buyer has no source for it). The review workspace looks the buyer up once (`ReviewWorkspace::buyer()`, via `CrossCheckedFields::buyerFor()`) and passes it to `options()`, `addressOptions()` and `isKnown()`. Without a resolver or attribution there are no options and nothing is flagged:
+The options come from what `BuyerMasterDataResolver` returns for the attributed customer (looked up by the active `buyer` party through `BuyerLookup::byReference()`), the same data field validation corroborates against, so the customer number shown in review is the one the attribution was checked with. Each field names either a `value` (`customer_number`, `name` with the alternative names, `vat_id`) or `addresses` (`buyer`: the billing addresses; `delivery`: the delivery addresses, then the billing addresses). There is no mapping for `customer_tax_number` (the buyer has no source for it). The review workspace looks the buyer up once (`ReviewWorkspace::buyer()`, via `CrossCheckedFields::buyerFor()`) and passes it to `options()`, `addressOptions()` and `isKnown()`. `CrossCheckedFields::attributedCustomer(?EbillingDocument)` returns the active buyer when it is a Customer (used for the review customer label and the change-customer select). Without a resolver or attribution there are no options and nothing is flagged:
 
 | Mode | Behaviour |
 |---|---|
