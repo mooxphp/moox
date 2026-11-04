@@ -203,7 +203,9 @@ class ViewInvoice extends ViewRecord
             ->visible(fn (): bool => $this->reviewEditing && $this->reviewWorkspace->isAvailable())
             ->modalHeading(__('e-billing::fields.review_change_customer'))
             ->modalDescription(__('e-billing::fields.review_change_customer_description'))
-            ->fillForm(fn (): array => ['customer_id' => $this->reviewDocument()?->customer_id])
+            ->fillForm(fn (): array => [
+                'customer_id' => CrossCheckedFields::attributedCustomer($this->reviewDocument())?->getKey(),
+            ])
             ->schema([
                 Select::make('customer_id')
                     ->label(__('e-billing::fields.field_customer'))

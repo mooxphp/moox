@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('ebilling_attributions', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignUuid('ebilling_document_id')
+                ->constrained('ebilling_documents')
+                ->cascadeOnDelete();
+            $table->string('role');
+            $table->string('party_type');
+            $table->string('party_id');
+            $table->string('attribution_source')->nullable();
+            $table->timestamp('ended_at')->nullable();
+            $table->timestamps();
+
+            $table->index(['ebilling_document_id', 'role', 'ended_at']);
+            $table->index(['party_type', 'party_id', 'role']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('ebilling_attributions');
+    }
+};

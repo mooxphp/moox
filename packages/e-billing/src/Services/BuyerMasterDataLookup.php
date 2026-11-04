@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Services;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Log;
-use Moox\Customer\Models\Customer;
 use Moox\EBilling\Contracts\BuyerMasterDataResolver;
 use Moox\EBilling\Data\BuyerLookup;
 use Moox\EBilling\Data\BuyerMasterData;
 use Moox\EBilling\Data\BuyerMasterDataResult;
+use Moox\EBilling\Data\PartyReference;
 use Moox\EBilling\Enums\BuyerMasterDataStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Throwable;
@@ -42,12 +45,12 @@ final class BuyerMasterDataLookup
             return BuyerMasterDataResult::noMatch();
         }
 
-        if ($result->buyer instanceof BuyerMasterData && ! $this->isStorable($result->buyer)) {
-            Log::error('[EBilling] Buyer resolver matched an unknown customer; master data is unavailable', [
+        if ($result->buyer instanceof BuyerMasterData && ! $this->exists($result->buyer)) {
+            Log::error('[EBilling] Buyer resolver matched a party that does not exist; master data is unavailable', [
                 'ebilling_document_id' => $document->getKey(),
                 'resolver' => $this->resolver::class,
-                'reference' => $result->buyer->reference,
-                'contact_reference' => $result->buyer->contactReference,
+                'party' => (array) $result->buyer->party,
+                'contact' => $result->buyer->contact === null ? null : (array) $result->buyer->contact,
             ]);
 
             return BuyerMasterDataResult::unavailable();
@@ -57,15 +60,25 @@ final class BuyerMasterDataLookup
     }
 
     /**
-     * The match is written to `customer_id` (foreign key to `customers`) and `contact_id` (big integer).
+     * A morph has no foreign key, so the parties are checked here, before they are attributed.
      */
-    private function isStorable(BuyerMasterData $buyer): bool
+    private function exists(BuyerMasterData $buyer): bool
     {
-        if ($buyer->contactReference !== null && ! ctype_digit($buyer->contactReference)) {
+        return $this->partyExists($buyer->party)
+            && ($buyer->contact === null || $this->partyExists($buyer->contact));
+    }
+
+    private function partyExists(PartyReference $party): bool
+    {
+        $model = Relation::getMorphedModel($party->type) ?? $party->type;
+
+        if (! is_a($model, Model::class, true)) {
             return false;
         }
 
-        return ctype_digit($buyer->reference)
-            && Customer::query()->withTrashed()->whereKey($buyer->reference)->exists();
+        return $model::query()
+            ->withoutGlobalScope(SoftDeletingScope::class)
+            ->whereKey($party->id)
+            ->exists();
     }
 }

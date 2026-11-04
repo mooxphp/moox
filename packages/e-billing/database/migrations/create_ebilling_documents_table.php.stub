@@ -33,9 +33,6 @@ return new class extends Migration
             $table->text('error_message')->nullable();
             $table->timestamps();
 
-            $table->unsignedBigInteger('contact_id')->nullable()->index();
-            $table->foreignId('customer_id')->nullable()->index()->constrained('customers')->nullOnDelete();
-            $table->string('attribution_source')->nullable()->index();
             $table->foreignUuid('invoice_id')->nullable()->constrained('invoices')->nullOnDelete();
 
             $table->string('scope')->nullable()->index();

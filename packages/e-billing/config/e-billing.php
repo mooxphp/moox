@@ -188,23 +188,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Recipient settings (`ebilling_settings`)
-    |--------------------------------------------------------------------------
-    |
-    | The default RecipientPreferenceResolver reads the settings row of the
-    | document's contact (`ebilling_documents.contact_id`). `contact_model` is
-    | the model that id belongs to; its morph class keys the row. Null (the
-    | default) reads no settings. Without a contact, a row or a format choice
-    | the defaults above apply.
-    |
-    */
-
-    'settings' => [
-        'contact_model' => null,
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | XRechnung copy PDF marking (§14c)
     |--------------------------------------------------------------------------
     |
@@ -1750,9 +1733,6 @@ return [
                     'approval_reason',
                     'validation_score',
                     'artifact_content_hash',
-                    'customer_id',
-                    'contact_id',
-                    'attribution_source',
                     'invoice_id',
                     'ignored_reason',
                     'scope',

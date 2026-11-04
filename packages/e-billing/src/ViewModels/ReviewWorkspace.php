@@ -128,7 +128,7 @@ final class ReviewWorkspace
 
     public function customerLabel(): ?string
     {
-        $customer = CrossCheckedFields::findCustomer($this->document?->customer_id);
+        $customer = CrossCheckedFields::attributedCustomer($this->document);
 
         return $customer instanceof Customer ? self::customerOptionLabel($customer) : null;
     }

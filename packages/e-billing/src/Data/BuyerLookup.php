@@ -8,7 +8,7 @@ use Moox\EBilling\Contracts\BuyerMasterDataResolver;
 
 /**
  * What the invoice says about its buyer, handed to the {@see BuyerMasterDataResolver}.
- * `reference` is set when a person attributed the document manually.
+ * `reference` is the attributed buyer when there is one to resolve exactly (a manual attribution, the review options).
  */
 final readonly class BuyerLookup
 {
@@ -16,7 +16,12 @@ final readonly class BuyerLookup
         public ?string $customerNumber,
         public ?string $name,
         public ?string $vatId,
-        public ?string $reference = null,
+        public ?PartyReference $reference = null,
     ) {
+    }
+
+    public static function byReference(PartyReference $reference): self
+    {
+        return new self(null, null, null, $reference);
     }
 }

@@ -21,9 +21,9 @@ use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Core\Traits\MorphPivot\HasMorphPivotRelations;
-use Moox\Customer\Models\Customer;
 use Moox\EBilling\Actions\RelayForeignSourcePdfAction;
-use Moox\EBilling\Enums\AttributionSource;
+use Moox\EBilling\Data\PartyReference;
+use Moox\EBilling\Enums\AttributionRole;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
@@ -66,9 +66,6 @@ use Throwable;
  * @property array<string, mixed>|null $field_validations
  * @property array<string, mixed>|null $severity_releases
  * @property string|null $invoice_id
- * @property string|null $customer_id Identity of the document (matched customer). Gate visibility on this, resolved live.
- * @property string|null $contact_id The matched customer's contact. Reporting only; never an access boundary.
- * @property AttributionSource|null $attribution_source How customer_id was set (`auto` matcher vs `manual` operator). Manual survives rematch.
  * @property int|null $validation_score
  * @property string|null $scope
  * @property Carbon|null $processed_at When the artifact last passed validation.
@@ -117,9 +114,6 @@ class EbillingDocument extends BaseItemModel
         'processed_at',
         'error_message',
         'invoice_id',
-        'contact_id',
-        'customer_id',
-        'attribution_source',
         'scope',
     ];
 
@@ -134,9 +128,6 @@ class EbillingDocument extends BaseItemModel
             'gateway_status' => EBillingAttachmentProcessingStatus::class,
             'review_status' => InvoiceProcessingStatus::class,
             'approval_status' => DocumentApprovalStatus::class,
-            'customer_id' => 'string',
-            'contact_id' => 'string',
-            'attribution_source' => AttributionSource::class,
             'field_validations' => 'array',
             // severity_releases and latest approval actor columns are not in $fillable.
             'severity_releases' => 'array',
@@ -587,11 +578,55 @@ class EbillingDocument extends BaseItemModel
     }
 
     /**
-     * @return BelongsTo<Customer, $this>
+     * Every attribution of this document, ended ones included (ADR 0021). Write through RecordAttributionAction.
+     *
+     * @return HasMany<EbillingAttribution, $this>
      */
-    public function customer(): BelongsTo
+    public function attributions(): HasMany
     {
-        return $this->belongsTo(Customer::class, 'customer_id');
+        return $this->hasMany(EbillingAttribution::class, 'ebilling_document_id');
+    }
+
+    /**
+     * The active attribution in the role. The buyer gates portal visibility; a manual one survives rematch.
+     */
+    public function activeAttribution(AttributionRole $role): ?EbillingAttribution
+    {
+        if ($this->relationLoaded('attributions')) {
+            return $this->attributions->first(
+                fn (EbillingAttribution $attribution): bool => $attribution->role === $role
+                    && $attribution->ended_at === null,
+            );
+        }
+
+        return $this->attributions()->where('role', $role->value)->active()->first();
+    }
+
+    public function activeParty(AttributionRole $role): ?PartyReference
+    {
+        return $this->activeAttribution($role)?->partyReference();
+    }
+
+    /**
+     * Limits a document query to documents whose active attribution in the role is one of the given parties.
+     *
+     * @template TQuery of Builder<Model>
+     *
+     * @param  TQuery  $query
+     * @param  list<string>  $partyIds
+     * @return TQuery
+     */
+    public static function whereAttributedTo(
+        Builder $query,
+        AttributionRole $role,
+        string $partyType,
+        array $partyIds,
+    ): Builder {
+        return $query->whereHas('attributions', fn (Builder $attributions): Builder => $attributions
+            ->where('role', $role->value)
+            ->where('party_type', $partyType)
+            ->whereIn('party_id', $partyIds)
+            ->whereNull('ended_at'));
     }
 
     /**
