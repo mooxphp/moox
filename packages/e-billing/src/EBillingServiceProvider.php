@@ -52,6 +52,7 @@ use Moox\EBilling\Formats\FormatDefinition;
 use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Formats\Strategies\ZugferdGeneratorStrategy;
 use Moox\EBilling\Listeners\ProcessInboxAttachmentListener;
+use Moox\EBilling\Models\EbillingAttribution;
 use Moox\EBilling\Models\EbillingDeliveryAttempt;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\InvoiceFieldValidator;
@@ -224,6 +225,7 @@ class EBillingServiceProvider extends MooxServiceProvider
         InvoiceRelationsConfig::mergeIntoInvoiceRelations();
         $this->registerInvoiceEbillingDocumentRelation();
         $this->registerInvoiceDeliveryAttemptsRelation();
+        $this->registerInvoiceAttributionsRelation();
         $this->registerInvoiceKositValidationsRelation();
         $this->registerInvoiceVeraPdfValidationsRelation();
         $this->registerInvoiceMailSendLogsRelation();
@@ -373,6 +375,23 @@ class EBillingServiceProvider extends MooxServiceProvider
     {
         Invoice::resolveRelationUsing('ebillingDocument', function (Invoice $invoice): HasOne {
             return $invoice->hasOne(EbillingDocument::class, 'invoice_id');
+        });
+    }
+
+    /**
+     * Expose the document's attribution history on the invoice (read-only Filament tab).
+     */
+    private function registerInvoiceAttributionsRelation(): void
+    {
+        Invoice::resolveRelationUsing('attributions', function (Invoice $invoice): HasManyThrough {
+            return $invoice->hasManyThrough(
+                EbillingAttribution::class,
+                EbillingDocument::class,
+                'invoice_id',
+                'ebilling_document_id',
+                $invoice->getKeyName(),
+                'id',
+            );
         });
     }
 

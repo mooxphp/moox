@@ -1,5 +1,6 @@
 <?php
 
+use Moox\EBilling\Models\EbillingAttribution;
 use Moox\EBilling\Models\EbillingDeliveryAttempt;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\CreditNoteResource;
@@ -1579,6 +1580,31 @@ return [
     */
 
     'invoice_relations' => [
+        'attributions' => [
+            'kind' => 'has_many',
+            'presentation' => 'tab',
+            'label' => 'trans//e-billing::fields.section_attributions',
+            'relationship' => 'attributions',
+            'model' => EbillingAttribution::class,
+            'translation_prefix' => 'e-billing::fields',
+            'display_columns' => [
+                'role_label',
+                'party_label',
+                'attribution_source_label',
+                'created_at',
+                'ended_at',
+            ],
+            'sortable_columns' => ['created_at'],
+            'default_order' => [
+                ['column' => 'created_at', 'direction' => 'desc'],
+                ['column' => 'id', 'direction' => 'desc'],
+            ],
+            'actions' => [
+                'header' => [],
+                'record' => [],
+                'toolbar' => [],
+            ],
+        ],
         'delivery_attempts' => [
             'kind' => 'has_many',
             'presentation' => 'tab',
