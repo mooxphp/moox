@@ -8,6 +8,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
+use Moox\Transform\Support\MappedExpression;
 use Moox\Transform\Support\SourceContextResolver;
 
 final class BulkTransformSummaryFormatter
@@ -262,8 +263,8 @@ final class BulkTransformSummaryFormatter
      */
     public static function externalId(array $projection, array $destinationMatch): ?string
     {
-        $path = $destinationMatch['external_reference'] ?? null;
-        if (! is_string($path) || $path === '') {
+        $path = MappedExpression::path($destinationMatch['external_reference'] ?? null);
+        if ($path === null) {
             return null;
         }
 
@@ -380,11 +381,12 @@ final class BulkTransformSummaryFormatter
         }
 
         foreach ($definitionDestinationMatch as $field => $path) {
-            if (! is_string($field) || $field === '' || ! is_string($path) || $path === '') {
+            $sourcePath = MappedExpression::path($path);
+            if (! is_string($field) || $field === '' || $sourcePath === null) {
                 continue;
             }
 
-            $value = data_get($projection, $path);
+            $value = data_get($projection, $sourcePath);
             if ($value === null || $value === '') {
                 continue;
             }

@@ -137,6 +137,40 @@ test('it rejects record when no source is provided by record or definition', fun
     ]);
 })->throws(ValidationException::class);
 
+test('it accepts documented field map and destination match expressions', function (): void {
+    createTestTables();
+
+    $definition = TransformDefinition::query()->create([
+        'name' => 'Documented mapping definition',
+        'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'title' => [
+                'expression' => 'title',
+                'note' => 'Wiedererkennung über den Quelltitel.',
+            ],
+        ],
+        'source_references' => [
+            [
+                'source_type' => 'db_table',
+                'connection' => (string) config('database.default'),
+                'table' => 'transform_dummy_models',
+                'key_column' => 'id',
+            ],
+        ],
+        'field_map' => [
+            'title' => [
+                'expression' => 'title',
+                'note' => 'Wiedererkennung über den Quelltitel.',
+            ],
+        ],
+        'validation_rules' => [],
+        'is_active' => true,
+    ]);
+
+    expect($definition->exists)->toBeTrue()
+        ->and($definition->field_map['title']['note'] ?? null)->toBe('Wiedererkennung über den Quelltitel.');
+});
+
 test('it rejects destination_match fields not present in field_map', function (): void {
     createTestTables();
     $jsonPath = storage_path('framework/testing/transform-destination-match.json');
