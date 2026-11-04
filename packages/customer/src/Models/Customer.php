@@ -83,6 +83,6 @@ class Customer extends Model
 
     public function displayLabel(): string
     {
-        return $this->customer_name . ' (' . $this->customer_number . ')';
+        return $this->customer_name.' ('.$this->customer_number.')';
     }
 }
