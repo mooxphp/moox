@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Transform;
 
 use Moox\Core\MooxServiceProvider;
+use Moox\Transform\Console\DispatchDueTransformSchedulesCommand;
 use Moox\Transform\Filament\Providers\TransformPanelProvider;
 use Moox\Transform\Support\ConfiguredImportRecordPayloadReader;
 use Moox\Transform\Support\ConfiguredLocaleVariantResolver;
@@ -72,7 +73,9 @@ class TransformServiceProvider extends MooxServiceProvider
                 'create_transform_definitions_table',
                 'create_transform_records_table',
                 'upgrade_transform_bulk_capabilities_table',
+                'add_schedule_to_transform_definitions_table',
             ])
+            ->hasCommand(DispatchDueTransformSchedulesCommand::class)
             ->hasTranslations();
     }
 }

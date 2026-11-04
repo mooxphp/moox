@@ -275,6 +275,7 @@ function createTestTables(): void
         $table->json('expand')->nullable();
         $table->json('bulk')->nullable();
         $table->boolean('is_active')->default(true);
+        $table->string('schedule')->nullable();
     });
 
     Schema::create('transform_records', function (Blueprint $table): void {

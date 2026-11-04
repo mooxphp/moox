@@ -35,6 +35,7 @@ use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
 use Moox\Transform\Support\ConfiguredImportRecordProjectionEnricher;
 use Moox\Transform\Support\ImportRecordSelectOptionBuilder;
+use Moox\Transform\Support\MappedExpression;
 
 class TransformDefinitionResource extends BaseItemResource
 {
@@ -95,10 +96,15 @@ class TransformDefinitionResource extends BaseItemResource
                                         ->label(__('transform::fields.source_references'))
                                         ->required()
                                         ->collapsible()
+                                        ->itemLabel(fn (array $state): ?string => static::sourceReferenceItemLabel($state))
                                         ->schema([
                                             TextInput::make('alias')
                                                 ->label(__('transform::fields.alias'))
                                                 ->maxLength(255),
+                                            Textarea::make('note')
+                                                ->label(__('transform::fields.source_note'))
+                                                ->helperText(__('transform::fields.source_note_help'))
+                                                ->rows(2),
                                             Select::make('source_type')
                                                 ->label(__('transform::fields.source_type'))
                                                 ->options(static::sourceTypeOptions())
@@ -224,7 +230,12 @@ class TransformDefinitionResource extends BaseItemResource
 
                                                             return is_scalar($state) ? (string) $state : '';
                                                         }),
+                                                    Textarea::make('note')
+                                                        ->label(__('transform::fields.where_note'))
+                                                        ->helperText(__('transform::fields.where_note_help'))
+                                                        ->rows(2),
                                                 ])
+                                                ->itemLabel(fn (array $state): ?string => static::whereClauseItemLabel($state))
                                                 ->visible(fn (Get $get): bool => $get('source_type') === 'db_table')
                                                 ->default([]),
                                             Select::make('columns')
@@ -289,6 +300,7 @@ class TransformDefinitionResource extends BaseItemResource
                                         ->required()
                                         ->minItems(1)
                                         ->collapsible()
+                                        ->itemLabel(fn (array $state): ?string => static::mappedExpressionItemLabel($state))
                                         ->schema([
                                             TextInput::make('destination_field')
                                                 ->label(__('transform::fields.destination_field'))
@@ -300,52 +312,18 @@ class TransformDefinitionResource extends BaseItemResource
                                                 ->datalist(fn (Get $get): array => array_values(TransformDefinition::discoverSourcePathOptions(is_array($get('../../../source_references')) ? $get('../../../source_references') : [])))
                                                 ->placeholder('title')
                                                 ->required(),
+                                            Textarea::make('note')
+                                                ->label(__('transform::fields.mapping_note'))
+                                                ->helperText(__('transform::fields.mapping_note_help'))
+                                                ->rows(2),
                                         ])
-                                        ->mutateDehydratedStateUsing(static function (mixed $state): array {
-                                            if (! is_array($state)) {
-                                                return [];
-                                            }
-
-                                            $mapped = [];
-                                            foreach ($state as $row) {
-                                                if (! is_array($row)) {
-                                                    continue;
-                                                }
-
-                                                $destinationField = $row['destination_field'] ?? null;
-                                                $sourcePath = $row['source_path'] ?? null;
-                                                if (! is_string($destinationField) || $destinationField === '' || ! is_string($sourcePath) || $sourcePath === '') {
-                                                    continue;
-                                                }
-
-                                                $mapped[$destinationField] = $sourcePath;
-                                            }
-
-                                            return $mapped;
-                                        })
-                                        ->formatStateUsing(static function (mixed $state): array {
-                                            if (! is_array($state)) {
-                                                return [];
-                                            }
-
-                                            $rows = [];
-                                            foreach ($state as $destinationField => $sourcePath) {
-                                                if (! is_string($destinationField) || $destinationField === '' || ! is_string($sourcePath) || $sourcePath === '') {
-                                                    continue;
-                                                }
-
-                                                $rows[] = [
-                                                    'destination_field' => $destinationField,
-                                                    'source_path' => $sourcePath,
-                                                ];
-                                            }
-
-                                            return $rows;
-                                        }),
+                                        ->mutateDehydratedStateUsing(static fn (mixed $state): array => static::dehydrateMappedExpressions($state))
+                                        ->formatStateUsing(static fn (mixed $state): array => static::hydrateMappedExpressions($state)),
                                     Repeater::make('destination_match')
                                         ->label(__('transform::fields.destination_match'))
                                         ->helperText(__('transform::fields.destination_match_help'))
                                         ->collapsible()
+                                        ->itemLabel(fn (array $state): ?string => static::mappedExpressionItemLabel($state))
                                         ->schema([
                                             TextInput::make('destination_field')
                                                 ->label(__('transform::fields.destination_field'))
@@ -377,6 +355,11 @@ class TransformDefinitionResource extends BaseItemResource
                                                             $set('source_path', $sourcePath);
                                                         }
 
+                                                        $note = $row['note'] ?? null;
+                                                        if (is_string($note) && $note !== '' && blank($get('note'))) {
+                                                            $set('note', $note);
+                                                        }
+
                                                         break;
                                                     }
                                                 }),
@@ -385,48 +368,13 @@ class TransformDefinitionResource extends BaseItemResource
                                                 ->datalist(fn (Get $get): array => array_values(TransformDefinition::discoverSourcePathOptions(is_array($get('../../../source_references')) ? $get('../../../source_references') : [])))
                                                 ->placeholder('source.email')
                                                 ->required(),
+                                            Textarea::make('note')
+                                                ->label(__('transform::fields.mapping_note'))
+                                                ->helperText(__('transform::fields.mapping_note_help'))
+                                                ->rows(2),
                                         ])
-                                        ->mutateDehydratedStateUsing(static function (mixed $state): array {
-                                            if (! is_array($state)) {
-                                                return [];
-                                            }
-
-                                            $mapped = [];
-                                            foreach ($state as $row) {
-                                                if (! is_array($row)) {
-                                                    continue;
-                                                }
-
-                                                $destinationField = $row['destination_field'] ?? null;
-                                                $sourcePath = $row['source_path'] ?? null;
-                                                if (! is_string($destinationField) || $destinationField === '' || ! is_string($sourcePath) || $sourcePath === '') {
-                                                    continue;
-                                                }
-
-                                                $mapped[$destinationField] = $sourcePath;
-                                            }
-
-                                            return $mapped;
-                                        })
-                                        ->formatStateUsing(static function (mixed $state): array {
-                                            if (! is_array($state)) {
-                                                return [];
-                                            }
-
-                                            $rows = [];
-                                            foreach ($state as $destinationField => $sourcePath) {
-                                                if (! is_string($destinationField) || $destinationField === '' || ! is_string($sourcePath) || $sourcePath === '') {
-                                                    continue;
-                                                }
-
-                                                $rows[] = [
-                                                    'destination_field' => $destinationField,
-                                                    'source_path' => $sourcePath,
-                                                ];
-                                            }
-
-                                            return $rows;
-                                        }),
+                                        ->mutateDehydratedStateUsing(static fn (mixed $state): array => static::dehydrateMappedExpressions($state))
+                                        ->formatStateUsing(static fn (mixed $state): array => static::hydrateMappedExpressions($state)),
                                     Repeater::make('validation_rules')
                                         ->label(__('transform::fields.validation_rules'))
                                         ->helperText('Optional extra rules on top of model-based validation.')
@@ -605,6 +553,12 @@ class TransformDefinitionResource extends BaseItemResource
                                         ->label(__('transform::fields.is_active'))
                                         ->default(true)
                                         ->required(),
+                                    TextInput::make('schedule')
+                                        ->label(__('transform::fields.schedule'))
+                                        ->helperText(__('transform::fields.schedule_help'))
+                                        ->placeholder('0 2 * * *')
+                                        ->maxLength(255)
+                                        ->nullable(),
                                 ])->columns(1)->columnSpan(2),
                         ])
                         ->columnSpan(2),
@@ -645,6 +599,9 @@ class TransformDefinitionResource extends BaseItemResource
                     ->sortable(),
                 IconColumn::make('is_active')
                     ->boolean(),
+                TextColumn::make('schedule')
+                    ->label(__('transform::fields.schedule'))
+                    ->toggleable(),
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable(),
@@ -964,6 +921,119 @@ class TransformDefinitionResource extends BaseItemResource
         $contextKey = config('transform.import_record_context_key', 'import_record_id');
 
         return is_string($contextKey) && $contextKey !== '' ? $contextKey : 'import_record_id';
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function dehydrateMappedExpressions(mixed $state): array
+    {
+        if (! is_array($state)) {
+            return [];
+        }
+
+        $mapped = [];
+        foreach ($state as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            $destinationField = $row['destination_field'] ?? null;
+            $stored = MappedExpression::fromFormRow($row);
+            if (! is_string($destinationField) || $destinationField === '' || $stored === null) {
+                continue;
+            }
+
+            $mapped[$destinationField] = $stored;
+        }
+
+        return $mapped;
+    }
+
+    /**
+     * @return list<array{destination_field: string, source_path: string, note: string}>
+     */
+    private static function hydrateMappedExpressions(mixed $state): array
+    {
+        if (! is_array($state)) {
+            return [];
+        }
+
+        $rows = [];
+        foreach ($state as $destinationField => $sourcePath) {
+            if (! is_string($destinationField) || $destinationField === '') {
+                continue;
+            }
+
+            $formRow = MappedExpression::toFormRow($sourcePath);
+            if ($formRow === null) {
+                continue;
+            }
+
+            $rows[] = [
+                'destination_field' => $destinationField,
+                ...$formRow,
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @param  array<string, mixed>  $state
+     */
+    private static function mappedExpressionItemLabel(array $state): ?string
+    {
+        $destinationField = $state['destination_field'] ?? null;
+        if (! is_string($destinationField) || $destinationField === '') {
+            return null;
+        }
+
+        $note = $state['note'] ?? null;
+        if (is_string($note) && trim($note) !== '') {
+            return $destinationField.' — '.trim($note);
+        }
+
+        return $destinationField;
+    }
+
+    /**
+     * @param  array<string, mixed>  $state
+     */
+    private static function sourceReferenceItemLabel(array $state): ?string
+    {
+        $note = $state['note'] ?? null;
+        if (is_string($note) && trim($note) !== '') {
+            return trim($note);
+        }
+
+        $alias = $state['alias'] ?? null;
+        if (is_string($alias) && $alias !== '') {
+            return $alias;
+        }
+
+        $sourceType = $state['source_type'] ?? null;
+
+        return is_string($sourceType) && $sourceType !== '' ? $sourceType : null;
+    }
+
+    /**
+     * @param  array<string, mixed>  $state
+     */
+    private static function whereClauseItemLabel(array $state): ?string
+    {
+        $note = $state['note'] ?? null;
+        if (is_string($note) && trim($note) !== '') {
+            return trim($note);
+        }
+
+        $column = $state['column'] ?? null;
+        $operator = $state['operator'] ?? null;
+        if (is_string($column) && $column !== '' && is_string($operator) && $operator !== '') {
+            return $column.' '.$operator;
+        }
+
+        return null;
     }
 
     /**

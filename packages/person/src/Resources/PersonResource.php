@@ -19,6 +19,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Person\Models\Person;
 use Moox\Person\Resources\Person\Pages\CreatePerson;
 use Moox\Person\Resources\Person\Pages\EditPerson;
@@ -43,6 +44,7 @@ class PersonResource extends Resource
     use HasExternalForm;
     use HasIdentityForm;
     use HasRelationForm;
+    use HasResourceRelations;
     use HasSoftDeleteForm;
 
     protected static ?string $model = Person::class;

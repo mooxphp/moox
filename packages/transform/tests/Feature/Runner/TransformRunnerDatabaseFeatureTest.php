@@ -87,6 +87,70 @@ test('it transforms from multiple db sources into one destination model', functi
     expect($saved?->price_label)->toBe('9.99 EUR');
 });
 
+test('it applies documented field map expressions the same as string mappings', function (): void {
+    createTestTables();
+    Schema::create('legacy_products', function (Blueprint $table): void {
+        $table->id();
+        $table->string('sku')->unique();
+        $table->string('title');
+        $table->integer('inventory');
+    });
+
+    DB::table('legacy_products')->insert([
+        'sku' => 'P-16',
+        'title' => 'Relay',
+        'inventory' => 4,
+    ]);
+
+    $definition = createDefinition([
+        'name' => 'documented-mapping-definition',
+        'destination_model' => TransformDummyModel::class,
+        'source_references' => [
+            [
+                'source_type' => 'db_table',
+                'table' => 'legacy_products',
+                'row_key' => 'P-16',
+                'key_column' => 'sku',
+                'alias' => 'product',
+            ],
+        ],
+        'field_map' => [
+            'title' => 'product.title',
+            'stock' => [
+                'expression' => 'product.inventory',
+                'note' => 'Bestand aus inventory, nicht aus einer Berechnung.',
+            ],
+            'price_label' => 'product.sku',
+        ],
+        'destination_match' => [
+            'price_label' => [
+                'expression' => 'product.sku',
+                'note' => 'SKU ist der stabile Schlüssel.',
+            ],
+        ],
+        'validation_rules' => [
+            'title' => ['required', 'string'],
+            'stock' => ['required', 'integer'],
+            'price_label' => ['required', 'string'],
+        ],
+    ]);
+
+    $record = TransformRecord::query()->create([
+        'transform_definition_id' => $definition->id,
+    ]);
+
+    makeRunner()->run($record);
+    $record->refresh();
+
+    expect($record->status)->toBe('processed')
+        ->and($record->validation_status)->toBe('valid');
+
+    $saved = TransformDummyModel::query()->first();
+    expect($saved?->title)->toBe('Relay')
+        ->and($saved?->stock)->toBe(4)
+        ->and($saved?->price_label)->toBe('P-16');
+});
+
 test('it updates an existing destination model using destination_match', function (): void {
     createTestTables();
     Schema::create('legacy_products', function (Blueprint $table): void {

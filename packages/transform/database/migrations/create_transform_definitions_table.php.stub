@@ -23,6 +23,7 @@ return new class extends Migration
             $table->json('expand')->nullable();
             $table->json('bulk')->nullable();
             $table->boolean('is_active')->default(true)->index();
+            $table->string('schedule')->nullable();
         });
     }
 
