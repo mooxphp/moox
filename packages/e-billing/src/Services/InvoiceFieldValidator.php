@@ -6,11 +6,13 @@ namespace Moox\EBilling\Services;
 
 use Moox\Data\Models\StaticAllowanceReason;
 use Moox\Data\Models\StaticChargeReason;
+use Moox\EBilling\Actions\RecordAttributionAction;
 use Moox\EBilling\Adapters\ZugferdAddressAdapter;
 use Moox\EBilling\Data\BuyerLookup;
 use Moox\EBilling\Data\BuyerMasterData;
 use Moox\EBilling\Data\BuyerMasterDataResult;
 use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
+use Moox\EBilling\Enums\AttributionRole;
 use Moox\EBilling\Enums\AttributionSource;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceValidationCompleted;
@@ -61,7 +63,8 @@ class InvoiceFieldValidator
 
         $invoice->loadMissing(['allowanceCharges', 'lines.allowanceCharges']);
 
-        $isManualAttribution = $document->attribution_source === AttributionSource::Manual;
+        $buyerSource = $document->activeAttribution(AttributionRole::Buyer)?->attribution_source;
+        $isManualAttribution = $buyerSource === AttributionSource::Manual;
         $masterData = $this->resolveBuyer($invoice, $document, $isManualAttribution);
 
         $invoiceValidations = [];
@@ -107,15 +110,19 @@ class InvoiceFieldValidator
 
         $document->field_validations = $invoiceValidations;
 
-        if (! $isManualAttribution && $masterData->buyer instanceof BuyerMasterData) {
-            $document->customer_id = $masterData->buyer->reference;
-            $document->contact_id = $masterData->buyer->contactReference;
-            $document->attribution_source = AttributionSource::Auto;
-        }
-
         $document->validation_score = $document->calculateValidationScore();
         $document->syncApprovalFlagsFromFieldValidations();
-        $document->save();
+
+        $buyer = $isManualAttribution ? null : $masterData->buyer;
+
+        $document->getConnection()->transaction(function () use ($document, $buyer): void {
+            $document->save();
+
+            if ($buyer instanceof BuyerMasterData) {
+                app(RecordAttributionAction::class)
+                    ->executeBuyer($document, $buyer->party, $buyer->contact, AttributionSource::Auto);
+            }
+        });
     }
 
     /**
@@ -202,7 +209,7 @@ class InvoiceFieldValidator
             customerNumber: $text($invoice->customer_number),
             name: $text($invoice->buyer?->name),
             vatId: $text($invoice->buyer?->vat_id),
-            reference: $isManualAttribution ? $text($document->customer_id) : null,
+            reference: $isManualAttribution ? $document->activeParty(AttributionRole::Buyer) : null,
         ), $document);
     }
 
@@ -475,8 +482,9 @@ class InvoiceFieldValidator
             default => null,
         };
 
-        if ($field === 'customer_number' && $isManualAttribution && $document?->customer_id !== null) {
-            return $this->validateManualCustomerNumberField($value, $masterData, (string) $document->customer_id);
+        $manualBuyer = $isManualAttribution ? $document?->activeParty(AttributionRole::Buyer) : null;
+        if ($field === 'customer_number' && $manualBuyer !== null) {
+            return $this->validateManualCustomerNumberField($value, $masterData, $manualBuyer->id);
         }
 
         $isEmpty = $field === 'customer_address'
@@ -499,20 +507,20 @@ class InvoiceFieldValidator
         return match ($field) {
             'customer_number' => $this->matchedEntry(
                 ! $buyer->isReviewable && ! $this->customerNumberDiffers($value, $buyer),
-                $buyer->reference,
+                $buyer->party->id,
             ),
             'customer_name' => $this->matchedEntry(
                 $corroborator->corroborateName((string) $value, $buyer),
-                $buyer->reference,
+                $buyer->party->id,
             ),
             'customer_vat_id' => $this->comparedEntry(
                 $corroborator->compareVat((string) $value, $buyer->vatId),
-                $buyer->reference,
+                $buyer->party->id,
                 'validated',
             ),
             'country' => $this->comparedEntry(
                 $corroborator->compareCountry((string) $value, $buyer),
-                $buyer->reference,
+                $buyer->party->id,
                 'db_validated',
             ),
             default => $this->validateCustomerAddressField($address, $priority, $buyer),
@@ -542,7 +550,7 @@ class InvoiceFieldValidator
 
         $corroborates = ! $buyer->isReviewable && ! $this->customerNumberDiffers($value, $buyer);
 
-        return ['status' => $corroborates ? 'db_validated' : 'needs_review', 'matched_id' => $buyer->reference]
+        return ['status' => $corroborates ? 'db_validated' : 'needs_review', 'matched_id' => $buyer->party->id]
             + $manual;
     }
 
@@ -689,7 +697,7 @@ class InvoiceFieldValidator
             $match = $corroborator->findOwnSiteDeliveryAddress($consignee->address, $masterDataBuyer);
             $entry = $this->matchedEntry(
                 $match['exists'] ?? false,
-                $match['matched_id'] ?? $masterDataBuyer->reference,
+                $match['matched_id'] ?? $masterDataBuyer->party->id,
             );
 
             return $this->withAddressDivergence($entry, $match ?? []);

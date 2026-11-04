@@ -4,22 +4,26 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Actions;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Moox\Customer\Models\Customer;
 use Moox\EBilling\Approval\DocumentEditGuard;
+use Moox\EBilling\Data\PartyReference;
 use Moox\EBilling\Enums\AttributionSource;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 
 /**
- * Operator-set customer attribution. Survives automatic rematch.
+ * Operator-set customer attribution: the customer as `buyer` and its contact as `buyer_contact`, both `manual`.
+ * Survives automatic rematch.
  */
 final class SetInvoiceAttributionAction
 {
     public function __construct(
         private readonly InvalidateDocumentApprovalAction $invalidateApproval,
         private readonly DocumentEditGuard $editGuard,
+        private readonly RecordAttributionAction $recordAttribution,
     ) {
     }
 
@@ -42,23 +46,24 @@ final class SetInvoiceAttributionAction
      */
     private function attribute(EbillingDocument $document, ?string $customerId): void
     {
-        if ($customerId === null || $customerId === '') {
-            $document->customer_id = null;
-            $document->contact_id = null;
-            $document->attribution_source = null;
-        } else {
+        $buyer = null;
+        $contact = null;
+        $source = null;
+
+        if ($customerId !== null && $customerId !== '') {
             $customer = Customer::query()->withTrashed()->find($customerId);
 
             if (! $customer instanceof Customer) {
                 throw new InvalidArgumentException("Customer [{$customerId}] was not found.");
             }
 
-            $document->customer_id = (string) $customer->getKey();
-            $document->contact_id = (string) $customer->contact_id;
-            $document->attribution_source = AttributionSource::Manual;
+            $buyer = PartyReference::of($customer);
+            $customerContact = $customer->getRelationValue('contact');
+            $contact = $customerContact instanceof Model ? PartyReference::of($customerContact) : null;
+            $source = AttributionSource::Manual;
         }
 
-        if ($document->isDirty(['customer_id', 'contact_id', 'attribution_source'])) {
+        if ($this->recordAttribution->executeBuyer($document, $buyer, $contact, $source)) {
             $document->forceFill(['review_changed_at' => now()]);
         }
 

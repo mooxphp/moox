@@ -81,7 +81,6 @@ class IgnoredDocumentResource extends BaseItemResource
                 'source_id',
                 'gateway_status',
                 'ignored_reason',
-                'customer_id',
                 'created_at',
             ]))
             ->addSelect([
@@ -90,7 +89,7 @@ class IgnoredDocumentResource extends BaseItemResource
             ])
             ->with([
                 'source' => fn ($morphTo) => $morphTo->morphWith([InboxAttachment::class => ['message']]),
-                'customer',
+                'attributions' => fn ($query) => $query->whereNull('ended_at')->with('party'),
                 'latestSourcePdfRelayAttempt',
             ]);
     }

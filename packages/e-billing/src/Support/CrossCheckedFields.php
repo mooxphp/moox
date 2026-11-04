@@ -8,6 +8,7 @@ use Moox\Customer\Models\Customer;
 use Moox\EBilling\Data\BuyerLookup;
 use Moox\EBilling\Data\BuyerMasterData;
 use Moox\EBilling\Data\BuyerMasterDataAddress;
+use Moox\EBilling\Enums\AttributionRole;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\BuyerMasterDataLookup;
 
@@ -43,17 +44,29 @@ final class CrossCheckedFields
     }
 
     /**
-     * The master data the resolver returns for the attributed customer, looked up by reference.
+     * The master data the resolver returns for the attributed buyer, looked up by reference.
      */
     public static function buyerFor(?EbillingDocument $document): ?BuyerMasterData
     {
-        if ($document?->customer_id === null) {
+        $party = $document?->activeParty(AttributionRole::Buyer);
+
+        if ($document === null || $party === null) {
             return null;
         }
 
-        return app(BuyerMasterDataLookup::class)
-            ->resolve(new BuyerLookup(null, null, null, reference: $document->customer_id), $document)
-            ->buyer;
+        return app(BuyerMasterDataLookup::class)->resolve(BuyerLookup::byReference($party), $document)->buyer;
+    }
+
+    /**
+     * The attributed buyer when it is a customer, also soft-deleted: attribution keeps a deleted customer.
+     */
+    public static function attributedCustomer(?EbillingDocument $document): ?Customer
+    {
+        $party = $document?->activeParty(AttributionRole::Buyer);
+
+        return $party?->isOf(Customer::class)
+            ? self::findCustomer($party->id)
+            : null;
     }
 
     /**

@@ -70,7 +70,7 @@ final class AttributionCorroborator
         if ($addressResult === null) {
             return [
                 'corroborates' => false,
-                'matched_id' => $buyer->reference,
+                'matched_id' => $buyer->party->id,
             ];
         }
 
@@ -205,7 +205,7 @@ final class AttributionCorroborator
 
         return $firstDivergentMatch ?? [
             'exists' => false,
-            'matched_id' => $buyer->reference,
+            'matched_id' => $buyer->party->id,
         ];
     }
 
@@ -301,7 +301,7 @@ final class AttributionCorroborator
 
             $match = [
                 'exists' => true,
-                'matched_id' => $address->reference ?? $buyer->reference,
+                'matched_id' => $address->reference ?? $buyer->party->id,
             ];
 
             if ($divergence === []) {

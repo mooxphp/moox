@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Moox\EBilling\Data;
 
 /**
- * The buyer as the host's master data knows it. `reference` is the key of an existing `customers` row, stored as the
- * document's `customer_id`; `contactReference` is that customer's contact, stored as `contact_id`.
+ * The buyer as the host's master data knows it. `party` is an existing record of any model, attributed to the document
+ * as `buyer`; `contact` is its organisation, attributed as `buyer_contact` (ADR 0021).
  * `isReviewable` marks a record that must not corroborate silently, e.g. deleted or inactive.
  * Billing addresses corroborate the buyer address and country; delivery addresses are tried first for a consignee,
  * then the billing addresses.
@@ -19,7 +19,7 @@ final readonly class BuyerMasterData
      * @param  list<BuyerMasterDataAddress>  $deliveryAddresses
      */
     public function __construct(
-        public string $reference,
+        public PartyReference $party,
         public ?string $name,
         public array $alternativeNames = [],
         public ?string $vatId = null,
@@ -27,7 +27,7 @@ final readonly class BuyerMasterData
         public bool $isReviewable = false,
         public array $billingAddresses = [],
         public array $deliveryAddresses = [],
-        public ?string $contactReference = null,
+        public ?PartyReference $contact = null,
     ) {
     }
 }

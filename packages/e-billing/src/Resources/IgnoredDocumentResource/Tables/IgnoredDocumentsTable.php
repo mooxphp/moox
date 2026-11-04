@@ -12,6 +12,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Moox\EBilling\Enums\AttributionRole;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Http\Middleware\SetFilamentPanelFromRequest;
 use Moox\EBilling\Models\EbillingDocument;
@@ -78,8 +79,9 @@ final class IgnoredDocumentsTable
                 ->toggleable(),
             TextColumn::make('customer')
                 ->label(__('e-billing::fields.ignored_customer'))
-                ->getStateUsing(fn (EbillingDocument $record): ?string => $record->customer->customer_name
-                    ?? self::filledString($record->getAttribute('bill_customer_name')))
+                ->getStateUsing(fn (EbillingDocument $record): ?string => self::filledString(
+                    $record->activeAttribution(AttributionRole::Buyer)?->party?->getAttribute('customer_name'),
+                ) ?? self::filledString($record->getAttribute('bill_customer_name')))
                 ->placeholder('—')
                 ->toggleable(),
             TextColumn::make('relay')
