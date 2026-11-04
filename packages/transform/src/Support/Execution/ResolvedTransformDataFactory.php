@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
 use Moox\Transform\Support\Exceptions\TransformDestinationConflictException;
+use Moox\Transform\Support\MappedExpression;
 use Moox\Transform\Support\Operations\InlineOperationRegistry;
 use Moox\Transform\Support\SourceContextResolver;
 
@@ -91,16 +92,17 @@ final class ResolvedTransformDataFactory
         $warnings = [];
 
         foreach ($mapping as $destinationField => $sourcePath) {
-            if (! is_string($sourcePath) || $sourcePath === '') {
+            $sourceExpression = MappedExpression::path($sourcePath);
+            if ($sourceExpression === null) {
                 $warnings[] = "Invalid mapping for {$destinationField}.";
 
                 continue;
             }
 
-            $pathExists = $this->sourceExpressionPathExists($payload, $sourcePath);
-            $value = $this->resolveMappedValueMemoized($payload, $sourcePath, (string) $destinationField, $warnings);
+            $pathExists = $this->sourceExpressionPathExists($payload, $sourceExpression);
+            $value = $this->resolveMappedValueMemoized($payload, $sourceExpression, (string) $destinationField, $warnings);
             if (! $pathExists) {
-                $warnings[] = "Mapped source path [{$sourcePath}] was not found.";
+                $warnings[] = "Mapped source path [{$sourceExpression}] was not found.";
             }
 
             $resolved[(string) $destinationField] = $value;
@@ -237,18 +239,19 @@ final class ResolvedTransformDataFactory
 
         $warnings = [];
         foreach ($this->resolveArrayAttribute($definition, 'destination_match') as $destinationField => $sourcePath) {
-            if (! is_string($destinationField) || $destinationField === '' || ! is_string($sourcePath) || $sourcePath === '') {
+            $sourceExpression = MappedExpression::path($sourcePath);
+            if (! is_string($destinationField) || $destinationField === '' || $sourceExpression === null) {
                 continue;
             }
 
-            $sourceId = $this->resolveMappedValueMemoized($payload, $sourcePath, $destinationField, $warnings);
+            $sourceId = $this->resolveMappedValueMemoized($payload, $sourceExpression, $destinationField, $warnings);
             if ($this->isMissingDestinationMatchValue($sourceId)) {
                 continue;
             }
 
             $sourceContext['references'][] = [
                 'source_type' => 'projection',
-                'source_path' => $sourcePath,
+                'source_path' => $sourceExpression,
                 'source_id' => $sourceId,
             ];
             $sourceContext['primary_source_id'] = $sourceId;
@@ -283,15 +286,16 @@ final class ResolvedTransformDataFactory
         $warnings = [];
 
         foreach ($destinationMatch as $destinationField => $sourcePath) {
-            if (! is_string($destinationField) || $destinationField === '' || ! is_string($sourcePath) || $sourcePath === '') {
+            $sourceExpression = MappedExpression::path($sourcePath);
+            if (! is_string($destinationField) || $destinationField === '' || $sourceExpression === null) {
                 $missing[] = (string) $destinationField;
 
                 continue;
             }
 
-            $value = $this->resolveMappedValueMemoized($payload, $sourcePath, $destinationField, $warnings);
+            $value = $this->resolveMappedValueMemoized($payload, $sourceExpression, $destinationField, $warnings);
             if ($this->isMissingDestinationMatchValue($value)) {
-                $missing[] = "{$destinationField} (from {$sourcePath})";
+                $missing[] = "{$destinationField} (from {$sourceExpression})";
 
                 continue;
             }

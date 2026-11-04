@@ -238,6 +238,62 @@ test('it persists validation_rules and field_map from filament create form', fun
     ]);
 });
 
+test('it persists mapping notes from filament create form', function (): void {
+    createTestTables();
+    $this->actingAs(createFilamentTestUser());
+
+    Livewire::test(CreateTransformDefinition::class)
+        ->fillForm([
+            'name' => 'Mapping Note Definition',
+            'destination_model' => User::class,
+            'source_references' => [
+                [
+                    'source_type' => 'db_table',
+                    'connection' => (string) config('database.default'),
+                    'table' => 'transform_dummy_models',
+                    'key_column' => 'id',
+                    'row_key' => '1',
+                    'note' => 'Eine Dummy-Tabelle als Quelle.',
+                ],
+            ],
+            'field_map' => [
+                [
+                    'destination_field' => 'name',
+                    'source_path' => 'title',
+                    'note' => 'Titel wird zum Namen.',
+                ],
+            ],
+            'destination_match' => [
+                [
+                    'destination_field' => 'name',
+                    'source_path' => 'title',
+                    'note' => 'Titel wird zum Namen.',
+                ],
+            ],
+            'validation_rules' => [],
+            'is_active' => true,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $definition = TransformDefinition::query()->where('name', 'Mapping Note Definition')->first();
+
+    expect($definition)->not()->toBeNull()
+        ->and($definition?->field_map)->toBe([
+            'name' => [
+                'expression' => 'title',
+                'note' => 'Titel wird zum Namen.',
+            ],
+        ])
+        ->and($definition?->destination_match)->toBe([
+            'name' => [
+                'expression' => 'title',
+                'note' => 'Titel wird zum Namen.',
+            ],
+        ])
+        ->and($definition?->source_references[0]['note'] ?? null)->toBe('Eine Dummy-Tabelle als Quelle.');
+});
+
 test('it updates and deletes a transform definition via filament edit page', function (): void {
     createTestTables();
     $this->actingAs(createFilamentTestUser());

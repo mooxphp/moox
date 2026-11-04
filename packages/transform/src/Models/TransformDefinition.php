@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Transform\Models;
 
+use Cron\CronExpression;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,7 +13,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
+use Moox\Transform\Support\MappedExpression;
 
 class TransformDefinition extends BaseItemModel
 {
@@ -31,6 +34,7 @@ class TransformDefinition extends BaseItemModel
         'expand',
         'bulk',
         'is_active',
+        'schedule',
     ];
 
     protected function casts(): array
@@ -61,6 +65,8 @@ class TransformDefinition extends BaseItemModel
 
             if (! is_array($fieldMap) || $fieldMap === []) {
                 $errors['field_map'][] = 'Field map must be a non-empty array.';
+            } else {
+                $errors = array_merge_recursive($errors, self::validateFieldMap($fieldMap));
             }
 
             if ($destinationMatch !== null && ! is_array($destinationMatch)) {
@@ -80,6 +86,21 @@ class TransformDefinition extends BaseItemModel
                 );
             } elseif ($definition->is_active) {
                 $errors['destination_match'][] = __('transform::validation.destination_match_required');
+            }
+
+            $schedule = $definition->getAttribute('schedule');
+            if (is_string($schedule)) {
+                $schedule = trim($schedule);
+                if ($schedule === '') {
+                    $definition->schedule = null;
+                } else {
+                    try {
+                        new CronExpression($schedule);
+                        $definition->schedule = $schedule;
+                    } catch (InvalidArgumentException) {
+                        $errors['schedule'][] = __('transform::fields.schedule_invalid');
+                    }
+                }
             }
 
             if ($errors !== []) {
@@ -219,6 +240,29 @@ class TransformDefinition extends BaseItemModel
     }
 
     /**
+     * @param  array<string, mixed>  $fieldMap
+     * @return array<string, array<int, string>>
+     */
+    public static function validateFieldMap(array $fieldMap): array
+    {
+        $errors = [];
+
+        foreach ($fieldMap as $destinationField => $sourcePath) {
+            if (! is_string($destinationField) || $destinationField === '') {
+                $errors['field_map'][] = 'Field map contains invalid destination field keys.';
+
+                continue;
+            }
+
+            if (MappedExpression::path($sourcePath) === null) {
+                $errors["field_map.{$destinationField}"][] = 'Field map source path must be a non-empty string.';
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
      * @param  array<string, mixed>  $destinationMatch
      * @param  array<string, mixed>  $fieldMap
      * @return array<string, array<int, string>>
@@ -234,7 +278,7 @@ class TransformDefinition extends BaseItemModel
                 continue;
             }
 
-            if (! is_string($sourcePath) || $sourcePath === '') {
+            if (MappedExpression::path($sourcePath) === null) {
                 $errors["destination_match.{$destinationField}"][] = 'Destination match source path must be a non-empty string.';
             }
         }
