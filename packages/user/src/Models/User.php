@@ -2,6 +2,7 @@
 
 namespace Moox\User\Models;
 
+use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
@@ -11,11 +12,13 @@ use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use Moox\Impersonate\Filament\Actions\ImpersonateAction;
 use Moox\User\Support\HasRolesTrait;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Throwable;
 
 /**
  * @property string|null $avatar_url
@@ -56,7 +59,71 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
         'two_factor_confirmed_at' => 'datetime',
     ];
 
+    protected static function newFactory()
+    {
+        $factory = config('user.factory');
+
+        if (is_string($factory) && class_exists($factory)) {
+            return $factory::new();
+        }
+
+        return null;
+    }
+
     public function canAccessPanel(Panel $panel): bool
+    {
+        $panelAccess = config('user.panel_access');
+        $rules = is_array($panelAccess) ? ($panelAccess[$panel->getId()] ?? null) : null;
+        $hasConfiguredPanels = is_array($panelAccess) && $panelAccess !== [];
+
+        if ($rules === null) {
+            if ($hasConfiguredPanels) {
+                return false;
+            }
+
+            return $this->legacyCanAccessPanel($panel);
+        }
+
+        if ($rules === false) {
+            return false;
+        }
+
+        if (! is_array($rules)) {
+            return false;
+        }
+
+        $email = strtolower((string) $this->email);
+
+        $denyEmails = array_map(
+            static fn (mixed $value): string => strtolower((string) $value),
+            $rules['deny_emails'] ?? []
+        );
+
+        if ($denyEmails !== [] && in_array($email, $denyEmails, true)) {
+            return false;
+        }
+
+        if (isset($rules['email_ends_with'])) {
+            $suffix = strtolower((string) $rules['email_ends_with']);
+
+            if ($suffix === '' || ! str_ends_with($email, $suffix)) {
+                return false;
+            }
+        }
+
+        $requireVerified = $rules['require_verified'] ?? true;
+
+        if ($requireVerified && ! $this->hasVerifiedEmail()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Backward-compatible default when panel_access is empty / unset.
+     */
+    protected function legacyCanAccessPanel(Panel $panel): bool
     {
         $email = strtolower((string) $this->email);
 
@@ -66,6 +133,23 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
 
         return preg_match('/@[^@\s]+\.[a-z]{2,63}$/i', $email) === 1
             && $this->hasVerifiedEmail();
+    }
+
+    public function canImpersonate(): bool
+    {
+        try {
+            if (! $this->canAccessPanel(Filament::getPanel('admin'))) {
+                return false;
+            }
+        } catch (Throwable) {
+            return false;
+        }
+
+        if (! class_exists(ImpersonateAction::class)) {
+            return false;
+        }
+
+        return ImpersonateAction::userMay($this);
     }
 
     public function getFilamentAvatarUrl(): ?string

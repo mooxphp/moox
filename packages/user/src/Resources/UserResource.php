@@ -41,11 +41,18 @@ class UserResource extends BaseRecordResource
     use HasScopedChildResource;
     use InteractsWithAuditResourceRelations;
 
-    protected static ?string $model = User::class;
-
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-manage-accounts';
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    /**
+     * Resolve the model from config so a host can swap in a subclass
+     * via `user.model`; defaults to Moox\User\Models\User.
+     */
+    public static function getModel(): string
+    {
+        return config('user.model', User::class);
+    }
 
     protected static function getEntityType(): string
     {

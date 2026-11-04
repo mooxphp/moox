@@ -36,6 +36,17 @@ php artisan migrate
 php artisan vendor:publish --tag="user-config"
 ```
 
+### Host app configuration
+
+No `App\Models\User` subclass is required. Point Auth / Shield at
+`Moox\User\Models\User` and configure:
+
+- `user.model` — Eloquent model (default `Moox\User\Models\User`)
+- `user.factory` — host factory class (e.g. `Database\Factories\UserFactory`)
+- `user.panel_access` — per-panel rules (`email_ends_with`, `require_verified`, `deny_emails`) or `false` to deny
+
+`UserResource` reads the model from `config('user.model')`.
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.

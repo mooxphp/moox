@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource;
+use Moox\UserDevice\Support\UserDeviceAuthorization;
 use Moox\UserDevice\Support\UserDevicePanel;
 use Throwable;
 
@@ -28,7 +29,13 @@ class TrustDeviceController
 
         $record = UserDevice::query()->findOrFail($device);
 
-        if ($authUser->can('update', $record) !== true) {
+        // Magic-link self-trust: the device owner must be able to confirm without
+        // Shield Update:UserDevice (fresh installs / roles often lack that permission).
+        // Ops with update / ViewAll still pass via policy.
+        $mayTrust = UserDeviceAuthorization::ownsRecord($authUser, $record)
+            || $authUser->can('update', $record) === true;
+
+        if (! $mayTrust) {
             abort(403);
         }
 
