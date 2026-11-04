@@ -80,4 +80,9 @@ class Customer extends Model
             'restored_at' => 'datetime',
         ];
     }
+
+    public function displayLabel(): string
+    {
+        return $this->customer_name . ' (' . $this->customer_number . ')';
+    }
 }
