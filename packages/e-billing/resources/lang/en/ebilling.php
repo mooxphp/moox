@@ -6,6 +6,8 @@ return [
     'credit_note' => 'Credit note',
     'credit_notes' => 'Credit notes',
     'ebilling_document' => 'E-Billing Document',
+    'ebilling_attribution' => 'Attribution',
+    'ebilling_setting' => 'E-invoice setting',
     'navigation_group' => 'E-Billing',
     'invoice_settings' => 'Invoice settings',
     'invoice_settings_description' => 'Format and copy options for future invoices. Changes do not affect already generated documents.',

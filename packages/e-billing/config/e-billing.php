@@ -3,6 +3,7 @@
 use Moox\EBilling\Models\EbillingAttribution;
 use Moox\EBilling\Models\EbillingDeliveryAttempt;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Models\EbillingSetting;
 use Moox\EBilling\Resources\CreditNoteResource;
 use Moox\EBilling\Resources\InvoiceResource;
 use Moox\EBilling\Support\EbillingActivityAttributeLabels;
@@ -1775,18 +1776,47 @@ return [
                     'copy_pdf_storage_path',
                 ],
             ],
+            // Who the document was attributed to and when (ADR 0021). Rows are only added and ended, so the
+            // created and updated (ended_at) audits together reconstruct every re-attribution.
+            EbillingAttribution::class => [
+                'log_name' => 'e-billing',
+                'label' => 'trans//e-billing::ebilling.ebilling_attribution',
+                'title_attribute' => 'role',
+                'attributes' => [
+                    'ebilling_document_id',
+                    'role',
+                    'party_type',
+                    'party_id',
+                    'attribution_source',
+                    'ended_at',
+                ],
+            ],
+            // A recipient's format choice (ADR 0022); it decides the format of future documents.
+            EbillingSetting::class => [
+                'log_name' => 'e-billing',
+                'label' => 'trans//e-billing::ebilling.ebilling_setting',
+                'title_attribute' => 'preferred_ebilling_format',
+                'attributes' => [
+                    'owner_type',
+                    'owner_id',
+                    'preferred_ebilling_format',
+                    'ebilling_recipients',
+                ],
+            ],
         ],
         'filament' => [
             InvoiceResource::class => [
                 'owner_model' => Invoice::class,
                 'aggregate_subjects' => [
                     EbillingDocument::class => 'ebillingDocument',
+                    EbillingAttribution::class => 'attributions',
                 ],
             ],
             CreditNoteResource::class => [
                 'owner_model' => Invoice::class,
                 'aggregate_subjects' => [
                     EbillingDocument::class => 'ebillingDocument',
+                    EbillingAttribution::class => 'attributions',
                 ],
             ],
         ],
