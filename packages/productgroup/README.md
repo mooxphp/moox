@@ -1,47 +1,57 @@
 # Moox ProductGroup
 
-Product family / grouping entity: hierarchical groups with `parent_id`, translatable content, draft/publish workflow, and a Filament admin UI.
+Hierarchical product family. Groups have a parent, translatable title, slug and description, and a Filament admin UI. A group is not orderable.
 
-## Data model
+## Tables
 
-### Table `product_groups`
+### `product_groups`
 
 | Field | Type | Notes |
 |-------|------|-------|
-| `code` | string, unique | Required business key |
-| `type` | string | Default `family` — values from `config('productgroup.types')` |
-| `status` | string | Default `draft` |
-| `parent_id` | bigint, nullable | Simple parent reference |
-| `_lft`, `_rgt` | int | Nested-set columns (Kalnoy) — **for programmatic imports only**, not in Filament UI |
-| `sku_prefix` | string, nullable | Optional SKU prefix |
-| `custom_properties` | json | Arbitrary key-value data |
-| `uuid`, `ulid` | uuid/ulid | Identifiers |
-| `deleted_at` | timestamp | Soft delete |
+| `ulid`, `uuid` | ulid / uuid | Unique identifiers |
+| `parent_id` | bigint, nullable | Parent group. `nullOnDelete` |
+| `lft`, `rgt` | unsigned int, default 0 | Stored integers. Editable in Filament. Not a nested set |
+| `is_active` | boolean, default true | |
+| `sort_order` | unsigned int, default 0 | |
+| `external_reference`, `external_info`, `external_status` | string, nullable | |
+| `note` | text, nullable | |
+| `image` | json, nullable | Moox Media picker |
+| `data` | json, nullable | |
+| audit columns | timestamps + actor id/type | created, updated, archived, deleted, restored, published, unpublished |
 
-### Table `product_group_translations`
+Indexes: `(parent_id, lft)`, `(parent_id, sort_order)`.
 
-Per locale: `name`, `slug`, `short_description`, `description`, `meta_title`, `meta_description`, plus the Moox translation workflow.
+### `product_group_translations`
+
+No timestamps. One row per group and locale.
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `product_group_id` | bigint | Cascade on delete |
+| `locale` | string | |
+| `title`, `slug` | string | Required |
+| `description` | text, nullable | |
+
+Unique: `(product_group_id, locale)`.
+
+Slug uniqueness among siblings is not a SQL unique index. `ProductGroupTranslation` rejects a save when another group with the same parent and the same locale already uses that slug. Groups with `parent_id` null are siblings of each other.
 
 ## What this package provides
 
-- Filament `ProductGroupResource` for all visible fields
-- Parent selection via `parent_id` (displays parent `code`)
-- Simple `parent()` / `children()` relations on `parent_id`
-- Nested-set columns in DB + model (`_lft`/`_rgt` fillable) for external imports
-- Multilingual content, slugs, draft tabs like other Moox entities
-- Morph pivot assignment to products via app config (`config/productgroup.php` → `relations`)
+- Filament `ProductGroupResource` (list, create, view, edit)
+- Parent select on `parent_id`. The current group and its descendants are excluded
+- `parent()` and `children()` on `parent_id`
+- Translatable `title`, `slug`, `description`, with translation fallback
+- Media through the `image` JSON field, `media_usables`, and a `preview` conversion
+- Active, identity, external, data, audit, archive, publish and soft-delete sections
 - Factory, seeder, Pest tests
+- Filament plugin `Moox\ProductGroup\Plugins\ProductGroupPlugin`
 
 ## What this package does not provide
 
-- **No nested-set behavior on the model** — no `NodeTrait`, no select-tree in Filament (`filament-select-tree` is in `composer.json` but unused)
-- **No tree UI** — hierarchy is a flat `parent_id` select, not a tree widget
-- **`_lft`/`_rgt` not in Filament** — written only via code/transform, not manually editable
-- **No brands** — no `brand_id`
-- **No attribute sets** — removed
-- **No default unit field** — removed
-- **No product relation out of the box** — app must define `relations.product_assignments` in `config/productgroup.php`
-- **No import/transform logic** — app responsibility
+- No nested-set library and no tree widget. Hierarchy is `parent_id` only
+- No product, article or category relation on the model. The app wires shop products in `config/productgroup.php` as the `product_assignments` morph pivot when `moox/product` is installed
+- No brands, attribute sets or SKU fields
 
 ## Installation
 
@@ -51,30 +61,14 @@ php artisan vendor:publish --tag=moox-productgroup-config
 php artisan migrate
 ```
 
-Filament plugin: `Moox\ProductGroup\Plugins\ProductGroupPlugin`.
-
-## App configuration (example)
-
-```php
-// config/productgroup.php
-'relations' => [
-    'product_assignments' => [
-        'kind' => 'morph_pivot',
-        'relationship' => 'products',
-        // ...
-    ],
-],
-```
-
-Product ↔ ProductGroup requires **both** app configs (`config/product.php` and `config/productgroup.php`).
+Register `ProductGroupPlugin::make()` on the Filament panel.
 
 ## Dependencies
 
 - `moox/core`
 - `moox/localization`
-- `moox/slug`
-- `kalnoy/nestedset` (migration columns only)
-- `codewithdennis/filament-select-tree` (declared, currently unused)
+- `moox/media`
+- `moox/support`
 
 ## Tests
 
