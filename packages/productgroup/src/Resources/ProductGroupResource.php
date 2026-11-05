@@ -4,282 +4,359 @@ declare(strict_types=1);
 
 namespace Moox\ProductGroup\Resources;
 
-use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\RichEditor;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Validation\Rules\Unique;
-use Moox\Core\Entities\Items\Draft\BaseDraftResource;
-use Moox\Core\Traits\HasCustomFields;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Moox\Core\Traits\Relations\HasResourceRelations;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
+use Moox\Media\Forms\Components\MediaPicker;
 use Moox\ProductGroup\Models\ProductGroup;
 use Moox\ProductGroup\Resources\ProductGroup\Pages\CreateProductGroup;
 use Moox\ProductGroup\Resources\ProductGroup\Pages\EditProductGroup;
 use Moox\ProductGroup\Resources\ProductGroup\Pages\ListProductGroups;
 use Moox\ProductGroup\Resources\ProductGroup\Pages\ViewProductGroup;
-use Moox\Slug\Forms\Components\TitleWithSlugInput;
-use Override;
+use Moox\Support\Active\HasActiveForm;
+use Moox\Support\Archive\HasArchiveForm;
+use Moox\Support\Audit\HasAuditForm;
+use Moox\Support\Data\HasDataForm;
+use Moox\Support\External\HasExternalForm;
+use Moox\Support\Filament\FeatureFields;
+use Moox\Support\Identity\HasIdentityForm;
+use Moox\Support\SoftDelete\HasSoftDeleteForm;
+use Moox\Support\Title\HasTitleForm;
 
-class ProductGroupResource extends BaseDraftResource
+class ProductGroupResource extends Resource
 {
-    use HasCustomFields;
+    use HasActiveForm;
+    use HasArchiveForm;
+    use HasAuditForm;
+    use HasDataForm;
+    use HasExternalForm;
+    use HasIdentityForm;
     use HasResourceRelations;
-    use HasResourceTabs;
+    use HasSoftDeleteForm;
+    use HasTitleForm;
 
     protected static ?string $model = ProductGroup::class;
 
+    protected static ?string $recordTitleAttribute = 'title';
+
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-shopping-bag-o';
-
-    protected static function getEntityType(): string
-    {
-        return 'productgroup';
-    }
-
-    #[Override]
-    public static function getTitleColumn(): TextColumn
-    {
-        return TextColumn::make('name')
-            ->label(__('productgroup::productgroup.name'))
-            ->searchable(true, function ($query, $search, $livewire): void {
-                $currentLang = static::resolveCurrentLang($livewire);
-                $query->whereHas('translations', function ($query) use ($search, $currentLang): void {
-                    $query->where('locale', $currentLang)
-                        ->where('name', 'like', '%'.$search.'%');
-                });
-            })
-            ->extraAttributes(function ($record, $livewire): array {
-                $currentLang = static::resolveCurrentLang($livewire);
-
-                return [
-                    'style' => $record->translations()->where('locale', $currentLang)->withTrashed()->whereNotNull('name')->exists()
-                        ? ''
-                        : 'color: var(--gray-500);',
-                ];
-            })
-            ->getStateUsing(function ($record, $livewire) {
-                $currentLang = static::resolveCurrentLang($livewire);
-                $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
-
-                if ($translation?->name) {
-                    return $translation->name;
-                }
-
-                return __('core::core.no_title_available');
-            });
-    }
 
     public static function getModelLabel(): string
     {
-        return config('productgroup.resources.productgroup.single');
+        return __('productgroup::productgroup.productgroup');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('productgroup.resources.productgroup.plural');
+        return __('productgroup::productgroup.productgroups');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('productgroup.resources.productgroup.plural');
-    }
-
-    public static function getBreadcrumb(): string
-    {
-        return config('productgroup.resources.productgroup.single');
+        return __('productgroup::productgroup.productgroups');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return config('productgroup.navigation_group');
+        $group = config('productgroup.navigation_group');
+
+        return is_string($group) && $group !== '' ? $group : null;
     }
 
-    public static function form(Schema $form): Schema
+    public static function getEloquentQuery(): Builder
     {
-        return $form
-            ->components([
-                Grid::make()
-                    ->schema([
-                        Section::make(__('productgroup::productgroup.section_content'))
-                            ->schema([
-                                TitleWithSlugInput::make(
-                                    fieldTitle: 'name',
-                                    fieldSlug: 'slug',
-                                    urlPathEntityType: 'productgroups',
-                                    slugRuleUniqueParameters: [
-                                        'modifyRuleUsing' => function (Unique $rule, $record, $livewire) {
-                                            $locale = $livewire->lang;
-                                            if ($record) {
-                                                $rule->where('locale', $locale);
-                                                $existingTranslation = $record->translations()
-                                                    ->where('locale', $locale)
-                                                    ->first();
-                                                if ($existingTranslation) {
-                                                    $rule->ignore($existingTranslation->id);
-                                                }
-                                            } else {
-                                                $rule->where('locale', $locale);
-                                            }
+        return parent::getEloquentQuery()->with(['translations', 'parent.translations']);
+    }
 
-                                            return $rule;
-                                        },
-                                        'table' => 'productgroup_translations',
-                                        'column' => 'slug',
-                                    ]
-                                ),
-                                Textarea::make('short_description')
-                                    ->label(__('productgroup::productgroup.short_description'))
-                                    ->rows(3)
-                                    ->columnSpanFull(),
-                                RichEditor::make('description')
-                                    ->label(__('productgroup::productgroup.description'))
-                                    ->columnSpanFull(),
-                                ...static::customFieldComponents(),
-                                KeyValue::make('custom_properties')
-                                    ->label(__('productgroup::productgroup.custom_properties'))
-                                    ->columnSpanFull(),
-                            ])
-                            ->columnSpan(2),
-                        Grid::make()
-                            ->schema([
-                                Section::make()
-                                    ->schema([
-                                        static::getFormActions(),
-                                    ]),
-                                Section::make(__('productgroup::productgroup.section_family'))
-                                    ->schema([
-                                        TextInput::make('code')
-                                            ->label(__('productgroup::productgroup.code'))
-                                            ->required()
-                                            ->unique(ignoreRecord: true)
-                                            ->maxLength(64),
-                                        Select::make('type')
-                                            ->label(__('productgroup::productgroup.type'))
-                                            ->options(config('productgroup.types', []))
-                                            ->default('family')
-                                            ->required(),
-                                        Select::make('status')
-                                            ->label(__('productgroup::productgroup.status'))
-                                            ->options(config('productgroup.statuses', []))
-                                            ->default('draft')
-                                            ->required(),
-                                        Select::make('parent_id')
-                                            ->label(__('productgroup::productgroup.parent'))
-                                            ->relationship('parent', 'code')
-                                            ->searchable()
-                                            ->preload(),
-                                        TextInput::make('sku_prefix')
-                                            ->label(__('productgroup::productgroup.sku_prefix'))
-                                            ->maxLength(64),
-                                    ]),
-                                ...static::customFieldComponents('sidebar'),
+    public static function form(Schema $schema): Schema
+    {
+        return $schema->components([
+            Grid::make()
+                ->schema([
+                    Grid::make(1)
+                        ->schema([
+                            static::activeSection(),
+                            static::titleSection(),
+                            static::domainSection(),
+                            static::mediaSection(),
+                            static::externalSection(),
+                            static::dataSection(),
+                        ])
+                        ->columnSpan(2),
+                    Grid::make(1)
+                        ->schema([
+                            static::identitySection()->columns(1),
+                            static::auditSection()->columns(1),
+                            static::archiveSection()->columns(1),
+                            static::publishSection()->columns(1),
+                            static::softDeleteSection()->columns(1),
+                        ])
+                        ->columnSpan(1),
+                ])
+                ->columns(3)
+                ->columnSpanFull(),
+        ]);
+    }
 
-                                Section::make(__('productgroup::productgroup.section_seo'))
-                                    ->schema([
-                                        TextInput::make('meta_title')
-                                            ->label(__('productgroup::productgroup.meta_title'))
-                                            ->maxLength(255),
-                                        Textarea::make('meta_description')
-                                            ->label(__('productgroup::productgroup.meta_description'))
-                                            ->rows(3),
-                                    ]),
-                                Section::make()
-                                    ->schema([
-                                        static::getTranslationStatusSelect(),
-                                        static::getPublishDateField(),
-                                        static::getUnpublishDateField(),
-                                    ]),
-                                Section::make('')
-                                    ->schema([
-                                        ...static::getStandardCopyableFields(),
-                                        Section::make('')
-                                            ->schema([
-                                                ...static::getStandardTimestampFields(),
-                                            ]),
-                                    ])
-                                    ->hidden(fn ($record) => $record === null),
-                            ])
-                            ->columnSpan(1)
-                            ->columns(1),
-                    ])
-                    ->columns(3)
+    protected static function domainSection(): Section
+    {
+        $translation = static::featureTranslation();
+
+        return Section::make(FeatureFields::label($translation, 'domain'))
+            ->schema([
+                Select::make('parent_id')
+                    ->label(FeatureFields::label($translation, 'parent_id'))
+                    ->options(fn (?Model $record): array => static::parentOptions($record))
+                    ->searchable()
+                    ->preload()
+                    ->rules(static::featureRules('parent_id')),
+                TextInput::make('sort_order')
+                    ->label(FeatureFields::label($translation, 'sort_order'))
+                    ->numeric()
+                    ->integer()
+                    ->default(0)
+                    ->required()
+                    ->rules(static::featureRules('sort_order')),
+                TextInput::make('lft')
+                    ->label(FeatureFields::label($translation, 'lft'))
+                    ->numeric()
+                    ->integer()
+                    ->default(0)
+                    ->rules(static::featureRules('lft')),
+                TextInput::make('rgt')
+                    ->label(FeatureFields::label($translation, 'rgt'))
+                    ->numeric()
+                    ->integer()
+                    ->default(0)
+                    ->rules(static::featureRules('rgt')),
+                Textarea::make('note')
+                    ->label(FeatureFields::label($translation, 'note'))
+                    ->rules(static::featureRules('note'))
+                    ->columnSpanFull(),
+            ])
+            ->columns(2);
+    }
+
+    protected static function mediaSection(): Section
+    {
+        $translation = static::featureTranslation();
+
+        return Section::make(FeatureFields::label($translation, 'media'))
+            ->schema([
+                MediaPicker::make('image')
+                    ->label(FeatureFields::label($translation, 'image'))
+                    ->multiple()
                     ->columnSpanFull(),
             ]);
     }
 
+    protected static function publishSection(): Section
+    {
+        $translation = static::featureTranslation();
+
+        return Section::make(FeatureFields::label($translation, 'publish'))
+            ->schema([
+                FeatureFields::locked($translation, 'published_at'),
+                FeatureFields::locked($translation, 'published_by_id'),
+                FeatureFields::locked($translation, 'published_by_type'),
+                FeatureFields::locked($translation, 'unpublished_at'),
+                FeatureFields::locked($translation, 'unpublished_by_id'),
+                FeatureFields::locked($translation, 'unpublished_by_type'),
+            ])
+            ->columns(2)
+            ->hidden(fn (?Model $record): bool => $record === null);
+    }
+
+    protected static function titleSection(): Section
+    {
+        $translation = static::featureTranslation();
+
+        return Section::make(FeatureFields::label($translation, 'titles'))
+            ->schema([
+                Repeater::make('translations')
+                    ->label(FeatureFields::label($translation, 'translations'))
+                    ->relationship()
+                    ->schema([
+                        Select::make('locale')
+                            ->label(FeatureFields::label($translation, 'locale'))
+                            ->options(static::titleLocaleOptions())
+                            ->required()
+                            ->searchable()
+                            ->disableOptionsWhenSelectedInSiblingRepeaterItems(),
+                        ...static::titleSlugFields(),
+                        Textarea::make('description')
+                            ->label(FeatureFields::label($translation, 'description'))
+                            ->rows(4)
+                            ->rules(static::featureRules('description'))
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(3)
+                    ->minItems(1)
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    protected static function featureTranslation(): string
+    {
+        return 'productgroup::fields';
+    }
+
+    /**
+     * @return list<string|ValidationRule>
+     */
+    protected static function featureRules(string $field): array
+    {
+        return match ($field) {
+            'is_active' => ['boolean'],
+            'title', 'slug' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'parent_id' => ['nullable', 'integer'],
+            'sort_order' => ['required', 'integer', 'min:0'],
+            'lft', 'rgt' => ['nullable', 'integer', 'min:0'],
+            'external_reference', 'external_info', 'external_status' => ['nullable', 'string', 'max:255'],
+            'note' => ['nullable', 'string'],
+            default => [],
+        };
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected static function parentOptions(?Model $record): array
+    {
+        /** @var Collection<int, ProductGroup> $groups */
+        $groups = ProductGroup::query()->with('translations')->orderBy('sort_order')->get();
+        $excluded = [];
+
+        if ($record instanceof ProductGroup) {
+            $recordKey = static::integerKey($record);
+
+            if ($recordKey !== null) {
+                $excluded = [$recordKey, ...static::descendantIds($groups, $recordKey)];
+            }
+        }
+
+        $options = [];
+
+        foreach ($groups as $group) {
+            $key = static::integerKey($group);
+
+            if ($key === null || in_array($key, $excluded, true)) {
+                continue;
+            }
+
+            $title = $group->title;
+            $options[$key] = is_string($title) && $title !== '' ? $title : (string) $key;
+        }
+
+        return $options;
+    }
+
+    /**
+     * @param  Collection<int, ProductGroup>  $groups
+     * @return list<int>
+     */
+    protected static function descendantIds(Collection $groups, int $id): array
+    {
+        /** @var array<int, list<int>> $childrenByParent */
+        $childrenByParent = [];
+
+        foreach ($groups as $group) {
+            $key = static::integerKey($group);
+
+            if ($group->parent_id === null || $key === null) {
+                continue;
+            }
+
+            $childrenByParent[$group->parent_id][] = $key;
+        }
+
+        $ids = [];
+        $pending = $childrenByParent[$id] ?? [];
+
+        for ($index = 0; $index < count($pending); $index++) {
+            $current = $pending[$index];
+
+            if (in_array($current, $ids, true)) {
+                continue;
+            }
+
+            $ids[] = $current;
+
+            foreach ($childrenByParent[$current] ?? [] as $childId) {
+                $pending[] = $childId;
+            }
+        }
+
+        return $ids;
+    }
+
+    protected static function integerKey(Model $model): ?int
+    {
+        $key = $model->getKey();
+
+        return is_int($key) ? $key : null;
+    }
+
     public static function table(Table $table): Table
     {
+        $translation = static::featureTranslation();
+
         return $table
             ->columns([
-                static::getTitleColumn(),
-                static::getSlugColumn(),
-                TranslationColumn::make('translations.locale'),
-                TextColumn::make('code')
-                    ->label(__('productgroup::productgroup.code'))
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('type')
-                    ->label(__('productgroup::productgroup.type'))
-                    ->badge()
-                    ->sortable(),
-                TextColumn::make('status')
-                    ->label(__('productgroup::productgroup.status'))
-                    ->badge()
-                    ->sortable(),
-                TextColumn::make('parent.name')
-                    ->label(__('productgroup::productgroup.parent'))
-                    ->toggleable(),
-                TextColumn::make('sku_prefix')
-                    ->label(__('productgroup::productgroup.sku_prefix'))
-                    ->toggleable(),
-                ...static::customFieldColumns(),
-                TextColumn::make('custom_properties')
-                    ->label(__('productgroup::productgroup.custom_properties'))
-                    ->formatStateUsing(function (mixed $state): string {
-                        if ($state === null || $state === []) {
+                ...static::titleColumns(),
+                TextColumn::make('parent_id')
+                    ->label(FeatureFields::label($translation, 'parent_id'))
+                    ->formatStateUsing(function (mixed $state, Model $record): string {
+                        if (! $record instanceof ProductGroup || ! $record->parent instanceof ProductGroup) {
                             return '';
                         }
 
-                        if (is_array($state)) {
-                            return json_encode($state, JSON_UNESCAPED_UNICODE) ?: '';
-                        }
+                        $title = $record->parent->title;
+                        $key = static::integerKey($record->parent);
 
-                        return is_scalar($state) ? (string) $state : (json_encode($state, JSON_UNESCAPED_UNICODE) ?: '');
+                        return is_string($title) && $title !== '' ? $title : ($key === null ? '' : (string) $key);
                     })
-                    ->limit(50)
                     ->toggleable(),
-                TextColumn::make('uuid')
-                    ->label('UUID')
-                    ->copyable()
+                TextColumn::make('sort_order')
+                    ->label(FeatureFields::label($translation, 'sort_order'))
+                    ->sortable(),
+                IconColumn::make('is_active')
+                    ->label(FeatureFields::label($translation, 'is_active'))
+                    ->boolean(),
+                TextColumn::make('external_reference')
+                    ->label(FeatureFields::label($translation, 'external_reference'))
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('ulid')
-                    ->label('ULID')
-                    ->copyable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                static::getStatusColumn(),
             ])
-            ->recordActions([...static::getTableActions()])
-            ->toolbarActions([...static::getBulkActions()])
+            ->defaultSort('sort_order')
             ->filters([
-                static::getTranslationStatusFilter(),
-                SelectFilter::make('status')
-                    ->label(__('productgroup::productgroup.status'))
-                    ->options(config('productgroup.statuses', [])),
-                SelectFilter::make('type')
-                    ->label(__('productgroup::productgroup.type'))
-                    ->options(config('productgroup.types', [])),
-                ...static::customFieldFilters(),
+                TernaryFilter::make('is_active')
+                    ->label(FeatureFields::label($translation, 'is_active')),
             ])
-            ->deferFilters(false)
-            ->persistFiltersInSession();
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                DeleteBulkAction::make(),
+            ]);
     }
 
     public static function getPages(): array
@@ -287,13 +364,8 @@ class ProductGroupResource extends BaseDraftResource
         return [
             'index' => ListProductGroups::route('/'),
             'create' => CreateProductGroup::route('/create'),
-            'edit' => EditProductGroup::route('/{record}/edit'),
             'view' => ViewProductGroup::route('/{record}'),
+            'edit' => EditProductGroup::route('/{record}/edit'),
         ];
-    }
-
-    public static function setCurrentTab(?string $tab): void
-    {
-        static::$currentTab = $tab;
     }
 }
