@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace Moox\ProductGroup\Resources\ProductGroup\Pages;
 
-use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
-use Moox\Core\Traits\Tabs\HasListPageTabs;
-use Moox\ProductGroup\Models\ProductGroup;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
 use Moox\ProductGroup\Resources\ProductGroupResource;
 
-class ListProductGroups extends BaseListDrafts
+class ListProductGroups extends ListRecords
 {
-    use HasListPageTabs;
-
     protected static string $resource = ProductGroupResource::class;
 
-    public function getTabs(): array
+    protected function getHeaderActions(): array
     {
-        return $this->getDynamicTabs('productgroup.resources.productgroup.tabs', ProductGroup::class);
+        return [
+            CreateAction::make(),
+        ];
     }
 }
