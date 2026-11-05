@@ -1,36 +1,68 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Kalnoy\Nestedset\NestedSet;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('product_groups', function (Blueprint $table) {
+        Schema::create('product_groups', function (Blueprint $table): void {
             $table->id();
-            $table->string('code', 64)->unique();
-            $table->string('type')->default('family');
-            $table->string('status')->default('draft');
-            NestedSet::columns($table);
-            $table->string('sku_prefix', 64)->nullable();
-            $table->json('custom_properties')->nullable();
-            $table->uuid('uuid')->unique();
             $table->ulid('ulid')->unique();
-            $table->softDeletes();
+            $table->uuid('uuid')->unique();
+
+            $table->foreignId('parent_id')->nullable()->constrained('product_groups')->nullOnDelete();
+            $table->unsignedInteger('lft')->default(0);
+            $table->unsignedInteger('rgt')->default(0);
+            $table->index(['parent_id', 'lft']);
+
+            $table->boolean('is_active')->default(true);
+            $table->unsignedInteger('sort_order')->default(0);
+            $table->index(['parent_id', 'sort_order']);
+
+            $table->string('external_reference')->nullable();
+            $table->string('external_info')->nullable();
+            $table->string('external_status')->nullable();
+            $table->text('note')->nullable();
+            $table->json('image')->nullable();
+            $table->json('data')->nullable();
+
+            $table->timestamp('created_at');
+            $table->unsignedBigInteger('created_by_id');
+            $table->string('created_by_type');
+            $table->timestamp('updated_at');
+            $table->unsignedBigInteger('updated_by_id');
+            $table->string('updated_by_type');
+
+            $table->timestamp('archived_at')->nullable();
+            $table->unsignedBigInteger('archived_by_id')->nullable();
+            $table->string('archived_by_type')->nullable();
+
+            $table->timestamp('deleted_at')->nullable();
+            $table->unsignedBigInteger('deleted_by_id')->nullable();
+            $table->string('deleted_by_type')->nullable();
+            $table->timestamp('restored_at')->nullable();
+            $table->unsignedBigInteger('restored_by_id')->nullable();
+            $table->string('restored_by_type')->nullable();
+
+            $table->timestamp('published_at')->nullable();
+            $table->unsignedBigInteger('published_by_id')->nullable();
+            $table->string('published_by_type')->nullable();
+            $table->timestamp('unpublished_at')->nullable();
+            $table->unsignedBigInteger('unpublished_by_id')->nullable();
+            $table->string('unpublished_by_type')->nullable();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('product_group_translations');
         Schema::dropIfExists('product_groups');
+        Schema::enableForeignKeyConstraints();
     }
 };

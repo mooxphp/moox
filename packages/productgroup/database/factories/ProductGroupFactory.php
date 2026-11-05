@@ -18,7 +18,7 @@ class ProductGroupFactory extends Factory
     public function configure(): static
     {
         return $this->afterCreating(function (ProductGroup $productGroup): void {
-            $locale = (string) config('app.locale', 'en');
+            $locale = app()->getLocale();
 
             $productGroup->translateOrNew($locale)
                 ->fill($this->defaultTranslatedAttributes())
@@ -29,14 +29,15 @@ class ProductGroupFactory extends Factory
     public function definition(): array
     {
         return [
-            'code' => 'PG-'.strtoupper($this->faker->unique()->bothify('??####')),
-            'type' => $this->faker->randomElement(array_keys(config('productgroup.types', ['family' => 'family']))),
-            'status' => $this->faker->randomElement(array_keys(config('productgroup.statuses', []))),
+            'is_active' => true,
             'parent_id' => null,
-            'sku_prefix' => $this->faker->optional(0.5)->bothify('??.??'),
-            'custom_properties' => [
-                'source' => 'factory',
-            ],
+            'lft' => 0,
+            'rgt' => 0,
+            'sort_order' => 0,
+            'created_by_id' => 1,
+            'created_by_type' => 'user',
+            'updated_by_id' => 1,
+            'updated_by_type' => 'user',
         ];
     }
 
@@ -64,16 +65,12 @@ class ProductGroupFactory extends Factory
      */
     protected function defaultTranslatedAttributes(): array
     {
-        $name = $this->faker->words(3, true);
-        $slug = Str::slug($name).'-'.Str::lower(Str::random(4));
+        $title = rtrim($this->faker->sentence(3), '.');
+        $slug = Str::slug($title).'-'.Str::lower(Str::random(4));
 
         return [
-            'name' => $name,
+            'title' => $title,
             'slug' => $slug,
-            'short_description' => $this->faker->optional(0.8)->sentence(12) ?? '',
-            'description' => $this->faker->paragraph(),
-            'meta_title' => $this->faker->optional(0.6)->sentence(6) ?? '',
-            'meta_description' => $this->faker->optional(0.6)->text(140) ?? '',
         ];
     }
 }
