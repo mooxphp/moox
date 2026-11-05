@@ -6,6 +6,7 @@ namespace Moox\ProductGroup\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use LogicException;
 use Moox\ProductGroup\Resources\ProductGroupResource;
 
 class ProductGroupPlugin implements Plugin
@@ -30,6 +31,12 @@ class ProductGroupPlugin implements Plugin
 
     public static function make(): static
     {
-        return app(static::class);
+        $plugin = app(static::class);
+
+        if (! $plugin instanceof static) {
+            throw new LogicException('Product group plugin could not be resolved.');
+        }
+
+        return $plugin;
     }
 }
