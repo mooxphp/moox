@@ -42,6 +42,16 @@ class MediaItemResource extends JsonResource
             'title' => $metadata['title'],
             'alt' => $metadata['alt'],
             'picture' => app(MediaPictureBuilder::class)->toArray($media),
+            'delivery' => [
+                'web' => app(MediaPictureBuilder::class)->toArray($media, profile: 'web'),
+                'mail' => [
+                    'url' => app(MediaPictureBuilder::class)->urlForProfile($media, 'mail'),
+                ],
+                'customer_api' => [
+                    'url' => app(MediaPictureBuilder::class)->urlForProfile($media, 'customer_api'),
+                ],
+            ],
+            'variants' => app(\Moox\Media\Support\MediaVariantCatalog::class)->for($media),
             'collection' => $collection ? [
                 'id' => $collection->getKey(),
                 'name' => $resolver->collectionName($collection->loadMissing('translations')),

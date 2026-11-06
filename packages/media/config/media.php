@@ -40,16 +40,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Delivery conversions (responsive <picture>)
-    |--------------------------------------------------------------------------
-    |
-    | Widths × formats for public delivery. Optimizer, image driver and queue
-    | settings come from config/media-library.php (Spatie).
-    |
-    */
-
-    /*
-    |--------------------------------------------------------------------------
     | Image driver preference
     |--------------------------------------------------------------------------
     |
@@ -60,20 +50,83 @@ return [
 
     'image_driver' => env('IMAGE_DRIVER', 'auto'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Delivery (web / mail / customer_api)
+    |--------------------------------------------------------------------------
+    |
+    | WordPress-compatible size names are canonical. Responsive srcsets use
+    | those widths (and optional extra_widths) only when <= original width and
+    | >= profiles.web.min_responsive_width (default 480).
+    | SVG: web = original; mail = PNG; customer_api = watermarked PNG.
+    | Optimizer / queue / image driver: config/media-library.php.
+    |
+    */
+
     'delivery' => [
-        'widths' => [480, 960, 1440],
-        'formats' => ['avif', 'webp', 'jpg'],
+        'sizes' => [
+            'thumbnail' => ['width' => 150, 'height' => 150, 'fit' => 'contain'],
+            'medium' => ['width' => 300],
+            'medium_large' => ['width' => 768],
+            'large' => ['width' => 1024],
+        ],
+        // Optional extra responsive breakpoints beyond WP sizes (still no upscale).
+        'extra_widths' => [480, 960, 1440],
         'quality' => [
-            'jpg' => 85,
+            'jpg' => 82,
             'webp' => 80,
-            'avif' => 50,
+            'avif' => 55,
+            'png' => 90,
         ],
         'raster_mime_types' => [
             'image/jpeg',
             'image/png',
             'image/webp',
             'image/avif',
+            'image/gif',
         ],
+        'profiles' => [
+            'web' => [
+                'formats' => ['avif', 'webp', 'original'],
+                'responsive' => true,
+                'upscale' => false,
+                // Admin sizes 150/300 stay available; web srcsets start at 480.
+                'min_responsive_width' => 480,
+            ],
+            'mail' => [
+                'formats' => ['jpg', 'png'],
+                'responsive' => false,
+                'upscale' => false,
+                'default_width' => 600,
+                'svg_to_png' => true,
+            ],
+            'customer_api' => [
+                'enabled' => true,
+                'formats' => ['jpg', 'png'],
+                'responsive' => false,
+                'upscale' => false,
+                'default_width' => 1024,
+                'watermark' => true,
+                'watermark_opacity' => 25,
+                'watermark_width_percent' => 40,
+                'watermark_path' => null,
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Static asset import
+    |--------------------------------------------------------------------------
+    |
+    | Maps packages/static-page/{brand}/resources/assets into the media library
+    | with custom property static_path for template lookup via StaticMedia.
+    |
+    */
+
+    'static_import' => [
+        'root' => base_path('packages/static-page'),
+        'brands' => ['heco', 'heltec', 'hecoform', 'hecogroup', 'heco-preview'],
     ],
 
     /*

@@ -356,20 +356,7 @@ class MediaPickerModal extends Component implements HasForms
                             $media->model_type = Media::class;
 
                             $media->setCustomProperty('file_hash', $fileHash);
-
-                            if (str_starts_with((string) $media->mime_type, 'image/')) {
-                                try {
-                                    $size = @getimagesize($media->getPath());
-                                    if ($size !== false) {
-                                        $media->setCustomProperty('dimensions', [
-                                            'width' => (int) $size[0],
-                                            'height' => (int) $size[1],
-                                        ]);
-                                    }
-                                } catch (Exception $e) {
-                                    // Ignore image size errors
-                                }
-                            }
+                            app(\Moox\Media\Support\MediaPostProcessor::class)->process($media);
 
                             $media->save();
 

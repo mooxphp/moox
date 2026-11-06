@@ -419,6 +419,16 @@ class MediaResource extends BaseResource
                 ->columnSpanFull()
                 ->collapsed(),
 
+            Section::make(__('media::fields.delivery_variants'))
+                ->schema([
+                    View::make('media::components.variants'),
+                ])
+                ->columnSpanFull()
+                ->collapsible()
+                ->collapsed()
+                ->visible(fn ($record): bool => $record !== null
+                    && str_starts_with((string) ($record->mime_type ?? ''), 'image/')),
+
             View::make('media::components.usage-modal'),
         ]);
     }

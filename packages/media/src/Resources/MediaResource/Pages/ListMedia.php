@@ -201,15 +201,7 @@ class ListMedia extends BaseListDrafts
 
                                     $media->setCustomProperty('file_hash', $fileHash);
 
-                                    if (str_starts_with((string) $media->mime_type, 'image/')) {
-                                        $size = @getimagesize($media->getPath());
-                                        if ($size !== false) {
-                                            $media->setCustomProperty('dimensions', [
-                                                'width' => (int) $size[0],
-                                                'height' => (int) $size[1],
-                                            ]);
-                                        }
-                                    }
+                                    app(\Moox\Media\Support\MediaPostProcessor::class)->process($media);
 
                                     $media->save();
                                 });

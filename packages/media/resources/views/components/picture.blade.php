@@ -2,6 +2,7 @@
     'media',
     'sizes' => null,
     'alt' => null,
+    'profile' => 'web',
 ])
 
 @php
@@ -10,7 +11,8 @@
         $media,
         $sizes,
         $alt,
-        $attributes->except(['media', 'sizes', 'alt'])->getAttributes(),
+        $attributes->except(['media', 'sizes', 'alt', 'profile'])->getAttributes(),
+        (string) $profile,
     );
 @endphp
 
