@@ -19,6 +19,7 @@ class ReparseDocumentsCommand extends Command
         {ids?* : E-billing document ids}
         {--kosit-failed : Select documents of current invoice versions whose latest KoSIT validation failed}
         {--order-missing : Select documents of current invoice versions missing an order number or date}
+        {--in-review : Select documents of current invoice versions that need human review (asks for confirmation)}
         {--hold : Keep the reparsed documents from auto-approval until a person approves them}
         {--dry-run : List the selection without changing anything}';
 
@@ -30,9 +31,10 @@ class ReparseDocumentsCommand extends Command
         $ids = $this->argument('ids');
         $kositFailed = (bool) $this->option('kosit-failed');
         $orderMissing = (bool) $this->option('order-missing');
+        $inReview = (bool) $this->option('in-review');
 
-        if ($ids === [] && ! $kositFailed && ! $orderMissing) {
-            $this->warn('Nothing selected. Pass document ids, --kosit-failed or --order-missing.');
+        if ($ids === [] && ! $kositFailed && ! $orderMissing && ! $inReview) {
+            $this->warn('Nothing selected. Pass document ids, --kosit-failed, --order-missing or --in-review.');
 
             return self::SUCCESS;
         }
@@ -43,6 +45,7 @@ class ReparseDocumentsCommand extends Command
             // Like the list's status tabs, option-based selections skip superseded versions; explicit ids do not.
             ->when($ids === [], fn ($query) => $query->whereHas('invoice', fn ($invoice) => $invoice->current()))
             ->when($kositFailed, fn ($query) => $query->whereLatestKositValidationPassed(false))
+            ->when($inReview, fn ($query) => $query->needsHumanReview())
             ->get()
             ->when($orderMissing, fn (Collection $documents) => $documents->filter(
                 fn (EbillingDocument $document): bool => self::hasMissingOrder($document),
@@ -51,18 +54,18 @@ class ReparseDocumentsCommand extends Command
         $this->info("Selected {$documents->count()} document(s).");
 
         if ($this->option('dry-run')) {
-            $rows = $documents->load('invoice')->map(function (EbillingDocument $document) use ($action): array {
-                $refusal = $action->refusal($document);
+            $this->selectionTable($documents, $action);
 
-                return [
-                    $document->getKey(),
-                    $document->invoice?->invoice_number,
-                    $document->review_status?->value,
-                    $document->gateway_status?->value,
-                    $refusal === null ? 'reparse' : "refuse: {$refusal}",
-                ];
-            });
-            $this->table(['id', 'invoice number', 'review status', 'gateway status', 'outcome'], $rows->all());
+            return self::SUCCESS;
+        }
+
+        // Every open document is a broad selection: reparsing replaces its parsed invoice, so a person confirms it.
+        if ($inReview) {
+            $this->selectionTable($documents, $action);
+        }
+
+        if ($inReview && ! $this->confirm("Reparse all {$documents->count()} document(s) that need human review?")) {
+            $this->warn('Aborted. Nothing was reparsed.');
 
             return self::SUCCESS;
         }
@@ -85,6 +88,26 @@ class ReparseDocumentsCommand extends Command
         $this->info(($documents->count() - $refused)." reparsed, {$refused} refused. Generation and KoSIT validation run on the queue.");
 
         return self::SUCCESS;
+    }
+
+    /**
+     * @param  Collection<int, EbillingDocument>  $documents
+     */
+    private function selectionTable(Collection $documents, ReparseDocumentAction $action): void
+    {
+        $rows = $documents->load('invoice')->map(function (EbillingDocument $document) use ($action): array {
+            $refusal = $action->refusal($document);
+
+            return [
+                $document->getKey(),
+                $document->invoice?->invoice_number,
+                $document->review_status?->value,
+                $document->gateway_status?->value,
+                $refusal === null ? 'reparse' : "refuse: {$refusal}",
+            ];
+        });
+
+        $this->table(['id', 'invoice number', 'review status', 'gateway status', 'outcome'], $rows->all());
     }
 
     private static function hasMissingOrder(EbillingDocument $document): bool

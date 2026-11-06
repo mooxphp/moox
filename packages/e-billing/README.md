@@ -345,7 +345,7 @@ The invoice list shows a **Dispatch status** column (`DispatchStatus`, derived, 
 After a parser fix, re-run the configured parser on documents that nobody has touched yet:
 
 ```bash
-php artisan e-billing:reparse {ids?*} {--kosit-failed} {--order-missing} {--hold} {--dry-run}
+php artisan e-billing:reparse {ids?*} {--kosit-failed} {--order-missing} {--in-review} {--hold} {--dry-run}
 ```
 
 | Argument / option | Effect |
@@ -353,10 +353,11 @@ php artisan e-billing:reparse {ids?*} {--kosit-failed} {--order-missing} {--hold
 | `ids` | One or more e-billing document ids |
 | `--kosit-failed` | Selects documents whose latest KoSIT validation failed (combines with `ids`; see below for invoice versions) |
 | `--order-missing` | Selects documents whose `order_number` or `order_date` validated as missing (combines with `ids`; see below for invoice versions) |
+| `--in-review` | Selects every document that needs human review (the same selection as `e-billing:revalidate --in-review`). Without `--dry-run` the command lists the selection like `--dry-run` and asks for confirmation; answering no, or running with `--no-interaction`, reparses nothing |
 | `--hold` | Holds the reparsed documents for approval (see [Hold for approval](#hold-for-approval)) |
 | `--dry-run` | Lists the selection (id, invoice number, review status, gateway status, and whether it would be reparsed or refused with which reason) without changing anything |
 
-Without ids and without `--kosit-failed` or `--order-missing` the command does nothing. The selection by `--kosit-failed` or `--order-missing` without ids matches the invoice list's status tabs, which show only the current version; superseded versions and documents without an invoice are not selected. Explicit `ids` are not restricted to current versions: the id of a superseded version is reparsed or refused as before, also when combined with `--kosit-failed` or `--order-missing`. Start with `--dry-run`, then run it again without it.
+Without ids and without `--kosit-failed`, `--order-missing` or `--in-review` the command does nothing. The selection by these options without ids matches the invoice list's status tabs, which show only the current version; superseded versions and documents without an invoice are not selected. Explicit `ids` are not restricted to current versions: the id of a superseded version is reparsed or refused as before, also when combined with `--kosit-failed` or `--order-missing`. Start with `--dry-run`, then run it again without it.
 
 For each selected document the command re-parses the source PDF, soft-deletes and unlinks the draft invoice, resets `bill_data`, `field_validations` and `validation_score`, sets `review_status` to `parser_created` and `gateway_status` to `generating`, logs the activity `document_reparsed` (old and new net and line totals) and dispatches `GenerateArtifactJob`, which keeps the existing artifact paths. Artifact regeneration and KoSIT validation run on the queue; the new validation attaches to the same document and the earlier one stays as history.
 
