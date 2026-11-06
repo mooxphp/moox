@@ -10,6 +10,7 @@ use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Support\MediaLocaleResolver;
 use Moox\Media\Support\MediaPictureBuilder;
+use Moox\Media\Support\MediaVariantCatalog;
 
 /**
  * @property Media $resource
@@ -51,7 +52,7 @@ class MediaItemResource extends JsonResource
                     'url' => app(MediaPictureBuilder::class)->urlForProfile($media, 'customer_api'),
                 ],
             ],
-            'variants' => app(\Moox\Media\Support\MediaVariantCatalog::class)->for($media),
+            'variants' => app(MediaVariantCatalog::class)->for($media),
             'collection' => $collection ? [
                 'id' => $collection->getKey(),
                 'name' => $resolver->collectionName($collection->loadMissing('translations')),

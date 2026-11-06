@@ -11,6 +11,7 @@ use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Resources\MediaResource;
 use Moox\Media\Support\MediaLocaleResolver;
+use Moox\Media\Support\MediaPostProcessor;
 use Moox\Media\Support\MediaUploadValidator;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
@@ -201,7 +202,7 @@ class ListMedia extends BaseListDrafts
 
                                     $media->setCustomProperty('file_hash', $fileHash);
 
-                                    app(\Moox\Media\Support\MediaPostProcessor::class)->process($media);
+                                    app(MediaPostProcessor::class)->process($media);
 
                                     $media->save();
                                 });
