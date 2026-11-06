@@ -15,7 +15,7 @@ return [
     'format_choice' => [
         'zugferd' => 'ZUGFeRD / Factur-X',
         'xrechnung' => 'XRechnung',
-        'xrechnung_with_pdf' => 'XRechnung with separate PDF',
+        'xrechnung_with_pdf' => 'XRechnung with PDF copy',
     ],
     'ignored_document' => 'Ignored document',
     'ignored_documents' => 'Ignored documents',
