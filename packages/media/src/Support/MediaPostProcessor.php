@@ -10,7 +10,8 @@ final class MediaPostProcessor
 {
     public function __construct(
         private readonly SvgSanitizer $svgSanitizer = new SvgSanitizer,
-    ) {}
+    ) {
+    }
 
     public function process(Media $media): void
     {

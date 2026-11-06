@@ -15,6 +15,7 @@ use Moox\Media\Http\Resources\MediaItemResource;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Support\MediaLocaleResolver;
+use Moox\Media\Support\MediaPostProcessor;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 class MediaController extends Controller
@@ -168,7 +169,7 @@ class MediaController extends Controller
             $media->model_type = Media::class;
 
             $media->setCustomProperty('file_hash', $fileHash);
-            app(\Moox\Media\Support\MediaPostProcessor::class)->process($media);
+            app(MediaPostProcessor::class)->process($media);
 
             $media->save();
 
