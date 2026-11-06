@@ -469,9 +469,12 @@ return [
     'party_label' => 'Attributed to',
     'attribution_source_label' => 'Source',
     'ended_at' => 'Ended at',
+    'valid_from_label' => 'Valid from',
+    'valid_until_label' => 'Valid until',
+    'attribution_current' => 'current',
     'attribution_role' => [
-        'buyer' => 'Buyer (debtor)',
-        'buyer_contact' => 'Buyer contact',
+        'buyer' => 'Customer',
+        'buyer_contact' => 'Contact',
     ],
     'attribution_source' => [
         'auto' => 'Automatic',

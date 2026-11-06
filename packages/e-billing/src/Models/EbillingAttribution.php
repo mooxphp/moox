@@ -30,6 +30,8 @@ use Moox\EBilling\Enums\AttributionSource;
  * @property Carbon|null $created_at
  * @property-read string $role_label
  * @property-read string $party_label
+ * @property-read string $valid_from_label
+ * @property-read string $valid_until_label
  * @property-read string|null $attribution_source_label
  */
 class EbillingAttribution extends Model
@@ -92,18 +94,38 @@ class EbillingAttribution extends Model
         return Attribute::get(fn (): string => $this->role->label());
     }
 
+    /**
+     * The party's name, with its customer number when it has one. A party without a name shows its type and key.
+     */
     protected function partyLabel(): Attribute
     {
         return Attribute::get(function (): string {
             $party = $this->party;
             $name = $party?->getAttribute('customer_name')
                 ?? $party?->getAttribute('display_name')
-                ?? $party?->getAttribute('name');
+                ?? $party?->getAttribute('name')
+                ?? $party?->getAttribute('name_1');
 
-            return filled($name)
-                ? "{$name} (#{$this->party_id})"
-                : class_basename($this->party_type).' #'.$this->party_id;
+            if (blank($name)) {
+                return class_basename($this->party_type).' '.$this->party_id;
+            }
+
+            $number = $party?->getAttribute('customer_number');
+
+            return filled($number) ? "{$name} ({$number})" : (string) $name;
         });
+    }
+
+    protected function validFromLabel(): Attribute
+    {
+        return Attribute::get(fn (): string => (string) $this->created_at?->isoFormat('L LT'));
+    }
+
+    protected function validUntilLabel(): Attribute
+    {
+        return Attribute::get(fn (): string => $this->ended_at === null
+            ? __('e-billing::fields.attribution_current')
+            : $this->ended_at->isoFormat('L LT'));
     }
 
     protected function attributionSourceLabel(): Attribute
