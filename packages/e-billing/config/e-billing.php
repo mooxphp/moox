@@ -1592,10 +1592,11 @@ return [
                 'role_label',
                 'party_label',
                 'attribution_source_label',
-                'created_at',
-                'ended_at',
+                'valid_from_label',
+                'valid_until_label',
             ],
-            'sortable_columns' => ['created_at'],
+            // The party links to its own resource page when the panel has one and the user may view it.
+            'link_columns' => ['party_label' => 'party'],
             'default_order' => [
                 ['column' => 'created_at', 'direction' => 'desc'],
                 ['column' => 'id', 'direction' => 'desc'],

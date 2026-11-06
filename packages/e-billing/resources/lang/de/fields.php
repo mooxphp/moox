@@ -471,9 +471,12 @@ return [
     'party_label' => 'Zugeordnet zu',
     'attribution_source_label' => 'Herkunft',
     'ended_at' => 'Beendet am',
+    'valid_from_label' => 'Gültig ab',
+    'valid_until_label' => 'Gültig bis',
+    'attribution_current' => 'aktuell',
     'attribution_role' => [
-        'buyer' => 'Käufer (Debitor)',
-        'buyer_contact' => 'Kontakt des Käufers',
+        'buyer' => 'Kunde',
+        'buyer_contact' => 'Kontakt',
     ],
     'attribution_source' => [
         'auto' => 'Automatisch',
