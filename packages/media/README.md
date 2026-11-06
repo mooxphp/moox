@@ -108,24 +108,61 @@ When media is attached via MediaPicker, the JSON field contains:
 
 When editing media in the admin panel or MediaPicker sidebar, fields like `name`, `title`, `alt`, `description`, and `internal_note` are automatically saved when you change a field and leave it (blur). No save button is required. For a locale without a translation yet, an amber notice is shown, `name` is prefilled from the default locale (or the original file name), and a translation row is created only after a real edit — not merely from opening/closing the UI. Changing the language switcher reloads picker metadata for the selected item.
 
-## Responsive delivery
+## Delivery profiles (web / mail / customer_api)
 
-Raster uploads get queued Spatie conversions named `delivery-{width}-{format}` (for example `delivery-960-webp`).
+Media owns output formats. Templates must not invent their own AVIF/WebP pipelines.
 
-Widths and formats are configured in `config/media.php` under `delivery` (defaults: widths `480`, `960`, `1440`; formats `avif`, `webp`, `jpg`). Optimizer chains, queue connection, and image driver come from `config/media-library.php`.
+| Profile | Formats | Responsive | Notes |
+|---------|---------|------------|--------|
+| `web` | AVIF, WebP, original/WP-size fallback | yes (no upscale) | SVG stays SVG (plain `<img>`) |
+| `mail` | JPEG/PNG | no | SVG → `mail-png`; fixed width (~600px) |
+| `customer_api` | JPEG/PNG + watermark | no | Signet overlay; not a blank original |
+
+### Widths
+
+WordPress-compatible **admin** sizes (always available when width allows): `thumbnail` (150), `medium` (300), `medium_large` (768), `large` (1024).
+
+**Web srcset** uses widths ≥ `min_responsive_width` (default **480**) plus `extra_widths` (`480` / `960` / `1440`). Typical ladder: **480, 768, 960, 1024, 1440**. Conversions above the original width are **not** created. Tiny sources (&lt; 480px) get no artificial web srcset (admin/mail sizes may still exist).
+
+### Quality defaults
+
+| Format | Quality | Rationale |
+|--------|---------|-----------|
+| jpg | 82 | Web JPEG sweet spot (~80–85) |
+| webp | 80 | ≈ JPEG 80 visually |
+| avif | 55 | AVIF scale runs ~15–20 below JPEG |
+| png | 90 | UI / logos with transparency |
+
+Queued conversion names look like `web-960-webp`, plus `mail` / `mail-png` / `customer_api`. Config: `config/media.php` → `delivery`. Optimizer / queue / driver: `config/media-library.php`.
 
 When `IMAGE_DRIVER` / `media.image_driver` is `auto` (default), the package prefers **vips → imagick → gd**.
 
 ```bash
 php artisan media:image-driver              # show resolved driver + optimizer binaries
 php artisan media:regenerate-delivery       # missing delivery conversions only (default)
-php artisan media:regenerate-delivery --force
+php artisan media:regenerate-delivery --force   # after quality/width config changes
 php artisan media:regenerate-delivery --ids=4
+php artisan media:import-static-assets heco # Static → Mediathek (static_path); brand must be allowlisted
+php artisan media:import-static-assets --dry-run
 ```
 
-A queue worker must be running while `media-library.queue_conversions_by_default` is true (admin thumbnails are `nonQueued` and appear immediately; delivery variants are queued).
+Admin edit/view lists every variant with an open link. API `MediaItemResource` exposes `picture`, `delivery.web|mail|customer_api`, and `variants`.
 
-Until delivery conversions finish, `<x-media::picture>` / API `picture.sources` may fall back to the original file without AVIF/WebP srcsets.
+A queue worker must be running while `media-library.queue_conversions_by_default` is true (admin sizes are `nonQueued`; delivery variants are queued).
+
+Until delivery conversions finish, `<x-media::picture>` / API payloads may fall back to the original file.
+
+### Security notes
+
+- **SVG:** uploads/imports run through `SvgSanitizer` (regex hardening). This is interim — prefer a dedicated allowlist library (e.g. `enshrined/svg-sanitize`) when a Composer dependency is approved. Prefer serving logos as SVG in `<img src>` (not inlined) so script context is limited.
+- **customer_api vs original:** Admin/picker payloads still include top-level `url` (original) for editors. **External / customer consumers must use only `delivery.customer_api.url`** (watermarked). Do not ship the original URL to untrusted clients.
+- **Static import:** brands must be listed in `media.static_import.brands`; resolved paths must stay under `media.static_import.root`.
+
+### Frontend handoff (RJE / static templates)
+
+**Media (this package) provides:** profiles, no-upscale rules, SVG sanitize + mail PNG, watermarked customer API URLs, `<x-media::picture profile="web|mail|customer_api">`, `StaticMedia::find('heco/images/logo.svg')` after import, variant UI.
+
+**Frontend should:** replace `storage/…` paths and `<x-responsive-image>` with Media IDs / `StaticMedia` + `<x-media::picture>`; keep SVG logos as SVG; set correct `sizes`; stop generating AVIF/WebP in `optimize-static-images.mjs` once a brand is cut over.
 
 ## Using media on pages (all options)
 

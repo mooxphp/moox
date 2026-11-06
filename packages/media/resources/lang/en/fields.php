@@ -32,6 +32,13 @@ return [
     'cancel' => 'Cancel',
     'download_file' => 'Download File',
     'preview' => 'Preview',
+    'delivery_variants' => 'Delivery variants',
+    'variant' => 'Variant',
+    'profile' => 'Profile',
+    'status' => 'Status',
+    'generated' => 'Ready',
+    'pending' => 'Pending',
+    'open' => 'Open',
 
     // Notifications
     'delete_error' => 'Error Deleting',

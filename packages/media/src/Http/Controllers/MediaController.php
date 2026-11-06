@@ -168,22 +168,7 @@ class MediaController extends Controller
             $media->model_type = Media::class;
 
             $media->setCustomProperty('file_hash', $fileHash);
-            if (str_starts_with((string) $media->mime_type, 'image/')) {
-                try {
-                    $path = $media->getPath();
-                    if ($path !== '') {
-                        $size = @getimagesize($path);
-                        if ($size !== false) {
-                            $media->setCustomProperty('dimensions', [
-                                'width' => (int) $size[0],
-                                'height' => (int) $size[1],
-                            ]);
-                        }
-                    }
-                } catch (\Throwable) {
-                    // ignore
-                }
-            }
+            app(\Moox\Media\Support\MediaPostProcessor::class)->process($media);
 
             $media->save();
 

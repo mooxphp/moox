@@ -13,7 +13,6 @@ use Moox\Core\Support\Scopes\ScopeValue;
 use Moox\Media\Support\MediaDeliveryConversions;
 use Moox\Media\Support\MediaLocaleResolver;
 use Moox\Media\Traits\HasMediaUsable;
-use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
@@ -71,34 +70,17 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
 
     public function registerMediaConversions(?BaseMedia $media = null): void
     {
-        $this->addMediaConversion('thumbnail')
-            ->nonQueued()
-            ->fit(Fit::Contain, 150, 150);
-
-        $this->addMediaConversion('preview')
-            ->nonQueued()
-            ->width(300);
-
-        $this->addMediaConversion('medium_large')
-            ->nonQueued()
-            ->width(768);
-
-        $this->addMediaConversion('large')
-            ->nonQueued()
-            ->width(1024)
-            ->quality(80);
-
-        $this->addMediaConversion('1536')
-            ->nonQueued()
-            ->width(1536)
-            ->quality(80);
-
-        $this->addMediaConversion('2048')
-            ->nonQueued()
-            ->width(2048)
-            ->quality(80);
-
+        // WP-compatible sizes + web/mail/customer_api delivery (no upscale).
+        // Legacy alias: preview === medium (kept for existing admin/API clients).
         MediaDeliveryConversions::register($this, $media);
+
+        if ($media === null || MediaDeliveryConversions::isRaster($media)) {
+            if ($media === null || MediaDeliveryConversions::canProduceWidth($media, 300)) {
+                $this->addMediaConversion('preview')
+                    ->nonQueued()
+                    ->width(300);
+            }
+        }
     }
 
     protected static function booted()

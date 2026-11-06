@@ -32,6 +32,13 @@ return [
     'cancel' => 'Abbrechen',
     'download_file' => 'Datei herunterladen',
     'preview' => 'Vorschau',
+    'delivery_variants' => 'Ausgabervarianten',
+    'variant' => 'Variante',
+    'profile' => 'Profil',
+    'status' => 'Status',
+    'generated' => 'Bereit',
+    'pending' => 'Ausstehend',
+    'open' => 'Öffnen',
 
     // Notifications
     'delete_error' => 'Fehler beim Löschen',

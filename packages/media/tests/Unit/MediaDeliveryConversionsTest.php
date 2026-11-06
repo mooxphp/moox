@@ -10,28 +10,25 @@ uses(TestCase::class);
 
 beforeEach(function (): void {
     config([
-        'media.delivery.widths' => [480, 960, 1440],
-        'media.delivery.formats' => ['avif', 'webp', 'jpg'],
+        'media.delivery.sizes' => [
+            'thumbnail' => ['width' => 150, 'height' => 150, 'fit' => 'contain'],
+            'medium' => ['width' => 300],
+            'medium_large' => ['width' => 768],
+            'large' => ['width' => 1024],
+        ],
+        'media.delivery.extra_widths' => [480, 960, 1440],
+        'media.delivery.profiles.web.formats' => ['avif', 'webp', 'original'],
+        'media.delivery.profiles.web.min_responsive_width' => 150,
     ]);
 });
 
-it('builds delivery conversion names for each width and format', function (): void {
-    expect(MediaDeliveryConversions::conversionName(960, 'webp'))->toBe('delivery-960-webp');
+it('builds web conversion names from widths and formats', function (): void {
+    expect(MediaDeliveryConversions::conversionName('web', 960, 'webp'))->toBe('web-960-webp');
 
-    expect(MediaDeliveryConversions::allConversionNames())->toBe([
-        'delivery-480-avif',
-        'delivery-480-webp',
-        'delivery-480-jpg',
-        'delivery-960-avif',
-        'delivery-960-webp',
-        'delivery-960-jpg',
-        'delivery-1440-avif',
-        'delivery-1440-webp',
-        'delivery-1440-jpg',
-    ]);
+    expect(MediaDeliveryConversions::responsiveWidths())->toContain(150, 300, 480, 768, 960, 1024, 1440);
 });
 
-it('only supports configured raster mime types', function (): void {
+it('only supports raster and svg mime types', function (): void {
     $jpeg = new class extends Media
     {
         public $mime_type = 'image/jpeg';
@@ -42,6 +39,31 @@ it('only supports configured raster mime types', function (): void {
         public $mime_type = 'image/svg+xml';
     };
 
+    $pdf = new class extends Media
+    {
+        public $mime_type = 'application/pdf';
+    };
+
     expect(MediaDeliveryConversions::supports($jpeg))->toBeTrue()
-        ->and(MediaDeliveryConversions::supports($svg))->toBeFalse();
+        ->and(MediaDeliveryConversions::isRaster($jpeg))->toBeTrue()
+        ->and(MediaDeliveryConversions::isSvg($svg))->toBeTrue()
+        ->and(MediaDeliveryConversions::supports($pdf))->toBeFalse();
+});
+
+it('does not allow upscale when original width is known', function (): void {
+    $media = Mockery::mock(Media::class)->makePartial();
+    $media->shouldReceive('getCustomProperty')->with('dimensions')->andReturn(['width' => 400, 'height' => 200]);
+    $media->shouldReceive('getPath')->andReturn('');
+
+    expect(MediaDeliveryConversions::canProduceWidth($media, 300))->toBeTrue()
+        ->and(MediaDeliveryConversions::canProduceWidth($media, 480))->toBeFalse()
+        ->and(MediaDeliveryConversions::applicableResponsiveWidths($media))->toBe([150, 300]);
+});
+
+it('skips responsive widths for tiny originals under 150px', function (): void {
+    $media = Mockery::mock(Media::class)->makePartial();
+    $media->shouldReceive('getCustomProperty')->with('dimensions')->andReturn(['width' => 64, 'height' => 64]);
+    $media->shouldReceive('getPath')->andReturn('');
+
+    expect(MediaDeliveryConversions::applicableResponsiveWidths($media))->toBe([]);
 });
