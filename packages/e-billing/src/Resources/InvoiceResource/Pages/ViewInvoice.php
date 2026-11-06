@@ -234,10 +234,11 @@ class ViewInvoice extends ViewRecord
                     return;
                 }
 
+                // The select hands back an integer for numeric keys; an empty choice removes the customer.
                 $customerId = $data['customer_id'] ?? null;
                 app(SetInvoiceAttributionAction::class)->execute(
                     $document,
-                    is_string($customerId) && $customerId !== '' ? $customerId : null,
+                    (is_string($customerId) || is_int($customerId)) && $customerId !== '' ? (string) $customerId : null,
                 );
 
                 Notification::make()
