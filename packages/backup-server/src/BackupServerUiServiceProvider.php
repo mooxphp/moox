@@ -16,7 +16,8 @@ class BackupServerUiServiceProvider extends MooxServiceProvider
         $package
             ->name('backup-server-ui')
             ->hasConfigFile()
-            ->hasTranslations();
+            ->hasTranslations()
+            ->hasViews();
     }
 
     /**

@@ -3,17 +3,15 @@
 namespace Moox\Restore\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class SummaryBackupMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
-
     public $mailData;
 
     /**
@@ -36,7 +34,6 @@ class SummaryBackupMail extends Mailable implements ShouldQueue
                 break; // Exit the loop once the condition is met
             }
         }
-
         return new Envelope(
             subject: $subject,
         );
@@ -55,7 +52,7 @@ class SummaryBackupMail extends Mailable implements ShouldQueue
     /**
      * Get the attachments for the message.
      *
-     * @return array<int, Attachment>
+     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
     public function attachments(): array
     {

@@ -17,7 +17,5 @@ abstract class TestCase extends Orchestra
         $this->actingAs(User::factory()->create());
     }
 
-    protected function getEnvironmentSetUp($app)
-    {
-    }
+    protected function getEnvironmentSetUp($app) {}
 }

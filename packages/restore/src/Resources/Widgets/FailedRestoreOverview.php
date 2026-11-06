@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Restore\Resources\Widgets;
 
 use Filament\Tables\Columns\IconColumn;
@@ -21,18 +23,18 @@ class FailedRestoreOverview extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->query(RestoreBackup::where('status', 'failed'))
+            ->query(RestoreBackup::query()->where('status', 'failed'))
             ->columns([
                 IconColumn::make('status')
                     ->label(__('restore::translations.status'))
                     ->icon(fn (string $state): string => match ($state) {
-                        'heroicon-o-question-mark-circle',
                         'failed' => 'heroicon-o-x-circle',
+                        default => 'heroicon-o-question-mark-circle',
                     })
-                    ->colors([
-                        'secondary',
-                        'danger' => 'failed',
-                    ]),
+                    ->color(fn (string $state): string => match ($state) {
+                        'failed' => 'danger',
+                        default => 'secondary',
+                    }),
                 TextColumn::make('restoreDestination.host')->label(__('restore::translations.name')),
                 TextColumn::make('message')->label(__('restore::translations.message')),
                 TextColumn::make('created_at')->label(__('restore::translations.created-at'))->date()->timezone('UTC'),

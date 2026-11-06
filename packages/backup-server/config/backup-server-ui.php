@@ -1,6 +1,18 @@
 <?php
 
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Max storage plan (GB)
+    |--------------------------------------------------------------------------
+    |
+    | Optional storage quota used by the Backups list stats. When set, Size and
+    | Real size percentages are calculated against this plan instead of against
+    | each other. Leave null/empty to keep the relative Real size / Size share.
+    |
+    */
+    'max_storage_plan_gb' => env('BACKUP_MAX_STORAGE_PLAN_GB'),
+
     'backup_source' => [
         'inline_help' => [
             'fields' => [

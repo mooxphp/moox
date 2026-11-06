@@ -6,15 +6,23 @@ namespace Moox\Restore\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Crypt;
 use Moox\Restore\Database\Factories\RestoreDestinationFactory;
 use Spatie\BackupServer\Models\Source;
 
+/**
+ * @property int $id
+ * @property string $host
+ * @property int $source_id
+ * @property array<string, mixed>|null $env_data
+ * @property-read Source|null $source
+ */
 class RestoreDestination extends Model
 {
+    /** @use HasFactory<RestoreDestinationFactory> */
     use HasFactory;
 
-    // The table name, in case it's not the default plural of the model name
     protected $table = 'restore_destinations';
 
     protected $fillable = [
@@ -27,18 +35,18 @@ class RestoreDestination extends Model
         'env_data' => 'array',
     ];
 
-    protected static function booted()
+    protected static function booted(): void
     {
-        static::saving(function ($model) {
-            if (isset($model->env_data['DB_PASSWORD'])) {
+        static::saving(function (RestoreDestination $model): void {
+            if (isset($model->env_data['DB_PASSWORD']) && is_string($model->env_data['DB_PASSWORD'])) {
                 $envData = $model->env_data;
                 $envData['DB_PASSWORD'] = Crypt::encryptString($envData['DB_PASSWORD']);
                 $model->env_data = $envData;
             }
         });
 
-        static::retrieved(function ($model) {
-            if (isset($model->env_data['DB_PASSWORD'])) {
+        static::retrieved(function (RestoreDestination $model): void {
+            if (isset($model->env_data['DB_PASSWORD']) && is_string($model->env_data['DB_PASSWORD'])) {
                 $envData = $model->env_data;
                 $envData['DB_PASSWORD'] = Crypt::decryptString($envData['DB_PASSWORD']);
                 $model->env_data = $envData;
@@ -47,14 +55,14 @@ class RestoreDestination extends Model
     }
 
     /**
-     * A deploy destination can have many backups deployed to it.
+     * @return BelongsTo<Source, $this>
      */
-    public function source()
+    public function source(): BelongsTo
     {
         return $this->belongsTo(Source::class, 'source_id');
     }
 
-    protected static function newFactory()
+    protected static function newFactory(): RestoreDestinationFactory
     {
         return RestoreDestinationFactory::new();
     }

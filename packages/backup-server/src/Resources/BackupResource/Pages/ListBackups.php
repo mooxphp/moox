@@ -4,10 +4,12 @@ namespace Moox\BackupServerUi\Resources\BackupResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
+use Filament\Pages\Concerns\ExposesTableToWidgets;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Moox\BackupServerUi\Resources\BackupResource;
+use Moox\BackupServerUi\Resources\BackupResource\Widgets\BackupSizeStats;
 use Spatie\BackupServer\Models\Backup;
 use Spatie\BackupServer\Models\BackupLogItem;
 use Spatie\BackupServer\Models\Source;
@@ -16,7 +18,16 @@ use Spatie\BackupServer\Tasks\Backup\Actions\CreateBackupAction;
 
 class ListBackups extends ListRecords
 {
+    use ExposesTableToWidgets;
+
     protected static string $resource = BackupResource::class;
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            BackupSizeStats::class,
+        ];
+    }
 
     protected function getHeaderActions(): array
     {
@@ -32,19 +43,25 @@ class ListBackups extends ListRecords
                         ->placeholder('Source'),
                 ])
                 ->action(function (array $data): void {
-                    $sourceName = Source::where('id', $data['source_id'])->value('name');
+                    $sourceName = Source::query()->where('id', $data['source_id'])->value('name');
 
-                    $this->manualBackup($sourceName);
+                    $this->manualBackup(is_string($sourceName) ? $sourceName : null);
                 }),
         ];
     }
 
-    protected function manualBackup($sourceName): int
+    protected function manualBackup(?string $sourceName): int
     {
+        if ($sourceName === null) {
+            Log::info('Manual Backup failed. Source name is missing.');
+
+            return -1;
+        }
+
         $source = Source::firstWhere('name', $sourceName);
 
         if (! $source) {
-            Log::info('Manual Backup failed. There is no source named'.$sourceName);
+            Log::info('Manual Backup failed. There is no source named '.$sourceName);
 
             return -1;
         }

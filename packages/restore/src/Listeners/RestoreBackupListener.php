@@ -2,13 +2,14 @@
 
 namespace Moox\Restore\Listeners;
 
-use Moox\Restore\Events\RestoreCompletedEvent;
+use Moox\Restore\Models\RestoreBackup;
 use Moox\Restore\Events\RestoreFailedEvent;
 use Moox\Restore\Events\RestoreStartedEvent;
-use Moox\Restore\Models\RestoreBackup;
+use Moox\Restore\Events\RestoreCompletedEvent;
 
 class RestoreBackupListener
 {
+
     /**
      * Handle the event.
      */

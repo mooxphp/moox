@@ -8,11 +8,11 @@ use Illuminate\Bus\Batch;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
-use Moox\Restore\Jobs\ProcessRestoreDestinationJob;
 use Moox\Restore\Models\RestoreDestination;
-use Throwable;
+use Moox\Restore\Jobs\ProcessRestoreDestinationJob;
+use Spatie\BackupServer\Tasks\Summary\Actions\CreateServerSummaryAction;
 
-class DispatchRestoreCommand extends Command
+class  DispatchRestoreCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -33,6 +33,7 @@ class DispatchRestoreCommand extends Command
      */
     public function handle()
     {
+
         $summary = [];
 
         $restoreDestinations = RestoreDestination::all();
@@ -42,9 +43,8 @@ class DispatchRestoreCommand extends Command
         });
 
         Bus::batch($jobs)
-            ->then(function (Batch $batch) {
-            })
-            ->catch(function (Batch $batch, Throwable $e) {
+            ->then(function (Batch $batch) use ($summary) {})
+            ->catch(function (Batch $batch, \Throwable $e) use ($summary) {
                 Log::error('Restore batch failed.', ['error' => $e->getMessage()]);
             })
             ->finally(function (Batch $batch) {

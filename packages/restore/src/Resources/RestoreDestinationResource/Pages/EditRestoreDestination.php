@@ -2,9 +2,9 @@
 
 namespace Moox\Restore\Resources\RestoreDestinationResource\Pages;
 
-use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
 use Moox\Restore\Resources\RestoreDestinationResource;
+use Filament\Actions;
+use Filament\Resources\Pages\EditRecord;
 
 class EditRestoreDestination extends EditRecord
 {
@@ -13,7 +13,7 @@ class EditRestoreDestination extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            Actions\DeleteAction::make(),
         ];
     }
 }

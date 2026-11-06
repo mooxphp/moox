@@ -18,14 +18,15 @@
     ],
     "require": {
         "moox/core": "dev-main",
-        "spatie/laravel-backup-server": "^4.0|^4.1|^4.2"
+        "spatie/laravel-backup-server": "^4.4"
     },
     "require-dev": {
         "moox/devtools": "dev-main"
     },
     "autoload": {
         "psr-4": {
-            "Moox\\BackupServerUi\\": "src"
+            "Moox\\BackupServerUi\\": "src",
+            "Moox\\BackupServerUi\\Database\\Seeders\\": "database/seeders"
         }
     },
     "extra": {

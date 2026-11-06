@@ -16,7 +16,9 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Moox\BackupServerUi\Resources\BackupResource\Pages\ListBackups;
 use Moox\BackupServerUi\Resources\BackupResource\Pages\ViewBackup;
+use Moox\BackupServerUi\Support\BackupSizeFormatter;
 use Moox\Core\Entities\BaseResource;
+use Spatie\BackupServer\Enums\BackupStatus;
 use Spatie\BackupServer\Models\Backup;
 
 class BackupResource extends BaseResource
@@ -185,12 +187,13 @@ class BackupResource extends BaseResource
                     ->limit(50)
                     ->badge()
                     ->sortable()
-                    ->formatStateUsing(fn (string $state): string => __("backup-server-ui::translations.{$state}"))
-                    ->color(fn (string $state): string => match ($state) {
-                        'completed' => 'success',
-                        'failed' => 'danger',
-                        'pending' => 'warning',
-                        default => 'secondary',
+                    ->formatStateUsing(fn (BackupStatus $state): string => __("backup-server-ui::translations.{$state->value}"))
+                    ->color(fn (BackupStatus $state): string => match ($state) {
+                        BackupStatus::Completed => 'success',
+                        BackupStatus::Failed => 'danger',
+                        BackupStatus::Pending => 'warning',
+                        BackupStatus::InProgress => 'info',
+                        BackupStatus::Deleting => 'gray',
                     }),
                 TextColumn::make('source.name')
                     ->label('Source')
@@ -212,7 +215,9 @@ class BackupResource extends BaseResource
                     ->limit(50),
                 TextColumn::make('size_in_kb')
                     ->state(function (Backup $record): ?string {
-                        return $record->size_in_kb ? round($record->size_in_kb / 1024, 2).' MB' : null;
+                        return $record->size_in_kb !== null
+                            ? BackupSizeFormatter::format($record->size_in_kb)
+                            : null;
                     })
                     ->label('Size')
                     ->toggleable()
@@ -220,7 +225,9 @@ class BackupResource extends BaseResource
                     ->limit(50),
                 TextColumn::make('real_size_in_kb')
                     ->state(function (Backup $record): ?string {
-                        return $record->real_size_in_kb ? round($record->real_size_in_kb / 1024, 2).' MB' : null;
+                        return $record->real_size_in_kb !== null
+                            ? BackupSizeFormatter::format($record->real_size_in_kb)
+                            : null;
                     })
                     ->label('Real Size')
                     ->toggleable()

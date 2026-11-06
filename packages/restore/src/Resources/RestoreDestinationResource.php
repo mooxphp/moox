@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Restore\Resources;
 
 use Filament\Actions\BulkActionGroup;
@@ -7,23 +9,23 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\IconPosition;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Entities\BaseResource;
 use Moox\Restore\Models\RestoreDestination;
-use Moox\Restore\Resources\RestoreDestinationResource\Pages\CreateRestoreDestination;
-use Moox\Restore\Resources\RestoreDestinationResource\Pages\EditRestoreDestination;
-use Moox\Restore\Resources\RestoreDestinationResource\Pages\ListRestoreDestinations;
+use Moox\Restore\Resources\RestoreDestinationResource\Pages;
+use Override;
 use Spatie\BackupServer\Models\Source;
 
-class RestoreDestinationResource extends BaseResource
+class RestoreDestinationResource extends Resource
 {
     protected static ?string $model = RestoreDestination::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-pin-end-o';
 
+    #[Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -42,7 +44,7 @@ class RestoreDestinationResource extends BaseResource
                 Select::make('source_id')
                     ->label(__('restore::translations.source'))
                     ->relationship('source', 'host')
-                    ->options(Source::all()->pluck('host', 'id'))
+                    ->options(Source::query()->pluck('host', 'id'))
                     ->required()
                     ->columnSpan([
                         'default' => 12,
@@ -119,21 +121,18 @@ class RestoreDestinationResource extends BaseResource
             ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('source.name') // Assuming you have a name field in the related model
+                TextColumn::make('source.name')
                     ->label(__('restore::translations.source-name')),
 
                 TextColumn::make('host')
                     ->label(__('restore::translations.host'))
                     ->toggleable()
-                    ->url(function ($record) {
-                        $host = $record->host;
-
-                        return "https://$host";
-                    })
+                    ->url(fn (RestoreDestination $record): string => 'https://'.$record->host)
                     ->openUrlInNewTab()
                     ->icon('gmdi-link')
                     ->iconPosition(IconPosition::After)
@@ -144,10 +143,6 @@ class RestoreDestinationResource extends BaseResource
                 TextColumn::make('created_at')
                     ->label(__('restore::translations.created-at'))
                     ->dateTime(),
-
-            ])
-            ->filters([
-                //
             ])
             ->recordActions([
                 EditAction::make(),
@@ -159,54 +154,75 @@ class RestoreDestinationResource extends BaseResource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => ListRestoreDestinations::route('/'),
-            'create' => CreateRestoreDestination::route('/create'),
-            'edit' => EditRestoreDestination::route('/{record}/edit'),
+            'index' => Pages\ListRestoreDestinations::route('/'),
+            'create' => Pages\CreateRestoreDestination::route('/create'),
+            'edit' => Pages\EditRestoreDestination::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
-        return config('restore.resources.destination.single');
+        $label = config('restore.resources.destination.single');
+
+        return is_string($label) ? $label : 'Restore Destination';
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
-        return config('restore.resources.destination.plural');
+        $label = config('restore.resources.destination.plural');
+
+        return is_string($label) ? $label : 'Restore Destinations';
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
-        return config('restore.resources.destination.plural');
+        return static::getPluralModelLabel();
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
-        return config('restore.resources.destination.single');
+        return static::getModelLabel();
     }
 
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return true;
     }
 
+    #[Override]
     public static function getNavigationBadge(): ?string
     {
         return number_format(static::getModel()::count());
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
-        return config('restore.navigation_group');
+        $group = config('restore.navigation_group');
+
+        return is_string($group) ? $group : null;
+    }
+
+    #[Override]
+    public static function getNavigationSort(): ?int
+    {
+        $sort = config('restore.navigation_sort');
+
+        return (is_int($sort) ? $sort : 0) + 3;
     }
 }

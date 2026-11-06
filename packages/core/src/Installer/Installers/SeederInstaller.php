@@ -2,6 +2,7 @@
 
 namespace Moox\Core\Installer\Installers;
 
+use Illuminate\Support\Facades\File;
 use Moox\Core\Installer\AbstractAssetInstaller;
 use Symfony\Component\Console\Input\StringInput;
 
@@ -163,6 +164,32 @@ class SeederInstaller extends AbstractAssetInstaller
             }
         }
 
-        return null;
+        // Hyphenated packages (e.g. moox/backup-server → Moox\BackupServerUi) need the file namespace
+        return $this->resolveSeederClassFromFile($packageName, $seeder);
+    }
+
+    protected function resolveSeederClassFromFile(string $packageName, string $seeder): ?string
+    {
+        $packagePath = $this->getPackagePath($packageName);
+        if ($packagePath === null) {
+            return null;
+        }
+
+        $seederFile = $packagePath.DIRECTORY_SEPARATOR.'database'.DIRECTORY_SEPARATOR.'seeders'.DIRECTORY_SEPARATOR.$seeder.'.php';
+        if (! File::exists($seederFile)) {
+            return null;
+        }
+
+        $content = File::get($seederFile);
+        if (
+            ! preg_match('/namespace\s+([^;]+);/', $content, $namespaceMatch)
+            || ! preg_match('/class\s+(\w+)/', $content, $classMatch)
+        ) {
+            return null;
+        }
+
+        $class = $namespaceMatch[1].'\\'.$classMatch[1];
+
+        return class_exists($class) ? $class : null;
     }
 }

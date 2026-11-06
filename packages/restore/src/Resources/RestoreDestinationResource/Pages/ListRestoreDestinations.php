@@ -2,9 +2,9 @@
 
 namespace Moox\Restore\Resources\RestoreDestinationResource\Pages;
 
-use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Moox\Restore\Resources\RestoreDestinationResource;
+use Filament\Actions;
+use Filament\Resources\Pages\ListRecords;
 
 class ListRestoreDestinations extends ListRecords
 {
@@ -13,7 +13,7 @@ class ListRestoreDestinations extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            Actions\CreateAction::make(),
         ];
     }
 }

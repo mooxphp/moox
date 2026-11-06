@@ -5,8 +5,18 @@ declare(strict_types=1);
 namespace Moox\Restore\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\BackupServer\Models\Backup;
 
+/**
+ * @property int $id
+ * @property string $status
+ * @property int $backup_id
+ * @property int $restore_destination_id
+ * @property string|null $message
+ * @property-read Backup|null $backup
+ * @property-read RestoreDestination|null $restoreDestination
+ */
 class RestoreBackup extends Model
 {
     public const STATUS_IN_PROGRESS = 'in progress';
@@ -15,10 +25,8 @@ class RestoreBackup extends Model
 
     public const STATUS_FAILED = 'failed';
 
-    // The table name, in case it's not the default plural of the model name
     protected $table = 'restore_backups';
 
-    // Mass assignable fields
     protected $fillable = [
         'status',
         'backup_id',
@@ -27,17 +35,17 @@ class RestoreBackup extends Model
     ];
 
     /**
-     * Each deploy backup belongs to one backup.
+     * @return BelongsTo<Backup, $this>
      */
-    public function backup()
+    public function backup(): BelongsTo
     {
         return $this->belongsTo(Backup::class, 'backup_id');
     }
 
     /**
-     * Each deploy backup is linked to one destination.
+     * @return BelongsTo<RestoreDestination, $this>
      */
-    public function restoreDestination()
+    public function restoreDestination(): BelongsTo
     {
         return $this->belongsTo(RestoreDestination::class, 'restore_destination_id');
     }

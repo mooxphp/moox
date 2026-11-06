@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Restore\Plugins;
+namespace Moox\Restore;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
