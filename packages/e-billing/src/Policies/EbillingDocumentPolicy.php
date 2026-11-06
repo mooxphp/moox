@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Policies;
 
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Moox\EBilling\Models\EbillingDocument;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class EbillingDocumentPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:EbillingDocument');
@@ -71,5 +71,4 @@ class EbillingDocumentPolicy
     {
         return $authUser->can('Reorder:EbillingDocument');
     }
-
 }
