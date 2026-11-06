@@ -11,6 +11,7 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DetachAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\MorphToSelect;
 use Filament\Forms\Components\MorphToSelect\Type;
@@ -928,6 +929,30 @@ class ConfigRelationManager extends RelationManager
         return $label;
     }
 
+    /**
+     * The view (else edit) page of the record's own resource in the current panel, when the user may open it.
+     */
+    protected static function modelResourceUrl(mixed $record): ?string
+    {
+        if (! $record instanceof Model) {
+            return null;
+        }
+
+        $resource = Filament::getModelResource($record);
+
+        if ($resource === null) {
+            return null;
+        }
+
+        foreach (['view' => $resource::canView($record), 'edit' => $resource::canEdit($record)] as $page => $allowed) {
+            if ($allowed && $resource::hasPage($page) && Route::has($resource::getRouteBaseName().'.'.$page)) {
+                return $resource::getUrl($page, ['record' => $record], shouldGuessMissingParameters: false);
+            }
+        }
+
+        return null;
+    }
+
     protected function getRelatedRecordResourceUrl(Model $record, string $page): ?string
     {
         $resource = $this->getResolvedRelatedResource();
@@ -1193,6 +1218,12 @@ class ConfigRelationManager extends RelationManager
         ));
         $searchableColumns = $this->configuredSearchableColumns($resolved);
         $sortableColumns = $this->configuredSortableColumns($resolved);
+        /** @var array<string, string> $linkColumns column => relation whose record the column links to */
+        $linkColumns = array_filter(
+            (array) ($resolved->config['link_columns'] ?? []),
+            fn (mixed $relation, mixed $column): bool => is_string($column) && is_string($relation) && $relation !== '',
+            ARRAY_FILTER_USE_BOTH,
+        );
 
         foreach ($displayColumns as $column) {
             if (! is_string($column) || $column === '') {
@@ -1222,6 +1253,11 @@ class ConfigRelationManager extends RelationManager
 
             if (in_array($column, $badgeColumns, true)) {
                 $columnDefinition->badge();
+            }
+
+            if (isset($linkColumns[$column])) {
+                $relation = $linkColumns[$column];
+                $columnDefinition->url(fn (Model $record): ?string => self::modelResourceUrl($record->getRelationValue($relation)));
             }
 
             if (in_array($column, $searchableColumns, true)) {

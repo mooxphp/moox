@@ -485,6 +485,15 @@ Owner resources only need the pivot wiring; display columns and Filament resourc
 ],
 ```
 
+#### Linking a column to the related record
+
+`link_columns` maps a display column to a relation of the listed record. The column then links to that record's own resource page in the current panel (view, else edit), when the panel has a resource for its model and the user may open it; otherwise it stays plain text:
+
+```php
+'display_columns' => ['role_label', 'party_label'],
+'link_columns' => ['party_label' => 'party'], // party is a morphTo on the listed model
+```
+
 #### Blueprints (optional, config)
 
 Reusable relation shapes can live in `config/core.php` under `relations.blueprints` and be referenced with `uses`:
