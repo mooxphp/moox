@@ -205,12 +205,14 @@ class InvoiceFieldValidator
     ): BuyerMasterDataResult {
         $text = fn (mixed $value): ?string => $this->isScalarEmpty($value) ? null : trim((string) $value);
 
-        return app(BuyerMasterDataLookup::class)->resolve(new BuyerLookup(
+        $lookup = new BuyerLookup(
             customerNumber: $text($invoice->customer_number),
             name: $text($invoice->buyer?->name),
             vatId: $text($invoice->buyer?->vat_id),
             reference: $isManualAttribution ? $document->activeParty(AttributionRole::Buyer) : null,
-        ), $document);
+        );
+
+        return app(BuyerMasterDataLookup::class)->resolve($lookup, $document);
     }
 
     /**

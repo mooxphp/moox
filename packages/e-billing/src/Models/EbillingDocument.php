@@ -622,11 +622,14 @@ class EbillingDocument extends BaseItemModel
         string $partyType,
         array $partyIds,
     ): Builder {
-        return $query->whereHas('attributions', fn (Builder $attributions): Builder => $attributions
-            ->where('role', $role->value)
-            ->where('party_type', $partyType)
-            ->whereIn('party_id', $partyIds)
-            ->whereNull('ended_at'));
+        return $query->whereHas(
+            'attributions',
+            fn (Builder $attributions): Builder => $attributions
+                ->where('role', $role->value)
+                ->where('party_type', $partyType)
+                ->whereIn('party_id', $partyIds)
+                ->whereNull('ended_at'),
+        );
     }
 
     /**
