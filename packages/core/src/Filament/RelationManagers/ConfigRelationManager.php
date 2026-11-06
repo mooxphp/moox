@@ -1257,7 +1257,9 @@ class ConfigRelationManager extends RelationManager
 
             if (isset($linkColumns[$column])) {
                 $relation = $linkColumns[$column];
-                $columnDefinition->url(fn (Model $record): ?string => self::modelResourceUrl($record->getRelationValue($relation)));
+                $columnDefinition->url(
+                    fn (Model $record): ?string => self::modelResourceUrl($record->getRelationValue($relation)),
+                );
             }
 
             if (in_array($column, $searchableColumns, true)) {
