@@ -116,7 +116,9 @@ Media owns output formats. Templates must not invent their own AVIF/WebP pipelin
 |---------|---------|------------|--------|
 | `web` | AVIF, WebP, original/WP-size fallback | yes (no upscale) | SVG stays SVG (plain `<img>`) |
 | `mail` | JPEG/PNG | no | SVG → `mail-png`; fixed width (~600px) |
-| `customer_api` | JPEG/PNG + watermark | no | Signet overlay; not a blank original |
+| `customer_api` | JPEG/PNG (+ optional watermark) | no | **Opt-in** via app `config/media.php`; for external consumers |
+
+`web` and `mail` are always available. `customer_api` stays off until an app enables it. Watermarking is a separate opt-in and only runs when `watermark_path` points at a real image file.
 
 ### Widths
 
@@ -142,27 +144,44 @@ php artisan media:image-driver              # show resolved driver + optimizer b
 php artisan media:regenerate-delivery       # missing delivery conversions only (default)
 php artisan media:regenerate-delivery --force   # after quality/width config changes
 php artisan media:regenerate-delivery --ids=4
-php artisan media:import-static-assets heco # Static → Mediathek (static_path); brand must be allowlisted
+php artisan media:import-static-assets {brand} # Static → Mediathek (static_path); brand must be allowlisted
 php artisan media:import-static-assets --dry-run
 ```
 
-Admin edit/view lists every variant with an open link. API `MediaItemResource` exposes `picture`, `delivery.web|mail|customer_api`, and `variants`.
+Enable optional features in the consuming app via `config/media.php` (publish or merge overrides), for example:
+
+```php
+return array_replace_recursive(require base_path('vendor/moox/media/config/media.php'), [
+    'delivery' => [
+        'profiles' => [
+            'customer_api' => [
+                'enabled' => true,
+                'watermark' => true,
+                'watermark_path' => storage_path('app/media-watermark.png'),
+            ],
+        ],
+    ],
+    'static_import' => [
+        'brands' => ['brand-a', 'brand-b'],
+    ],
+]);
+```
+
+Admin edit/view lists every variant with an open link. API `MediaItemResource` exposes `picture`, `delivery.web|mail`, and `delivery.customer_api` only when enabled.
 
 A queue worker must be running while `media-library.queue_conversions_by_default` is true (admin sizes are `nonQueued`; delivery variants are queued).
 
-Until delivery conversions finish, `<x-media::picture>` / API payloads may fall back to the original file.
+Until delivery conversions finish, `<x-media::picture>` / API payloads may fall back to the original file (except `customer_api`, which never falls back to the original).
 
 ### Security notes
 
-- **SVG:** all ingest paths (API, ListMedia upload, MediaPicker, MediaResource replace/edit, static import) run through `MediaPostProcessor` → `SvgSanitizer` (regex hardening). This is interim — prefer a dedicated allowlist library (e.g. `enshrined/svg-sanitize`) when a Composer dependency is approved. Prefer serving logos as SVG in `<img src>` (not inlined) so script context is limited.
-- **customer_api vs original:** Admin/picker payloads still include top-level `url` (original) for editors. **External / customer consumers must use only `delivery.customer_api.url`** (watermarked). Do not ship the original URL to untrusted clients.
+- **SVG:** all ingest paths (API, ListMedia upload, MediaPicker, MediaResource replace/edit, static import) run through `MediaPostProcessor` → `SvgSanitizer` (`enshrined/svg-sanitize`, remote references removed). Prefer serving logos as SVG in `<img src>` (not inlined) so script context is limited.
+- **customer_api vs original:** When enabled, admin/picker payloads still include top-level `url` (original) for editors. External consumers should use only `delivery.customer_api.url`. If that field is `null`, do not fall back to `url`. With `skip_static` (default), assets tagged `static_path` and SVGs get no `customer_api` conversion.
 - **Static import:** brands must be listed in `media.static_import.brands`; resolved paths must stay under `media.static_import.root`.
 
-### Frontend handoff (RJE / static templates)
+### Frontend handoff
 
-**Media (this package) provides:** profiles, no-upscale rules, SVG sanitize + mail PNG, watermarked customer API URLs, `<x-media::picture profile="web|mail|customer_api">`, `StaticMedia::find('heco/images/logo.svg')` after import, variant UI.
-
-**Frontend should:** replace `storage/…` paths and `<x-responsive-image>` with Media IDs / `StaticMedia` + `<x-media::picture>`; keep SVG logos as SVG; set correct `sizes`; stop generating AVIF/WebP in `optimize-static-images.mjs` once a brand is cut over.
+**Media provides:** delivery profiles, no-upscale rules, SVG sanitize + mail PNG, optional customer API URLs (+ optional watermark), `<x-media::picture profile="web|mail|customer_api">`, `StaticMedia::find('brand/images/logo.svg')` after import, variant UI.
 
 ## Using media on pages (all options)
 

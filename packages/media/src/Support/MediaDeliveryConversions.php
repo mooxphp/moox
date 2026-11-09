@@ -282,13 +282,21 @@ final class MediaDeliveryConversions
     public static function watermarkPath(): ?string
     {
         $configured = config('media.delivery.profiles.customer_api.watermark_path');
-        if (is_string($configured) && $configured !== '' && is_file($configured)) {
-            return $configured;
+        if (! is_string($configured) || $configured === '') {
+            return null;
         }
 
-        $packaged = dirname(__DIR__, 2).'/resources/watermarks/signet.png';
+        $path = $configured;
+        if (! str_starts_with($path, DIRECTORY_SEPARATOR) && ! preg_match('/^[A-Za-z]:[\\\\\\/]/', $path)) {
+            $path = base_path($path);
+        }
 
-        return is_file($packaged) ? $packaged : null;
+        return is_file($path) ? $path : null;
+    }
+
+    public static function customerApiEnabled(): bool
+    {
+        return (bool) config('media.delivery.profiles.customer_api.enabled', false);
     }
 
     private static function registerSvgConversions(HasMedia $model): void
@@ -297,12 +305,7 @@ final class MediaDeliveryConversions
         $mail = $model->addMediaConversion(self::MAIL_PNG);
         $mail->format('png')->queued();
 
-        if ((bool) config('media.delivery.profiles.customer_api.watermark', true)) {
-            /** @var Conversion $api */
-            $api = $model->addMediaConversion(self::CUSTOMER_API);
-            $api->format('png')->queued();
-            self::applyWatermark($api);
-        }
+        // SVGs are brand/UI assets — customer API protection targets product rasters only.
     }
 
     private static function registerRasterAdminSizes(HasMedia $model, ?Media $media): void
@@ -389,7 +392,11 @@ final class MediaDeliveryConversions
 
     private static function registerCustomerApiConversion(HasMedia $model, ?Media $media): void
     {
-        if (! (bool) config('media.delivery.profiles.customer_api.enabled', true)) {
+        if (! self::customerApiEnabled()) {
+            return;
+        }
+
+        if (! self::shouldProtectForCustomerApi($media)) {
             return;
         }
 
@@ -405,7 +412,7 @@ final class MediaDeliveryConversions
         $conversion = $model->addMediaConversion(self::CUSTOMER_API);
         $conversion->width(max(1, $width))->format($format)->queued();
 
-        if ((bool) config('media.delivery.profiles.customer_api.watermark', true)) {
+        if ((bool) config('media.delivery.profiles.customer_api.watermark', false)) {
             self::applyWatermark($conversion);
         }
 
@@ -415,6 +422,33 @@ final class MediaDeliveryConversions
         }
     }
 
+    /**
+     * Whether this media should get a customer_api conversion when the profile is enabled.
+     * Static-site imports (custom property static_path) are skipped when skip_static is true.
+     */
+    public static function shouldProtectForCustomerApi(?Media $media): bool
+    {
+        if (! self::customerApiEnabled()) {
+            return false;
+        }
+
+        if ($media === null) {
+            return true;
+        }
+
+        if (self::isSvg($media)) {
+            return false;
+        }
+
+        if (! (bool) config('media.delivery.profiles.customer_api.skip_static', true)) {
+            return true;
+        }
+
+        $staticPath = $media->getCustomProperty('static_path');
+
+        return ! (is_string($staticPath) && $staticPath !== '');
+    }
+
     private static function applyWatermark(Conversion $conversion): void
     {
         $watermarkPath = self::watermarkPath();
@@ -422,18 +456,20 @@ final class MediaDeliveryConversions
             return;
         }
 
+        $padding = (int) config('media.delivery.profiles.customer_api.watermark_padding_percent', 3);
+
         $conversion->watermark(
             $watermarkPath,
-            AlignPosition::Center,
-            20,
-            20,
-            Unit::Pixel,
-            (int) config('media.delivery.profiles.customer_api.watermark_width_percent', 40),
+            AlignPosition::BottomRight,
+            $padding,
+            $padding,
+            Unit::Percent,
+            (int) config('media.delivery.profiles.customer_api.watermark_width_percent', 15),
             Unit::Percent,
             0,
             Unit::Pixel,
             Fit::Contain,
-            (int) config('media.delivery.profiles.customer_api.watermark_opacity', 25),
+            (int) config('media.delivery.profiles.customer_api.watermark_opacity', 40),
         );
     }
 
