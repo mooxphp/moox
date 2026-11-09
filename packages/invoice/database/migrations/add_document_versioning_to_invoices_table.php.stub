@@ -11,6 +11,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Fresh installs get both columns and the index from create_invoices_table.
+        if (Schema::hasColumn('invoices', 'document_version')) {
+            return;
+        }
+
         Schema::table('invoices', function (Blueprint $table): void {
             $table->unsignedInteger('document_version')->default(1)->after('document_type');
             $table->boolean('is_current')->default(true)->after('document_version');
