@@ -33,6 +33,7 @@ use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
 use Moox\Media\Support\MediaLocaleResolver;
+use Moox\Media\Support\MediaPostProcessor;
 use Moox\Media\Support\MediaUploadValidator;
 use Moox\Media\Tables\Columns\CustomImageColumn;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
@@ -167,15 +168,7 @@ class MediaResource extends BaseResource
                                     $media->media_collection_id = $oldMedia->media_collection_id;
                                 }
 
-                                if (str_starts_with((string) $media->mime_type, 'image/')) {
-                                    $size = @getimagesize($media->getPath());
-                                    if ($size !== false) {
-                                        $media->setCustomProperty('dimensions', [
-                                            'width' => (int) $size[0],
-                                            'height' => (int) $size[1],
-                                        ]);
-                                    }
-                                }
+                                app(MediaPostProcessor::class)->process($media);
 
                                 static::applyScopedDefaults($media);
                                 $media->save();
