@@ -30,20 +30,24 @@ final class MediaVariantCatalog
         ];
 
         if (MediaDeliveryConversions::isSvg($media)) {
-            foreach ([
-                MediaDeliveryConversions::MAIL_PNG => 'Mail PNG',
-                MediaDeliveryConversions::CUSTOMER_API => 'Customer API (watermark)',
-            ] as $key => $label) {
-                $variants[] = $this->conversionRow($media, $key, $label, $key === MediaDeliveryConversions::CUSTOMER_API
-                    ? MediaDeliveryConversions::PROFILE_CUSTOMER_API
-                    : MediaDeliveryConversions::PROFILE_MAIL);
-            }
+            // SVGs: mail gets a rasterized PNG; customer_api is product-raster only.
+            $variants[] = $this->conversionRow(
+                $media,
+                MediaDeliveryConversions::MAIL_PNG,
+                'Mail PNG',
+                MediaDeliveryConversions::PROFILE_MAIL,
+            );
 
             return $variants;
         }
 
         foreach (MediaDeliveryConversions::sizes() as $name => $definition) {
             $width = is_array($definition) ? (int) ($definition['width'] ?? 0) : 0;
+            // No-upscale: do not list sizes that will never be generated for this file.
+            if ($width > 0 && ! MediaDeliveryConversions::canProduceWidth($media, $width)) {
+                continue;
+            }
+
             $variants[] = $this->conversionRow(
                 $media,
                 (string) $name,
@@ -75,12 +79,14 @@ final class MediaVariantCatalog
             MediaDeliveryConversions::PROFILE_MAIL,
         );
 
-        $variants[] = $this->conversionRow(
-            $media,
-            MediaDeliveryConversions::CUSTOMER_API,
-            'Customer API (watermark)',
-            MediaDeliveryConversions::PROFILE_CUSTOMER_API,
-        );
+        if (MediaDeliveryConversions::shouldProtectForCustomerApi($media)) {
+            $variants[] = $this->conversionRow(
+                $media,
+                MediaDeliveryConversions::CUSTOMER_API,
+                'Customer API',
+                MediaDeliveryConversions::PROFILE_CUSTOMER_API,
+            );
+        }
 
         return $variants;
     }

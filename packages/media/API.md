@@ -91,13 +91,13 @@ Standard Laravel pagination (resource collection) with:
 - **`delivery`** (object): profile payloads
   - **`web`**: same shape as `picture`
   - **`mail`**: `{ "url": "…/mail…" }` (single raster; SVG → `mail-png`)
-  - **`customer_api`**: `{ "url": "…/customer_api…" }` (**watermarked** — use this for external/customer consumers)
+  - **`customer_api`** (optional): `{ "url": "…/customer_api…" }` — only present when `media.delivery.profiles.customer_api.enabled` is true; URL may be `null` while queued or when the asset is skipped (e.g. `static_path` / SVG)
 - **`variants`** (array): conversion catalog (admin/debug; may include original)
 - **`collection`** (object|null): `{ id, name }`
 - **`created_at`** (string|null)
 - **`updated_at`** (string|null)
 
-**External / customer integrations must not use top-level `url` or `variants[].url` for originals.** Use only `delivery.customer_api.url` when a watermarked asset is required.
+**When using `customer_api` for external consumers:** do not use top-level `url` or `variants[].url` for originals. Use only `delivery.customer_api.url`. If that field is missing or `null`, do **not** fall back to `url`.
 
 ##### `picture` / `delivery.web`
 

@@ -98,7 +98,11 @@ it('strips external use elements', function (): void {
 
     $clean = app(SvgSanitizer::class)->sanitize($dirty);
 
-    expect($clean)->not->toContain('<use')
-        ->and($clean)->not->toContain('evil.example')
+    expect($clean)->not->toContain('evil.example')
         ->and($clean)->toContain('<circle');
+});
+
+it('rejects unparseable svg markup', function (): void {
+    expect(fn () => app(SvgSanitizer::class)->sanitize('<not-svg>broken'))
+        ->toThrow(RuntimeException::class);
 });

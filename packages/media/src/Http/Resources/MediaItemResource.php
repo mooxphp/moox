@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
+use Moox\Media\Support\MediaDeliveryConversions;
 use Moox\Media\Support\MediaLocaleResolver;
 use Moox\Media\Support\MediaPictureBuilder;
 use Moox\Media\Support\MediaVariantCatalog;
@@ -43,15 +44,17 @@ class MediaItemResource extends JsonResource
             'title' => $metadata['title'],
             'alt' => $metadata['alt'],
             'picture' => app(MediaPictureBuilder::class)->toArray($media),
-            'delivery' => [
+            'delivery' => array_filter([
                 'web' => app(MediaPictureBuilder::class)->toArray($media, profile: 'web'),
                 'mail' => [
                     'url' => app(MediaPictureBuilder::class)->urlForProfile($media, 'mail'),
                 ],
-                'customer_api' => [
-                    'url' => app(MediaPictureBuilder::class)->urlForProfile($media, 'customer_api'),
-                ],
-            ],
+                'customer_api' => MediaDeliveryConversions::customerApiEnabled()
+                    ? [
+                        'url' => app(MediaPictureBuilder::class)->urlForProfile($media, 'customer_api'),
+                    ]
+                    : null,
+            ]),
             'variants' => app(MediaVariantCatalog::class)->for($media),
             'collection' => $collection ? [
                 'id' => $collection->getKey(),

@@ -4,60 +4,36 @@ declare(strict_types=1);
 
 namespace Moox\Media\Support;
 
+use enshrined\svgSanitize\Sanitizer;
+use RuntimeException;
+
 /**
- * Interim SVG hardening without a dedicated allowlist library.
- * Prefer a proper sanitizer (e.g. enshrined/svg-sanitize) when adding a Composer dependency is approved.
+ * Sanitize untrusted SVG uploads via enshrined/svg-sanitize (DOM allowlist).
  */
 final class SvgSanitizer
 {
+    public function __construct(
+        private readonly Sanitizer $sanitizer = new Sanitizer,
+    ) {
+        $this->sanitizer->removeRemoteReferences(true);
+        $this->sanitizer->removeXMLTag(true);
+        $this->sanitizer->minify(true);
+    }
+
     /**
-     * Strip scriptable / external content from SVG markup without rewriting the visual structure.
+     * Strip scriptable / remote content from SVG markup.
+     *
+     * @throws RuntimeException When the markup cannot be parsed as SVG.
      */
     public function sanitize(string $svg): string
     {
-        $svg = preg_replace('/<!DOCTYPE[^>]*>/i', '', $svg) ?? $svg;
-        $svg = preg_replace('/<\?xml[^>]*\?>/i', '', $svg) ?? $svg;
+        $clean = $this->sanitizer->sanitize($svg);
 
-        $svg = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $svg) ?? $svg;
-        $svg = preg_replace('/<foreignObject\b[^>]*>.*?<\/foreignObject>/is', '', $svg) ?? $svg;
+        if ($clean === false) {
+            throw new RuntimeException('SVG could not be sanitized.');
+        }
 
-        // Event handlers (onclick, onload, …).
-        $svg = preg_replace('/\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $svg) ?? $svg;
-
-        // Remove <use> that points at external / scriptable targets (before attr stripping).
-        $svg = preg_replace(
-            '/<use\b[^>]*\s(?:xlink:)?href\s*=\s*("(?:\s*(?:https?:|data:|blob:|javascript:)[^"]*)"|\'(?:\s*(?:https?:|data:|blob:|javascript:)[^\']*)\')[^>]*\/?>/i',
-            '',
-            $svg,
-        ) ?? $svg;
-
-        // javascript: / data: / blob: / http(s) in href / xlink:href.
-        $svg = preg_replace(
-            '/\s(?:xlink:)?href\s*=\s*("\s*(?:javascript:|data:|blob:|https?:)[^"]*"|\'\s*(?:javascript:|data:|blob:|https?:)[^\']*\')/i',
-            '',
-            $svg,
-        ) ?? $svg;
-
-        // SMIL that can retarget href to javascript:/data:.
-        $svg = preg_replace(
-            '/<(?:animate|set)\b[^>]*\sattributeName\s*=\s*("(?:xlink:)?href"|\'(?:xlink:)?href\')[^>]*\/?>/i',
-            '',
-            $svg,
-        ) ?? $svg;
-        $svg = preg_replace(
-            '/<(?:animate|set)\b[^>]*\sattributeName\s*=\s*("(?:xlink:)?href"|\'(?:xlink:)?href\')[^>]*>.*?<\/(?:animate|set)>/is',
-            '',
-            $svg,
-        ) ?? $svg;
-
-        // Drop style attributes that contain url(...).
-        $svg = preg_replace(
-            '/\sstyle\s*=\s*("[^"]*url\s*\([^)]*\)[^"]*"|\'[^\']*url\s*\([^)]*\)[^\']*\')/i',
-            '',
-            $svg,
-        ) ?? $svg;
-
-        return trim($svg);
+        return trim($clean);
     }
 
     public function sanitizeFile(string $path): bool
@@ -71,7 +47,12 @@ final class SvgSanitizer
             return false;
         }
 
-        $sanitized = $this->sanitize($contents);
+        try {
+            $sanitized = $this->sanitize($contents);
+        } catch (RuntimeException) {
+            return false;
+        }
+
         if ($sanitized === $contents) {
             return true;
         }

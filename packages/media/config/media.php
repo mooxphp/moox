@@ -58,7 +58,9 @@ return [
     | WordPress-compatible size names are canonical. Responsive srcsets use
     | those widths (and optional extra_widths) only when <= original width and
     | >= profiles.web.min_responsive_width (default 480).
-    | SVG: web = original; mail = PNG; customer_api = watermarked PNG.
+    | SVG: web = original; mail = PNG.
+    | customer_api is opt-in (off by default) for apps that expose media to
+    | external consumers; enable/watermark in the app config/media.php.
     | Optimizer / queue / image driver: config/media-library.php.
     |
     */
@@ -101,14 +103,20 @@ return [
                 'svg_to_png' => true,
             ],
             'customer_api' => [
-                'enabled' => true,
+                // Opt-in: most apps only need web + mail. Enable in the app config.
+                'enabled' => false,
                 'formats' => ['jpg', 'png'],
                 'responsive' => false,
                 'upscale' => false,
                 'default_width' => 1024,
-                'watermark' => true,
-                'watermark_opacity' => 25,
-                'watermark_width_percent' => 40,
+                // Skip assets tagged with custom property static_path (site imports).
+                'skip_static' => true,
+                // Opt-in watermark; applied only when watermark_path resolves to a file.
+                'watermark' => false,
+                'watermark_opacity' => 40,
+                'watermark_width_percent' => 15,
+                'watermark_padding_percent' => 3,
+                // Absolute path, or path relative to base_path().
                 'watermark_path' => null,
             ],
         ],
@@ -119,14 +127,15 @@ return [
     | Static asset import
     |--------------------------------------------------------------------------
     |
-    | Maps packages/static-page/{brand}/resources/assets into the media library
-    | with custom property static_path for template lookup via StaticMedia.
+    | Maps {root}/{brand}/… into the media library with custom property
+    | static_path for template lookup via StaticMedia. Brands default to [] —
+    | each app sets its allowlist in config/media.php.
     |
     */
 
     'static_import' => [
         'root' => base_path('packages/static-page'),
-        'brands' => ['heco', 'heltec', 'hecoform', 'hecogroup', 'heco-preview'],
+        'brands' => [],
     ],
 
     /*

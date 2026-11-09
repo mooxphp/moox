@@ -95,9 +95,8 @@ final class MediaPictureBuilder
         $src = match ($profile) {
             MediaDeliveryConversions::PROFILE_MAIL => $this->safeConversionUrl($media, MediaDeliveryConversions::MAIL_PNG)
                 ?? $this->originalUrl($media),
-            MediaDeliveryConversions::PROFILE_CUSTOMER_API => $this->safeConversionUrl($media, MediaDeliveryConversions::CUSTOMER_API)
-                ?? $this->safeConversionUrl($media, MediaDeliveryConversions::MAIL_PNG)
-                ?? $this->originalUrl($media),
+            // Never fall back to original/mail — those are unprotected.
+            MediaDeliveryConversions::PROFILE_CUSTOMER_API => $this->safeConversionUrl($media, MediaDeliveryConversions::CUSTOMER_API),
             default => $this->originalUrl($media),
         };
 
@@ -150,9 +149,8 @@ final class MediaPictureBuilder
      */
     private function customerApiPayload(Media $media, string $alt, array $dimensions): array
     {
-        $src = $this->safeConversionUrl($media, MediaDeliveryConversions::CUSTOMER_API)
-            ?? $this->safeConversionUrl($media, MediaDeliveryConversions::MAIL_RASTER)
-            ?? $this->originalUrl($media);
+        // Only the watermarked conversion — never mail/original fallback.
+        $src = $this->safeConversionUrl($media, MediaDeliveryConversions::CUSTOMER_API);
 
         return [
             'profile' => MediaDeliveryConversions::PROFILE_CUSTOMER_API,
@@ -320,6 +318,8 @@ final class MediaPictureBuilder
     private function safeConversionUrl(Media $media, string $conversion): ?string
     {
         try {
+            // Stale generated_conversions flags can remain after registration rules change;
+            // getUrl() throws InvalidConversion when the conversion is no longer registered.
             if (! $media->hasGeneratedConversion($conversion)) {
                 return null;
             }

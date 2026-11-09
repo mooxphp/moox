@@ -33,7 +33,7 @@ class ImportStaticAssetsCommand extends Command
 
         /** @var list<string> $allowedBrands */
         $allowedBrands = array_values(array_filter(
-            array_map(static fn (mixed $brand): string => (string) $brand, (array) config('media.static_import.brands', ['heco'])),
+            array_map(static fn (mixed $brand): string => (string) $brand, (array) config('media.static_import.brands', [])),
             static fn (string $brand): bool => $brand !== '',
         ));
 
@@ -130,10 +130,20 @@ class ImportStaticAssetsCommand extends Command
                 $model = new Media;
                 $model->exists = true;
 
+                // static_path must be set BEFORE toMediaCollection so conversion
+                // registration can skip customer_api for website assets.
+                $customProperties = [
+                    StaticMedia::PROPERTY => StaticMedia::normalize($staticPath),
+                ];
+                if ($fileHash !== null) {
+                    $customProperties['file_hash'] = $fileHash;
+                }
+
                 /** @var Media $media */
                 $media = FileAdderFactory::create($model, $absolutePath)
                     ->usingFileName($file->getFilename())
                     ->usingName(pathinfo($file->getFilename(), PATHINFO_FILENAME))
+                    ->withCustomProperties($customProperties)
                     ->preservingOriginal()
                     ->toMediaCollection((string) ($collection->name ?? 'default'));
 
@@ -143,9 +153,6 @@ class ImportStaticAssetsCommand extends Command
                 $media->original_model_id = $media->getKey();
                 $media->model_id = $media->getKey();
                 $media->model_type = Media::class;
-                if ($fileHash !== null) {
-                    $media->setCustomProperty('file_hash', $fileHash);
-                }
                 StaticMedia::remember($media, $staticPath);
                 $postProcessor->process($media);
                 $media->save();
