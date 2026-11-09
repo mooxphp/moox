@@ -404,8 +404,13 @@ final class MediaPictureBuilder
             $imgAttrs['height'] = $data['height'];
         }
 
+        $allowedKeys = [
+            'src', 'srcset', 'sizes', 'alt', 'loading', 'decoding', 'fetchpriority',
+            'width', 'height', 'class', 'id', 'style', 'title', 'role',
+        ];
+
         $attrString = collect($imgAttrs)
-            ->filter(static fn (mixed $value): bool => $value !== null && $value !== '')
+            ->filter(static fn (mixed $value, string $key): bool => $value !== null && $value !== '' && in_array($key, $allowedKeys, true))
             ->map(static fn (mixed $value, string $key): string => sprintf('%s="%s"', $key, e((string) $value)))
             ->implode(' ');
 

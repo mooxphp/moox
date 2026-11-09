@@ -154,7 +154,7 @@ Until delivery conversions finish, `<x-media::picture>` / API payloads may fall 
 
 ### Security notes
 
-- **SVG:** uploads/imports run through `SvgSanitizer` (regex hardening). This is interim — prefer a dedicated allowlist library (e.g. `enshrined/svg-sanitize`) when a Composer dependency is approved. Prefer serving logos as SVG in `<img src>` (not inlined) so script context is limited.
+- **SVG:** all ingest paths (API, ListMedia upload, MediaPicker, MediaResource replace/edit, static import) run through `MediaPostProcessor` → `SvgSanitizer` (regex hardening). This is interim — prefer a dedicated allowlist library (e.g. `enshrined/svg-sanitize`) when a Composer dependency is approved. Prefer serving logos as SVG in `<img src>` (not inlined) so script context is limited.
 - **customer_api vs original:** Admin/picker payloads still include top-level `url` (original) for editors. **External / customer consumers must use only `delivery.customer_api.url`** (watermarked). Do not ship the original URL to untrusted clients.
 - **Static import:** brands must be listed in `media.static_import.brands`; resolved paths must stay under `media.static_import.root`.
 

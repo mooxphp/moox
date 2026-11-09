@@ -77,7 +77,7 @@ Standard Laravel pagination (resource collection) with:
 ##### `data[]` item fields
 
 - **`id`** (int): primary key
-- **`url`** (string): public asset URL (Spatie `getUrl()`)
+- **`url`** (string): **original** public asset URL (Spatie `getUrl()`). Intended for admin/editor tooling only.
 - **`thumbnail_url`** (string|null): thumbnail conversion (if available)
 - **`preview_url`** (string|null): preview conversion (if available)
 - **`poster_url`** (string|null): for videos (fallback: preview → thumbnail)
@@ -87,31 +87,40 @@ Standard Laravel pagination (resource collection) with:
 - **`name`** (string|null)
 - **`title`** (string|null)
 - **`alt`** (string|null)
-- **`picture`** (object): delivery payload for `<picture>` (see below)
+- **`picture`** (object): web delivery payload for `<picture>` (see below)
+- **`delivery`** (object): profile payloads
+  - **`web`**: same shape as `picture`
+  - **`mail`**: `{ "url": "…/mail…" }` (single raster; SVG → `mail-png`)
+  - **`customer_api`**: `{ "url": "…/customer_api…" }` (**watermarked** — use this for external/customer consumers)
+- **`variants`** (array): conversion catalog (admin/debug; may include original)
 - **`collection`** (object|null): `{ id, name }`
 - **`created_at`** (string|null)
 - **`updated_at`** (string|null)
 
-##### `picture`
+**External / customer integrations must not use top-level `url` or `variants[].url` for originals.** Use only `delivery.customer_api.url` when a watermarked asset is required.
+
+##### `picture` / `delivery.web`
 
 ```json
 {
+  "profile": "web",
+  "mode": "picture",
   "alt": "...",
   "sizes": null,
   "sources": [
-    { "type": "image/avif", "srcset": "…/delivery-480-avif.avif 480w, … 960w, … 1440w" },
+    { "type": "image/avif", "srcset": "…/web-480-avif.avif 480w, … 960w, … 1440w" },
     { "type": "image/webp", "srcset": "…" }
   ],
   "img": {
-    "src": "…/delivery-960-jpg.jpg",
-    "srcset": "… 480w, … 960w, … 1440w",
+    "src": "…/medium_large…",
+    "srcset": null,
     "loading": "lazy",
     "decoding": "async"
   }
 }
 ```
 
-Missing conversions are omitted (`sources` may be empty while conversions are still queued).
+Missing conversions are omitted (`sources` may be empty while conversions are still queued). Web srcsets start at `min_responsive_width` (default 480).
 
 #### Error codes
 

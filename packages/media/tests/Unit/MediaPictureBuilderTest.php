@@ -97,7 +97,11 @@ it('uses mail conversion url for mail profile', function (): void {
             : 'https://example.test/media/conversions/'.$conversion.'.jpg',
     );
 
-    $picture = app(MediaPictureBuilder::class)->toArray($media, profile: MediaDeliveryConversions::PROFILE_MAIL);
+    $picture = app(MediaPictureBuilder::class)->toArray(
+        $media,
+        alt: 'Hero',
+        profile: MediaDeliveryConversions::PROFILE_MAIL,
+    );
 
     expect($picture['mode'])->toBe('img')
         ->and($picture['img']['src'])->toContain('mail')
