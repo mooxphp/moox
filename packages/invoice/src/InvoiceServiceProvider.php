@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Invoice;
 
+use Illuminate\Support\Facades\Gate;
 use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceAllowanceCharge;
 use Moox\Invoice\Models\InvoiceLine;
+use Moox\Invoice\Policies\InvoicePolicy;
 use Moox\Invoice\Support\InvoiceModels;
 use Spatie\LaravelPackageTools\Package;
 
@@ -48,6 +50,9 @@ class InvoiceServiceProvider extends MooxServiceProvider
 
     public function packageBooted(): void
     {
+        // Registered explicitly so host subclasses (invoice.models.invoice) resolve it too.
+        Gate::policy(Invoice::class, InvoicePolicy::class);
+
         if (
             ! class_exists(AuditPackageRegistry::class)
             || ! config('audit.enabled', true)
