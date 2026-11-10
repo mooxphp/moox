@@ -13,7 +13,6 @@ use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\Installer\Contracts\AssetInstallerInterface;
 use Moox\Core\MooxServiceProvider;
 use Moox\Media\Console\ImageDriverCommand;
-use Moox\Media\Console\ImportStaticAssetsCommand;
 use Moox\Media\Console\RegenerateDeliveryCommand;
 use Moox\Media\Http\Livewire\MediaPickerModal;
 use Moox\Media\Installers\MediaInstaller;
@@ -40,7 +39,6 @@ class MediaServiceProvider extends MooxServiceProvider
             ->hasCommands([
                 RegenerateDeliveryCommand::class,
                 ImageDriverCommand::class,
-                ImportStaticAssetsCommand::class,
             ]);
     }
 

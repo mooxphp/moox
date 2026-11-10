@@ -140,13 +140,14 @@ Queued conversion names look like `web-960-webp`, plus `mail` / `mail-png` / `cu
 When `IMAGE_DRIVER` / `media.image_driver` is `auto` (default), the package prefers **vips → imagick → gd**.
 
 ```bash
-php artisan media:image-driver              # show resolved driver + optimizer binaries
-php artisan media:regenerate-delivery       # missing delivery conversions only (default)
-php artisan media:regenerate-delivery --force   # after quality/width config changes
+php artisan queue:work
+php artisan media:image-driver                 # resolved driver + optimizer binaries
+php artisan media:regenerate-delivery          # missing delivery conversions
+php artisan media:regenerate-delivery --force  # rebuild after delivery/watermark config changes
 php artisan media:regenerate-delivery --ids=4
-php artisan media:import-static-assets {brand} # Static → Mediathek (static_path); brand must be allowlisted
-php artisan media:import-static-assets --dry-run
 ```
+
+Normal path: **upload in Filament/API** → queue builds delivery variants. Use `--force` regenerate when enabling or changing watermark/`customer_api` (or other delivery settings) for images that were already uploaded.
 
 Enable optional features in the consuming app via `config/media.php` (publish or merge overrides), for example:
 
@@ -161,9 +162,6 @@ return array_replace_recursive(require base_path('vendor/moox/media/config/media
             ],
         ],
     ],
-    'static_import' => [
-        'brands' => ['brand-a', 'brand-b'],
-    ],
 ]);
 ```
 
@@ -175,13 +173,12 @@ Until delivery conversions finish, `<x-media::picture>` / API payloads may fall 
 
 ### Security notes
 
-- **SVG:** all ingest paths (API, ListMedia upload, MediaPicker, MediaResource replace/edit, static import) run through `MediaPostProcessor` → `SvgSanitizer` (`enshrined/svg-sanitize`, remote references removed). Prefer serving logos as SVG in `<img src>` (not inlined) so script context is limited.
-- **customer_api vs original:** When enabled, admin/picker payloads still include top-level `url` (original) for editors. External consumers should use only `delivery.customer_api.url`. If that field is `null`, do not fall back to `url`. With `skip_static` (default), assets tagged `static_path` and SVGs get no `customer_api` conversion.
-- **Static import:** brands must be listed in `media.static_import.brands`; resolved paths must stay under `media.static_import.root`.
+- **SVG:** all ingest paths (API, ListMedia upload, MediaPicker, MediaResource replace/edit) run through `MediaPostProcessor` → `SvgSanitizer` (`enshrined/svg-sanitize`, remote references removed). Prefer serving logos as SVG in `<img src>` (not inlined) so script context is limited.
+- **customer_api vs original:** When enabled, admin/picker payloads still include top-level `url` (original) for editors. External consumers should use only `delivery.customer_api.url`. If that field is `null`, do not fall back to `url`. SVGs get no `customer_api` conversion (when `skip_static` is enabled, records tagged `static_path` are skipped too).
 
 ### Frontend handoff
 
-**Media provides:** delivery profiles, no-upscale rules, SVG sanitize + mail PNG, optional customer API URLs (+ optional watermark), `<x-media::picture profile="web|mail|customer_api">`, `StaticMedia::find('brand/images/logo.svg')` after import, variant UI.
+**Media provides:** delivery profiles, no-upscale rules, SVG sanitize + mail PNG, optional customer API URLs (+ optional watermark), `<x-media::picture profile="web|mail|customer_api">`, variant UI. Templates resolve media via upload/CMS/MediaPicker (`Media::find` / attached relations).
 
 ## Using media on pages (all options)
 

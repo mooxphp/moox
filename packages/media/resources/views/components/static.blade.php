@@ -7,7 +7,7 @@
     'width' => null,
     'height' => null,
     'fetchpriority' => null,
-    /** Fallback base for legacy <x-responsive-image> while import is incomplete */
+    /** Optional disk fallback base for legacy <x-responsive-image> */
     'fallbackBase' => null,
 ])
 
