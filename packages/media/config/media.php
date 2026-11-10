@@ -109,7 +109,7 @@ return [
                 'responsive' => false,
                 'upscale' => false,
                 'default_width' => 1024,
-                // Skip assets tagged with custom property static_path (site imports).
+                // Skip assets tagged with custom property static_path.
                 'skip_static' => true,
                 // Opt-in watermark; applied only when watermark_path resolves to a file.
                 'watermark' => false,
@@ -120,22 +120,6 @@ return [
                 'watermark_path' => null,
             ],
         ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Static asset import
-    |--------------------------------------------------------------------------
-    |
-    | Maps {root}/{brand}/… into the media library with custom property
-    | static_path for template lookup via StaticMedia. Brands default to [] —
-    | each app sets its allowlist in config/media.php.
-    |
-    */
-
-    'static_import' => [
-        'root' => base_path('packages/static-page'),
-        'brands' => [],
     ],
 
     /*
