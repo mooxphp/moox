@@ -1,0 +1,22 @@
+{
+    "name": "moox/mcp",
+    "description": "Moox MCP Server for Laravel, Filament, and Moox of course.",
+    "type": "library",
+    "require": {
+        "laravel/mcp": "^0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Mcp\\": "src/"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox",
+            "email": "dev@moox.org"
+        }
+    ],
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
