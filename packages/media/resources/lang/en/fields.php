@@ -39,6 +39,12 @@ return [
     'generated' => 'Ready',
     'pending' => 'Pending',
     'open' => 'Open',
+    'regenerate_delivery' => 'Regenerate delivery',
+    'regenerate_delivery_submit' => 'Regenerate',
+    'regenerate_delivery_force' => 'Also regenerate existing variants',
+    'regenerate_delivery_force_help' => 'Default: missing variants only. Use force after config/watermark changes.',
+    'regenerate_delivery_queued' => 'Delivery regenerate started',
+    'regenerate_delivery_queued_body' => 'For :count file|For :count files — queue worker must be running.',
 
     // Notifications
     'delete_error' => 'Error Deleting',

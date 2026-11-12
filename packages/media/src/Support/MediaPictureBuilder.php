@@ -34,15 +34,11 @@ final class MediaPictureBuilder
             return $this->svgPayload($media, $altText, $profile, $dimensions);
         }
 
-        if ($profile === MediaDeliveryConversions::PROFILE_MAIL) {
-            return $this->mailPayload($media, $altText, $dimensions);
+        if (MediaDeliveryConversions::profileMode($profile) === MediaDeliveryConversions::MODE_SINGLE) {
+            return $this->singlePayload($media, $altText, $profile, $dimensions);
         }
 
-        if ($profile === MediaDeliveryConversions::PROFILE_CUSTOMER_API) {
-            return $this->customerApiPayload($media, $altText, $dimensions);
-        }
-
-        return $this->webPayload($media, $sizes, $altText, $dimensions);
+        return $this->responsivePayload($media, $sizes, $altText, $profile, $dimensions);
     }
 
     public function toHtml(
@@ -92,11 +88,13 @@ final class MediaPictureBuilder
      */
     private function svgPayload(Media $media, string $alt, string $profile, array $dimensions): array
     {
-        $src = match ($profile) {
-            MediaDeliveryConversions::PROFILE_MAIL => $this->safeConversionUrl($media, MediaDeliveryConversions::MAIL_PNG)
-                ?? $this->originalUrl($media),
-            // Never fall back to original/mail — those are unprotected.
-            MediaDeliveryConversions::PROFILE_CUSTOMER_API => $this->safeConversionUrl($media, MediaDeliveryConversions::CUSTOMER_API),
+        $svgMode = MediaDeliveryConversions::profileSvgMode($profile);
+        $fallback = MediaDeliveryConversions::profileFallbackToOriginal($profile);
+
+        $src = match ($svgMode) {
+            'png' => $this->safeConversionUrl($media, MediaDeliveryConversions::svgConversionName($profile))
+                ?? ($fallback ? $this->originalUrl($media) : null),
+            'skip' => null,
             default => $this->originalUrl($media),
         };
 
@@ -121,13 +119,16 @@ final class MediaPictureBuilder
      * @param  array{width: int|null, height: int|null}  $dimensions
      * @return array<string, mixed>
      */
-    private function mailPayload(Media $media, string $alt, array $dimensions): array
+    private function singlePayload(Media $media, string $alt, string $profile, array $dimensions): array
     {
-        $src = $this->safeConversionUrl($media, MediaDeliveryConversions::MAIL_RASTER)
-            ?? $this->originalUrl($media);
+        $src = $this->safeConversionUrl($media, MediaDeliveryConversions::singleConversionName($profile));
+
+        if ($src === null && MediaDeliveryConversions::profileFallbackToOriginal($profile)) {
+            $src = $this->originalUrl($media);
+        }
 
         return [
-            'profile' => MediaDeliveryConversions::PROFILE_MAIL,
+            'profile' => $profile,
             'mode' => 'img',
             'alt' => $alt,
             'sizes' => null,
@@ -147,43 +148,17 @@ final class MediaPictureBuilder
      * @param  array{width: int|null, height: int|null}  $dimensions
      * @return array<string, mixed>
      */
-    private function customerApiPayload(Media $media, string $alt, array $dimensions): array
+    private function responsivePayload(Media $media, ?string $sizes, string $alt, string $profile, array $dimensions): array
     {
-        // Only the watermarked conversion — never mail/original fallback.
-        $src = $this->safeConversionUrl($media, MediaDeliveryConversions::CUSTOMER_API);
-
-        return [
-            'profile' => MediaDeliveryConversions::PROFILE_CUSTOMER_API,
-            'mode' => 'img',
-            'alt' => $alt,
-            'sizes' => null,
-            'width' => $dimensions['width'],
-            'height' => $dimensions['height'],
-            'sources' => [],
-            'img' => [
-                'src' => $src,
-                'srcset' => null,
-                'loading' => 'lazy',
-                'decoding' => 'async',
-            ],
-        ];
-    }
-
-    /**
-     * @param  array{width: int|null, height: int|null}  $dimensions
-     * @return array<string, mixed>
-     */
-    private function webPayload(Media $media, ?string $sizes, string $alt, array $dimensions): array
-    {
-        $widths = MediaDeliveryConversions::applicableResponsiveWidths($media);
+        $widths = MediaDeliveryConversions::applicableResponsiveWidths($media, $profile);
         $formats = array_values(array_filter(
-            MediaDeliveryConversions::webFormats(),
+            MediaDeliveryConversions::formatsForProfile($profile),
             static fn (string $format): bool => ! in_array($format, ['original', 'jpg', 'jpeg', 'png'], true),
         ));
 
         $sources = [];
         foreach ($formats as $format) {
-            $srcset = $this->srcsetForFormat($media, $format, $widths);
+            $srcset = $this->srcsetForFormat($media, $profile, $format, $widths);
             if ($srcset === null) {
                 continue;
             }
@@ -194,8 +169,8 @@ final class MediaPictureBuilder
             ];
         }
 
-        $jpgSrcset = $this->srcsetForFormat($media, 'jpg', $widths);
-        $jpgSrc = $this->preferredFallbackSrc($media, $widths);
+        $jpgSrcset = $this->srcsetForFormat($media, $profile, 'jpg', $widths);
+        $jpgSrc = $this->preferredFallbackSrc($media, $profile, $widths);
 
         $mode = ($widths === [] || ($jpgSrcset === null && $sources === []))
             ? 'img'
@@ -206,7 +181,6 @@ final class MediaPictureBuilder
             if (count($widths) <= 1) {
                 $jpgSrcset = null;
                 foreach ($sources as $i => $source) {
-                    // Keep single-URL sources without density list noise when only one width
                     if (! str_contains($source['srcset'], ',')) {
                         $sources[$i]['srcset'] = preg_replace('/\s+\d+w$/', '', $source['srcset']) ?? $source['srcset'];
                     }
@@ -215,7 +189,7 @@ final class MediaPictureBuilder
         }
 
         return [
-            'profile' => MediaDeliveryConversions::PROFILE_WEB,
+            'profile' => $profile,
             'mode' => $mode === 'picture' && ($sources !== [] || $jpgSrcset !== null) ? 'picture' : 'img',
             'alt' => $alt,
             'sizes' => $sizes,
@@ -234,10 +208,10 @@ final class MediaPictureBuilder
     /**
      * @param  list<int>  $widths
      */
-    private function srcsetForFormat(Media $media, string $format, array $widths): ?string
+    private function srcsetForFormat(Media $media, string $profile, string $format, array $widths): ?string
     {
         if ($widths === []) {
-            $url = $this->sameSizeFormatUrl($media, $format);
+            $url = $this->sameSizeFormatUrl($media, $profile, $format);
             if ($url === null) {
                 return null;
             }
@@ -248,7 +222,7 @@ final class MediaPictureBuilder
         $parts = [];
 
         foreach ($widths as $width) {
-            $name = MediaDeliveryConversions::conversionName(MediaDeliveryConversions::PROFILE_WEB, $width, $format);
+            $name = MediaDeliveryConversions::conversionName($profile, $width, $format);
             $url = $this->safeConversionUrl($media, $name);
             if ($url === null) {
                 continue;
@@ -264,12 +238,17 @@ final class MediaPictureBuilder
         return implode(', ', $parts);
     }
 
-    private function sameSizeFormatUrl(Media $media, string $format): ?string
+    private function sameSizeFormatUrl(Media $media, string $profile, string $format): ?string
     {
-        foreach (MediaDeliveryConversions::responsiveWidths() as $width) {
+        $widths = MediaDeliveryConversions::applicableResponsiveWidths($media, $profile);
+        if ($widths === []) {
+            $widths = MediaDeliveryConversions::responsiveWidths($profile);
+        }
+
+        foreach ($widths as $width) {
             $url = $this->safeConversionUrl(
                 $media,
-                MediaDeliveryConversions::conversionName(MediaDeliveryConversions::PROFILE_WEB, $width, $format),
+                MediaDeliveryConversions::conversionName($profile, $width, $format),
             );
             if ($url !== null) {
                 return $url;
@@ -282,14 +261,14 @@ final class MediaPictureBuilder
     /**
      * @param  list<int>  $widths
      */
-    private function preferredFallbackSrc(Media $media, array $widths): ?string
+    private function preferredFallbackSrc(Media $media, string $profile, array $widths): ?string
     {
         if ($widths !== []) {
             $preferred = $widths[intdiv(count($widths), 2)] ?? $widths[0];
             foreach (array_unique(array_merge([$preferred], array_reverse($widths))) as $width) {
                 $url = $this->safeConversionUrl(
                     $media,
-                    MediaDeliveryConversions::conversionName(MediaDeliveryConversions::PROFILE_WEB, $width, 'jpg'),
+                    MediaDeliveryConversions::conversionName($profile, $width, 'jpg'),
                 );
                 if ($url !== null) {
                     return $url;
@@ -297,7 +276,7 @@ final class MediaPictureBuilder
 
                 $url = $this->safeConversionUrl(
                     $media,
-                    MediaDeliveryConversions::conversionName(MediaDeliveryConversions::PROFILE_WEB, $width, 'png'),
+                    MediaDeliveryConversions::conversionName($profile, $width, 'png'),
                 );
                 if ($url !== null) {
                     return $url;
@@ -312,14 +291,16 @@ final class MediaPictureBuilder
             }
         }
 
-        return $this->originalUrl($media);
+        if (MediaDeliveryConversions::profileFallbackToOriginal($profile)) {
+            return $this->originalUrl($media);
+        }
+
+        return null;
     }
 
     private function safeConversionUrl(Media $media, string $conversion): ?string
     {
         try {
-            // Stale generated_conversions flags can remain after registration rules change;
-            // getUrl() throws InvalidConversion when the conversion is no longer registered.
             if (! $media->hasGeneratedConversion($conversion)) {
                 return null;
             }
@@ -366,11 +347,11 @@ final class MediaPictureBuilder
 
     private function normalizeProfile(string $profile): string
     {
-        return match ($profile) {
-            MediaDeliveryConversions::PROFILE_MAIL => MediaDeliveryConversions::PROFILE_MAIL,
-            MediaDeliveryConversions::PROFILE_CUSTOMER_API => MediaDeliveryConversions::PROFILE_CUSTOMER_API,
-            default => MediaDeliveryConversions::PROFILE_WEB,
-        };
+        if (MediaDeliveryConversions::profileExists($profile)) {
+            return $profile;
+        }
+
+        return MediaDeliveryConversions::PROFILE_WEB;
     }
 
     /**

@@ -108,23 +108,53 @@ When media is attached via MediaPicker, the JSON field contains:
 
 When editing media in the admin panel or MediaPicker sidebar, fields like `name`, `title`, `alt`, `description`, and `internal_note` are automatically saved when you change a field and leave it (blur). No save button is required. For a locale without a translation yet, an amber notice is shown, `name` is prefilled from the default locale (or the original file name), and a translation row is created only after a real edit — not merely from opening/closing the UI. Changing the language switcher reloads picker metadata for the selected item.
 
-## Delivery profiles (web / mail / customer_api)
+## Delivery profiles
 
-Media owns output formats. Templates must not invent their own AVIF/WebP pipelines.
+Media owns output formats. Templates must not invent their own AVIF/WebP pipelines. Every key under `media.delivery.profiles` is a profile — apps can add their own (`og`, `feed`, …). The package ships **no brand assets** (watermarks live in the app).
 
-| Profile | Formats | Responsive | Notes |
-|---------|---------|------------|--------|
-| `web` | AVIF, WebP, original/WP-size fallback | yes (no upscale) | SVG stays SVG (plain `<img>`) |
-| `mail` | JPEG/PNG | no | SVG → `mail-png`; fixed width (~600px) |
-| `customer_api` | JPEG/PNG (+ optional watermark) | no | **Opt-in** via app `config/media.php`; for external consumers |
+### Default profiles
 
-`web` and `mail` are always available. `customer_api` stays off until an app enables it. Watermarking is a separate opt-in and only runs when `watermark_path` points at a real image file.
+| Profile | Mode | Formats | Notes |
+|---------|------|---------|--------|
+| `web` | `responsive` | AVIF, WebP, original fallback | SVG = original `<img>`; no upscale |
+| `mail` | `single` | JPEG/PNG | SVG → `mail-png`; ~600px |
+| `customer_api` | `single` | JPEG/PNG | **Opt-in**; optional watermark; `fallback_to_original=false`; `svg=skip` |
 
-### Widths
+### Profile config keys
 
-WordPress-compatible **admin** sizes (always available when width allows): `thumbnail` (150), `medium` (300), `medium_large` (768), `large` (1024).
+```php
+'my_profile' => [
+    'enabled' => true,
+    'mode' => 'responsive', // or 'single'
+    'formats' => ['avif', 'webp', 'original'],
+    'upscale' => false,
+    'min_responsive_width' => 480, // responsive
+    'widths' => [480, 960, 1440],  // optional; else global extra_widths
+    'default_width' => 1200,       // single
+    'fallback_to_original' => true,
+    'svg' => 'original',           // original | png | skip
+    'skip_static' => false,
+    'watermark' => [
+        'enabled' => false,
+        'path' => null, // absolute or relative to base_path(); app file only
+        'opacity' => 40,
+        'width_percent' => 15,
+        'padding_percent' => 3,
+    ],
+],
+```
 
-**Web srcset** uses widths ≥ `min_responsive_width` (default **480**) plus `extra_widths` (`480` / `960` / `1440`). Typical ladder: **480, 768, 960, 1024, 1440**. Conversions above the original width are **not** created. Tiny sources (&lt; 480px) get no artificial web srcset (admin/mail sizes may still exist).
+### Widths & edge cases
+
+WordPress-compatible **admin** sizes (when width allows): `thumbnail` (150), `medium` (300), `medium_large` (768), `large` (1024).
+
+| Case | Behaviour |
+|------|-----------|
+| Original ≥ `min_responsive_width` | Width ladder (WP sizes ≥ min + profile `widths` / global `extra_widths`), no upscale |
+| Original &lt; min (e.g. nav 240px) | **Same-size** AVIF/WebP/JPG at original width — no multi-width srcset |
+| `image/gif` (default `skip_mime_types`) | No delivery profiles; keep animated original (+ small admin thumbs) |
+| Unknown dimensions | No responsive ladder guessed; admin thumbs ≤ 300px only |
+| SVG | Per profile `svg`: `original` / `png` / `skip` |
 
 ### Quality defaults
 
@@ -135,21 +165,28 @@ WordPress-compatible **admin** sizes (always available when width allows): `thum
 | avif | 55 | AVIF scale runs ~15–20 below JPEG |
 | png | 90 | UI / logos with transparency |
 
-Queued conversion names look like `web-960-webp`, plus `mail` / `mail-png` / `customer_api`. Config: `config/media.php` → `delivery`. Optimizer / queue / driver: `config/media-library.php`.
+Conversion names: responsive/same-size `{profile}-{width}-{format}`; single = profile key; SVG PNG = `{profile}-png`. Config: `config/media.php` → `delivery`. Optimizer / queue / driver: `config/media-library.php`.
 
 When `IMAGE_DRIVER` / `media.image_driver` is `auto` (default), the package prefers **vips → imagick → gd**.
 
+### Regenerate (prefer targeted)
+
+Normal path: **upload** → queue builds variants. Prefer selecting media in the Mediathek bulk action, or CLI with `--ids` / `--profile`. Full-library scans are intentional ops only.
+
 ```bash
 php artisan queue:work
-php artisan media:image-driver                 # resolved driver + optimizer binaries
-php artisan media:regenerate-delivery          # missing delivery conversions
-php artisan media:regenerate-delivery --force  # rebuild after delivery/watermark config changes
-php artisan media:regenerate-delivery --ids=4
+php artisan media:image-driver
+php artisan media:regenerate-delivery --ids=4 --ids=12
+php artisan media:regenerate-delivery --profile=customer_api --force
+php artisan media:regenerate-delivery --profile=web,mail --ids=4
+# library-wide missing only (warns when no --ids):
+php artisan media:regenerate-delivery
+php artisan media:regenerate-delivery --force   # after watermark/config change
 ```
 
-Normal path: **upload in Filament/API** → queue builds delivery variants. Use `--force` regenerate when enabling or changing watermark/`customer_api` (or other delivery settings) for images that were already uploaded.
+Use `--force` after enabling profiles or changing watermark settings.
 
-Enable optional features in the consuming app via `config/media.php` (publish or merge overrides), for example:
+App override example (enable customer API + watermark from **app** storage):
 
 ```php
 return array_replace_recursive(require base_path('vendor/moox/media/config/media.php'), [
@@ -157,28 +194,55 @@ return array_replace_recursive(require base_path('vendor/moox/media/config/media
         'profiles' => [
             'customer_api' => [
                 'enabled' => true,
-                'watermark' => true,
-                'watermark_path' => storage_path('app/media-watermark.png'),
+                'watermark' => [
+                    'enabled' => true,
+                    'path' => resource_path('watermarks/signet.png'),
+                ],
             ],
+            // Optional custom profile:
+            // 'og' => [
+            //     'enabled' => true,
+            //     'mode' => 'single',
+            //     'formats' => ['jpg'],
+            //     'default_width' => 1200,
+            //     'svg' => 'skip',
+            // ],
         ],
     ],
 ]);
 ```
 
-Admin edit/view lists every variant with an open link. API `MediaItemResource` exposes `picture`, `delivery.web|mail`, and `delivery.customer_api` only when enabled.
+Admin lists every variant. API `delivery` includes every **enabled** profile (`responsive` → picture payload, `single` → `{ url }`).
 
 A queue worker must be running while `media-library.queue_conversions_by_default` is true (admin sizes are `nonQueued`; delivery variants are queued).
 
-Until delivery conversions finish, `<x-media::picture>` / API payloads may fall back to the original file (except `customer_api`, which never falls back to the original).
+Until conversions finish, payloads may fall back to the original when `fallback_to_original` is true (default for `web`/`mail`; false for `customer_api`).
 
 ### Security notes
 
-- **SVG:** all ingest paths (API, ListMedia upload, MediaPicker, MediaResource replace/edit) run through `MediaPostProcessor` → `SvgSanitizer` (`enshrined/svg-sanitize`, remote references removed). Prefer serving logos as SVG in `<img src>` (not inlined) so script context is limited.
-- **customer_api vs original:** When enabled, admin/picker payloads still include top-level `url` (original) for editors. External consumers should use only `delivery.customer_api.url`. If that field is `null`, do not fall back to `url`. SVGs get no `customer_api` conversion (when `skip_static` is enabled, records tagged `static_path` are skipped too).
+- **SVG:** all ingest paths run through `MediaPostProcessor` → `SvgSanitizer` (`enshrined/svg-sanitize`). Prefer logos as `<img src="…svg">` (not inlined).
+- **Protected profiles:** when `fallback_to_original` is false, never use top-level `url` for external consumers — only `delivery.{profile}.url`. With `skip_static`, records tagged `static_path` are skipped.
+
+### Rendering (Spatie Media Library + Moox profiles)
+
+Uses Spatie’s rendering API and extends it with delivery profiles:
+
+```blade
+{{-- Spatie-style conversion / original --}}
+{{ $media->img() }}
+{{ $media->img('thumb')->lazy()->attributes(['class' => 'rounded']) }}
+<x-media::img :media="$media" conversion="medium" class="rounded" lazy />
+
+{{-- Moox delivery profile (<picture> / same-size / mail / …) --}}
+{{ $media->img()->profile('web')->sizes('100vw')->alt('Hero') }}
+<x-media::picture :media="$media" profile="web" sizes="100vw" alt="Hero" />
+```
+
+Watermarks are applied via `Moox\Media\Support\MediaWatermark` (Spatie Image `watermark()`), only when a profile enables them and points at an **app** file path — never a package brand asset.
 
 ### Frontend handoff
 
-**Media provides:** delivery profiles, no-upscale rules, SVG sanitize + mail PNG, optional customer API URLs (+ optional watermark), `<x-media::picture profile="web|mail|customer_api">`, variant UI. Templates resolve media via upload/CMS/MediaPicker (`Media::find` / attached relations).
+**Media provides:** config-driven delivery profiles, Spatie `img()` rendering + profile HTML, no-upscale rules, SVG sanitize + optional mail PNG, optional watermarks (app path), `<x-media::img>` / `<x-media::picture>`, variant UI. Resolve media via upload/CMS/MediaPicker (`Media::find` / relations).
 
 ## Using media on pages (all options)
 

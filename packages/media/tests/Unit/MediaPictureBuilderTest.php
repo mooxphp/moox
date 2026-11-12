@@ -18,8 +18,35 @@ beforeEach(function (): void {
             'large' => ['width' => 1024],
         ],
         'media.delivery.extra_widths' => [480, 960, 1440],
-        'media.delivery.profiles.web.formats' => ['avif', 'webp', 'original'],
-        'media.delivery.profiles.web.min_responsive_width' => 150,
+        'media.delivery.profiles' => [
+            'web' => [
+                'enabled' => true,
+                'mode' => 'responsive',
+                'formats' => ['avif', 'webp', 'original'],
+                'upscale' => false,
+                'min_responsive_width' => 150,
+                'fallback_to_original' => true,
+                'svg' => 'original',
+            ],
+            'mail' => [
+                'enabled' => true,
+                'mode' => 'single',
+                'formats' => ['jpg', 'png'],
+                'upscale' => false,
+                'default_width' => 600,
+                'fallback_to_original' => true,
+                'svg' => 'png',
+            ],
+            'customer_api' => [
+                'enabled' => false,
+                'mode' => 'single',
+                'formats' => ['jpg', 'png'],
+                'upscale' => false,
+                'default_width' => 1024,
+                'fallback_to_original' => false,
+                'svg' => 'skip',
+            ],
+        ],
     ]);
 });
 
@@ -107,4 +134,31 @@ it('uses mail conversion url for mail profile', function (): void {
         ->and($picture['img']['src'])->toContain('mail')
         ->and($picture['img']['srcset'])->toBeNull()
         ->and($picture['sources'])->toBe([]);
+});
+
+it('serves a custom single profile without falling back to original', function (): void {
+    config([
+        'media.delivery.profiles.og' => [
+            'enabled' => true,
+            'mode' => 'single',
+            'formats' => ['jpg'],
+            'default_width' => 1200,
+            'fallback_to_original' => false,
+            'svg' => 'skip',
+        ],
+    ]);
+
+    $media = Mockery::mock(Media::class)->makePartial();
+    $media->file_name = 'hero.jpg';
+    $media->mime_type = 'image/jpeg';
+    $media->shouldReceive('loadMissing')->andReturnSelf();
+    $media->shouldReceive('getCustomProperty')->with('dimensions')->andReturn(['width' => 1600, 'height' => 900]);
+    $media->shouldReceive('hasGeneratedConversion')->andReturn(false);
+    $media->shouldReceive('getUrl')->andReturn('https://example.test/media/hero.jpg');
+
+    $picture = app(MediaPictureBuilder::class)->toArray($media, alt: 'OG', profile: 'og');
+
+    expect($picture['profile'])->toBe('og')
+        ->and($picture['mode'])->toBe('img')
+        ->and($picture['img']['src'])->toBeNull();
 });

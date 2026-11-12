@@ -9,6 +9,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Callout;
@@ -23,6 +24,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -738,10 +740,59 @@ class MediaResource extends BaseResource
                             return redirect(static::getUrl('index'));
                         }
                     }),
+
+                Action::make('regenerateDeliverySelected')
+                    ->label(function ($livewire) {
+                        $count = count($livewire->selected);
+
+                        return $count > 0
+                            ? __('media::fields.regenerate_delivery')." ({$count})"
+                            : __('media::fields.regenerate_delivery');
+                    })
+                    ->icon('heroicon-m-arrow-path')
+                    ->color('gray')
+                    ->schema([
+                        Toggle::make('force')
+                            ->label(__('media::fields.regenerate_delivery_force'))
+                            ->helperText(__('media::fields.regenerate_delivery_force_help'))
+                            ->default(false),
+                    ])
+                    ->modalHeading(__('media::fields.regenerate_delivery'))
+                    ->modalSubmitActionLabel(__('media::fields.regenerate_delivery_submit'))
+                    ->modalCancelActionLabel(__('media::fields.cancel'))
+                    ->visible(fn ($livewire) => $livewire->isGridView && $livewire->isSelecting && ! empty($livewire->selected))
+                    ->action(function (array $data, $livewire): void {
+                        static::regenerateDeliveryForIds(
+                            array_map('strval', $livewire->selected),
+                            (bool) ($data['force'] ?? false),
+                        );
+                    }),
             ])
             ->bulkActions([
                 static::getAssignScopeBulkAction()
                     ->visible(fn ($livewire) => ! (property_exists($livewire, 'isGridView') ? $livewire->isGridView : false)),
+                BulkAction::make('regenerateDelivery')
+                    ->label(__('media::fields.regenerate_delivery'))
+                    ->icon('heroicon-m-arrow-path')
+                    ->color('gray')
+                    ->schema([
+                        Toggle::make('force')
+                            ->label(__('media::fields.regenerate_delivery_force'))
+                            ->helperText(__('media::fields.regenerate_delivery_force_help'))
+                            ->default(false),
+                    ])
+                    ->modalHeading(function (Collection $records) {
+                        return __('media::fields.regenerate_delivery').' ('.$records->count().' '.trans_choice('media::fields.file|files', $records->count()).')';
+                    })
+                    ->modalSubmitActionLabel(__('media::fields.regenerate_delivery_submit'))
+                    ->modalCancelActionLabel(__('media::fields.cancel'))
+                    ->visible(fn ($livewire) => ! (property_exists($livewire, 'isGridView') ? $livewire->isGridView : false))
+                    ->action(function (Collection $records, array $data): void {
+                        static::regenerateDeliveryForIds(
+                            $records->modelKeys(),
+                            (bool) ($data['force'] ?? false),
+                        );
+                    }),
                 BulkAction::make('delete')
                     ->label(__('media::fields.delete_selected'))
                     ->icon('heroicon-m-trash')
@@ -1107,6 +1158,37 @@ class MediaResource extends BaseResource
     public static function getNavigationBadge(): ?string
     {
         return static::resolveScopedNavigationBadge();
+    }
+
+    /**
+     * @param  list<int|string>  $ids
+     */
+    protected static function regenerateDeliveryForIds(array $ids, bool $force = false): void
+    {
+        $filtered = array_values(array_filter(
+            array_map(static fn (int|string $id): string => (string) $id, $ids),
+            static fn (string $id): bool => $id !== '',
+        ));
+
+        if ($filtered === []) {
+            return;
+        }
+
+        $parameters = [
+            '--ids' => $filtered,
+        ];
+
+        if ($force) {
+            $parameters['--force'] = true;
+        }
+
+        Artisan::call('media:regenerate-delivery', $parameters);
+
+        Notification::make()
+            ->success()
+            ->title(__('media::fields.regenerate_delivery_queued'))
+            ->body(trans_choice('media::fields.regenerate_delivery_queued_body', count($filtered), ['count' => count($filtered)]))
+            ->send();
     }
 
     protected static function displayLocaleLabel(mixed $livewire): string

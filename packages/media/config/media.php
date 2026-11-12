@@ -52,16 +52,30 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Delivery (web / mail / customer_api)
+    | Delivery profiles
     |--------------------------------------------------------------------------
     |
-    | WordPress-compatible size names are canonical. Responsive srcsets use
-    | those widths (and optional extra_widths) only when <= original width and
-    | >= profiles.web.min_responsive_width (default 480).
-    | SVG: web = original; mail = PNG.
-    | customer_api is opt-in (off by default) for apps that expose media to
-    | external consumers; enable/watermark in the app config/media.php.
-    | Optimizer / queue / image driver: config/media-library.php.
+    | Each key under profiles is a delivery profile apps can extend or replace.
+    | Package ships web / mail / customer_api defaults only — no brand assets.
+    |
+    | Per profile:
+    | - enabled (bool, default true)
+    | - mode: responsive | single
+    | - formats: e.g. avif, webp, jpg, png, original
+    | - upscale (bool)
+    | - min_responsive_width (responsive)
+    | - widths (responsive, optional) — else global extra_widths
+    | - default_width (single)
+    | - fallback_to_original (bool)
+    | - svg: original | png | skip
+    | - skip_static (bool) — skip media with custom property static_path
+    | - watermark: { enabled, path, opacity, width_percent, padding_percent, position, fit }
+    |   Applied via MediaWatermark (Spatie Image). path = app file only (base_path relative OK).
+    |
+    | Responsive: originals >= min_responsive_width get a width ladder (no upscale).
+    | Smaller rasters get same-size modern formats only (no multi-width srcset).
+    | skip_mime_types (default image/gif) skip delivery profiles (original kept).
+    | Optimizer / queue / driver: config/media-library.php.
     |
     */
 
@@ -72,7 +86,7 @@ return [
             'medium_large' => ['width' => 768],
             'large' => ['width' => 1024],
         ],
-        // Optional extra responsive breakpoints beyond WP sizes (still no upscale).
+        // Fallback breakpoints when a profile does not set its own widths.
         'extra_widths' => [480, 960, 1440],
         'quality' => [
             'jpg' => 82,
@@ -87,37 +101,49 @@ return [
             'image/avif',
             'image/gif',
         ],
+        // No AVIF/WebP/mail/customer_api pipelines for these (e.g. animated GIF).
+        'skip_mime_types' => [
+            'image/gif',
+        ],
         'profiles' => [
             'web' => [
+                'enabled' => true,
+                'mode' => 'responsive',
                 'formats' => ['avif', 'webp', 'original'],
-                'responsive' => true,
                 'upscale' => false,
-                // Admin sizes 150/300 stay available; web srcsets start at 480.
                 'min_responsive_width' => 480,
+                // 'widths' => [480, 960, 1440], // optional; defaults to extra_widths
+                'fallback_to_original' => true,
+                'svg' => 'original',
             ],
             'mail' => [
+                'enabled' => true,
+                'mode' => 'single',
                 'formats' => ['jpg', 'png'],
-                'responsive' => false,
                 'upscale' => false,
                 'default_width' => 600,
-                'svg_to_png' => true,
+                'fallback_to_original' => true,
+                'svg' => 'png',
             ],
             'customer_api' => [
-                // Opt-in: most apps only need web + mail. Enable in the app config.
+                // Opt-in: enable + watermark path in the consuming app config.
                 'enabled' => false,
+                'mode' => 'single',
                 'formats' => ['jpg', 'png'],
-                'responsive' => false,
                 'upscale' => false,
                 'default_width' => 1024,
-                // Skip assets tagged with custom property static_path.
+                'fallback_to_original' => false,
+                'svg' => 'skip',
                 'skip_static' => true,
-                // Opt-in watermark; applied only when watermark_path resolves to a file.
-                'watermark' => false,
-                'watermark_opacity' => 40,
-                'watermark_width_percent' => 15,
-                'watermark_padding_percent' => 3,
-                // Absolute path, or path relative to base_path().
-                'watermark_path' => null,
+                'watermark' => [
+                    'enabled' => false,
+                    'path' => null, // app file only (absolute or relative to base_path)
+                    'opacity' => 40,
+                    'width_percent' => 15,
+                    'padding_percent' => 3,
+                    'position' => 'bottom_right', // Spatie AlignPosition name
+                    'fit' => 'contain',
+                ],
             ],
         ],
     ],

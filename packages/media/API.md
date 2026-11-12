@@ -87,17 +87,20 @@ Standard Laravel pagination (resource collection) with:
 - **`name`** (string|null)
 - **`title`** (string|null)
 - **`alt`** (string|null)
-- **`picture`** (object): web delivery payload for `<picture>` (see below)
-- **`delivery`** (object): profile payloads
-  - **`web`**: same shape as `picture`
-  - **`mail`**: `{ "url": "…/mail…" }` (single raster; SVG → `mail-png`)
-  - **`customer_api`** (optional): `{ "url": "…/customer_api…" }` — only present when `media.delivery.profiles.customer_api.enabled` is true; URL may be `null` while queued or when the asset is skipped (e.g. `static_path` / SVG)
+- **`picture`** (object): default web delivery payload for `<picture>` (see below)
+- **`delivery`** (object): one entry per **enabled** profile from `media.delivery.profiles`
+  - **responsive** profiles (e.g. `web`): same shape as `picture`
+  - **single** profiles (e.g. `mail`, `customer_api`): `{ "url": "…" }` (`null` while queued / skipped)
 - **`variants`** (array): conversion catalog (admin/debug; may include original)
 - **`collection`** (object|null): `{ id, name }`
 - **`created_at`** (string|null)
 - **`updated_at`** (string|null)
 
-**When using `customer_api` for external consumers:** do not use top-level `url` or `variants[].url` for originals. Use only `delivery.customer_api.url`. If that field is missing or `null`, do **not** fall back to `url`.
+**Protected profiles** (`fallback_to_original=false`, typically `customer_api`): do not use top-level `url` for external consumers. Use only `delivery.{profile}.url`. If missing/`null`, do **not** fall back to `url`.
+
+### Blade rendering (Spatie + Moox)
+
+`$media->img()` returns Moox `HtmlableMedia` (Spatie rendering API). Optional `->profile('web'|'mail'|…)` builds delivery HTML via `MediaPictureBuilder`. Watermarks are applied only when a profile enables `MediaWatermark` with an app-owned file path.
 
 ##### `picture` / `delivery.web`
 
@@ -120,7 +123,7 @@ Standard Laravel pagination (resource collection) with:
 }
 ```
 
-Missing conversions are omitted (`sources` may be empty while conversions are still queued). Web srcsets start at `min_responsive_width` (default 480).
+Missing conversions are omitted (`sources` may be empty while conversions are still queued). Web srcsets start at `min_responsive_width` (default 480). Sources smaller than that min get same-size modern formats only (no multi-width srcset). MIME types in `delivery.skip_mime_types` (default `image/gif`) have no delivery profiles.
 
 #### Error codes
 
