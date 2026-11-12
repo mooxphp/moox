@@ -27,7 +27,8 @@ final class MediaWatermark
         public readonly int $widthPercent = 15,
         public readonly int $opacity = 40,
         public readonly Fit $fit = Fit::Contain,
-    ) {}
+    ) {
+    }
 
     /**
      * Build from a delivery profile config, or null when watermark is off / path missing.
