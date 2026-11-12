@@ -30,22 +30,36 @@ final class MediaVariantCatalog
         ];
 
         if (MediaDeliveryConversions::isSvg($media)) {
-            // SVGs: mail gets a rasterized PNG; customer_api is product-raster only.
-            $variants[] = $this->conversionRow(
-                $media,
-                MediaDeliveryConversions::MAIL_PNG,
-                'Mail PNG',
-                MediaDeliveryConversions::PROFILE_MAIL,
-            );
+            foreach (MediaDeliveryConversions::enabledProfileNames() as $profile) {
+                if (! MediaDeliveryConversions::shouldApplyProfile($media, $profile)) {
+                    continue;
+                }
+
+                if (MediaDeliveryConversions::profileSvgMode($profile) !== 'png') {
+                    continue;
+                }
+
+                $variants[] = $this->conversionRow(
+                    $media,
+                    MediaDeliveryConversions::svgConversionName($profile),
+                    sprintf('%s PNG', ucfirst(str_replace('_', ' ', $profile))),
+                    $profile,
+                );
+            }
 
             return $variants;
         }
 
         foreach (MediaDeliveryConversions::sizes() as $name => $definition) {
             $width = is_array($definition) ? (int) ($definition['width'] ?? 0) : 0;
-            // No-upscale: do not list sizes that will never be generated for this file.
             if ($width > 0 && ! MediaDeliveryConversions::canProduceWidth($media, $width)) {
-                continue;
+                $originalWidth = MediaDeliveryConversions::originalWidth($media);
+                if ($originalWidth === null && $width > 300) {
+                    continue;
+                }
+                if ($originalWidth !== null) {
+                    continue;
+                }
             }
 
             $variants[] = $this->conversionRow(
@@ -56,35 +70,39 @@ final class MediaVariantCatalog
             );
         }
 
-        foreach (MediaDeliveryConversions::applicableResponsiveWidths($media) as $width) {
-            foreach (MediaDeliveryConversions::webFormats() as $format) {
-                if ($format === 'original') {
-                    continue;
-                }
-
-                $key = MediaDeliveryConversions::conversionName(MediaDeliveryConversions::PROFILE_WEB, $width, $format);
-                $variants[] = $this->conversionRow(
-                    $media,
-                    $key,
-                    sprintf('Web %spx · %s', $width, strtoupper($format)),
-                    MediaDeliveryConversions::PROFILE_WEB,
-                );
-            }
+        // GIF / skipped MIME: admin sizes only.
+        if (! MediaDeliveryConversions::isDeliveryEligible($media)) {
+            return $variants;
         }
 
-        $variants[] = $this->conversionRow(
-            $media,
-            MediaDeliveryConversions::MAIL_RASTER,
-            'Mail',
-            MediaDeliveryConversions::PROFILE_MAIL,
-        );
+        foreach (MediaDeliveryConversions::enabledProfileNames() as $profile) {
+            if (! MediaDeliveryConversions::shouldApplyProfile($media, $profile)) {
+                continue;
+            }
 
-        if (MediaDeliveryConversions::shouldProtectForCustomerApi($media)) {
+            if (MediaDeliveryConversions::profileMode($profile) === MediaDeliveryConversions::MODE_RESPONSIVE) {
+                $widths = MediaDeliveryConversions::applicableResponsiveWidths($media, $profile);
+                $sameSize = MediaDeliveryConversions::needsSameSizeDelivery($media, $profile);
+
+                foreach ($widths as $width) {
+                    foreach (MediaDeliveryConversions::rasterFormatsForProfile($profile) as $format) {
+                        $key = MediaDeliveryConversions::conversionName($profile, $width, $format);
+                        $label = $sameSize
+                            ? sprintf('%s same-size %spx · %s', ucfirst($profile), $width, strtoupper($format))
+                            : sprintf('%s %spx · %s', ucfirst($profile), $width, strtoupper($format));
+
+                        $variants[] = $this->conversionRow($media, $key, $label, $profile);
+                    }
+                }
+
+                continue;
+            }
+
             $variants[] = $this->conversionRow(
                 $media,
-                MediaDeliveryConversions::CUSTOMER_API,
-                'Customer API',
-                MediaDeliveryConversions::PROFILE_CUSTOMER_API,
+                MediaDeliveryConversions::singleConversionName($profile),
+                ucfirst(str_replace('_', ' ', $profile)),
+                $profile,
             );
         }
 

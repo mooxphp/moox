@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\DB;
 use Moox\Core\Models\Concerns\HasScopedModel;
 use Moox\Core\Support\Scopes\ScopeValue;
+use Moox\Media\Support\HtmlableMedia;
 use Moox\Media\Support\MediaDeliveryConversions;
 use Moox\Media\Support\MediaLocaleResolver;
 use Moox\Media\Traits\HasMediaUsable;
@@ -68,9 +69,31 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
         return $this->belongsTo(MediaCollection::class, 'media_collection_id');
     }
 
+    /**
+     * Spatie Media Library rendering entrypoint (optionally with Moox delivery profile).
+     *
+     * @see https://spatie.be/docs/laravel-medialibrary/v11/advanced-usage/rendering-media
+     *
+     * @param  string|array<string, mixed>  $extraAttributes
+     */
+    public function img(string $conversionName = '', $extraAttributes = []): HtmlableMedia
+    {
+        $htmlableMedia = new HtmlableMedia($this);
+
+        if ($conversionName !== '') {
+            $htmlableMedia->conversion($conversionName);
+        }
+
+        if (is_array($extraAttributes) && $extraAttributes !== []) {
+            $htmlableMedia->attributes($extraAttributes);
+        }
+
+        return $htmlableMedia;
+    }
+
     public function registerMediaConversions(?BaseMedia $media = null): void
     {
-        // WP-compatible sizes + web/mail/customer_api delivery (no upscale).
+        // WP-compatible sizes + config-driven delivery profiles (no upscale by default).
         // Legacy alias: preview === medium (kept for existing admin/API clients).
         MediaDeliveryConversions::register($this, $media);
 

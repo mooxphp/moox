@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Media\Support;
 
-use Spatie\Image\Enums\AlignPosition;
 use Spatie\Image\Enums\Fit;
-use Spatie\Image\Enums\Unit;
 use Spatie\MediaLibrary\Conversions\Conversion;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -25,12 +23,16 @@ final class MediaDeliveryConversions
 
     public const CUSTOMER_API = 'customer_api';
 
+    public const MODE_RESPONSIVE = 'responsive';
+
+    public const MODE_SINGLE = 'single';
+
     public const MIN_RESPONSIVE_WIDTH = 150;
 
     public static function register(HasMedia $model, ?Media $media = null): void
     {
         if ($media !== null && self::isSvg($media)) {
-            self::registerSvgConversions($model);
+            self::registerSvgConversions($model, $media);
 
             return;
         }
@@ -40,9 +42,28 @@ final class MediaDeliveryConversions
         }
 
         self::registerRasterAdminSizes($model, $media);
-        self::registerRasterWebConversions($model, $media);
-        self::registerRasterMailConversion($model, $media);
-        self::registerCustomerApiConversion($model, $media);
+
+        if ($media !== null && ! self::isDeliveryEligible($media)) {
+            return;
+        }
+
+        foreach (self::enabledProfileNames() as $profile) {
+            if (! self::shouldApplyProfile($media, $profile)) {
+                continue;
+            }
+
+            if (self::profileMode($profile) === self::MODE_RESPONSIVE) {
+                self::registerResponsiveProfile($model, $media, $profile);
+
+                continue;
+            }
+
+            if ($media !== null && ! self::isDeliveryEligible($media)) {
+                continue;
+            }
+
+            self::registerSingleProfile($model, $media, $profile);
+        }
     }
 
     public static function isSvg(Media $media): bool
@@ -56,6 +77,25 @@ final class MediaDeliveryConversions
         $mime = strtolower((string) ($media->mime_type ?? ''));
 
         return in_array($mime, self::rasterMimeTypes(), true);
+    }
+
+    /**
+     * Whether delivery profiles (responsive/single/watermark) should run for this file.
+     * Admin WP sizes still apply for rasters even when delivery is skipped (e.g. GIF).
+     */
+    public static function isDeliveryEligible(Media $media): bool
+    {
+        if (self::isSvg($media)) {
+            return true;
+        }
+
+        if (! self::isRaster($media)) {
+            return false;
+        }
+
+        $mime = strtolower((string) ($media->mime_type ?? ''));
+
+        return ! in_array($mime, self::skipMimeTypes(), true);
     }
 
     public static function supports(Media $media): bool
@@ -103,28 +143,161 @@ final class MediaDeliveryConversions
     }
 
     /**
-     * @return list<int>
+     * @return array<string, array<string, mixed>>
      */
-    public static function responsiveWidths(): array
+    public static function profiles(): array
     {
-        $widths = [];
+        $profiles = config('media.delivery.profiles', []);
 
-        foreach (self::sizes() as $definition) {
-            if (! is_array($definition) || ! isset($definition['width'])) {
+        return is_array($profiles) ? $profiles : [];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function enabledProfileNames(): array
+    {
+        $names = [];
+
+        foreach (self::profiles() as $name => $definition) {
+            if (! is_string($name) || $name === '' || ! is_array($definition)) {
                 continue;
             }
 
-            $width = (int) $definition['width'];
-            if ($width >= self::minResponsiveWidth()) {
-                $widths[] = $width;
+            if (self::profileEnabled($name)) {
+                $names[] = $name;
             }
         }
 
-        $extra = config('media.delivery.extra_widths', []);
-        if (is_array($extra)) {
-            foreach ($extra as $width) {
+        return $names;
+    }
+
+    public static function profileExists(string $profile): bool
+    {
+        $definition = self::profiles()[$profile] ?? null;
+
+        return is_array($definition);
+    }
+
+    public static function profileEnabled(string $profile): bool
+    {
+        $definition = self::profiles()[$profile] ?? null;
+        if (! is_array($definition)) {
+            return false;
+        }
+
+        return (bool) ($definition['enabled'] ?? true);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function profileConfig(string $profile): array
+    {
+        $definition = self::profiles()[$profile] ?? null;
+
+        return is_array($definition) ? $definition : [];
+    }
+
+    public static function profileMode(string $profile): string
+    {
+        $definition = self::profileConfig($profile);
+
+        if (isset($definition['mode']) && is_string($definition['mode'])) {
+            return $definition['mode'] === self::MODE_SINGLE ? self::MODE_SINGLE : self::MODE_RESPONSIVE;
+        }
+
+        if (array_key_exists('responsive', $definition)) {
+            return (bool) $definition['responsive'] ? self::MODE_RESPONSIVE : self::MODE_SINGLE;
+        }
+
+        return self::MODE_RESPONSIVE;
+    }
+
+    public static function profileSvgMode(string $profile): string
+    {
+        $definition = self::profileConfig($profile);
+
+        if (isset($definition['svg']) && is_string($definition['svg'])) {
+            return match ($definition['svg']) {
+                'png' => 'png',
+                'skip' => 'skip',
+                default => 'original',
+            };
+        }
+
+        if ((bool) ($definition['svg_to_png'] ?? false)) {
+            return 'png';
+        }
+
+        return 'original';
+    }
+
+    public static function profileAllowsUpscale(string $profile): bool
+    {
+        return (bool) (self::profileConfig($profile)['upscale'] ?? false);
+    }
+
+    public static function profileFallbackToOriginal(string $profile): bool
+    {
+        $definition = self::profileConfig($profile);
+
+        if (array_key_exists('fallback_to_original', $definition)) {
+            return (bool) $definition['fallback_to_original'];
+        }
+
+        return $profile !== self::PROFILE_CUSTOMER_API;
+    }
+
+    public static function singleConversionName(string $profile): string
+    {
+        return $profile;
+    }
+
+    public static function svgConversionName(string $profile): string
+    {
+        return $profile.'-png';
+    }
+
+    /**
+     * Configured breakpoint widths for a responsive profile (before no-upscale filter).
+     *
+     * @return list<int>
+     */
+    public static function profileWidths(?string $profile = null): array
+    {
+        $profile ??= self::PROFILE_WEB;
+        $definition = self::profileConfig($profile);
+        $configured = $definition['widths'] ?? null;
+
+        if (is_array($configured) && $configured !== []) {
+            $widths = [];
+            foreach ($configured as $width) {
                 $widths[] = (int) $width;
             }
+
+            $widths = array_values(array_unique(array_filter($widths, static fn (int $w): bool => $w > 0)));
+            sort($widths);
+
+            return $widths;
+        }
+
+        return self::defaultExtraWidths();
+    }
+
+    /**
+     * @return list<int>
+     */
+    public static function defaultExtraWidths(): array
+    {
+        $extra = config('media.delivery.extra_widths', [480, 960, 1440]);
+        if (! is_array($extra)) {
+            return [480, 960, 1440];
+        }
+
+        $widths = [];
+        foreach ($extra as $width) {
+            $widths[] = (int) $width;
         }
 
         $widths = array_values(array_unique(array_filter($widths, static fn (int $w): bool => $w > 0)));
@@ -133,9 +306,48 @@ final class MediaDeliveryConversions
         return $widths;
     }
 
-    public static function minResponsiveWidth(): int
+    /**
+     * @return list<int>
+     */
+    public static function responsiveWidths(?string $profile = null): array
     {
-        return (int) config('media.delivery.profiles.web.min_responsive_width', self::MIN_RESPONSIVE_WIDTH);
+        $profile ??= self::PROFILE_WEB;
+        $min = self::minResponsiveWidth($profile);
+        $widths = [];
+
+        foreach (self::sizes() as $definition) {
+            if (! is_array($definition) || ! isset($definition['width'])) {
+                continue;
+            }
+
+            $width = (int) $definition['width'];
+            if ($width >= $min) {
+                $widths[] = $width;
+            }
+        }
+
+        foreach (self::profileWidths($profile) as $width) {
+            if ($width >= $min) {
+                $widths[] = $width;
+            }
+        }
+
+        $widths = array_values(array_unique(array_filter($widths, static fn (int $w): bool => $w > 0 && $w >= $min)));
+        sort($widths);
+
+        return $widths;
+    }
+
+    public static function minResponsiveWidth(?string $profile = null): int
+    {
+        $profile ??= self::PROFILE_WEB;
+        $configured = self::profileConfig($profile)['min_responsive_width'] ?? null;
+
+        if (is_int($configured) || is_string($configured)) {
+            return max(1, (int) $configured);
+        }
+
+        return self::MIN_RESPONSIVE_WIDTH;
     }
 
     public static function canProduceWidth(?Media $media, int $targetWidth, bool $allowUpscale = false): bool
@@ -145,33 +357,84 @@ final class MediaDeliveryConversions
         }
 
         $originalWidth = self::originalWidth($media);
+        // Known media without dimensions: do not guess a ladder (avoids accidental upscale).
         if ($originalWidth === null) {
-            return true;
+            return false;
         }
 
         return $originalWidth >= $targetWidth;
     }
 
+    public static function needsSameSizeDelivery(Media $media, ?string $profile = null): bool
+    {
+        $profile ??= self::PROFILE_WEB;
+
+        if (self::profileMode($profile) !== self::MODE_RESPONSIVE) {
+            return false;
+        }
+
+        if (! self::isDeliveryEligible($media) || self::isSvg($media)) {
+            return false;
+        }
+
+        $originalWidth = self::originalWidth($media);
+        if ($originalWidth === null) {
+            return false;
+        }
+
+        return $originalWidth < self::minResponsiveWidth($profile);
+    }
+
     /**
-     * Widths that should appear in a web srcset for this media (no upscale, skip tiny sources).
+     * Widths that should appear in a responsive/same-size delivery for this media.
      *
      * @return list<int>
      */
-    public static function applicableResponsiveWidths(Media $media): array
+    public static function applicableResponsiveWidths(Media $media, ?string $profile = null): array
     {
-        $originalWidth = self::originalWidth($media);
-        if ($originalWidth !== null && $originalWidth < self::minResponsiveWidth()) {
+        $profile ??= self::PROFILE_WEB;
+
+        if (! self::isDeliveryEligible($media)) {
             return [];
         }
 
+        if (self::needsSameSizeDelivery($media, $profile)) {
+            $originalWidth = self::originalWidth($media);
+
+            return $originalWidth !== null && $originalWidth > 0 ? [$originalWidth] : [];
+        }
+
+        $originalWidth = self::originalWidth($media);
+        $min = self::minResponsiveWidth($profile);
+        if ($originalWidth !== null && $originalWidth < $min) {
+            return [];
+        }
+
+        // Unknown dimensions on a concrete media: no ladder.
+        if ($originalWidth === null) {
+            return [];
+        }
+
+        $allowUpscale = self::profileAllowsUpscale($profile);
         $widths = [];
-        foreach (self::responsiveWidths() as $width) {
-            if (self::canProduceWidth($media, $width, allowUpscale: false)) {
+        foreach (self::responsiveWidths($profile) as $width) {
+            if (self::canProduceWidth($media, $width, allowUpscale: $allowUpscale)) {
                 $widths[] = $width;
             }
         }
 
         return $widths;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function rasterFormatsForProfile(string $profile): array
+    {
+        return array_values(array_filter(
+            self::formatsForProfile($profile),
+            static fn (string $format): bool => $format !== 'original',
+        ));
     }
 
     public static function conversionName(string $profile, int|string $sizeOrWidth, string $format): string
@@ -180,26 +443,38 @@ final class MediaDeliveryConversions
     }
 
     /**
+     * @param  list<string>|null  $profiles
      * @return list<string>
      */
-    public static function allConversionNames(): array
+    public static function allConversionNames(?array $profiles = null): array
     {
-        $names = [
-            self::MAIL_PNG,
-            self::MAIL_RASTER,
-            self::CUSTOMER_API,
-        ];
+        $names = [];
+        $profileNames = $profiles ?? self::enabledProfileNames();
 
-        foreach (self::sizes() as $name => $definition) {
-            $names[] = $name;
+        if ($profiles === null) {
+            foreach (self::sizes() as $name => $definition) {
+                $names[] = (string) $name;
+            }
         }
 
-        foreach (self::responsiveWidths() as $width) {
-            foreach (self::webFormats() as $format) {
-                if ($format === 'original') {
-                    continue;
+        foreach ($profileNames as $profile) {
+            if (! is_string($profile) || $profile === '' || ! self::profileEnabled($profile)) {
+                continue;
+            }
+
+            if (self::profileMode($profile) === self::MODE_RESPONSIVE) {
+                foreach (self::responsiveWidths($profile) as $width) {
+                    foreach (self::rasterFormatsForProfile($profile) as $format) {
+                        $names[] = self::conversionName($profile, $width, $format);
+                    }
                 }
-                $names[] = self::conversionName(self::PROFILE_WEB, $width, $format);
+
+                continue;
+            }
+
+            $names[] = self::singleConversionName($profile);
+            if (self::profileSvgMode($profile) === 'png') {
+                $names[] = self::svgConversionName($profile);
             }
         }
 
@@ -219,7 +494,7 @@ final class MediaDeliveryConversions
      */
     public static function formatsForProfile(string $profile): array
     {
-        $formats = config("media.delivery.profiles.{$profile}.formats", ['avif', 'webp', 'jpg']);
+        $formats = self::profileConfig($profile)['formats'] ?? ['avif', 'webp', 'jpg'];
 
         if (! is_array($formats)) {
             return ['avif', 'webp', 'jpg'];
@@ -255,7 +530,27 @@ final class MediaDeliveryConversions
         $normalized = [];
         foreach ($types as $type) {
             if (is_string($type) && $type !== '') {
-                $normalized[] = $type;
+                $normalized[] = strtolower($type);
+            }
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function skipMimeTypes(): array
+    {
+        $types = config('media.delivery.skip_mime_types', ['image/gif']);
+        if (! is_array($types)) {
+            return ['image/gif'];
+        }
+
+        $normalized = [];
+        foreach ($types as $type) {
+            if (is_string($type) && $type !== '') {
+                $normalized[] = strtolower($type);
             }
         }
 
@@ -279,9 +574,13 @@ final class MediaDeliveryConversions
         return (int) $quality;
     }
 
-    public static function watermarkPath(): ?string
+    public static function watermarkPath(?string $profile = null): ?string
     {
-        $configured = config('media.delivery.profiles.customer_api.watermark_path');
+        $profile ??= self::PROFILE_CUSTOMER_API;
+        $definition = self::profileConfig($profile);
+        $watermark = is_array($definition['watermark'] ?? null) ? $definition['watermark'] : [];
+
+        $configured = $watermark['path'] ?? $definition['watermark_path'] ?? null;
         if (! is_string($configured) || $configured === '') {
             return null;
         }
@@ -294,18 +593,75 @@ final class MediaDeliveryConversions
         return is_file($path) ? $path : null;
     }
 
-    public static function customerApiEnabled(): bool
+    public static function watermarkEnabled(string $profile): bool
     {
-        return (bool) config('media.delivery.profiles.customer_api.enabled', false);
+        $definition = self::profileConfig($profile);
+        $watermark = $definition['watermark'] ?? null;
+
+        if (is_array($watermark) && array_key_exists('enabled', $watermark)) {
+            return (bool) $watermark['enabled'];
+        }
+
+        if (is_bool($watermark)) {
+            return $watermark;
+        }
+
+        return false;
     }
 
-    private static function registerSvgConversions(HasMedia $model): void
+    public static function customerApiEnabled(): bool
     {
-        /** @var Conversion $mail */
-        $mail = $model->addMediaConversion(self::MAIL_PNG);
-        $mail->format('png')->queued();
+        return self::profileEnabled(self::PROFILE_CUSTOMER_API);
+    }
 
-        // SVGs are brand/UI assets — customer API protection targets product rasters only.
+    public static function shouldProtectForCustomerApi(?Media $media): bool
+    {
+        return self::shouldApplyProfile($media, self::PROFILE_CUSTOMER_API);
+    }
+
+    public static function shouldApplyProfile(?Media $media, string $profile): bool
+    {
+        if (! self::profileEnabled($profile)) {
+            return false;
+        }
+
+        if ($media === null) {
+            return true;
+        }
+
+        if (! self::isDeliveryEligible($media) && ! self::isSvg($media)) {
+            return false;
+        }
+
+        if (self::isSvg($media)) {
+            return self::profileSvgMode($profile) !== 'skip';
+        }
+
+        $definition = self::profileConfig($profile);
+        if (! (bool) ($definition['skip_static'] ?? false)) {
+            return true;
+        }
+
+        $staticPath = $media->getCustomProperty('static_path');
+
+        return ! (is_string($staticPath) && $staticPath !== '');
+    }
+
+    private static function registerSvgConversions(HasMedia $model, Media $media): void
+    {
+        foreach (self::enabledProfileNames() as $profile) {
+            if (! self::shouldApplyProfile($media, $profile)) {
+                continue;
+            }
+
+            if (self::profileSvgMode($profile) !== 'png') {
+                continue;
+            }
+
+            /** @var Conversion $conversion */
+            $conversion = $model->addMediaConversion(self::svgConversionName($profile));
+            $conversion->format('png')->queued();
+        }
     }
 
     private static function registerRasterAdminSizes(HasMedia $model, ?Media $media): void
@@ -316,7 +672,12 @@ final class MediaDeliveryConversions
             }
 
             $width = (int) $definition['width'];
-            if (! self::canProduceWidth($media, $width)) {
+            if ($media !== null && self::originalWidth($media) === null) {
+                // Unknown dimensions: still offer small admin thumbs only.
+                if ($width > 300) {
+                    continue;
+                }
+            } elseif (! self::canProduceWidth($media, $width)) {
                 continue;
             }
 
@@ -345,142 +706,104 @@ final class MediaDeliveryConversions
         }
     }
 
-    private static function registerRasterWebConversions(HasMedia $model, ?Media $media): void
+    private static function registerResponsiveProfile(HasMedia $model, ?Media $media, string $profile): void
     {
-        $formats = array_values(array_filter(
-            self::webFormats(),
-            static fn (string $format): bool => $format !== 'original',
-        ));
+        $formats = self::rasterFormatsForProfile($profile);
 
-        foreach (self::responsiveWidths() as $width) {
-            if (! self::canProduceWidth($media, $width)) {
+        if ($media !== null && self::needsSameSizeDelivery($media, $profile)) {
+            self::registerSameSizeConversions($model, $media, $profile, $formats);
+
+            return;
+        }
+
+        // Concrete media with unknown dimensions: no responsive ladder.
+        if ($media !== null && self::originalWidth($media) === null) {
+            return;
+        }
+
+        $allowUpscale = self::profileAllowsUpscale($profile);
+
+        foreach (self::responsiveWidths($profile) as $width) {
+            if (! self::canProduceWidth($media, $width, allowUpscale: $allowUpscale)) {
                 continue;
             }
 
             foreach ($formats as $format) {
-                /** @var Conversion $conversion */
-                $conversion = $model->addMediaConversion(self::conversionName(self::PROFILE_WEB, $width, $format));
-                $conversion->width($width)->format($format)->queued();
-
-                $quality = self::qualityFor($format);
-                if ($quality !== null) {
-                    $conversion->quality($quality);
-                }
+                self::addRasterConversion($model, self::conversionName($profile, $width, $format), $width, $format);
             }
         }
     }
 
-    private static function registerRasterMailConversion(HasMedia $model, ?Media $media): void
-    {
-        $width = (int) config('media.delivery.profiles.mail.default_width', 600);
-        if (! self::canProduceWidth($media, $width)) {
-            $originalWidth = $media !== null ? self::originalWidth($media) : null;
-            $width = $originalWidth ?? $width;
-        }
-
-        $format = self::preferredMailFormat($media);
-
-        /** @var Conversion $conversion */
-        $conversion = $model->addMediaConversion(self::MAIL_RASTER);
-        $conversion->width(max(1, $width))->format($format)->queued();
-
-        $quality = self::qualityFor($format);
-        if ($quality !== null) {
-            $conversion->quality($quality);
-        }
-    }
-
-    private static function registerCustomerApiConversion(HasMedia $model, ?Media $media): void
-    {
-        if (! self::customerApiEnabled()) {
-            return;
-        }
-
-        if (! self::shouldProtectForCustomerApi($media)) {
-            return;
-        }
-
-        $width = (int) config('media.delivery.profiles.customer_api.default_width', 1024);
-        if (! self::canProduceWidth($media, $width)) {
-            $originalWidth = $media !== null ? self::originalWidth($media) : null;
-            $width = $originalWidth ?? $width;
-        }
-
-        $format = self::preferredMailFormat($media);
-
-        /** @var Conversion $conversion */
-        $conversion = $model->addMediaConversion(self::CUSTOMER_API);
-        $conversion->width(max(1, $width))->format($format)->queued();
-
-        if ((bool) config('media.delivery.profiles.customer_api.watermark', false)) {
-            self::applyWatermark($conversion);
-        }
-
-        $quality = self::qualityFor($format);
-        if ($quality !== null) {
-            $conversion->quality($quality);
-        }
-    }
-
     /**
-     * Whether this media should get a customer_api conversion when the profile is enabled.
-     * Static-site imports (custom property static_path) are skipped when skip_static is true.
+     * @param  list<string>  $formats
      */
-    public static function shouldProtectForCustomerApi(?Media $media): bool
+    private static function registerSameSizeConversions(HasMedia $model, Media $media, string $profile, array $formats): void
     {
-        if (! self::customerApiEnabled()) {
-            return false;
-        }
-
-        if ($media === null) {
-            return true;
-        }
-
-        if (self::isSvg($media)) {
-            return false;
-        }
-
-        if (! (bool) config('media.delivery.profiles.customer_api.skip_static', true)) {
-            return true;
-        }
-
-        $staticPath = $media->getCustomProperty('static_path');
-
-        return ! (is_string($staticPath) && $staticPath !== '');
-    }
-
-    private static function applyWatermark(Conversion $conversion): void
-    {
-        $watermarkPath = self::watermarkPath();
-        if ($watermarkPath === null) {
+        $width = self::originalWidth($media);
+        if ($width === null || $width < 1) {
             return;
         }
 
-        $padding = (int) config('media.delivery.profiles.customer_api.watermark_padding_percent', 3);
-
-        $conversion->watermark(
-            $watermarkPath,
-            AlignPosition::BottomRight,
-            $padding,
-            $padding,
-            Unit::Percent,
-            (int) config('media.delivery.profiles.customer_api.watermark_width_percent', 15),
-            Unit::Percent,
-            0,
-            Unit::Pixel,
-            Fit::Contain,
-            (int) config('media.delivery.profiles.customer_api.watermark_opacity', 40),
-        );
+        foreach ($formats as $format) {
+            self::addRasterConversion($model, self::conversionName($profile, $width, $format), $width, $format);
+        }
     }
 
-    private static function preferredMailFormat(?Media $media): string
+    private static function addRasterConversion(HasMedia $model, string $name, int $width, string $format): void
     {
-        $mime = strtolower((string) ($media?->mime_type ?? ''));
+        /** @var Conversion $conversion */
+        $conversion = $model->addMediaConversion($name);
+        $conversion->width($width)->format($format)->queued();
 
-        if ($mime === 'image/png' || str_contains($mime, 'png')) {
+        $quality = self::qualityFor($format);
+        if ($quality !== null) {
+            $conversion->quality($quality);
+        }
+    }
+
+    private static function registerSingleProfile(HasMedia $model, ?Media $media, string $profile): void
+    {
+        $definition = self::profileConfig($profile);
+        $width = (int) ($definition['default_width'] ?? 1024);
+        $allowUpscale = self::profileAllowsUpscale($profile);
+
+        if ($media !== null && self::originalWidth($media) === null) {
+            // Unknown size: still produce a single delivery at default width (downscale-safe for most files).
+        } elseif (! self::canProduceWidth($media, $width, allowUpscale: $allowUpscale)) {
+            $originalWidth = $media !== null ? self::originalWidth($media) : null;
+            $width = $originalWidth ?? $width;
+        }
+
+        $format = self::preferredSingleFormat($media, $profile);
+
+        /** @var Conversion $conversion */
+        $conversion = $model->addMediaConversion(self::singleConversionName($profile));
+        $conversion->width(max(1, $width))->format($format)->queued();
+
+        MediaWatermark::fromProfile($profile)?->applyToConversion($conversion);
+
+        $quality = self::qualityFor($format);
+        if ($quality !== null) {
+            $conversion->quality($quality);
+        }
+    }
+
+    private static function preferredSingleFormat(?Media $media, string $profile): string
+    {
+        $formats = array_values(array_filter(
+            self::formatsForProfile($profile),
+            static fn (string $format): bool => ! in_array($format, ['original', 'avif', 'webp'], true),
+        ));
+
+        $mime = strtolower((string) ($media?->mime_type ?? ''));
+        if (($mime === 'image/png' || str_contains($mime, 'png')) && in_array('png', $formats, true)) {
             return 'png';
         }
 
-        return 'jpg';
+        if (in_array('jpg', $formats, true)) {
+            return 'jpg';
+        }
+
+        return $formats[0] ?? 'jpg';
     }
 }

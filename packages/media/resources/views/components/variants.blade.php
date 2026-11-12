@@ -16,9 +16,12 @@
             </colgroup>
             <thead>
                 <tr class="text-gray-500 dark:text-gray-400">
-                    <th style="padding:0 1rem 0.5rem 0;font-weight:500;text-align:left;">{{ __('media::fields.variant') }}</th>
-                    <th style="padding:0 1rem 0.5rem 0;font-weight:500;text-align:left;">{{ __('media::fields.profile') }}</th>
-                    <th style="padding:0 1rem 0.5rem 0;font-weight:500;text-align:left;">{{ __('media::fields.status') }}</th>
+                    <th style="padding:0 1rem 0.5rem 0;font-weight:500;text-align:left;">{{ __('media::fields.variant') }}
+                    </th>
+                    <th style="padding:0 1rem 0.5rem 0;font-weight:500;text-align:left;">{{ __('media::fields.profile') }}
+                    </th>
+                    <th style="padding:0 1rem 0.5rem 0;font-weight:500;text-align:left;">{{ __('media::fields.status') }}
+                    </th>
                     <th style="padding:0 0 0.5rem 0;font-weight:500;text-align:left;">{{ __('media::fields.preview') }}</th>
                 </tr>
             </thead>
@@ -41,12 +44,8 @@
                         </td>
                         <td style="padding:0.5rem 0;text-align:left;">
                             @if ($variant['url'])
-                                <a
-                                    href="{{ $variant['url'] }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="text-primary-600 hover:underline dark:text-primary-400"
-                                >
+                                <a href="{{ $variant['url'] }}" target="_blank" rel="noopener noreferrer"
+                                    class="text-primary-600 hover:underline dark:text-primary-400">
                                     {{ __('media::fields.open') }}
                                 </a>
                             @else

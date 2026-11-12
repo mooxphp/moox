@@ -39,6 +39,12 @@ return [
     'generated' => 'Bereit',
     'pending' => 'Ausstehend',
     'open' => 'Öffnen',
+    'regenerate_delivery' => 'Delivery neu erzeugen',
+    'regenerate_delivery_submit' => 'Neu erzeugen',
+    'regenerate_delivery_force' => 'Auch vorhandene Varianten neu erzeugen',
+    'regenerate_delivery_force_help' => 'Standard: nur fehlende Varianten. Force nach Config-/Watermark-Änderung.',
+    'regenerate_delivery_queued' => 'Delivery-Regenerate gestartet',
+    'regenerate_delivery_queued_body' => 'Für :count Datei|Für :count Dateien — Queue muss laufen.',
 
     // Notifications
     'delete_error' => 'Fehler beim Löschen',
