@@ -126,7 +126,7 @@ return [
                 'svg' => 'png',
             ],
             'customer_api' => [
-                // Opt-in: enable + watermark path in the consuming app config.
+                // Publish config/media.php and enable + set watermark.path in the app.
                 'enabled' => false,
                 'mode' => 'single',
                 'formats' => ['jpg', 'png'],
