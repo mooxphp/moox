@@ -186,30 +186,22 @@ php artisan media:regenerate-delivery --force   # after watermark/config change
 
 Use `--force` after enabling profiles or changing watermark settings.
 
-App override example (enable customer API + watermark from **app** storage):
+Publish and edit the app config as usual (`php artisan vendor:publish --tag=media-config`), then enable what you need — e.g. customer API + watermark from **app** storage:
 
 ```php
-return array_replace_recursive(require base_path('vendor/moox/media/config/media.php'), [
-    'delivery' => [
-        'profiles' => [
-            'customer_api' => [
-                'enabled' => true,
-                'watermark' => [
-                    'enabled' => true,
-                    'path' => resource_path('watermarks/signet.png'),
-                ],
-            ],
-            // Optional custom profile:
-            // 'og' => [
-            //     'enabled' => true,
-            //     'mode' => 'single',
-            //     'formats' => ['jpg'],
-            //     'default_width' => 1200,
-            //     'svg' => 'skip',
-            // ],
-        ],
+'customer_api' => [
+    'enabled' => true,
+    // …
+    'watermark' => [
+        'enabled' => true,
+        'path' => resource_path('watermarks/signet.png'),
+        'opacity' => 40,
+        'width_percent' => 15,
+        'padding_percent' => 3,
+        'position' => 'bottom_right',
+        'fit' => 'contain',
     ],
-]);
+],
 ```
 
 Admin lists every variant. API `delivery` includes every **enabled** profile (`responsive` → picture payload, `single` → `{ url }`).
