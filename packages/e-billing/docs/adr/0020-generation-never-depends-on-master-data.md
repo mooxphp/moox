@@ -5,6 +5,8 @@ date: 2026-10-28
 
 # Generation never depends on master data
 
+> Superseded in part by [ADR 0023](0023-consignee-corroboration-and-master-data-recheck.md): the delivery-address parts (consignee tiers; "`delivery_address` is unchanged") no longer hold.
+
 ## Context
 
 Field validation runs inside `GenerateArtifactJob`, before the XML is generated. It queried the Moox `Company` and `Customer` models directly: customer-number and name matching, then corroboration of name, VAT id, country and addresses. When a host changed its master data (for example the companies table was dropped), the queries threw and every document ended in `generation_failed`, although the XML needs nothing from master data (mooxphp/e-billing#119).
@@ -15,7 +17,7 @@ Field validation runs inside `GenerateArtifactJob`, before the XML is generated.
 - **Contract.** `BuyerMasterDataResolver::resolve(BuyerLookup): BuyerMasterDataResult`. The result status is `matched`, `no_match`, `ambiguous` or `unavailable`; `ambiguous` is treated like `no_match` for now.
   - The resolver **finds** the buyer: by `BuyerLookup::$reference` for a manual attribution, otherwise by customer number first, then by name.
   - The package **corroborates** name, VAT id, country and addresses against the returned `BuyerMasterData` with its existing rules (token and short-name rules, postal fingerprint, city and additional-line divergence as information, ADR 0019).
-  - Billing addresses corroborate the buyer address and country. A consignee is matched against delivery addresses first, then billing addresses; an own site (a consignee with the buyer's name) only against delivery addresses. Which host address roles map to billing or delivery is the resolver's job.
+  - Billing addresses corroborate the buyer address and country. A consignee is matched against delivery addresses first, then billing addresses; an own site (a consignee with the buyer's name) only against delivery addresses (superseded by ADR 0023). Which host address roles map to billing or delivery is the resolver's job.
 - **A throwing resolver never fails the document.** `BuyerMasterDataLookup` catches the exception, logs it as an error and returns `unavailable`. There is no retry: `unavailable` only leads to review, and a later revalidation catches up.
 - **Default binding** is `NullBuyerMasterDataResolver` (always `unavailable`). `e-billing.master_data.resolver` replaces it; a class that does not implement the contract makes the service provider throw `InvalidArgumentException`.
 - **`e-billing.master_data.when_unavailable`:**
