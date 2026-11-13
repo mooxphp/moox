@@ -440,14 +440,17 @@ return [
         .'– please check.',
     'hint_review_consignee_address_missing' => 'The consignee is not the buyer and is printed without an address '
         .'– please look up and enter its delivery address.',
+    'hint_review_consignee_not_in_master_data' => 'No delivery address of the buyer has this consignee\'s address '
+        .'and name — please compare name and address with the PDF.',
     'hint_review_master_data_unavailable' => 'Master data could not be consulted — please check the value.',
     'hint_review_unrecognized' => 'Printed as “:printed”, which was not recognised as a value — please check.',
+    'hint_review_printed_differs_from_config' => 'Printed as “:printed”, which differs from the configured seller data — please check.',
     'hint_review_default' => 'This field should be reviewed manually.',
 
     // Field hints — informational (no validation status)
     'hint_info_buyer_email' => 'Delivery recipient — not checked against master data.',
-    'hint_info_consignee_not_in_master_data' => 'Consignee not in the buyer\'s master data — '
-        .'expected for a delivery to a third party (does not block).',
+    'hint_info_consignee_not_in_master_data' => 'Consignee not found in the buyer\'s master data '
+        .'(does not block).',
     'hint_info_address_differs' => 'Master data differs: :details (does not block).',
     'hint_info_address_differs_city' => 'city “:city”',
     'hint_info_address_differs_additional_lines' => 'additional address lines “:lines”',

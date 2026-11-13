@@ -814,11 +814,39 @@ return [
     | - trust_parsed: the parsed buyer values are accepted; auto-approval is
     |   possible.
     |
+    | consignee_corroboration (ADR 0023): a separate consignee must match one of
+    | the buyer's addresses of `address_roles` (delivery, billing) and pass the
+    | name check against the name on that address (`address`) or the buyer's
+    | names (`buyer`); `names: []` checks the address alone. A miss needs
+    | review (`on_miss: review`) or is a hint only (`info`).
+    |
+    | Recheck (ADR 0023): master data synchronised from another system can lag
+    | behind the invoices. When field validation leaves a master-data finding
+    | (`needs_review` on one of `recheck_fields`, header or line), the document
+    | is regenerated after `recheck_after_minutes`, at most `recheck_attempts`
+    | times. Meanwhile it waits in its own tab and reviewers are not notified.
+    | 0 minutes or 0 attempts turns the recheck off.
+    |
     */
 
     'master_data' => [
         'resolver' => null,
         'when_unavailable' => env('EBILLING_MASTER_DATA_WHEN_UNAVAILABLE', 'review'),
+        'consignee_corroboration' => [
+            'address_roles' => ['delivery'],
+            'names' => ['address', 'buyer'],
+            'on_miss' => env('EBILLING_MASTER_DATA_CONSIGNEE_ON_MISS', 'review'),
+        ],
+        'recheck_after_minutes' => (int) env('EBILLING_MASTER_DATA_RECHECK_AFTER_MINUTES', 0),
+        'recheck_attempts' => (int) env('EBILLING_MASTER_DATA_RECHECK_ATTEMPTS', 1),
+        'recheck_fields' => [
+            'customer_number',
+            'customer_name',
+            'customer_vat_id',
+            'country',
+            'customer_address',
+            'delivery_address',
+        ],
     ],
 
     /*

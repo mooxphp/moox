@@ -29,11 +29,63 @@ final class AttributionCorroborator
      */
     public function corroborateName(?string $invoiceName, BuyerMasterData $buyer): bool
     {
+        return $this->nameMatchesAny($invoiceName, [$buyer->name, ...$buyer->alternativeNames]);
+    }
+
+    /**
+     * Corroborate a separate consignee (ADR 0023): its address must match one of the buyer's addresses of
+     * `$addressRoles` (`delivery`, `billing`, searched in that order) and its name must pass the name check against
+     * the name kept on that address (`address` in `$nameSources`) or against the buyer's names (`buyer`). Without
+     * name sources the address alone decides. Null when the consignee has no address.
+     *
+     * @param  list<string>  $addressRoles
+     * @param  list<string>  $nameSources
+     * @return AddressMatch|null
+     */
+    public function corroborateConsignee(
+        Party $consignee,
+        BuyerMasterData $buyer,
+        array $addressRoles,
+        array $nameSources,
+    ): ?array {
+        $tiers = [];
+        foreach ($addressRoles as $role) {
+            $tiers[] = match ($role) {
+                'delivery' => $buyer->deliveryAddresses,
+                'billing' => $buyer->billingAddresses,
+                default => [],
+            };
+        }
+
+        $acceptsName = $nameSources === [] ? null : function (BuyerMasterDataAddress $address) use (
+            $consignee,
+            $buyer,
+            $nameSources,
+        ): bool {
+            $candidates = [];
+            if (in_array('address', $nameSources, true)) {
+                $candidates[] = $address->name;
+            }
+            if (in_array('buyer', $nameSources, true)) {
+                array_push($candidates, $buyer->name, ...$buyer->alternativeNames);
+            }
+
+            return $this->nameMatchesAny($consignee->name, $candidates);
+        };
+
+        return $this->findAddressAmongTiers($consignee->address, $buyer, $tiers, $acceptsName);
+    }
+
+    /**
+     * @param  list<?string>  $candidates
+     */
+    private function nameMatchesAny(?string $invoiceName, array $candidates): bool
+    {
         $invoiceParts = $this->nameParts($invoiceName ?? '');
         $invoiceTokens = $this->significantTokensOf($invoiceParts);
         $invoiceFullName = $this->withoutLegalFormSuffix($invoiceParts);
 
-        foreach ([$buyer->name, ...$buyer->alternativeNames] as $candidate) {
+        foreach ($candidates as $candidate) {
             if (! is_string($candidate) || trim($candidate) === '') {
                 continue;
             }
@@ -54,42 +106,6 @@ final class AttributionCorroborator
         }
 
         return false;
-    }
-
-    /**
-     * Corroborate a delivery/consignee party: name token overlap and address fingerprint
-     * must both pass.
-     *
-     * @return array{corroborates: bool, matched_id: string, divergence?: AddressDivergence}
-     */
-    public function corroborateDeliveryParty(Party $party, BuyerMasterData $buyer): array
-    {
-        $invoiceName = trim($party->name) !== '' ? $party->name : null;
-        $addressResult = $this->findDeliveryMatchingAddress($party->address, $buyer);
-
-        if ($addressResult === null) {
-            return [
-                'corroborates' => false,
-                'matched_id' => $buyer->party->id,
-            ];
-        }
-
-        if ($this->corroborateName($invoiceName, $buyer) && $addressResult['exists']) {
-            $corroborated = [
-                'corroborates' => true,
-                'matched_id' => $addressResult['matched_id'],
-            ];
-            if (isset($addressResult['divergence'])) {
-                $corroborated['divergence'] = $addressResult['divergence'];
-            }
-
-            return $corroborated;
-        }
-
-        return [
-            'corroborates' => false,
-            'matched_id' => $addressResult['matched_id'],
-        ];
     }
 
     /**
@@ -151,39 +167,18 @@ final class AttributionCorroborator
     }
 
     /**
-     * Existence check of a delivery address: delivery addresses first, then the billing addresses.
-     *
-     * @return AddressMatch|null null when invoice address is empty
-     */
-    public function findDeliveryMatchingAddress(?InvoiceAddress $invoiceAddress, BuyerMasterData $buyer): ?array
-    {
-        return $this->findAddressAmongTiers(
-            $invoiceAddress,
-            $buyer,
-            [$buyer->deliveryAddresses, $buyer->billingAddresses],
-        );
-    }
-
-    /**
-     * Existence check of one of the buyer's own sites: the delivery addresses only, no billing fallback.
-     *
-     * @return AddressMatch|null null when invoice address is empty
-     */
-    public function findOwnSiteDeliveryAddress(?InvoiceAddress $invoiceAddress, BuyerMasterData $buyer): ?array
-    {
-        return $this->findAddressAmongTiers($invoiceAddress, $buyer, [$buyer->deliveryAddresses]);
-    }
-
-    /**
-     * A match without divergence in a later tier wins over an earlier tier's divergent one (#96).
+     * A match without divergence in a later tier wins over an earlier tier's divergent one (#96). `$accepts`
+     * narrows the candidate addresses, e.g. to those whose name passes ({@see self::corroborateConsignee()}).
      *
      * @param  list<list<BuyerMasterDataAddress>>  $tiers
+     * @param  (callable(BuyerMasterDataAddress): bool)|null  $accepts
      * @return AddressMatch|null
      */
     private function findAddressAmongTiers(
         ?InvoiceAddress $invoiceAddress,
         BuyerMasterData $buyer,
         array $tiers,
+        ?callable $accepts = null,
     ): ?array {
         if ($invoiceAddress === null || $invoiceAddress->isEmpty()) {
             return null;
@@ -191,6 +186,10 @@ final class AttributionCorroborator
 
         $firstDivergentMatch = null;
         foreach ($tiers as $addresses) {
+            if ($accepts !== null) {
+                $addresses = array_values(array_filter($addresses, $accepts));
+            }
+
             $match = $this->findFingerprintAmong($invoiceAddress, $buyer, $addresses);
             if ($match === null) {
                 continue;

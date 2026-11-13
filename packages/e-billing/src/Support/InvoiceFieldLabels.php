@@ -275,8 +275,18 @@ final class InvoiceFieldLabels
             ]);
         }
 
+        if ($status === 'needs_review' && ($validation['reason'] ?? null) === 'printed_differs_from_config') {
+            return __('e-billing::fields.hint_review_printed_differs_from_config', [
+                'printed' => (string) ($validation['printed'] ?? ''),
+            ]);
+        }
+
         if ($status === 'needs_review' && ($validation['reason'] ?? null) === 'consignee_address_missing') {
             return __('e-billing::fields.hint_review_consignee_address_missing');
+        }
+
+        if ($status === 'needs_review' && ($validation['reason'] ?? null) === 'consignee_not_in_master_data') {
+            return __('e-billing::fields.hint_review_consignee_not_in_master_data');
         }
 
         if ($status === 'needs_review' && ($validation['reason'] ?? null) === 'master_data_unavailable') {
