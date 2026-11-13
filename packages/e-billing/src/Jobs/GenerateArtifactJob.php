@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use LogicException;
 use Moox\EBilling\Actions\ApplyUploadedRecipientEmailAction;
 use Moox\EBilling\Actions\DiscardIdenticalContentDuplicateAction;
+use Moox\EBilling\Actions\ScheduleMasterDataRecheckAction;
 use Moox\EBilling\Adapters\ZugferdInvoiceAdapter;
 use Moox\EBilling\Contracts\PdfaNormalizerInterface;
 use Moox\EBilling\Contracts\SourcePdfPreparerInterface;
@@ -284,6 +285,9 @@ class GenerateArtifactJob implements ShouldQueue
 
         $document->refresh();
         $invoiceFieldValidator->validate($document);
+
+        // Before validation queues auto-approval, which must see a pending recheck (ADR 0023).
+        app(ScheduleMasterDataRecheckAction::class)->execute($document);
 
         $this->setProgress(90);
 

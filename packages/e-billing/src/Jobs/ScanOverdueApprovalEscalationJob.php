@@ -110,7 +110,8 @@ final class ScanOverdueApprovalEscalationJob implements ShouldBeUnique, ShouldQu
     ): bool {
         $createdAt = $document->created_at;
 
-        if (! $createdAt instanceof Carbon) {
+        // Escalates after the master-data recheck ended, without claiming a level meanwhile (ADR 0023).
+        if (! $createdAt instanceof Carbon || $document->hasPendingMasterDataRecheck()) {
             return false;
         }
 

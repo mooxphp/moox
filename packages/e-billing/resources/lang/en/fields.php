@@ -173,6 +173,7 @@ return [
     'tab_gateway_failed' => 'Failed',
     'tab_processing' => 'Processing',
     'tab_needs_review' => 'Review needed',
+    'tab_master_data_recheck' => 'Master-data recheck',
     'tab_confirmed' => 'Confirmed',
     'tab_awaiting_approval' => 'Awaiting approval',
     'tab_sent' => 'Sent',

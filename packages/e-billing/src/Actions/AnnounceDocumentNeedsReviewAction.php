@@ -33,6 +33,11 @@ final class AnnounceDocumentNeedsReviewAction
             return;
         }
 
+        // Announced once the recheck ended, by its last generation or by RecheckMasterDataJob (ADR 0023).
+        if ($document->hasPendingMasterDataRecheck()) {
+            return;
+        }
+
         $documentId = (string) $document->getKey();
 
         if (! Cache::add(ReviewNotificationCache::notifiedKey($documentId), true)) {

@@ -291,6 +291,19 @@ class InvoiceResource extends BaseItemResource
                 continue;
             }
 
+            // Pending master-data recheck (ADR 0023): its own tab, kept out of "needs review" meanwhile.
+            if ($condition['field'] === 'master_data_recheck') {
+                if ($value === true) {
+                    $isAllTab = false;
+                }
+                $query->whereHas(
+                    'ebillingDocument',
+                    fn ($documentQuery) => $documentQuery->masterDataRecheckPending((bool) $value),
+                );
+
+                continue;
+            }
+
             if ($condition['field'] === 'review_status' && $condition['operator'] === 'in') {
                 $isNeedsReviewTab = true;
                 $query->whereHas(
