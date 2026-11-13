@@ -664,9 +664,9 @@ class InvoiceFieldValidator
 
     /**
      * Only a separate consignee is corroborated: one that is printed and is not the same party as the buyer, nor
-     * (on a line) as the header consignee that already carries the verdict. A miss is information only, unless the
-     * consignee carries the buyer's name: one of the buyer's own sites belongs among the master-data delivery
-     * addresses.
+     * (on a line) as the header consignee that already carries the verdict. Every separate consignee, the buyer's
+     * own site or another company, must be found among the buyer's master-data addresses by address and name
+     * (`e-billing.master_data.consignee_corroboration`, ADR 0023); a miss needs review unless `on_miss` is `info`.
      *
      * @return array{status: string, source?: string, matched_id?: string, reason?: string}
      */
@@ -683,39 +683,36 @@ class InvoiceFieldValidator
             return ['status' => 'not_applicable'];
         }
 
-        $carriesBuyerName = $this->carriesBuyerName($consignee, $buyer);
-
-        if (! $carriesBuyerName && $this->hasNoPostalAddress($consignee)) {
-            return ['status' => 'needs_review', 'reason' => 'consignee_address_missing'];
+        if ($this->hasNoPostalAddress($consignee)) {
+            // Printed with the buyer's name only, the consignee is the buyer itself.
+            return $this->carriesBuyerName($consignee, $buyer)
+                ? ['status' => 'parsed']
+                : ['status' => 'needs_review', 'reason' => 'consignee_address_missing'];
         }
 
         if (! $masterDataBuyer instanceof BuyerMasterData) {
             return ['status' => 'parsed'];
         }
 
-        $corroborator = new AttributionCorroborator;
+        // Defaults in code too: a published `master_data` block replaces the package one entirely.
+        $config = (array) config('e-billing.master_data.consignee_corroboration', []);
+        $match = (new AttributionCorroborator)->corroborateConsignee(
+            $consignee,
+            $masterDataBuyer,
+            array_values((array) ($config['address_roles'] ?? ['delivery'])),
+            array_values((array) ($config['names'] ?? ['address', 'buyer'])),
+        );
 
-        if ($carriesBuyerName) {
-            $match = $corroborator->findOwnSiteDeliveryAddress($consignee->address, $masterDataBuyer);
-            $entry = $this->matchedEntry(
-                $match['exists'] ?? false,
-                $match['matched_id'] ?? $masterDataBuyer->party->id,
-            );
-
-            return $this->withAddressDivergence($entry, $match ?? []);
+        if ($match !== null && $match['exists']) {
+            return $this->withAddressDivergence($this->matchedEntry(true, $match['matched_id']), $match);
         }
 
-        $result = $corroborator->corroborateDeliveryParty($consignee, $masterDataBuyer);
-
-        if ($result['corroborates']) {
-            return $this->withAddressDivergence([
-                'status' => 'db_validated',
-                'source' => 'auto',
-                'matched_id' => $result['matched_id'],
-            ], $result);
+        if (($config['on_miss'] ?? 'review') === 'info') {
+            return ['status' => 'parsed', 'reason' => 'consignee_not_in_master_data'];
         }
 
-        return ['status' => 'parsed', 'reason' => 'consignee_not_in_master_data'];
+        return $this->matchedEntry(false, $masterDataBuyer->party->id)
+            + ['reason' => 'consignee_not_in_master_data'];
     }
 
     /**

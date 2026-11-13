@@ -442,14 +442,17 @@ return [
         .'als das Dokument trägt – bitte prüfen.',
     'hint_review_consignee_address_missing' => 'Der Warenempfänger ist nicht der Käufer und ohne Anschrift gedruckt '
         .'– bitte seine Lieferadresse ermitteln und eintragen.',
+    'hint_review_consignee_not_in_master_data' => 'Warenempfänger mit dieser Anschrift und diesem Namen nicht unter '
+        .'den Lieferadressen des Käufers gefunden — bitte Name und Anschrift mit dem PDF abgleichen.',
     'hint_review_master_data_unavailable' => 'Stammdaten waren nicht abrufbar — bitte den Wert prüfen.',
     'hint_review_unrecognized' => 'Gedruckt steht „:printed“, das wurde nicht als Wert erkannt — bitte prüfen.',
+    'hint_review_printed_differs_from_config' => 'Gedruckt steht „:printed“, abweichend von den hinterlegten Verkäuferdaten — bitte prüfen.',
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 
     // Field hints — informational (no validation status)
     'hint_info_buyer_email' => 'Empfänger für die Zustellung — nicht mit Stammdaten abgeglichen.',
-    'hint_info_consignee_not_in_master_data' => 'Warenempfänger nicht in den Stammdaten des Käufers — '
-        .'bei einer Lieferung an Dritte erwartet (blockiert nicht).',
+    'hint_info_consignee_not_in_master_data' => 'Warenempfänger nicht in den Stammdaten des Käufers gefunden '
+        .'(blockiert nicht).',
     'hint_info_address_differs' => 'Stammdaten weichen ab: :details (blockiert nicht).',
     'hint_info_address_differs_city' => 'Ort „:city“',
     'hint_info_address_differs_additional_lines' => 'Adresszusatz „:lines“',
