@@ -173,6 +173,7 @@ return [
     'tab_gateway_failed' => 'Fehlgeschlagen',
     'tab_processing' => 'In Bearbeitung',
     'tab_needs_review' => 'Prüfung nötig',
+    'tab_master_data_recheck' => 'Stammdaten-Nachprüfung',
     'tab_confirmed' => 'Bestätigt',
     'tab_awaiting_approval' => 'Zur Freigabe',
     'tab_sent' => 'Versendet',

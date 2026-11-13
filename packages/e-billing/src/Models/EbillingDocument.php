@@ -1126,6 +1126,59 @@ class EbillingDocument extends BaseItemModel
     }
 
     /**
+     * The master-data recheck state (ADR 0023): `attempt` counts the rechecks scheduled so far, `due_at` is set
+     * while one is pending. Null before the first.
+     *
+     * @return array{attempt: int, due_at?: string}|null
+     */
+    public function masterDataRecheck(): ?array
+    {
+        $recheck = is_array($this->approval_flags) ? ($this->approval_flags['master_data_recheck'] ?? null) : null;
+        if (! is_array($recheck)) {
+            return null;
+        }
+
+        $state = ['attempt' => (int) ($recheck['attempt'] ?? 0)];
+        if (is_string($recheck['due_at'] ?? null)) {
+            $state['due_at'] = $recheck['due_at'];
+        }
+
+        return $state;
+    }
+
+    /**
+     * @param  array{attempt: int, due_at?: string}  $state
+     */
+    public function setMasterDataRecheck(array $state): void
+    {
+        $flags = is_array($this->approval_flags) ? $this->approval_flags : [];
+        $flags['master_data_recheck'] = $state;
+
+        $this->approval_flags = $flags;
+    }
+
+    /**
+     * Whether the document waits for a master-data recheck; reviewers are not notified meanwhile.
+     */
+    public function hasPendingMasterDataRecheck(): bool
+    {
+        return isset($this->masterDataRecheck()['due_at']);
+    }
+
+    /**
+     * `due_at` is removed, never stored as null, so the JSON path is SQL NULL once the recheck ended.
+     *
+     * @param  Builder<EbillingDocument>  $query
+     * @return Builder<EbillingDocument>
+     */
+    public function scopeMasterDataRecheckPending(Builder $query, bool $pending = true): Builder
+    {
+        return $pending
+            ? $query->whereNotNull('approval_flags->master_data_recheck->due_at')
+            : $query->whereNull('approval_flags->master_data_recheck->due_at');
+    }
+
+    /**
      * Sync approval_flags.duplicate from field validations (invoice number collision).
      * Preserves host-set anomalies.
      */

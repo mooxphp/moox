@@ -436,6 +436,27 @@ return [
                         'value' => ['parser_created', 'db_validated'],
                     ],
                     [
+                        'field' => 'master_data_recheck',
+                        'operator' => '=',
+                        'value' => false,
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'master_data_recheck' => [
+                'label' => 'trans//e-billing::fields.tab_master_data_recheck',
+                'icon' => 'gmdi-update',
+                'query' => [
+                    [
+                        'field' => 'master_data_recheck',
+                        'operator' => '=',
+                        'value' => true,
+                    ],
+                    [
                         'field' => 'deleted_at',
                         'operator' => '=',
                         'value' => null,
@@ -644,6 +665,27 @@ return [
                         'field' => 'review_status',
                         'operator' => 'in',
                         'value' => ['parser_created', 'db_validated'],
+                    ],
+                    [
+                        'field' => 'master_data_recheck',
+                        'operator' => '=',
+                        'value' => false,
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'master_data_recheck' => [
+                'label' => 'trans//e-billing::fields.tab_master_data_recheck',
+                'icon' => 'gmdi-update',
+                'query' => [
+                    [
+                        'field' => 'master_data_recheck',
+                        'operator' => '=',
+                        'value' => true,
                     ],
                     [
                         'field' => 'deleted_at',
