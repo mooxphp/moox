@@ -41,6 +41,15 @@ use RuntimeException;
  */
 class InvoiceFieldValidator
 {
+    /**
+     * Seller fields taken from `e-billing.supplier`: printed text the parser reports for them means the
+     * print deviates from the configured seller.
+     */
+    private const CONFIGURED_SELLER_FIELDS = [
+        'supplier_name', 'supplier_vat_id', 'supplier_tax_number', 'supplier_address', 'supplier_bank_accounts',
+        'supplier_email', 'supplier_phone', 'supplier_legal_registration_id', 'supplier_additional_legal_information',
+    ];
+
     /** BT-3 of the invoice being validated; selects the MoSCoW profile (ADR 0009). */
     private ?string $profileDocumentType = null;
 
@@ -88,7 +97,7 @@ class InvoiceFieldValidator
             if (in_array($invoiceValidations[$field]['status'] ?? null, ['parsed', 'missing'], true)) {
                 $invoiceValidations[$field] = [
                     'status' => 'needs_review',
-                    'reason' => 'unrecognized',
+                    'reason' => in_array($field, self::CONFIGURED_SELLER_FIELDS, true) ? 'printed_differs_from_config' : 'unrecognized',
                     'printed' => $printed,
                 ];
             }
