@@ -196,6 +196,7 @@ The parser receives extracted PDF text (from `moox/pdf-parser`) and returns a `M
 
 Parser notes:
 
+- A parser that returns no document type (empty code and label) for a manual upload gets the upload's declared type applied, with the amounts as printed. Report `unrecognized_fields['document_type']` to keep it a review finding.
 - Line `buyerArticleNumber` (BT-156) sits next to `articleNumber` (BT-155) on `Data\InvoiceLine`.
 - Line extras (`material`, `materialTestCertificate`, `weightKgTotal`, `weightKgNet`) reach the line model only when the parser fills them, so the host line model needs columns only for what it fills.
 
