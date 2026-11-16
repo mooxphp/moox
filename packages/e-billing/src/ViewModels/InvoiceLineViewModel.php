@@ -48,7 +48,7 @@ final class InvoiceLineViewModel
         $names = [
             'position', 'description', 'description_detail',
             'quantity', 'unit', 'unit_price', 'line_total', 'vat_category',
-            'article_number', 'material', 'customs_tariff_number',
+            'article_number', 'buyer_article_number', 'material', 'customs_tariff_number',
             'delivery_date', 'delivery_note_number',
             'order_number', 'order_date', 'delivery_address',
             'weight_kg_total', 'weight_kg_net',

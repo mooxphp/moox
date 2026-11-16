@@ -971,6 +971,8 @@ class InvoiceFieldValidator
             'supplier_name' => $invoice->seller?->name,
             'supplier_vat_id' => $invoice->seller?->vat_id,
             'supplier_tax_number' => $invoice->seller?->tax_number,
+            'supplier_legal_registration_id' => $invoice->seller?->legal_registration_id,
+            'supplier_additional_legal_information' => $invoice->seller?->additional_legal_information,
             'supplier_address' => $invoice->seller?->address,
             'agent' => $invoice->seller?->contact?->name,
             'supplier_email' => $invoice->seller?->contact?->email,

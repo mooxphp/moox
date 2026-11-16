@@ -1017,6 +1017,8 @@ return [
             // Seller — MUST (own company data, from system settings later)
             'supplier_name' => 'must',    // BT-27
             'supplier_number' => 'could', // BT-29
+            'supplier_legal_registration_id' => 'could', // BT-30
+            'supplier_additional_legal_information' => 'could', // BT-33
             'supplier_vat_id' => 'must',    // BT-31
             'supplier_tax_number' => 'should', // BT-32
             'supplier_address' => 'must',    // BG-5
@@ -1062,6 +1064,7 @@ return [
             'vat_category' => 'must', // BT-151 (inherits header stamp)
 
             'article_number' => 'should',  // BT-155
+            'buyer_article_number' => 'could',  // BT-156
             'material' => 'should',  // BG-32 / BT-160–161 (host-specific)
             'customs_tariff_number' => 'could', // BT-158
 
@@ -1196,6 +1199,8 @@ return [
             // Seller — MUST (own company data, from system settings later)
             'supplier_name' => 'must',    // BT-27
             'supplier_number' => 'could', // BT-29
+            'supplier_legal_registration_id' => 'could', // BT-30
+            'supplier_additional_legal_information' => 'could', // BT-33
             'supplier_vat_id' => 'must',    // BT-31
             'supplier_tax_number' => 'should', // BT-32
             'supplier_address' => 'must',    // BG-5
@@ -1241,6 +1246,7 @@ return [
             'vat_category' => 'must', // BT-151 (inherits header stamp)
 
             'article_number' => 'should',  // BT-155
+            'buyer_article_number' => 'could',  // BT-156
             'material' => 'should',  // BG-32 / BT-160–161 (host-specific)
             'customs_tariff_number' => 'could', // BT-158
 
@@ -1320,6 +1326,8 @@ return [
             // Seller — MUST (own company data, from system settings later)
             'supplier_name' => 'must',    // BT-27
             'supplier_number' => 'could', // BT-29
+            'supplier_legal_registration_id' => 'could', // BT-30
+            'supplier_additional_legal_information' => 'could', // BT-33
             'supplier_vat_id' => 'must',    // BT-31
             'supplier_tax_number' => 'should', // BT-32
             'supplier_address' => 'must',    // BG-5
@@ -1365,6 +1373,7 @@ return [
             'vat_category' => 'must', // BT-151 (inherits header stamp)
 
             'article_number' => 'should',  // BT-155
+            'buyer_article_number' => 'could',  // BT-156
             'material' => 'should',  // BG-32 / BT-160–161 (host-specific)
             'customs_tariff_number' => 'could', // BT-158
 

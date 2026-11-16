@@ -44,6 +44,7 @@ final class CorrectFieldValueAction
      */
     private const CREATABLE_KEYS = [
         'seller.contact.name', 'seller.contact.phone', 'seller.contact.email',
+        'seller.legal_registration_id', 'seller.additional_legal_information',
         'buyer.contact.name', 'buyer.contact.phone', 'buyer.contact.email',
         'delivery.name',
         'delivery.address.line1', 'delivery.address.line2', 'delivery.address.postal_code',
