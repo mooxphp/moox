@@ -1,5 +1,5 @@
 {
-    "name": "moox/productgroup",
+    "name": "moox/productcategory",
     "description": "Moox product family entity with translatable content.",
     "keywords": [
         "Moox",
@@ -9,7 +9,7 @@
         "Laravel package",
         "Product"
     ],
-    "homepage": "https://moox.org/docs/productgroup",
+    "homepage": "https://moox.org/docs/productcategory",
     "license": "MIT",
     "authors": [
         {
@@ -26,44 +26,44 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\ProductGroup\\": "src",
-            "Moox\\ProductGroup\\Database\\Factories\\": "database/factories",
-            "Moox\\ProductGroup\\Database\\Seeders\\": "database/seeders"
+            "Moox\\ProductCategory\\": "src",
+            "Moox\\ProductCategory\\Database\\Factories\\": "database/factories",
+            "Moox\\ProductCategory\\Database\\Seeders\\": "database/seeders"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Moox\\ProductGroup\\Tests\\": "tests"
+            "Moox\\ProductCategory\\Tests\\": "tests"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Moox\\ProductGroup\\ProductGroupServiceProvider"
+                "Moox\\ProductCategory\\ProductCategoryServiceProvider"
             ]
         },
         "moox": {
-            "name": "Moox ProductGroup",
+            "name": "Moox ProductCategory",
             "stability": "stable",
             "type": "moox-plugin",
             "install": {
                 "auto_migrate": "database/migrations",
-                "seed": "database/seeders/ProductGroupSeeder.php",
-                "auto_publish": "moox-productgroup-config",
+                "seed": "database/seeders/ProductCategorySeeder.php",
+                "auto_publish": "moox-productcategory-config",
                 "auto_entities": {
-                    "ProductGroup": true
+                    "ProductCategory": true
                 },
                 "auto_class": {
-                    "ProductGroup": "Moox\\ProductGroup\\Models\\ProductGroup"
+                    "ProductCategory": "Moox\\ProductCategory\\Models\\ProductCategory"
                 }
             },
             "update": {
                 "migrate": "database/migrations",
-                "merge": "moox-productgroup-config"
+                "merge": "moox-productcategory-config"
             },
             "uninstall": {
                 "migrate": "database/migrations",
-                "remove": "moox-productgroup-config"
+                "remove": "moox-productcategory-config"
             }
         }
     },

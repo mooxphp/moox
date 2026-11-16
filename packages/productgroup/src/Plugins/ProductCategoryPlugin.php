@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Moox\ProductGroup\Plugins;
+namespace Moox\ProductCategory\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use LogicException;
-use Moox\ProductGroup\Resources\ProductGroupResource;
+use Moox\ProductCategory\Resources\ProductCategoryResource;
 
-class ProductGroupPlugin implements Plugin
+class ProductCategoryPlugin implements Plugin
 {
     public function getId(): string
     {
-        return 'productgroup';
+        return 'productcategory';
     }
 
     public function register(Panel $panel): void
     {
         $panel
             ->resources([
-                ProductGroupResource::class,
+                ProductCategoryResource::class,
             ]);
     }
 
@@ -34,7 +34,7 @@ class ProductGroupPlugin implements Plugin
         $plugin = app(static::class);
 
         if (! $plugin instanceof static) {
-            throw new LogicException('Product group plugin could not be resolved.');
+            throw new LogicException('Product category plugin could not be resolved.');
         }
 
         return $plugin;

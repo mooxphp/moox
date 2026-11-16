@@ -10,25 +10,25 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('product_group_translations', function (Blueprint $table): void {
+        Schema::create('product_category_translations', function (Blueprint $table): void {
             $table->id();
-            $table->unsignedBigInteger('product_group_id');
-            $table->foreign('product_group_id', 'product_group_translations_group_fk')
+            $table->unsignedBigInteger('product_category_id');
+            $table->foreign('product_category_id', 'product_category_translations_category_fk')
                 ->references('id')
-                ->on('product_groups')
+                ->on('product_categories')
                 ->cascadeOnDelete();
             $table->string('locale');
             $table->string('title');
             $table->string('slug');
             $table->text('description')->nullable();
 
-            $table->unique(['product_group_id', 'locale'], 'product_group_locale_unique');
+            $table->unique(['product_category_id', 'locale'], 'product_category_locale_unique');
             $table->index('locale');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('product_group_translations');
+        Schema::dropIfExists('product_category_translations');
     }
 };

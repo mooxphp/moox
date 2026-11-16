@@ -10,17 +10,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('product_groups', function (Blueprint $table): void {
+        Schema::create('product_categories', function (Blueprint $table): void {
             $table->id();
             $table->ulid('ulid')->unique();
             $table->uuid('uuid')->unique();
 
-            $table->foreignId('parent_id')->nullable()->constrained('product_groups')->nullOnDelete();
+            $table->foreignId('parent_id')->nullable()->constrained('product_categories')->nullOnDelete();
             $table->unsignedInteger('lft')->default(0);
             $table->unsignedInteger('rgt')->default(0);
             $table->index(['parent_id', 'lft']);
 
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_canonical')->default(false);
+            $table->foreignId('canonical_product_category_id')->nullable()->constrained('product_categories')->nullOnDelete();
             $table->unsignedInteger('sort_order')->default(0);
             $table->index(['parent_id', 'sort_order']);
 
@@ -61,8 +63,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('product_group_translations');
-        Schema::dropIfExists('product_groups');
+        Schema::dropIfExists('product_category_translations');
+        Schema::dropIfExists('product_categories');
         Schema::enableForeignKeyConstraints();
     }
 };

@@ -1,6 +1,6 @@
 <?php
 
-use Moox\ProductGroup\Resources\ProductGroupResource;
+use Moox\ProductCategory\Resources\ProductCategoryResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -8,7 +8,7 @@ use Moox\ProductGroup\Resources\ProductGroupResource;
 |--------------------------------------------------------------------------
 |
 | Relations are resolved by moox/core (RelationService + ConfigRelationManager).
-| Wire product ↔ productgroup assignments in the application config when both
+| Wire product ↔ productcategory assignments in the application config when both
 | packages are installed.
 |
 */
@@ -16,16 +16,16 @@ return [
     'readonly' => false,
 
     'resources' => [
-        'productgroup' => [
-            'single' => 'trans//productgroup::productgroup.productgroup',
-            'plural' => 'trans//productgroup::productgroup.productgroups',
+        'productcategory' => [
+            'single' => 'trans//productcategory::productcategory.productcategory',
+            'plural' => 'trans//productcategory::productcategory.productcategories',
         ],
     ],
 
     'related_morph_defaults' => [
         'display_columns' => ['title'],
-        'translation_prefix' => 'productgroup::fields',
-        'related_resource' => ProductGroupResource::class,
+        'translation_prefix' => 'productcategory::fields',
+        'related_resource' => ProductCategoryResource::class,
         'record_select_search_columns' => ['external_reference'],
     ],
 

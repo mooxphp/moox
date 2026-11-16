@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Moox\ProductGroup\Resources;
+namespace Moox\ProductCategory\Resources;
 
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -24,12 +25,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Moox\Core\Traits\Relations\HasResourceRelations;
-use Moox\Media\Forms\Components\MediaPicker;
-use Moox\ProductGroup\Models\ProductGroup;
-use Moox\ProductGroup\Resources\ProductGroup\Pages\CreateProductGroup;
-use Moox\ProductGroup\Resources\ProductGroup\Pages\EditProductGroup;
-use Moox\ProductGroup\Resources\ProductGroup\Pages\ListProductGroups;
-use Moox\ProductGroup\Resources\ProductGroup\Pages\ViewProductGroup;
+use Moox\Media\Forms\HasMediaForm;
+use Moox\Media\Tables\Columns\CustomImageColumn;
+use Moox\ProductCategory\Models\ProductCategory;
+use Moox\ProductCategory\Resources\ProductCategory\Pages\CreateProductCategory;
+use Moox\ProductCategory\Resources\ProductCategory\Pages\EditProductCategory;
+use Moox\ProductCategory\Resources\ProductCategory\Pages\ListProductCategories;
+use Moox\ProductCategory\Resources\ProductCategory\Pages\ViewProductCategory;
 use Moox\Support\Active\HasActiveForm;
 use Moox\Support\Archive\HasArchiveForm;
 use Moox\Support\Audit\HasAuditForm;
@@ -37,10 +39,12 @@ use Moox\Support\Data\HasDataForm;
 use Moox\Support\External\HasExternalForm;
 use Moox\Support\Filament\FeatureFields;
 use Moox\Support\Identity\HasIdentityForm;
+use Moox\Support\Publish\HasPublishForm;
 use Moox\Support\SoftDelete\HasSoftDeleteForm;
+use Moox\Support\Title\HasTitleDescriptionForm;
 use Moox\Support\Title\HasTitleForm;
 
-class ProductGroupResource extends Resource
+class ProductCategoryResource extends Resource
 {
     use HasActiveForm;
     use HasArchiveForm;
@@ -48,11 +52,16 @@ class ProductGroupResource extends Resource
     use HasDataForm;
     use HasExternalForm;
     use HasIdentityForm;
+    use HasMediaForm;
+    use HasPublishForm;
     use HasResourceRelations;
     use HasSoftDeleteForm;
-    use HasTitleForm;
+    use HasTitleDescriptionForm;
+    use HasTitleForm {
+        HasTitleDescriptionForm::titleTranslationExtraFields insteadof HasTitleForm;
+    }
 
-    protected static ?string $model = ProductGroup::class;
+    protected static ?string $model = ProductCategory::class;
 
     protected static ?string $recordTitleAttribute = 'title';
 
@@ -60,22 +69,22 @@ class ProductGroupResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('productgroup::productgroup.productgroup');
+        return __('productcategory::productcategory.productcategory');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('productgroup::productgroup.productgroups');
+        return __('productcategory::productcategory.productcategories');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('productgroup::productgroup.productgroups');
+        return __('productcategory::productcategory.productcategories');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        $group = config('productgroup.navigation_group');
+        $group = config('productcategory.navigation_group');
 
         return is_string($group) && $group !== '' ? $group : null;
     }
@@ -127,6 +136,20 @@ class ProductGroupResource extends Resource
                     ->searchable()
                     ->preload()
                     ->rules(static::featureRules('parent_id')),
+                Toggle::make('is_canonical')
+                    ->label(FeatureFields::label($translation, 'is_canonical'))
+                    ->default(false)
+                    ->live()
+                    ->rules(static::featureRules('is_canonical')),
+                Select::make('canonical_product_category_id')
+                    ->label(FeatureFields::label($translation, 'canonical_product_category_id'))
+                    ->options(fn (?Model $record): array => static::canonicalOptions($record))
+                    ->searchable()
+                    ->preload()
+                    ->visible(fn (Get $get): bool => static::isReference($get))
+                    ->dehydrated(fn (Get $get): bool => static::isReference($get))
+                    ->required(fn (Get $get): bool => static::isReference($get))
+                    ->rules(static::featureRules('canonical_product_category_id')),
                 TextInput::make('sort_order')
                     ->label(FeatureFields::label($translation, 'sort_order'))
                     ->numeric()
@@ -154,68 +177,9 @@ class ProductGroupResource extends Resource
             ->columns(2);
     }
 
-    protected static function mediaSection(): Section
-    {
-        $translation = static::featureTranslation();
-
-        return Section::make(FeatureFields::label($translation, 'media'))
-            ->schema([
-                MediaPicker::make('image')
-                    ->label(FeatureFields::label($translation, 'image'))
-                    ->multiple()
-                    ->columnSpanFull(),
-            ]);
-    }
-
-    protected static function publishSection(): Section
-    {
-        $translation = static::featureTranslation();
-
-        return Section::make(FeatureFields::label($translation, 'publish'))
-            ->schema([
-                FeatureFields::locked($translation, 'published_at'),
-                FeatureFields::locked($translation, 'published_by_id'),
-                FeatureFields::locked($translation, 'published_by_type'),
-                FeatureFields::locked($translation, 'unpublished_at'),
-                FeatureFields::locked($translation, 'unpublished_by_id'),
-                FeatureFields::locked($translation, 'unpublished_by_type'),
-            ])
-            ->columns(2)
-            ->hidden(fn (?Model $record): bool => $record === null);
-    }
-
-    protected static function titleSection(): Section
-    {
-        $translation = static::featureTranslation();
-
-        return Section::make(FeatureFields::label($translation, 'titles'))
-            ->schema([
-                Repeater::make('translations')
-                    ->label(FeatureFields::label($translation, 'translations'))
-                    ->relationship()
-                    ->schema([
-                        Select::make('locale')
-                            ->label(FeatureFields::label($translation, 'locale'))
-                            ->options(static::titleLocaleOptions())
-                            ->required()
-                            ->searchable()
-                            ->disableOptionsWhenSelectedInSiblingRepeaterItems(),
-                        ...static::titleSlugFields(),
-                        Textarea::make('description')
-                            ->label(FeatureFields::label($translation, 'description'))
-                            ->rows(4)
-                            ->rules(static::featureRules('description'))
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(3)
-                    ->minItems(1)
-                    ->columnSpanFull(),
-            ]);
-    }
-
     protected static function featureTranslation(): string
     {
-        return 'productgroup::fields';
+        return 'productcategory::fields';
     }
 
     /**
@@ -228,6 +192,8 @@ class ProductGroupResource extends Resource
             'title', 'slug' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'parent_id' => ['nullable', 'integer'],
+            'is_canonical' => ['boolean'],
+            'canonical_product_category_id' => ['nullable', 'integer', 'min:1'],
             'sort_order' => ['required', 'integer', 'min:0'],
             'lft', 'rgt' => ['nullable', 'integer', 'min:0'],
             'external_reference', 'external_info', 'external_status' => ['nullable', 'string', 'max:255'],
@@ -241,11 +207,11 @@ class ProductGroupResource extends Resource
      */
     protected static function parentOptions(?Model $record): array
     {
-        /** @var Collection<int, ProductGroup> $groups */
-        $groups = ProductGroup::query()->with('translations')->orderBy('sort_order')->get();
+        /** @var Collection<int, ProductCategory> $groups */
+        $groups = ProductCategory::query()->with('translations')->orderBy('sort_order')->get();
         $excluded = [];
 
-        if ($record instanceof ProductGroup) {
+        if ($record instanceof ProductCategory) {
             $recordKey = static::integerKey($record);
 
             if ($recordKey !== null) {
@@ -270,7 +236,37 @@ class ProductGroupResource extends Resource
     }
 
     /**
-     * @param  Collection<int, ProductGroup>  $groups
+     * @return array<int, string>
+     */
+    protected static function canonicalOptions(?Model $record): array
+    {
+        /** @var Collection<int, ProductCategory> $groups */
+        $groups = ProductCategory::query()->with('translations')->orderBy('sort_order')->get();
+        $options = [];
+
+        foreach ($groups as $group) {
+            $key = static::integerKey($group);
+
+            if ($key === null || ($record instanceof ProductCategory && $record->is($group))) {
+                continue;
+            }
+
+            $title = $group->title;
+            $options[$key] = is_string($title) && $title !== '' ? $title : (string) $key;
+        }
+
+        return $options;
+    }
+
+    protected static function isReference(Get $get): bool
+    {
+        $value = $get('is_canonical');
+
+        return $value === true || $value === 1 || $value === '1';
+    }
+
+    /**
+     * @param  Collection<int, ProductCategory>  $groups
      * @return list<int>
      */
     protected static function descendantIds(Collection $groups, int $id): array
@@ -321,11 +317,18 @@ class ProductGroupResource extends Resource
 
         return $table
             ->columns([
+                CustomImageColumn::make('image')
+                    ->label(FeatureFields::label($translation, 'image'))
+                    ->conversion('thumbnail')
+                    ->stacked()
+                    ->limit(3)
+                    ->limitedRemainingText()
+                    ->height(40),
                 ...static::titleColumns(),
                 TextColumn::make('parent_id')
                     ->label(FeatureFields::label($translation, 'parent_id'))
                     ->formatStateUsing(function (mixed $state, Model $record): string {
-                        if (! $record instanceof ProductGroup || ! $record->parent instanceof ProductGroup) {
+                        if (! $record instanceof ProductCategory || ! $record->parent instanceof ProductCategory) {
                             return '';
                         }
 
@@ -362,10 +365,10 @@ class ProductGroupResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListProductGroups::route('/'),
-            'create' => CreateProductGroup::route('/create'),
-            'view' => ViewProductGroup::route('/{record}'),
-            'edit' => EditProductGroup::route('/{record}/edit'),
+            'index' => ListProductCategories::route('/'),
+            'create' => CreateProductCategory::route('/create'),
+            'view' => ViewProductCategory::route('/{record}'),
+            'edit' => EditProductCategory::route('/{record}/edit'),
         ];
     }
 }

@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Moox\ProductGroup;
+namespace Moox\ProductCategory;
 
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
-class ProductGroupServiceProvider extends MooxServiceProvider
+class ProductCategoryServiceProvider extends MooxServiceProvider
 {
     public function configureMoox(Package $package): void
     {
         $package
-            ->name('productgroup')
+            ->name('productcategory')
             ->hasConfigFile()
             ->hasTranslations()
             ->hasMigrations(
-                'create_productgroups_table',
-                'create_productgroup_translations_table',
+                'create_productcategories_table',
+                'create_productcategory_translations_table',
             );
     }
 }
