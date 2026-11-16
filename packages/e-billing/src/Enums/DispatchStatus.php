@@ -18,6 +18,8 @@ enum DispatchStatus: string
     case Held = 'held';
     case AwaitingApproval = 'awaiting_approval';
     case Rejected = 'rejected';
+    /** A reviewer marked the document foreign: rejected on purpose, never sent as an e-invoice (ADR 0024). */
+    case MarkedForeign = 'marked_foreign';
 
     /**
      * Null while the document is not ready to be sent (no approval state yet).
@@ -35,7 +37,7 @@ enum DispatchStatus: string
 
         return match ($document->resolveApprovalStatusEnum()) {
             DocumentApprovalStatus::Pending => $document->isHeldForApproval() ? self::Held : self::AwaitingApproval,
-            DocumentApprovalStatus::Rejected => self::Rejected,
+            DocumentApprovalStatus::Rejected => $document->isMarkedForeign() ? self::MarkedForeign : self::Rejected,
             default => null,
         };
     }
@@ -62,7 +64,12 @@ enum DispatchStatus: string
                 ->where('approval_status', DocumentApprovalStatus::Pending->value)
                 ->whereNull('approval_flags->held'),
             self::Rejected => $documentQuery->doesntHave('deliveryAttempts')
-                ->where('approval_status', DocumentApprovalStatus::Rejected->value),
+                ->where('approval_status', DocumentApprovalStatus::Rejected->value)
+                ->whereNull('ignored_reason->marked_by'),
+            self::MarkedForeign => $documentQuery->doesntHave('deliveryAttempts')
+                ->where('approval_status', DocumentApprovalStatus::Rejected->value)
+                ->where('gateway_status', EBillingAttachmentProcessingStatus::IgnoredForeign->value)
+                ->whereNotNull('ignored_reason->marked_by'),
         };
     }
 
@@ -77,7 +84,7 @@ enum DispatchStatus: string
             self::Sent => 'success',
             self::DeliveryFailed => 'danger',
             self::Held, self::AwaitingApproval => 'warning',
-            self::Rejected => 'gray',
+            self::Rejected, self::MarkedForeign => 'gray',
         };
     }
 }

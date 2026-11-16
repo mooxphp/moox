@@ -37,7 +37,9 @@ final class ConfirmInvoiceAction
             ? $invoice->ebillingDocument
             : EbillingDocument::query()->where('invoice_id', $invoice->id)->first();
 
-        if (! $document instanceof EbillingDocument) {
+        // An ignored document (e.g. one a reviewer marked foreign) is settled; confirming it would make its unsent
+        // draft the current version and try to approve it.
+        if (! $document instanceof EbillingDocument || $document->gateway_status?->isIgnored() === true) {
             return $this->failure();
         }
 

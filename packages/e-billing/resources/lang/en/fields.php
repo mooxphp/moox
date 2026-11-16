@@ -253,6 +253,7 @@ return [
     'dispatch_status_held' => 'Held',
     'dispatch_status_awaiting_approval' => 'Awaiting approval',
     'dispatch_status_rejected' => 'Rejected',
+    'dispatch_status_marked_foreign' => 'Foreign – not sent',
     'approval_status_approved' => 'Approved for dispatch',
     'approval_status_rejected' => 'Rejected',
     'approval_reason' => 'Reason',
@@ -272,6 +273,30 @@ return [
     'notification_reject_success_body' => 'The rejection was recorded.',
     'notification_restore_success_title' => 'Document restored',
     'notification_restore_success_body' => 'The document is pending approval again.',
+    'action_mark_foreign' => 'Mark as foreign',
+    'action_mark_foreign_modal_heading' => 'Mark as a foreign document?',
+    'action_mark_foreign_modal_description' => 'No e-invoice is sent; the draft is kept unsent. A mailed document is '
+        .'relayed to its recipient as the original PDF when the disposition is forward; for an upload the uploader '
+        .'is notified. This cannot be undone.',
+    'action_mark_foreign_submit' => 'Mark as foreign',
+    'notification_mark_foreign_success_title' => 'Marked as foreign',
+    'notification_mark_foreign_success_body' => 'The document is settled as a foreign document.',
+    'notification_mark_foreign_relayed_body' => 'No e-invoice. The original PDF was relayed to :recipient.',
+    'notification_mark_foreign_not_relayed_body' => 'No e-invoice and nothing was sent. Send the original PDF the '
+        .'usual way.',
+    'notification_mark_foreign_failed_title' => 'Marking failed',
+    'notification_mark_foreign_failed_body' => 'The document could not be marked as foreign, e.g. because relaying '
+        .'the original PDF failed. Please try again later.',
+    'approval_reason_marked_foreign' => 'Marked as a foreign document',
+    'banner_marked_foreign' => 'Marked as a foreign document (:country) on :date – no e-invoice sent',
+    'banner_held_foreign_unclear' => 'Held – foreign classification unclear: :reason. Approve it as domestic or '
+        .'mark it as foreign.',
+    'foreign_unclear_reason' => [
+        'unclear_foreign_vat_charged' => 'billed to :country with VAT charged (:vat) but no domestic VAT id (:vat_id)',
+        'unclear_domestic_vat_id_without_vat' => 'billed to :country with a domestic VAT id (:vat_id) but no VAT',
+        'unclear_net_only' => 'no country recognised and net amounts only',
+    ],
+    'foreign_unclear_no_vat_id' => 'none',
 
     // Actions
     'action_details' => 'Details',

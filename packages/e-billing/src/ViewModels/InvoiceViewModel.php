@@ -222,12 +222,39 @@ final class InvoiceViewModel
     }
 
     /**
+     * Why the foreign classification is unclear, from the signals kept by {@see EbillingDocument::flagForeignReview()}.
+     */
+    private function foreignUnclearBanner(EbillingDocument $document): string
+    {
+        $review = $document->foreignReview() ?? [];
+        $vat = $review['vat_amount'] ?? null;
+
+        return __('e-billing::fields.banner_held_foreign_unclear', [
+            'reason' => __('e-billing::fields.foreign_unclear_reason.'.($review['matched_rule'] ?? ''), [
+                'country' => $review['country'] ?? '?',
+                'vat' => $vat !== null ? number_format($vat, 2, ',', '.') : '?',
+                'vat_id' => $review['customer_vat_id'] ?? __('e-billing::fields.foreign_unclear_no_vat_id'),
+            ]),
+        ]);
+    }
+
+    /**
      * @return array{color: string, text: string}
      */
     public function statusBanner(): array
     {
         // The approval decision supersedes the review stage, e.g. "confirmed, waiting for approval".
         $approval = $this->document?->resolveApprovalStatusEnum();
+        if ($approval === DocumentApprovalStatus::Rejected && $this->document->isMarkedForeign()) {
+            return [
+                'color' => 'blue',
+                'text' => __('e-billing::fields.banner_marked_foreign', [
+                    'country' => $this->document->ignored_reason['country'] ?? '?',
+                    'date' => $this->document->approval_acted_at?->format('d.m.Y') ?? '?',
+                ]),
+            ];
+        }
+
         if ($approval === DocumentApprovalStatus::Approved || $approval === DocumentApprovalStatus::Rejected) {
             return [
                 'color' => $approval === DocumentApprovalStatus::Approved ? 'green' : 'red',
@@ -238,9 +265,11 @@ final class InvoiceViewModel
         if ($approval === DocumentApprovalStatus::Pending && $this->document?->isHeldForApproval()) {
             return [
                 'color' => 'yellow',
-                'text' => $this->document->heldForApprovalReason() === 'format_preference_unavailable'
-                    ? __('e-billing::fields.banner_held_format_preference_unavailable')
-                    : __('e-billing::fields.banner_held_for_approval'),
+                'text' => match ($this->document->heldForApprovalReason()) {
+                    'format_preference_unavailable' => __('e-billing::fields.banner_held_format_preference_unavailable'),
+                    EbillingDocument::HOLD_REASON_FOREIGN_UNCLEAR => $this->foreignUnclearBanner($this->document),
+                    default => __('e-billing::fields.banner_held_for_approval'),
+                },
             ];
         }
 

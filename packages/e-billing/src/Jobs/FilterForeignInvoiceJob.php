@@ -11,9 +11,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Moox\EBilling\Actions\MarkDocumentForeignAction;
 use Moox\EBilling\Actions\RelayForeignSourcePdfAction;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\ForeignDisposition;
+use Moox\EBilling\Enums\InvoiceOriginRule;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Models\UploadedPdfSource;
 use Moox\EBilling\Support\ForeignInvoiceClassifier;
@@ -151,17 +153,15 @@ final class FilterForeignInvoiceJob implements ShouldQueue
         $classification = $classifier->appliesTo(ForeignInvoiceClassifier::SOURCE_MAIL)
             ? $classifier->classify($billData)
             : null;
-        if ($classification !== null && $classification['is_foreign']) {
+        $markedTwin = $classification !== null ? $this->markedForeignTwin($document, $classification) : null;
+        if ($classification !== null && ($classification['is_foreign'] || $markedTwin !== null)) {
             $this->setProgress(60);
 
             $country = $classification['country'];
             $matchedRule = $classification['matched_rule']->value;
             $disposition = ForeignDisposition::fromConfig();
 
-            $this->settleIgnored($drivers, $document, $attachment, $message, $disposition, EBillingAttachmentProcessingStatus::IgnoredForeign, [
-                'country' => $country,
-                'matched_rule' => $matchedRule,
-            ]);
+            $this->settleIgnored($drivers, $document, $attachment, $message, $disposition, EBillingAttachmentProcessingStatus::IgnoredForeign, $this->foreignReason($classification, $markedTwin));
 
             Log::info(
                 'Foreign invoice '.$disposition->value.': attachment=#'.$attachment->id.' country='
@@ -191,6 +191,10 @@ final class FilterForeignInvoiceJob implements ShouldQueue
             $this->setProgress(100);
 
             return;
+        }
+
+        if ($classification !== null) {
+            $this->flagIfUnclear($document, $classification, $billData);
         }
 
         $this->dispatchGenerateArtifact($document);
@@ -249,7 +253,8 @@ final class FilterForeignInvoiceJob implements ShouldQueue
 
     /**
      * A foreign upload has no inbox message to settle or relay: it ends ignored, and the uploader is told
-     * to send the original PDF the usual way, whatever the disposition.
+     * to send the original PDF the usual way, whatever the disposition. An unclear upload is flagged and
+     * held for a person, then generated like a domestic one.
      */
     private function ignoreForeignUpload(ForeignInvoiceClassifier $classifier, EbillingDocument $document): bool
     {
@@ -264,13 +269,15 @@ final class FilterForeignInvoiceJob implements ShouldQueue
         }
 
         $classification = $classifier->classify($billData);
-        if (! $classification['is_foreign']) {
+        $markedTwin = $this->markedForeignTwin($document, $classification);
+        if (! $classification['is_foreign'] && $markedTwin === null) {
+            $this->flagIfUnclear($document, $classification, $billData);
+
             return false;
         }
 
         $document->ignored_reason = [
-            'country' => $classification['country'],
-            'matched_rule' => $classification['matched_rule']->value,
+            ...$this->foreignReason($classification, $markedTwin),
             'classified_at' => now()->utc()->toIso8601String(),
         ];
         $document->gateway_status = EBillingAttachmentProcessingStatus::IgnoredForeign;
@@ -283,6 +290,58 @@ final class FilterForeignInvoiceJob implements ShouldQueue
             .' matched_rule='.$classification['matched_rule']->value);
 
         return true;
+    }
+
+    /**
+     * @param  array{is_foreign: bool, country: ?string, matched_rule: InvoiceOriginRule}  $classification
+     * @param  array<string, mixed>  $billData
+     */
+    private function flagIfUnclear(EbillingDocument $document, array $classification, array $billData): void
+    {
+        if (! $classification['matched_rule']->needsReview()) {
+            return;
+        }
+
+        $document->flagForeignReview($classification, $billData);
+        $document->save();
+    }
+
+    /**
+     * The `ignored_reason` of a foreign document; one that took a reviewer's decision points to that document.
+     *
+     * @param  array{is_foreign: bool, country: ?string, matched_rule: InvoiceOriginRule}  $classification
+     * @return array<string, string|null>
+     */
+    private function foreignReason(array $classification, ?EbillingDocument $markedTwin): array
+    {
+        $reason = ['country' => $classification['country'], 'matched_rule' => $classification['matched_rule']->value];
+        if ($markedTwin !== null) {
+            $reason['matched_document_id'] = (string) $markedTwin->getKey();
+        }
+
+        return $reason;
+    }
+
+    /**
+     * For an unclear document: an earlier document with the same source PDF bytes that a reviewer marked foreign
+     * ({@see MarkDocumentForeignAction}). The same PDF takes that decision instead of a second review.
+     *
+     * @param  array{is_foreign: bool, country: ?string, matched_rule: InvoiceOriginRule}  $classification
+     */
+    private function markedForeignTwin(EbillingDocument $document, array $classification): ?EbillingDocument
+    {
+        $hash = $document->source_content_hash;
+        if (! $classification['matched_rule']->needsReview() || ! is_string($hash) || $hash === '') {
+            return null;
+        }
+
+        return EbillingDocument::query()
+            ->whereKeyNot($document->getKey())
+            ->where('source_content_hash', $hash)
+            ->where('gateway_status', EBillingAttachmentProcessingStatus::IgnoredForeign)
+            ->whereNotNull('ignored_reason->marked_by')
+            ->orderBy('created_at')
+            ->first();
     }
 
     /**

@@ -31,6 +31,7 @@ use Moox\EBilling\Actions\ClassifyDocumentTypeAction;
 use Moox\EBilling\Actions\ConfirmInvoiceAction;
 use Moox\EBilling\Actions\CorrectFieldValueAction;
 use Moox\EBilling\Actions\LeaveEditAction;
+use Moox\EBilling\Actions\MarkDocumentForeignAction;
 use Moox\EBilling\Actions\QueueDocumentDeliveryAction;
 use Moox\EBilling\Actions\RejectDocumentAction;
 use Moox\EBilling\Actions\RestoreRejectedDocumentAction;
@@ -306,7 +307,8 @@ class ViewInvoice extends ViewRecord
                 })
                 ->modalSubmitActionLabel(__('e-billing::fields.action_confirm_submit'))
                 ->visible(fn (): bool => ! $this->reviewEditing
-                    && $document?->review_status === InvoiceProcessingStatus::DbValidated)
+                    && $document?->review_status === InvoiceProcessingStatus::DbValidated
+                    && $document->gateway_status?->isIgnored() !== true)
                 ->action(function () use ($record): void {
                     if (! $record instanceof Invoice) {
                         return;
@@ -407,6 +409,35 @@ class ViewInvoice extends ViewRecord
                     );
 
                     $this->reviewEditing = false;
+                }),
+            // Only on a document whose foreign classification was unclear (`e-billing.foreign.review_unclear`).
+            Action::make('mark_foreign')
+                ->label(__('e-billing::fields.action_mark_foreign'))
+                ->icon(Heroicon::OutlinedGlobeEuropeAfrica)
+                ->color('warning')
+                ->requiresConfirmation()
+                ->modalHeading(__('e-billing::fields.action_mark_foreign_modal_heading'))
+                ->modalDescription(__('e-billing::fields.action_mark_foreign_modal_description'))
+                ->modalSubmitActionLabel(__('e-billing::fields.action_mark_foreign_submit'))
+                ->visible(fn (): bool => ! $this->reviewEditing
+                    && $document instanceof EbillingDocument
+                    && $document->awaitsForeignDecision())
+                ->action(function () use ($record, $document): void {
+                    if (! $document instanceof EbillingDocument) {
+                        return;
+                    }
+
+                    $this->runHeaderAction(
+                        $record,
+                        fn () => app(MarkDocumentForeignAction::class)->execute($document),
+                        'e-billing::fields.notification_mark_foreign_success_title',
+                        'e-billing::fields.notification_mark_foreign_success_body',
+                        'e-billing::fields.notification_mark_foreign_failed_title',
+                        'e-billing::fields.notification_mark_foreign_failed_body',
+                        fn (mixed $relayedTo): string => is_string($relayedTo)
+                            ? __('e-billing::fields.notification_mark_foreign_relayed_body', ['recipient' => $relayedTo])
+                            : __('e-billing::fields.notification_mark_foreign_not_relayed_body'),
+                    );
                 }),
             Action::make('restore_approval')
                 ->label(__('e-billing::fields.action_restore_approval'))
@@ -819,6 +850,10 @@ class ViewInvoice extends ViewRecord
         )));
     }
 
+    /**
+     * @param  (callable(mixed): string)|null  $successBody  builds the success body from the action's result; it
+     *                                                       also keeps the toast standing until it is closed
+     */
     private function runHeaderAction(
         Invoice $record,
         callable $action,
@@ -826,9 +861,10 @@ class ViewInvoice extends ViewRecord
         string $successBodyKey,
         string $failedTitleKey,
         string $failedBodyKey,
+        ?callable $successBody = null,
     ): void {
         try {
-            $action();
+            $result = $action();
         } catch (Throwable $exception) {
             report($exception);
 
@@ -841,11 +877,16 @@ class ViewInvoice extends ViewRecord
             return;
         }
 
-        Notification::make()
+        $notification = Notification::make()
             ->title(__($successTitleKey))
-            ->body(__($successBodyKey))
-            ->success()
-            ->send();
+            ->body($successBody !== null ? $successBody($result) : __($successBodyKey))
+            ->success();
+
+        if ($successBody !== null) {
+            $notification->persistent();
+        }
+
+        $notification->send();
 
         $record->load('ebillingDocument');
         // The banner and approve state render from the cached view models.

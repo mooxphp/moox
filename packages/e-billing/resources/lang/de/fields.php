@@ -254,6 +254,7 @@ return [
     'dispatch_status_held' => 'Angehalten',
     'dispatch_status_awaiting_approval' => 'Wartet auf Freigabe',
     'dispatch_status_rejected' => 'Abgelehnt',
+    'dispatch_status_marked_foreign' => 'Ausland – nicht versendet',
     'approval_status_approved' => 'Zum Versand freigegeben',
     'approval_status_rejected' => 'Abgelehnt',
     'approval_reason' => 'Begründung',
@@ -273,6 +274,33 @@ return [
     'notification_reject_success_body' => 'Die Ablehnung wurde erfasst.',
     'notification_restore_success_title' => 'Dokument wiederhergestellt',
     'notification_restore_success_body' => 'Das Dokument wartet erneut auf Freigabe.',
+    'action_mark_foreign' => 'Als Ausland markieren',
+    'action_mark_foreign_modal_heading' => 'Als Auslandsbeleg markieren?',
+    'action_mark_foreign_modal_description' => 'Es wird keine E-Rechnung versendet, der Entwurf bleibt unversendet '
+        .'erhalten. Ein per Mail eingegangener Beleg wird bei Weiterleitung als Original-PDF an den Empfänger '
+        .'weitergeleitet, bei einem Upload wird die hochladende Person benachrichtigt. Das lässt sich nicht '
+        .'rückgängig machen.',
+    'action_mark_foreign_submit' => 'Als Ausland markieren',
+    'notification_mark_foreign_success_title' => 'Als Ausland markiert',
+    'notification_mark_foreign_success_body' => 'Der Beleg ist als Auslandsbeleg abgeschlossen.',
+    'notification_mark_foreign_relayed_body' => 'Keine E-Rechnung. Das Original-PDF wurde an :recipient weitergeleitet.',
+    'notification_mark_foreign_not_relayed_body' => 'Keine E-Rechnung und nichts verschickt. Bitte das Original-PDF '
+        .'wie gewohnt versenden.',
+    'notification_mark_foreign_failed_title' => 'Markieren fehlgeschlagen',
+    'notification_mark_foreign_failed_body' => 'Der Beleg konnte nicht als Ausland markiert werden, z. B. weil die '
+        .'Weiterleitung des Original-PDFs fehlschlug. Bitte später erneut versuchen.',
+    'approval_reason_marked_foreign' => 'Als Auslandsbeleg markiert',
+    'banner_marked_foreign' => 'Als Auslandsbeleg markiert (:country) am :date – keine E-Rechnung versendet',
+    'banner_held_foreign_unclear' => 'Angehalten – Auslandseinstufung unklar: :reason. Bitte als Inland freigeben '
+        .'oder als Ausland markieren.',
+    'foreign_unclear_reason' => [
+        'unclear_foreign_vat_charged' => 'Rechnungsanschrift in :country mit ausgewiesener USt (:vat), aber ohne '
+            .'inländische USt-ID (:vat_id)',
+        'unclear_domestic_vat_id_without_vat' => 'Rechnungsanschrift in :country mit inländischer USt-ID (:vat_id), '
+            .'aber ohne USt',
+        'unclear_net_only' => 'kein Land erkennbar und nur Nettobeträge',
+    ],
+    'foreign_unclear_no_vat_id' => 'keine',
 
     // Actions
     'action_details' => 'Details',

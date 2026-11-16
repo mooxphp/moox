@@ -67,14 +67,26 @@ final class ForeignInvoiceClassifier
             return ['is_foreign' => false, 'country' => $country, 'matched_rule' => InvoiceOriginRule::CountryDetectedDe];
         }
 
+        $reviewUnclear = config('e-billing.foreign.review_unclear', false) === true;
+        $vatCharged = $vatAmount !== null && $vatAmount !== 0.0;
+
         if (config('e-billing.foreign.domestic_vat_id_makes_domestic', false) === true
             && $this->isDomestic($this->countryFromVatId($billData['customer_vat_id'] ?? null))) {
-            return ['is_foreign' => false, 'country' => $country, 'matched_rule' => InvoiceOriginRule::DomesticVatId];
+            // A domestic supply carries VAT; without it the VAT id alone does not decide.
+            $rule = $reviewUnclear && ! $vatCharged
+                ? InvoiceOriginRule::UnclearDomesticVatIdWithoutVat
+                : InvoiceOriginRule::DomesticVatId;
+
+            return ['is_foreign' => false, 'country' => $country, 'matched_rule' => $rule];
         }
 
         if ($country !== null) {
-            if (config('e-billing.foreign.require_zero_vat', false) === true && $vatAmount !== null && $vatAmount !== 0.0) {
+            if (config('e-billing.foreign.require_zero_vat', false) === true && $vatCharged) {
                 return ['is_foreign' => false, 'country' => $country, 'matched_rule' => InvoiceOriginRule::DomesticVatCharged];
+            }
+
+            if ($reviewUnclear && $vatCharged) {
+                return ['is_foreign' => false, 'country' => $country, 'matched_rule' => InvoiceOriginRule::UnclearForeignVatCharged];
             }
 
             return ['is_foreign' => true, 'country' => $country, 'matched_rule' => InvoiceOriginRule::CountryDetected];
@@ -82,7 +94,9 @@ final class ForeignInvoiceClassifier
 
         if (config('e-billing.foreign.net_only_without_country', true) === true
             && $this->isNetOnly($this->toNullableFloat($billData['gross_total'] ?? null), $vatAmount)) {
-            return ['is_foreign' => true, 'country' => null, 'matched_rule' => InvoiceOriginRule::NetOnly];
+            return $reviewUnclear
+                ? ['is_foreign' => false, 'country' => null, 'matched_rule' => InvoiceOriginRule::UnclearNetOnly]
+                : ['is_foreign' => true, 'country' => null, 'matched_rule' => InvoiceOriginRule::NetOnly];
         }
 
         return ['is_foreign' => false, 'country' => null, 'matched_rule' => InvoiceOriginRule::DefaultDe];
