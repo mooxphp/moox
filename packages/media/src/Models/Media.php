@@ -70,7 +70,10 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
     }
 
     /**
-     * Spatie Media Library rendering entrypoint (optionally with Moox delivery profile).
+     * Rendering entrypoint (Spatie-compatible API, Moox delivery by default).
+     *
+     * No conversion → delivery profile `web`. Explicit conversion → admin/preview `<img>`.
+     * Use `->profile(...)` for mail / customer_api / custom profiles (wins over conversion).
      *
      * @see https://spatie.be/docs/laravel-medialibrary/v11/advanced-usage/rendering-media
      *

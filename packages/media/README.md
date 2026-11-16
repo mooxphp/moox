@@ -215,26 +215,29 @@ Until conversions finish, payloads may fall back to the original when `fallback_
 - **SVG:** all ingest paths run through `MediaPostProcessor` → `SvgSanitizer` (`enshrined/svg-sanitize`). Prefer logos as `<img src="…svg">` (not inlined).
 - **Protected profiles:** when `fallback_to_original` is false, never use top-level `url` for external consumers — only `delivery.{profile}.url`. With `skip_static`, records tagged `static_path` are skipped.
 
-### Rendering (Spatie Media Library + Moox profiles)
+### Rendering (Spatie-compatible API, Moox delivery default)
 
-Uses Spatie’s rendering API and extends it with delivery profiles:
+`$media->img()` follows Spatie’s fluent API, but **defaults to Moox delivery** (profile `web`), not Spatie’s built-in responsive views. Delivery owns formats / `<picture>` / same-size / mail / API.
 
 ```blade
-{{-- Spatie-style conversion / original --}}
+{{-- Delivery (default = web) --}}
 {{ $media->img() }}
-{{ $media->img('thumb')->lazy()->attributes(['class' => 'rounded']) }}
-<x-media::img :media="$media" conversion="medium" class="rounded" lazy />
-
-{{-- Moox delivery profile (<picture> / same-size / mail / …) --}}
-{{ $media->img()->profile('web')->sizes('100vw')->alt('Hero') }}
+{{ $media->img()->sizes('100vw')->alt('Hero') }}
+{{ $media->img()->profile('mail') }}
+{{ $media->img()->profile('customer_api') }}
+<x-media::img :media="$media" sizes="100vw" alt="Hero" lazy />
 <x-media::picture :media="$media" profile="web" sizes="100vw" alt="Hero" />
+
+{{-- Admin / preview conversion only (simple <img>, no delivery <picture>) --}}
+{{ $media->img('thumbnail')->lazy()->attributes(['class' => 'rounded']) }}
+<x-media::img :media="$media" conversion="medium" class="rounded" lazy />
 ```
 
-Watermarks are applied via `Moox\Media\Support\MediaWatermark` (Spatie Image `watermark()`), only when a profile enables them and points at an **app** file path — never a package brand asset.
+If both `conversion(...)` and `profile(...)` are set, **profile wins**. Watermarks are applied via `Moox\Media\Support\MediaWatermark` (Spatie Image) only when a profile enables them with an **app** file path.
 
 ### Frontend handoff
 
-**Media provides:** config-driven delivery profiles, Spatie `img()` rendering + profile HTML, no-upscale rules, SVG sanitize + optional mail PNG, optional watermarks (app path), `<x-media::img>` / `<x-media::picture>`, variant UI. Resolve media via upload/CMS/MediaPicker (`Media::find` / relations).
+**Media provides:** config-driven delivery profiles, `$media->img()` defaulting to web delivery (+ explicit admin conversions), no-upscale rules, SVG sanitize + optional mail PNG, optional watermarks (app path), `<x-media::img>` / `<x-media::picture>`, variant UI. Resolve media via upload/CMS/MediaPicker (`Media::find` / relations).
 
 ## Using media on pages (all options)
 

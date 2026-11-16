@@ -100,7 +100,7 @@ Standard Laravel pagination (resource collection) with:
 
 ### Blade rendering (Spatie + Moox)
 
-`$media->img()` returns Moox `HtmlableMedia` (Spatie rendering API). Optional `->profile('web'|'mail'|…)` builds delivery HTML via `MediaPictureBuilder`. Watermarks are applied only when a profile enables `MediaWatermark` with an app-owned file path.
+`$media->img()` returns Moox `HtmlableMedia`. **Without a conversion name it defaults to delivery profile `web`** via `MediaPictureBuilder`. Use `->profile('mail'|'customer_api'|…)` for other profiles; `img('thumbnail')` is admin/preview only (simple `<img>`). If both conversion and profile are set, profile wins. Watermarks apply only when a profile enables `MediaWatermark` with an app-owned file path.
 
 ##### `picture` / `delivery.web`
 
