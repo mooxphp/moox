@@ -147,6 +147,7 @@ EBILLING_DOCUMENT_LOCALE=en
 
 Override `supplier` in your published `config/e-billing.php` with your company details (name, VAT ID, address, bank accounts). Values are snapshotted onto each `Invoice` when `GenerateArtifactJob` creates the record.
 
+Optional seller keys `legal_registration_id` (BT-30, e.g. the commercial register number) and `additional_legal_information` (BT-33, e.g. register court and managing directors) are snapshotted onto the invoice seller party and emitted. The profiles list them as `supplier_legal_registration_id` and `supplier_additional_legal_information` (`could` by default). If a parser reports printed text for a `supplier_*` field in `unrecognized_fields`, the field is flagged for review with the reason `printed_differs_from_config`, because the seller values come from config.
 ### `default_customer_country`
 
 When the parser cannot derive a buyer country from the PDF, this ISO code is used as a fallback for domestic classification. It also fills an empty country on the document delivery address and on each line delivery address that has a street, postal code or city (a country printed there is kept; a name-only line consignee gets none), so a consignee equal to the buyer is recognised and omitted from the ship-to party. It is transitional and will be replaced by Company / Address master-data lookup.
@@ -166,6 +167,11 @@ $this->app->bind(InvoiceParserInterface::class, YourParser::class);
 ```
 
 The parser receives extracted PDF text (from `moox/pdf-parser`) and returns a `Moox\EBilling\Data\Invoice` DTO. The host is responsible for persisting `bill_data` on the `EbillingDocument` before the pipeline jobs run.
+
+Parser notes:
+
+- Line `buyerArticleNumber` (BT-156) sits next to `articleNumber` (BT-155) on `Data\InvoiceLine`.
+- Line extras (`material`, `materialTestCertificate`, `weightKgTotal`, `weightKgNet`) reach the line model only when the parser fills them, so the host line model needs columns only for what it fills.
 
 ## Buyer master data
 

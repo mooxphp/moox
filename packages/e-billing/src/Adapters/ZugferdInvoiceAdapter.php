@@ -122,6 +122,14 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
         get => $this->model->seller?->tax_number;
     }
 
+    public ?string $supplierLegalRegistrationId {
+        get => $this->model->seller?->legal_registration_id;
+    }
+
+    public ?string $supplierAdditionalLegalInformation {
+        get => $this->model->seller?->additional_legal_information;
+    }
+
     public ?string $supplierNumber {
         get => $this->model->supplier_number !== null
             ? (string) $this->model->supplier_number

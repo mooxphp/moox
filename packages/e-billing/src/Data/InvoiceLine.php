@@ -67,6 +67,8 @@ class InvoiceLine implements ZugferdInvoiceLine
          * @var array<string, string>
          */
         public array $unrecognizedFields = [],
+        /** BT-156 the buyer's article number, next to the seller's in `articleNumber` (BT-155). */
+        public ?string $buyerArticleNumber = null,
     ) {
         $this->partialDeliveries = PartialDeliveries::normalize($this->partialDeliveries);
 
@@ -143,6 +145,7 @@ class InvoiceLine implements ZugferdInvoiceLine
             partialDeliveries: PartialDeliveries::normalize($data['deliveries'] ?? null),
             isNonGoods: ($data['is_non_goods'] ?? false) === true,
             unrecognizedFields: UnrecognizedFields::normalize($data['unrecognized_fields'] ?? null),
+            buyerArticleNumber: is_string($data['buyer_article_number'] ?? null) ? $data['buyer_article_number'] : null,
         );
     }
 
@@ -156,6 +159,7 @@ class InvoiceLine implements ZugferdInvoiceLine
             'description' => $this->description,
             'description_detail' => $this->descriptionDetail,
             'article_number' => $this->articleNumber,
+            'buyer_article_number' => $this->buyerArticleNumber,
             'material' => $this->material,
             'material_test_certificate' => $this->materialTestCertificate,
             'material_test_certificate_price' => $this->materialTestCertificatePrice,

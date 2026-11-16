@@ -106,6 +106,10 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
         get => $this->line->article_number;
     }
 
+    public ?string $buyerArticleNumber {
+        get => $this->line->buyer_article_number;
+    }
+
     public float $unitPrice {
         get => (float) $this->line->unit_price;
     }

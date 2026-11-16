@@ -36,6 +36,8 @@ class EBilling
         $invoice->supplierPhone = $supplier['phone'] ?? null;
         $invoice->supplierEmail = $supplier['email'] ?? null;
         $invoice->supplierBankAccounts = $supplier['bank_accounts'] ?? [];
+        $invoice->supplierLegalRegistrationId = $supplier['legal_registration_id'] ?? null;
+        $invoice->supplierAdditionalLegalInformation = $supplier['additional_legal_information'] ?? null;
 
         return $invoice;
     }

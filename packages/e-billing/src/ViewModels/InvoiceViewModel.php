@@ -58,6 +58,7 @@ final class InvoiceViewModel
                 'subtitle' => 'BG-4',
                 'fields' => $this->buildFields([
                     'supplier_name', 'supplier_number', 'supplier_vat_id', 'supplier_tax_number',
+                    'supplier_legal_registration_id', 'supplier_additional_legal_information',
                     'supplier_address', 'supplier_bank_accounts', 'supplier_email', 'supplier_phone', 'payment_means', 'agent',
                 ]),
             ],
@@ -496,6 +497,8 @@ final class InvoiceViewModel
             'supplier_name' => $this->invoice->seller?->name,
             'supplier_vat_id' => $this->invoice->seller?->vat_id,
             'supplier_tax_number' => $this->invoice->seller?->tax_number,
+            'supplier_legal_registration_id' => $this->invoice->seller?->legal_registration_id,
+            'supplier_additional_legal_information' => $this->invoice->seller?->additional_legal_information,
             'supplier_address' => PartyAddressFormatter::format($this->invoice->seller),
             'agent' => $this->invoice->seller?->contact?->name,
             'supplier_email' => $this->invoice->seller?->contact?->email,

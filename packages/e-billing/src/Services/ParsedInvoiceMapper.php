@@ -210,6 +210,7 @@ class ParsedInvoiceMapper
             description: $dto->description,
             description_detail: $dto->descriptionDetail,
             article_number: $dto->articleNumber,
+            buyer_article_number: $dto->buyerArticleNumber,
             customs_tariff_number: $dto->customsTariffNumber,
             unit_price: $dto->unitPrice,
             line_total: $dto->lineTotal,
@@ -238,6 +239,8 @@ class ParsedInvoiceMapper
             taxNumber: $dto->supplierTaxNumber,
             address: $dto->supplierAddress,
             contact: $this->mapSellerContact($dto),
+            legalRegistrationId: $dto->supplierLegalRegistrationId,
+            additionalLegalInformation: $dto->supplierAdditionalLegalInformation,
         );
     }
 
@@ -294,6 +297,8 @@ class ParsedInvoiceMapper
         ?string $taxNumber,
         ?Address $address,
         ?Contact $contact,
+        ?string $legalRegistrationId = null,
+        ?string $additionalLegalInformation = null,
     ): ?Party {
         $trimmedName = trim($name);
         if ($trimmedName === '') {
@@ -311,6 +316,8 @@ class ParsedInvoiceMapper
             tax_number: $taxNumber,
             address: $en16931Address,
             contact: $contact,
+            legal_registration_id: $legalRegistrationId,
+            additional_legal_information: $additionalLegalInformation,
         );
     }
 

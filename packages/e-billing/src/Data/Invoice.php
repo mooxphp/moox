@@ -114,6 +114,12 @@ class Invoice
 
         /** BT-97 of the document discount as printed; without it the reason text is generated from the percentage. */
         public ?string $discountReason = null,
+
+        /** BT-30 seller legal registration identifier, e.g. the commercial register number. */
+        public ?string $supplierLegalRegistrationId = null,
+
+        /** BT-33 seller additional legal information, e.g. register court and managing directors. */
+        public ?string $supplierAdditionalLegalInformation = null,
     ) {
         $this->customerVatId = VatIdNormalizer::normalize($this->customerVatId);
         $this->supplierVatId = VatIdNormalizer::normalize($this->supplierVatId);
@@ -215,6 +221,9 @@ class Invoice
             vatRate: $data['vat_rate'] ?? 19.0,
             vatAmount: $data['vat_amount'] ?? 0,
             grossTotal: $data['gross_total'] ?? 0,
+
+            supplierLegalRegistrationId: $supplier['legal_registration_id'] ?? null,
+            supplierAdditionalLegalInformation: $supplier['additional_legal_information'] ?? null,
         );
 
         $invoice->applyDefaultCustomerCountry();
@@ -345,6 +354,12 @@ class Invoice
             currency: is_string($data['currency'] ?? null) && $data['currency'] !== '' ? $data['currency'] : 'EUR',
             documentCharges: is_array($data['document_charges'] ?? null) ? $data['document_charges'] : [],
             discountReason: is_string($data['discount_reason'] ?? null) ? $data['discount_reason'] : null,
+            supplierLegalRegistrationId: is_string($data['supplier_legal_registration_id'] ?? null)
+                ? $data['supplier_legal_registration_id']
+                : null,
+            supplierAdditionalLegalInformation: is_string($data['supplier_additional_legal_information'] ?? null)
+                ? $data['supplier_additional_legal_information']
+                : null,
         );
 
         $invoice->applyDefaultCustomerCountry();
@@ -377,6 +392,12 @@ class Invoice
         $this->supplierPhone = is_string($supplier['phone'] ?? null) ? $supplier['phone'] : null;
         $this->supplierEmail = is_string($supplier['email'] ?? null) ? $supplier['email'] : null;
         $this->supplierBankAccounts = is_array($supplier['bank_accounts'] ?? null) ? $supplier['bank_accounts'] : [];
+        $this->supplierLegalRegistrationId = is_string($supplier['legal_registration_id'] ?? null)
+            ? $supplier['legal_registration_id']
+            : null;
+        $this->supplierAdditionalLegalInformation = is_string($supplier['additional_legal_information'] ?? null)
+            ? $supplier['additional_legal_information']
+            : null;
         $this->applyDefaultCustomerCountry();
     }
 
@@ -437,6 +458,8 @@ class Invoice
             'supplier_tax_number' => $this->supplierTaxNumber,
             'supplier_address' => $this->supplierAddress?->toArray(),
             'supplier_number' => $this->supplierNumber,
+            'supplier_legal_registration_id' => $this->supplierLegalRegistrationId,
+            'supplier_additional_legal_information' => $this->supplierAdditionalLegalInformation,
             'supplier_phone' => $this->supplierPhone,
             'supplier_email' => $this->supplierEmail,
             'supplier_bank_accounts' => $this->supplierBankAccounts,
