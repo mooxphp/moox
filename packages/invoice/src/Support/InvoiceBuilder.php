@@ -91,6 +91,10 @@ class InvoiceBuilder
             : null;
         $line->description_detail = $lineDraft->description_detail;
         $line->article_number = $lineDraft->article_number;
+        // Written only when set, so hosts that have not published the column yet keep working.
+        if ($lineDraft->buyer_article_number !== null) {
+            $line->buyer_article_number = $lineDraft->buyer_article_number;
+        }
         $line->customs_tariff_number = $lineDraft->customs_tariff_number;
         $line->unit_price = (string) $lineDraft->unit_price;
         $line->line_total = (string) $lineDraft->line_total;

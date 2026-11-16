@@ -20,6 +20,7 @@ use Moox\Invoice\Support\InvoiceModels;
  * @property string|null $unit_code
  * @property list<array{date: ?string, delivery_note: ?string, quantity: ?float}>|null $deliveries Partial deliveries
  * @property bool $is_non_goods Bills or credits an amount, not an article; set explicitly, never derived
+ * @property string|null $buyer_article_number The buyer's article number (BT-156)
  */
 class InvoiceLine extends BaseItemModel
 {
@@ -42,6 +43,7 @@ class InvoiceLine extends BaseItemModel
         'description',
         'description_detail',
         'article_number',
+        'buyer_article_number',
         'customs_tariff_number',
         'unit_price',
         'line_total',
