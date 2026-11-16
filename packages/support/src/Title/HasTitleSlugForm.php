@@ -11,17 +11,23 @@ use Moox\Support\Filament\FeatureFields;
 
 trait HasTitleSlugForm
 {
+    protected static function titleSlugIsRequired(): bool
+    {
+        return true;
+    }
+
     /**
      * @return list<TextInput>
      */
     protected static function titleSlugFields(): array
     {
         $translation = static::featureTranslation();
+        $required = static::titleSlugIsRequired();
 
         return [
             TextInput::make('title')
                 ->label(FeatureFields::label($translation, 'title'))
-                ->required()
+                ->required($required)
                 ->maxLength(255)
                 ->live(onBlur: true)
                 ->afterStateUpdated(function (?string $state, Set $set): void {
@@ -34,7 +40,7 @@ trait HasTitleSlugForm
                 ->rules(static::featureRules('title')),
             TextInput::make('slug')
                 ->label(FeatureFields::label($translation, 'slug'))
-                ->required()
+                ->required($required)
                 ->maxLength(255)
                 ->rules(static::featureRules('slug')),
         ];

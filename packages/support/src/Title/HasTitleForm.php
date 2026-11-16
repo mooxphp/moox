@@ -6,6 +6,7 @@ namespace Moox\Support\Title;
 
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,24 +23,48 @@ trait HasTitleForm
     {
         $translation = static::featureTranslation();
 
+        $repeater = Repeater::make('translations')
+            ->label(FeatureFields::label($translation, 'translations'))
+            ->relationship()
+            ->schema([
+                Select::make('locale')
+                    ->label(FeatureFields::label($translation, 'locale'))
+                    ->options(static::titleLocaleOptions())
+                    ->required()
+                    ->searchable()
+                    ->disableOptionsWhenSelectedInSiblingRepeaterItems(),
+                ...static::titleSlugFields(),
+                ...static::titleTranslationExtraFields(),
+            ])
+            ->columns(3)
+            ->columnSpanFull();
+
+        $minItems = static::titleTranslationsMinItems();
+
+        if ($minItems !== null) {
+            $repeater->minItems($minItems);
+        }
+
         return Section::make(FeatureFields::label($translation, 'titles'))
             ->schema([
-                Repeater::make('translations')
-                    ->label(FeatureFields::label($translation, 'translations'))
-                    ->relationship()
-                    ->schema([
-                        Select::make('locale')
-                            ->label(FeatureFields::label($translation, 'locale'))
-                            ->options(static::titleLocaleOptions())
-                            ->required()
-                            ->searchable()
-                            ->disableOptionsWhenSelectedInSiblingRepeaterItems(),
-                        ...static::titleSlugFields(),
-                    ])
-                    ->columns(3)
-                    ->minItems(1)
-                    ->columnSpanFull(),
+                $repeater,
             ]);
+    }
+
+    /**
+     * Extra fields inside the translations repeater, after title/slug.
+     * Opt in via HasTitleDescriptionForm or a package override.
+     *
+     * @return list<Component>
+     */
+    protected static function titleTranslationExtraFields(): array
+    {
+        return [];
+    }
+
+    protected static function titleTranslationsMinItems(): ?int
+    {
+        return 1;
     }
 
     /**
