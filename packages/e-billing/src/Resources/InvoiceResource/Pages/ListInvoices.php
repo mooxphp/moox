@@ -8,12 +8,14 @@ use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Base\BaseInListPage;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInListPage;
+use Moox\EBilling\Resources\Concerns\FlushesPendingUploadToasts;
 use Moox\EBilling\Resources\Concerns\HasEBillingDocumentListTabs;
 use Moox\EBilling\Resources\InvoiceResource;
 
 final class ListInvoices extends ListRecords
 {
     use BaseInListPage;
+    use FlushesPendingUploadToasts;
     use HasEBillingDocumentListTabs;
     use SingleSoftDeleteInListPage;
 

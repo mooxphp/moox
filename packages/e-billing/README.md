@@ -173,6 +173,7 @@ Rules, first match wins:
 The billing country comes from `billing_country`, then the customer address country, then the buyer VAT id prefix. The matched rule is stored in `ignored_reason`.
 
 A foreign manual upload has no inbox message, so `disposition` does not apply: the document always ends `IgnoredForeign`, nothing is relayed, and the uploader gets a Filament database notification to send the original PDF the usual way. For the notification, run the `notifications` table migration and call `databaseNotifications()` on the panel; if the table is missing, no notification is sent.
+A foreign manual upload has no inbox message, so `disposition` does not apply: the document always ends `IgnoredForeign`, nothing is relayed, and the uploader gets a Filament database notification to send the original PDF the usual way. For the notification, run the `notifications` table migration and call `databaseNotifications()` on the panel; if the table is missing, no notification is sent. The uploader also gets the same text as a standing toast on their next request on the invoice or credit-note list (`Support\PendingUploadToasts`, flushed by the `FlushesPendingUploadToasts` page trait); the identical-credit-note notice uses the same queue. When a reviewer marks an upload foreign, the action's own standing toast says whether the PDF was relayed (to which address) or must be sent the usual way, and the uploader keeps only the bell entry.
 
 ### `default_customer_country`
 

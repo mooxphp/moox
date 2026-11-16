@@ -20,7 +20,7 @@ use Throwable;
 
 /**
  * Identical-content discard feedback:
- * - Credit notes (manual upload): Filament toast for the uploader
+ * - Credit notes (manual upload): standing toast for the uploader ({@see PendingUploadToasts})
  * - Invoices (usually mail ingest): Filament database notifications
  */
 final class IdenticalDuplicateNotifier
@@ -28,8 +28,6 @@ final class IdenticalDuplicateNotifier
     private const CREDIT_NOTE_DOCUMENT_TYPE = '381';
 
     private const USER_CACHE_PREFIX = 'ebilling.identical_duplicate.user.';
-
-    private const TOAST_CACHE_PREFIX = 'ebilling.identical_duplicate.toast.';
 
     private const CACHE_TTL_SECONDS = 86400;
 
@@ -64,35 +62,6 @@ final class IdenticalDuplicateNotifier
         $this->sendInvoiceDatabaseNotifications($rememberedUserId, $title, $body);
     }
 
-    public function flushPendingToastForCurrentUser(): void
-    {
-        $userId = $this->currentUserId();
-
-        if ($userId === null) {
-            return;
-        }
-
-        $payload = Cache::pull($this->toastCacheKey($userId));
-
-        if (! is_array($payload)) {
-            return;
-        }
-
-        $title = $payload['title'] ?? null;
-        $body = $payload['body'] ?? null;
-
-        if (! is_string($title) || $title === '') {
-            return;
-        }
-
-        Notification::make()
-            ->title($title)
-            ->body(is_string($body) ? $body : null)
-            ->warning()
-            ->persistent()
-            ->send();
-    }
-
     private function isCreditNote(Invoice $matchedInvoice): bool
     {
         return (string) ($matchedInvoice->document_type ?? '') === self::CREDIT_NOTE_DOCUMENT_TYPE;
@@ -113,10 +82,7 @@ final class IdenticalDuplicateNotifier
             return;
         }
 
-        Cache::put($this->toastCacheKey($userId), [
-            'title' => $title,
-            'body' => $body,
-        ], self::CACHE_TTL_SECONDS);
+        app(PendingUploadToasts::class)->push($userId, $title, $body);
     }
 
     private function sendInvoiceDatabaseNotifications(?string $rememberedUserId, string $title, string $body): void
@@ -256,10 +222,5 @@ final class IdenticalDuplicateNotifier
     private function userCacheKey(string $documentId): string
     {
         return self::USER_CACHE_PREFIX.$documentId;
-    }
-
-    private function toastCacheKey(string $userId): string
-    {
-        return self::TOAST_CACHE_PREFIX.$userId;
     }
 }

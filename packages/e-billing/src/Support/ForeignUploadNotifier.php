@@ -11,12 +11,18 @@ use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Models\UploadedPdfSource;
 
 /**
- * Tells the uploader through a Filament database notification that an upload was ignored as foreign,
- * so the original PDF still gets sent the usual way.
+ * Tells the uploader that an upload was ignored as foreign, so the original PDF still gets sent the usual way:
+ * a Filament database notification (bell) and, unless the uploader just decided it themselves, a standing toast
+ * on their next request ({@see PendingUploadToasts}).
  */
 final class ForeignUploadNotifier
 {
-    public function notify(EbillingDocument $document): void
+    public function __construct(
+        private readonly PendingUploadToasts $toasts,
+    ) {
+    }
+
+    public function notify(EbillingDocument $document, bool $toast = true): void
     {
         $source = $document->source;
         $userClass = config('auth.providers.users.model');
@@ -40,13 +46,20 @@ final class ForeignUploadNotifier
             ? $billData['invoice_number']
             : (string) $source->original_filename;
 
+        $title = __('e-billing::fields.notification_foreign_upload_title');
+        $body = __('e-billing::fields.notification_foreign_upload_body', [
+            'number' => $number,
+            'country' => $document->ignored_reason['country'] ?? '?',
+        ]);
+
         Notification::make()
-            ->title(__('e-billing::fields.notification_foreign_upload_title'))
-            ->body(__('e-billing::fields.notification_foreign_upload_body', [
-                'number' => $number,
-                'country' => $document->ignored_reason['country'] ?? '?',
-            ]))
+            ->title($title)
+            ->body($body)
             ->warning()
             ->sendToDatabase($uploader);
+
+        if ($toast) {
+            $this->toasts->push($source->uploader_user_id, $title, $body);
+        }
     }
 }
