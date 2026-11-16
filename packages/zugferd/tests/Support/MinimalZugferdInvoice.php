@@ -40,6 +40,8 @@ function minimalZugferdInvoice(
 
         public ?string $articleNumber = null;
 
+        public ?string $buyerArticleNumber = null;
+
         public float $unitPrice;
 
         public float $quantity = 1.0;
@@ -129,6 +131,10 @@ function minimalZugferdInvoice(
         public ?string $supplierTaxNumber = null;
 
         public ?string $supplierNumber = null;
+
+        public ?string $supplierLegalRegistrationId = null;
+
+        public ?string $supplierAdditionalLegalInformation = null;
 
         public ?string $paymentTerms = null;
 
