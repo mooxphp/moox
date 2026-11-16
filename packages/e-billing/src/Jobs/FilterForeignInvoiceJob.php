@@ -14,8 +14,10 @@ use Illuminate\Support\Facades\Log;
 use Moox\EBilling\Actions\RelayForeignSourcePdfAction;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\ForeignDisposition;
-use Moox\EBilling\Enums\InvoiceOriginRule;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Models\UploadedPdfSource;
+use Moox\EBilling\Support\ForeignInvoiceClassifier;
+use Moox\EBilling\Support\ForeignUploadNotifier;
 use Moox\EBilling\Support\IntakeCutoff;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
@@ -31,6 +33,7 @@ use Throwable;
  * Ignored on the inbox driver and marked {@see EBillingAttachmentProcessingStatus::IgnoredForeign}
  * without persisting an e-billing {@see Invoice} record. Domestic mail-sourced invoices dated before
  * the {@see IntakeCutoff} take the same path as {@see EBillingAttachmentProcessingStatus::IgnoredBeforeCutoff}.
+ * Uploads are classified only when `e-billing.foreign.sources` lists `upload`.
  */
 final class FilterForeignInvoiceJob implements ShouldQueue
 {
@@ -39,36 +42,6 @@ final class FilterForeignInvoiceJob implements ShouldQueue
     use JobProgress;
     use Queueable;
     use SerializesModels;
-
-    private const VAT_COUNTRY_PREFIXES = [
-        'AT' => 'AT',
-        'BE' => 'BE',
-        'BG' => 'BG',
-        'CY' => 'CY',
-        'CZ' => 'CZ',
-        'DE' => 'DE',
-        'DK' => 'DK',
-        'EE' => 'EE',
-        'EL' => 'GR',
-        'ES' => 'ES',
-        'FI' => 'FI',
-        'FR' => 'FR',
-        'HR' => 'HR',
-        'HU' => 'HU',
-        'IE' => 'IE',
-        'IT' => 'IT',
-        'LT' => 'LT',
-        'LU' => 'LU',
-        'LV' => 'LV',
-        'MT' => 'MT',
-        'NL' => 'NL',
-        'PL' => 'PL',
-        'PT' => 'PT',
-        'RO' => 'RO',
-        'SE' => 'SE',
-        'SI' => 'SI',
-        'SK' => 'SK',
-    ];
 
     public int $tries = 3;
 
@@ -110,8 +83,15 @@ final class FilterForeignInvoiceJob implements ShouldQueue
         }
 
         $attachment = $document->inboxAttachment();
+        $classifier = app(ForeignInvoiceClassifier::class);
 
         if ($attachment === null) {
+            if ($this->ignoreForeignUpload($classifier, $document)) {
+                $this->setProgress(100);
+
+                return;
+            }
+
             $this->dispatchGenerateArtifact($document);
             $this->setProgress(100);
 
@@ -168,8 +148,10 @@ final class FilterForeignInvoiceJob implements ShouldQueue
 
         $cutoff = IntakeCutoff::fromConfig();
 
-        $classification = $this->classifyInvoiceOrigin($billData);
-        if ($classification['is_foreign']) {
+        $classification = $classifier->appliesTo(ForeignInvoiceClassifier::SOURCE_MAIL)
+            ? $classifier->classify($billData)
+            : null;
+        if ($classification !== null && $classification['is_foreign']) {
             $this->setProgress(60);
 
             $country = $classification['country'];
@@ -266,6 +248,44 @@ final class FilterForeignInvoiceJob implements ShouldQueue
     }
 
     /**
+     * A foreign upload has no inbox message to settle or relay: it ends ignored, and the uploader is told
+     * to send the original PDF the usual way, whatever the disposition.
+     */
+    private function ignoreForeignUpload(ForeignInvoiceClassifier $classifier, EbillingDocument $document): bool
+    {
+        $billData = $document->bill_data;
+
+        if (! $classifier->appliesTo(ForeignInvoiceClassifier::SOURCE_UPLOAD)
+            || ! $document->source instanceof UploadedPdfSource
+            || ! is_array($billData)
+            || $billData === []
+            || $this->isEmptyParsedInvoiceArray($billData)) {
+            return false;
+        }
+
+        $classification = $classifier->classify($billData);
+        if (! $classification['is_foreign']) {
+            return false;
+        }
+
+        $document->ignored_reason = [
+            'country' => $classification['country'],
+            'matched_rule' => $classification['matched_rule']->value,
+            'classified_at' => now()->utc()->toIso8601String(),
+        ];
+        $document->gateway_status = EBillingAttachmentProcessingStatus::IgnoredForeign;
+        $document->save();
+
+        app(ForeignUploadNotifier::class)->notify($document);
+
+        Log::info('Foreign upload ignored: document=#'.$document->getKey()
+            .' country='.($classification['country'] ?? 'null')
+            .' matched_rule='.$classification['matched_rule']->value);
+
+        return true;
+    }
+
+    /**
      * @param  array<string, mixed>  $parsed
      */
     private function isEmptyParsedInvoiceArray(array $parsed): bool
@@ -275,100 +295,6 @@ final class FilterForeignInvoiceJob implements ShouldQueue
         return ($parsed['invoice_number'] ?? '') === ''
             && ($parsed['customer_name'] ?? '') === ''
             && ($addr === null || $addr === [] || $addr === '');
-    }
-
-    /**
-     * @param  array<string, mixed>  $billData
-     * @return array{is_foreign: bool, country: ?string, matched_rule: InvoiceOriginRule}
-     */
-    private function classifyInvoiceOrigin(array $billData): array
-    {
-        $country = $this->resolveBillingCountry($billData);
-        $grossTotal = $this->toNullableFloat($billData['gross_total'] ?? null);
-        $taxAmount = $this->toNullableFloat($billData['vat_amount'] ?? null);
-
-        if ($country !== null && $country !== 'DE') {
-            return ['is_foreign' => true, 'country' => $country, 'matched_rule' => InvoiceOriginRule::CountryDetected];
-        }
-
-        if ($country === 'DE') {
-            return [
-                'is_foreign' => false,
-                'country' => $country,
-                'matched_rule' => InvoiceOriginRule::CountryDetectedDe,
-            ];
-        }
-
-        if ($this->isNetOnly($grossTotal, $taxAmount)) {
-            return ['is_foreign' => true, 'country' => null, 'matched_rule' => InvoiceOriginRule::NetOnly];
-        }
-
-        return ['is_foreign' => false, 'country' => null, 'matched_rule' => InvoiceOriginRule::DefaultDe];
-    }
-
-    /**
-     * @param  array<string, mixed>  $billData
-     */
-    private function resolveBillingCountry(array $billData): ?string
-    {
-        $country = $this->normalizeCountry($billData['billing_country'] ?? null);
-        if ($country !== null) {
-            return $country;
-        }
-
-        $customerAddress = $billData['customer_address'] ?? null;
-        if (! is_array($customerAddress)) {
-            return $this->countryFromVatId($billData['customer_vat_id'] ?? null);
-        }
-
-        $country = $this->normalizeCountry($customerAddress['country'] ?? null);
-        if ($country !== null) {
-            return $country;
-        }
-
-        return $this->countryFromVatId($billData['customer_vat_id'] ?? null);
-    }
-
-    private function isNetOnly(?float $grossTotal, ?float $taxAmount): bool
-    {
-        $grossEmpty = $grossTotal === null || $grossTotal === 0.0;
-        $taxEmpty = $taxAmount === null || $taxAmount === 0.0;
-
-        return $grossEmpty && $taxEmpty;
-    }
-
-    private function normalizeCountry(mixed $country): ?string
-    {
-        if (! is_string($country) || trim($country) === '') {
-            return null;
-        }
-
-        return strtoupper(trim($country));
-    }
-
-    private function countryFromVatId(mixed $vatId): ?string
-    {
-        if (! is_string($vatId)) {
-            return null;
-        }
-
-        $normalized = strtoupper((string) preg_replace('/[^A-Z0-9]/i', '', $vatId));
-        if (strlen($normalized) < 4) {
-            return null;
-        }
-
-        $prefix = substr($normalized, 0, 2);
-
-        return self::VAT_COUNTRY_PREFIXES[$prefix] ?? null;
-    }
-
-    private function toNullableFloat(mixed $value): ?float
-    {
-        if (! is_numeric($value)) {
-            return null;
-        }
-
-        return (float) $value;
     }
 
     private function dispatchGenerateArtifact(EbillingDocument $document): void

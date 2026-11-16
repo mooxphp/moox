@@ -36,7 +36,7 @@ The pipeline then runs in order:
 | --- | --- | --- |
 | 1 | `ProcessInboxAttachmentListener` | Creates or finds an `EbillingDocument` for the attachment and dispatches `StoreBillDataJob`. Only processes attachments from Scopes listed in `e-billing.intake.scopes` (a required allowlist: `null` / `[]` processes nothing); PDFs from any other Scope are marked Skipped and get no document. |
 | 2 | `StoreBillDataJob` | Reads parsed `bill_data` on the document (populated upstream by the host parser) and dispatches `FilterForeignInvoiceJob`. |
-| 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign invoices. Foreign disposition (`e-billing.foreign.disposition`): `ignore` (default) settles as `Ignored` / `IgnoredForeign`; `forward` runs Source-PDF relay to inbox To then settles the same way (ADR 0006). Domestic invoices advance to artifact generation, unless the **intake cutoff** (`e-billing.intake.invoice_date_from`, `Y-m-d`) applies: a mail-sourced invoice whose parsed invoice date (BT-2) lies before that day settles as `Ignored` / `IgnoredBeforeCutoff`, after a Source-PDF relay when `e-billing.intake.before_cutoff_disposition` is `forward` (default `ignore`). The cutoff day is processed; a missing or unparseable invoice date, foreign invoices and manual uploads are not affected. An invalid date value throws. |
+| 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign documents by the rules in `e-billing.foreign` (see [Foreign invoices](#foreign-invoices)). Foreign disposition (`e-billing.foreign.disposition`) for mail-sourced documents: `ignore` (default) settles as `Ignored` / `IgnoredForeign`; `forward` runs Source-PDF relay to inbox To then settles the same way (ADR 0006). A foreign manual upload (only when `foreign.sources` lists `upload`) ends `IgnoredForeign` without relay and notifies the uploader. Domestic invoices advance to artifact generation, unless the **intake cutoff** (`e-billing.intake.invoice_date_from`, `Y-m-d`) applies: a mail-sourced invoice whose parsed invoice date (BT-2) lies before that day settles as `Ignored` / `IgnoredBeforeCutoff`, after a Source-PDF relay when `e-billing.intake.before_cutoff_disposition` is `forward` (default `ignore`). The cutoff day is processed; a missing or unparseable invoice date, foreign invoices and manual uploads are not affected. An invalid date value throws. |
 | 4 | `GenerateArtifactJob` | Maps `bill_data` to a persisted `Invoice` once (only when the document has none yet; later runs use the existing Invoice rows), generates the format-specific artifact (XML only or hybrid PDF with embedded XML), runs field validation, and dispatches `ValidateArtifactJob`. Generation does not depend on master data: see [Buyer master data](#buyer-master-data). If the recipient format preference lookup fails, the job is retried with its backoff; on the last attempt it generates the default format and holds the document (`approval_flags.held.reason = format_preference_unavailable`). |
 | 5 | `ValidateArtifactJob` | Runs KoSIT validation on the XML that will be delivered (loose XML or XML extracted from the hybrid PDF). For hybrid formats, also runs veraPDF PDF/A-3 validation. A hybrid passes only when both succeed; if veraPDF is missing the document is retained and flagged, never `Validated`. On pass, stores a SHA-256 hash of the deliverable. |
 
@@ -148,6 +148,32 @@ EBILLING_DOCUMENT_LOCALE=en
 Override `supplier` in your published `config/e-billing.php` with your company details (name, VAT ID, address, bank accounts). Values are snapshotted onto each `Invoice` when `GenerateArtifactJob` creates the record.
 
 Optional seller keys `legal_registration_id` (BT-30, e.g. the commercial register number) and `additional_legal_information` (BT-33, e.g. register court and managing directors) are snapshotted onto the invoice seller party and emitted. The profiles list them as `supplier_legal_registration_id` and `supplier_additional_legal_information` (`could` by default). If a parser reports printed text for a `supplier_*` field in `unrecognized_fields`, the field is flagged for review with the reason `printed_differs_from_config`, because the seller values come from config.
+
+### Foreign invoices
+
+A foreign document needs no e-invoice. It ends `IgnoredForeign` without an Invoice. `Support\ForeignInvoiceClassifier` decides by these `foreign` keys:
+
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `disposition` | `ignore` (env `EBILLING_FOREIGN_DISPOSITION`) | What happens to a foreign mail-sourced document: `ignore` or `forward` (Source-PDF relay, ADR 0006). |
+| `sources` | `['mail']` | Intake sources that are classified at all: `mail`, `upload`. Add `upload` to classify manual uploads. |
+| `domestic_countries` | `['DE']` | ISO 3166-1 alpha-2 codes that count as domestic. |
+| `require_zero_vat` | `false` | A foreign billing country counts as domestic when VAT is charged (for example a supply to the buyer's domestic permanent establishment). |
+| `net_only_without_country` | `true` | Without a country, a document with neither a gross nor a VAT amount is foreign. |
+| `domestic_vat_id_makes_domestic` | `false` | A buyer VAT id with a domestic prefix makes the document domestic. |
+
+Rules, first match wins:
+
+1. Billing country is domestic: domestic (`country_detected_de`).
+2. `domestic_vat_id_makes_domestic` and the buyer VAT id has a domestic prefix: domestic (`domestic_vat_id`).
+3. Billing country is foreign: foreign (`country_detected`), unless `require_zero_vat` and VAT is charged: domestic (`domestic_vat_charged`).
+4. No country, `net_only_without_country`, and neither gross nor VAT amount: foreign (`net_only`).
+5. Otherwise domestic (`default_de`).
+
+The billing country comes from `billing_country`, then the customer address country, then the buyer VAT id prefix. The matched rule is stored in `ignored_reason`.
+
+A foreign manual upload has no inbox message, so `disposition` does not apply: the document always ends `IgnoredForeign`, nothing is relayed, and the uploader gets a Filament database notification to send the original PDF the usual way. For the notification, run the `notifications` table migration and call `databaseNotifications()` on the panel; if the table is missing, no notification is sent.
+
 ### `default_customer_country`
 
 When the parser cannot derive a buyer country from the PDF, this ISO code is used as a fallback for domestic classification. It also fills an empty country on the document delivery address and on each line delivery address that has a street, postal code or city (a country printed there is kept; a name-only line consignee gets none), so a consignee equal to the buyer is recognised and omitted from the ship-to party. It is transitional and will be replaced by Company / Address master-data lookup.

@@ -388,6 +388,8 @@ return [
         .' Die Aufbereitung läuft im Hintergrund.',
     'notification_identical_duplicate_title' => 'Identische Datei erkannt',
     'notification_identical_duplicate_body' => 'Zu Beleg :number liegt bereits eine identische Datei vor. Es wurde keine neue Version angelegt.',
+    'notification_foreign_upload_title' => 'Auslandsbeleg: keine E-Rechnung',
+    'notification_foreign_upload_body' => 'Beleg :number (:country) ist ein Auslandsbeleg. Es wird keine E-Rechnung erzeugt. Bitte das Original-PDF wie gewohnt versenden.',
 
     // Downloads & preview
     'download_zugferd_pdf' => 'ZUGFeRD-PDF',

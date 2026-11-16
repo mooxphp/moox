@@ -386,6 +386,8 @@ return [
     'notification_bulk_upload_body' => ':created created, :failed failed. Processing continues in the background.',
     'notification_identical_duplicate_title' => 'Identical file detected',
     'notification_identical_duplicate_body' => 'An identical file for document :number already exists. No new version was created.',
+    'notification_foreign_upload_title' => 'Foreign document: no e-invoice',
+    'notification_foreign_upload_body' => 'Document :number (:country) is a foreign document. No e-invoice is created. Send the original PDF the usual way.',
 
     // Downloads & preview
     'download_zugferd_pdf' => 'ZUGFeRD PDF',
