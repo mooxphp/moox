@@ -222,12 +222,13 @@ class ParsedInvoiceMapper
             order_date: $dto->orderDate,
             delivery: $dto->deliveryAddress?->toEn16931DeliveryParty(),
             charges: $charges,
-            extra: [
+            // Only parsed values: a host's line model needs a column for what its parser fills, not for every key.
+            extra: array_filter([
                 'material' => $dto->material,
                 'material_test_certificate' => $dto->materialTestCertificate,
                 'weight_kg_total' => $dto->weightKgTotal !== null ? (string) $dto->weightKgTotal : null,
                 'weight_kg_net' => $dto->weightKgNet !== null ? (string) $dto->weightKgNet : null,
-            ],
+            ], static fn (?string $value): bool => $value !== null),
         );
     }
 
