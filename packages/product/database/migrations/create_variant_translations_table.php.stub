@@ -1,0 +1,52 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('variant_translations', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('variant_id');
+            $table->foreign('variant_id', 'variant_translations_variant_fk')
+                ->references('id')
+                ->on('variants')
+                ->cascadeOnDelete();
+            $table->string('locale');
+            $table->string('title')->nullable();
+            $table->string('slug')->nullable();
+            $table->text('description')->nullable();
+
+            $table->timestamp('created_at');
+            $table->unsignedBigInteger('created_by_id');
+            $table->string('created_by_type');
+            $table->timestamp('updated_at');
+            $table->unsignedBigInteger('updated_by_id');
+            $table->string('updated_by_type');
+
+            $table->timestamp('published_at')->nullable();
+            $table->unsignedBigInteger('published_by_id')->nullable();
+            $table->string('published_by_type')->nullable();
+            $table->timestamp('unpublished_at')->nullable();
+            $table->unsignedBigInteger('unpublished_by_id')->nullable();
+            $table->string('unpublished_by_type')->nullable();
+
+            $table->timestamp('deleted_at')->nullable();
+            $table->unsignedBigInteger('deleted_by_id')->nullable();
+            $table->string('deleted_by_type')->nullable();
+
+            $table->unique(['variant_id', 'locale'], 'variant_locale_unique');
+            $table->index('locale');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('variant_translations');
+    }
+};

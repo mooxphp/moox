@@ -1,0 +1,68 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('variants', function (Blueprint $table): void {
+            $table->id();
+            $table->ulid('ulid')->unique();
+            $table->uuid('uuid')->unique();
+
+            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
+
+            $table->string('sku')->nullable()->unique()->collation('utf8mb4_de_pb_0900_ai_ci');
+            $table->boolean('is_orderable')->default(false);
+            $table->boolean('is_active')->default(true);
+            $table->unsignedInteger('sort_order')->default(0);
+            $table->index(['product_id', 'sort_order']);
+
+            $table->unsignedBigInteger('manufacturer_id')->nullable();
+            $table->index('manufacturer_id');
+            $table->string('manufacturer_name')->nullable();
+
+            $table->string('external_reference')->nullable();
+            $table->string('external_info')->nullable();
+            $table->string('external_status')->nullable();
+            $table->text('note')->nullable();
+            $table->json('image')->nullable();
+            $table->json('data')->nullable();
+
+            $table->timestamp('created_at');
+            $table->unsignedBigInteger('created_by_id');
+            $table->string('created_by_type');
+            $table->timestamp('updated_at');
+            $table->unsignedBigInteger('updated_by_id');
+            $table->string('updated_by_type');
+
+            $table->timestamp('archived_at')->nullable();
+            $table->unsignedBigInteger('archived_by_id')->nullable();
+            $table->string('archived_by_type')->nullable();
+
+            $table->timestamp('deleted_at')->nullable();
+            $table->unsignedBigInteger('deleted_by_id')->nullable();
+            $table->string('deleted_by_type')->nullable();
+            $table->timestamp('restored_at')->nullable();
+            $table->unsignedBigInteger('restored_by_id')->nullable();
+            $table->string('restored_by_type')->nullable();
+
+            $table->timestamp('published_at')->nullable();
+            $table->unsignedBigInteger('published_by_id')->nullable();
+            $table->string('published_by_type')->nullable();
+            $table->timestamp('unpublished_at')->nullable();
+            $table->unsignedBigInteger('unpublished_by_id')->nullable();
+            $table->string('unpublished_by_type')->nullable();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('variants');
+    }
+};
