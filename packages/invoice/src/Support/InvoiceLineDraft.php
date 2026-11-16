@@ -14,6 +14,7 @@ readonly class InvoiceLineDraft
      *                                       on the configured line model or persistence fails.
      * @param  list<array{date: ?string, delivery_note: ?string, quantity: ?float}>  $deliveries  Partial deliveries; empty when delivered at once.
      * @param  bool  $is_non_goods  The line bills or credits an amount, not an article.
+     * @param  string|null  $buyer_article_number  The buyer's article number (BT-156).
      */
     public function __construct(
         public int $position,
@@ -35,6 +36,7 @@ readonly class InvoiceLineDraft
         public ?string $unit_code = null,
         public array $deliveries = [],
         public bool $is_non_goods = false,
+        public ?string $buyer_article_number = null,
     ) {
     }
 }

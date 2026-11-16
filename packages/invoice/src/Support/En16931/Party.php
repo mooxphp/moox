@@ -9,14 +9,20 @@ use Moox\Invoice\Exceptions\IncompleteInvoiceDataException;
 readonly class Party
 {
     /** @var list<string> */
-    private const DELIVERY_FORBIDDEN_KEYS = ['vat_id', 'tax_number', 'contact'];
+    private const DELIVERY_FORBIDDEN_KEYS = ['vat_id', 'tax_number', 'contact', 'legal_registration_id', 'additional_legal_information'];
 
+    /**
+     * @param  string|null  $legal_registration_id  Legal registration identifier, e.g. the commercial register number (seller: BT-30).
+     * @param  string|null  $additional_legal_information  Free-text legal information, e.g. register court and managing directors (seller: BT-33).
+     */
     public function __construct(
         public string $name,
         public ?string $vat_id,
         public ?string $tax_number,
         public Address $address,
         public ?Contact $contact,
+        public ?string $legal_registration_id = null,
+        public ?string $additional_legal_information = null,
     ) {
     }
 
@@ -47,6 +53,10 @@ readonly class Party
             tax_number: isset($data['tax_number']) ? (string) $data['tax_number'] : null,
             address: Address::fromArray($data['address']),
             contact: $contact,
+            legal_registration_id: isset($data['legal_registration_id']) ? (string) $data['legal_registration_id'] : null,
+            additional_legal_information: isset($data['additional_legal_information'])
+                ? (string) $data['additional_legal_information']
+                : null,
         );
     }
 
@@ -148,13 +158,23 @@ readonly class Party
      */
     public function toArray(): array
     {
-        return [
+        $data = [
             'name' => $this->name,
             'vat_id' => $this->vat_id,
             'tax_number' => $this->tax_number,
             'address' => $this->address->toArray(),
             'contact' => $this->contact?->toArray(),
         ];
+
+        // Added only when set, so parties stored without legal data keep their shape.
+        if ($this->legal_registration_id !== null) {
+            $data['legal_registration_id'] = $this->legal_registration_id;
+        }
+        if ($this->additional_legal_information !== null) {
+            $data['additional_legal_information'] = $this->additional_legal_information;
+        }
+
+        return $data;
     }
 
     /**

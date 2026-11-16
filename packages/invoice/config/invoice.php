@@ -83,6 +83,7 @@ return [
                     'description',
                     'description_detail',
                     'article_number',
+                    'buyer_article_number',
                     'customs_tariff_number',
                     'unit_price',
                     'line_total',

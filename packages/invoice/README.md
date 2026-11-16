@@ -146,8 +146,12 @@ public function __construct(
     public ?string $tax_number,
     public Address $address,
     public ?Contact $contact,
+    public ?string $legal_registration_id = null,
+    public ?string $additional_legal_information = null,
 )
 ```
+
+`legal_registration_id` (seller BT-30, e.g. the commercial register number) and `additional_legal_information` (seller BT-33, e.g. register court and managing directors) are optional. `toArray()` includes them only when set; a delivery party never carries them.
 
 ### `BankAccount`
 
@@ -231,7 +235,8 @@ The `InvoiceLine` model (`Moox\Invoice\Models\InvoiceLine`) stores a single invo
 -   `quantity` (decimal 12,3, default: `0`) - Quantity
 -   `description` (text, nullable) - Short line description
 -   `description_detail` (text, nullable) - Extended line description
--   `article_number` (string, nullable) - Seller article / SKU
+-   `article_number` (string, nullable) - Seller article / SKU (BT-155)
+-   `buyer_article_number` (string, nullable) - Buyer article number (BT-156). Migration stub `add_buyer_article_number_to_invoice_lines_table` (hosts must publish/run it). `InvoiceBuilder` writes it only when set, so a host without the column keeps working.
 -   `customs_tariff_number` (string, nullable) - Customs tariff number
 -   `unit_price` (decimal 12,2, default: `0`) - Net unit price
 -   `line_total` (decimal 12,2, default: `0`) - Net line total
