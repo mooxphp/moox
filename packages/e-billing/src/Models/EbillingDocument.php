@@ -21,11 +21,13 @@ use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Core\Traits\MorphPivot\HasMorphPivotRelations;
+use Moox\EBilling\Actions\MarkDocumentForeignAction;
 use Moox\EBilling\Actions\RelayForeignSourcePdfAction;
 use Moox\EBilling\Data\PartyReference;
 use Moox\EBilling\Enums\AttributionRole;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
+use Moox\EBilling\Enums\InvoiceOriginRule;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Formats\ArtifactKind;
 use Moox\EBilling\Support\EBillingArtifactNaming;
@@ -692,6 +694,9 @@ class EbillingDocument extends BaseItemModel
      */
     public const FIXED_INVOICE_FIELDS = ['allowance_charge_reason_codes' => 'must'];
 
+    /** Hold reason of a document whose foreign classification is unclear ({@see flagForeignReview()}). */
+    public const HOLD_REASON_FOREIGN_UNCLEAR = 'foreign_classification_unclear';
+
     /**
      * @return array{0: array<string, string>, 1: array<string, string>}
      */
@@ -1123,6 +1128,63 @@ class EbillingDocument extends BaseItemModel
         $reason = $this->isHeldForApproval() ? ($this->approval_flags['held']['reason'] ?? null) : null;
 
         return is_string($reason) ? $reason : null;
+    }
+
+    /**
+     * Hold an unclear foreign classification for a person (`e-billing.foreign.review_unclear`) and keep the
+     * signals it was based on, so the reviewer sees why and may mark the document foreign.
+     *
+     * @param  array{matched_rule: InvoiceOriginRule, country: ?string}  $classification
+     * @param  array<string, mixed>  $billData
+     */
+    public function flagForeignReview(array $classification, array $billData): void
+    {
+        $vatAmount = $billData['vat_amount'] ?? null;
+        $vatId = $billData['customer_vat_id'] ?? null;
+
+        $flags = is_array($this->approval_flags) ? $this->approval_flags : [];
+        $flags['foreign_review'] = [
+            'matched_rule' => $classification['matched_rule']->value,
+            'country' => $classification['country'],
+            'vat_amount' => is_numeric($vatAmount) ? (float) $vatAmount : null,
+            'customer_vat_id' => is_string($vatId) && $vatId !== '' ? $vatId : null,
+            'flagged_at' => now()->toIso8601String(),
+        ];
+        $this->approval_flags = $flags;
+
+        $this->holdForApproval(self::HOLD_REASON_FOREIGN_UNCLEAR);
+    }
+
+    /**
+     * The signals of an unclear foreign classification, or null when the classification was clear.
+     *
+     * @return array{matched_rule: string, country: ?string, vat_amount: ?float, customer_vat_id: ?string, flagged_at: string}|null
+     */
+    public function foreignReview(): ?array
+    {
+        $review = is_array($this->approval_flags) ? ($this->approval_flags['foreign_review'] ?? null) : null;
+
+        return is_array($review) ? $review : null;
+    }
+
+    /**
+     * Whether a reviewer may still mark this unclear document foreign: flagged, pending and not ignored yet.
+     */
+    public function awaitsForeignDecision(): bool
+    {
+        return $this->foreignReview() !== null
+            && $this->resolveApprovalStatusEnum() === DocumentApprovalStatus::Pending
+            && $this->gateway_status?->isIgnored() !== true;
+    }
+
+    /**
+     * Whether a reviewer marked this unclear document foreign ({@see MarkDocumentForeignAction}).
+     */
+    public function isMarkedForeign(): bool
+    {
+        return $this->gateway_status === EBillingAttachmentProcessingStatus::IgnoredForeign
+            && is_array($this->ignored_reason)
+            && isset($this->ignored_reason['marked_by']);
     }
 
     /**

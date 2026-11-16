@@ -79,9 +79,13 @@ final class DocumentApprovalGuard
         return $document->resolveApprovalStatusEnum() === DocumentApprovalStatus::Pending;
     }
 
+    /**
+     * A document a reviewer marked foreign stays rejected: its source PDF may already have been relayed.
+     */
     public function canRestore(EbillingDocument $document): bool
     {
-        return $document->resolveApprovalStatusEnum() === DocumentApprovalStatus::Rejected;
+        return $document->resolveApprovalStatusEnum() === DocumentApprovalStatus::Rejected
+            && ! $document->isMarkedForeign();
     }
 
     public function assertCanApprove(EbillingDocument $document): void

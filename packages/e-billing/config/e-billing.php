@@ -1551,6 +1551,11 @@ return [
     |      (e.g. a supply to the buyer's domestic permanent establishment) → domestic.
     |   4. No country, net_only_without_country, and neither gross nor VAT amount → foreign.
     |   5. Otherwise domestic.
+    | review_unclear: instead of deciding alone, send contradicting or missing signals to a person.
+    |   Rule 2 without VAT charged, rule 3 with VAT charged (require_zero_vat off) and rule 4 are then
+    |   unclear: the document is generated like a domestic one, held from auto-approval, and shows its
+    |   signals; the reviewer approves it or marks it foreign (relay or uploader notice as above, the
+    |   draft stays unsent). A later document with the same source PDF takes that decision.
     |
     */
 
@@ -1561,6 +1566,7 @@ return [
         'require_zero_vat' => false,
         'net_only_without_country' => true,
         'domestic_vat_id_makes_domestic' => false,
+        'review_unclear' => false,
     ],
 
     /*

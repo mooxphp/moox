@@ -161,6 +161,7 @@ A foreign document needs no e-invoice. It ends `IgnoredForeign` without an Invoi
 | `require_zero_vat` | `false` | A foreign billing country counts as domestic when VAT is charged (for example a supply to the buyer's domestic permanent establishment). |
 | `net_only_without_country` | `true` | Without a country, a document with neither a gross nor a VAT amount is foreign. |
 | `domestic_vat_id_makes_domestic` | `false` | A buyer VAT id with a domestic prefix makes the document domestic. |
+| `review_unclear` | `false` | Send contradicting or missing signals to review instead of guessing (ADR 0024). |
 
 Rules, first match wins:
 
@@ -172,7 +173,8 @@ Rules, first match wins:
 
 The billing country comes from `billing_country`, then the customer address country, then the buyer VAT id prefix. The matched rule is stored in `ignored_reason`.
 
-A foreign manual upload has no inbox message, so `disposition` does not apply: the document always ends `IgnoredForeign`, nothing is relayed, and the uploader gets a Filament database notification to send the original PDF the usual way. For the notification, run the `notifications` table migration and call `databaseNotifications()` on the panel; if the table is missing, no notification is sent.
+With `review_unclear` on, three outcomes are unclear instead of decided: a domestic buyer VAT id without VAT charged (`unclear_domestic_vat_id_without_vat`), a foreign billing country with VAT charged while `require_zero_vat` is off (`unclear_foreign_vat_charged`), and a net amount only without a country (`unclear_net_only`). The document is generated like a domestic one, flagged and held from auto-approval (hold reason `foreign_classification_unclear`); the invoice view banner names the signals. While it awaits a decision, the invoice and credit-note view offer the header action "Mark as foreign". It asks for confirmation, applies `disposition` (relay for a mailed document, notice for an upload), sets `IgnoredForeign`, rejects the approval so the draft is never sent, and cannot be undone. An unclear resend with the same source content as a document marked foreign is treated as foreign right away, without a second review.
+
 A foreign manual upload has no inbox message, so `disposition` does not apply: the document always ends `IgnoredForeign`, nothing is relayed, and the uploader gets a Filament database notification to send the original PDF the usual way. For the notification, run the `notifications` table migration and call `databaseNotifications()` on the panel; if the table is missing, no notification is sent. The uploader also gets the same text as a standing toast on their next request on the invoice or credit-note list (`Support\PendingUploadToasts`, flushed by the `FlushesPendingUploadToasts` page trait); the identical-credit-note notice uses the same queue. When a reviewer marks an upload foreign, the action's own standing toast says whether the PDF was relayed (to which address) or must be sent the usual way, and the uploader keeps only the bell entry.
 
 ### `default_customer_country`
