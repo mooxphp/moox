@@ -10,4 +10,6 @@ enum InvoiceOriginRule: string
     case CountryDetectedDe = 'country_detected_de';
     case NetOnly = 'net_only';
     case DefaultDe = 'default_de';
+    case DomesticVatId = 'domestic_vat_id';
+    case DomesticVatCharged = 'domestic_vat_charged';
 }
