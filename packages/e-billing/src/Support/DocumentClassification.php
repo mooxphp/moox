@@ -132,11 +132,21 @@ final class DocumentClassification
     /**
      * Applies a declared type to the parsed data. A parsed classification type is replaced (381 and 384
      * cannot be told apart by parsing) and the amounts follow the new sign; any other parsed type is kept
-     * and surfaces as a review finding on `document_type`.
+     * and surfaces as a review finding on `document_type`. A document the parser could not type takes the
+     * declared type with its amounts as printed; the parser's `unrecognized_fields['document_type']` keeps
+     * that a review finding.
      */
     public static function applyDeclaredType(InvoiceDto $parsed, string $declaredType): InvoiceDto
     {
         $parsedType = $parsed->documentTypeCode;
+
+        if ($parsedType === '' && trim($parsed->documentType) === '') {
+            $data = $parsed->toArray();
+            $data['document_type_code'] = $declaredType;
+            $data['document_type'] = DocumentClassificationLabels::label($declaredType);
+
+            return InvoiceDto::fromArray($data);
+        }
 
         if ($parsedType === $declaredType || ! self::isClassificationType($parsedType)) {
             return $parsed;
