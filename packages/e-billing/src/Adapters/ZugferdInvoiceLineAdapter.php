@@ -39,6 +39,8 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
 
     public readonly ?string $purchaseOrderLineReference;
 
+    public readonly ?string $buyerArticleNumber;
+
     /** @var list<ZugferdItemAttribute> */
     public readonly array $itemAttributes;
 
@@ -64,6 +66,7 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
 
         $this->deliveryDate = self::resolveDeliveryDate($this->line, $this->emitLineDeliveryDate);
         $this->purchaseOrderLineReference = null;
+        $this->buyerArticleNumber = $this->line->buyer_article_number;
 
         $delivery = $this->line->delivery;
         if ($delivery instanceof Party) {
@@ -104,10 +107,6 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
 
     public ?string $articleNumber {
         get => $this->line->article_number;
-    }
-
-    public ?string $buyerArticleNumber {
-        get => $this->line->buyer_article_number;
     }
 
     public float $unitPrice {
