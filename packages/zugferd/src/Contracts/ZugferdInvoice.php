@@ -53,6 +53,12 @@ interface ZugferdInvoice
     /** BT-29 seller identifier; null/empty → do not emit. */
     public ?string $supplierNumber { get; }
 
+    /** BT-30 seller legal registration identifier (e.g. commercial register number); null/empty → do not emit. */
+    public ?string $supplierLegalRegistrationId { get; }
+
+    /** BT-33 seller additional legal information (e.g. register court, managing directors); null/empty → do not emit. */
+    public ?string $supplierAdditionalLegalInformation { get; }
+
     public ?string $paymentTerms { get; }
 
     public ?string $deliveryDate { get; }

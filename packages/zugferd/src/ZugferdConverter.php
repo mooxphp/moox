@@ -300,7 +300,13 @@ class ZugferdConverter
 
     private function setSeller(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
     {
-        $doc->setDocumentSeller($invoice->supplierName);
+        $legalInformation = trim((string) $invoice->supplierAdditionalLegalInformation);
+        $doc->setDocumentSeller($invoice->supplierName, null, $legalInformation !== '' ? $legalInformation : null);
+
+        $legalRegistrationId = trim((string) $invoice->supplierLegalRegistrationId);
+        if ($legalRegistrationId !== '') {
+            $doc->setDocumentSellerLegalOrganisation($legalRegistrationId, null, null);
+        }
 
         $sellerId = $invoice->supplierNumber !== null ? trim($invoice->supplierNumber) : '';
         if ($sellerId !== '') {
@@ -774,11 +780,13 @@ class ZugferdConverter
         $emitLineActualDelivery = $profileKey === 'EXTENDED';
 
         foreach ($invoice->lines as $line) {
+            $buyerArticleNumber = trim((string) $line->buyerArticleNumber);
             $doc->addNewPosition((string) $line->position);
             $doc->setDocumentPositionProductDetails(
                 $line->description,
                 $line->descriptionDetail ?? '',
                 $line->articleNumber,
+                $buyerArticleNumber !== '' ? $buyerArticleNumber : null,
             );
             $doc->setDocumentPositionNetPrice($line->unitPrice);
             $doc->setDocumentPositionQuantity(

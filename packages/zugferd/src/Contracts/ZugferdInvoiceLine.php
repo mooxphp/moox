@@ -14,6 +14,9 @@ interface ZugferdInvoiceLine
 
     public ?string $articleNumber { get; }
 
+    /** BT-156 the buyer's article number; null/empty → do not emit. */
+    public ?string $buyerArticleNumber { get; }
+
     public float $unitPrice { get; }
 
     public float $quantity { get; }
