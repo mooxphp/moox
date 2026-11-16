@@ -1532,17 +1532,35 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Foreign invoice disposition
+    | Foreign invoices
     |--------------------------------------------------------------------------
     |
-    | After FilterForeignInvoiceJob classifies a non-domestic invoice:
-    | ignore (default) — settle Ignored / IgnoredForeign only
-    | forward — Source-PDF relay to inbox To, then settle (ADR 0006)
+    | A foreign document needs no e-invoice; it ends IgnoredForeign without an Invoice.
+    |
+    | disposition: what happens to a foreign mail-sourced document
+    |   ignore (default) — settle Ignored / IgnoredForeign only
+    |   forward — Source-PDF relay to inbox To, then settle (ADR 0006)
+    |   A foreign upload has no inbox message: it is always ignored, and its uploader gets a
+    |   database notification to send the original PDF the usual way.
+    | sources: intake sources that are classified at all ('mail', 'upload').
+    | domestic_countries: ISO 3166-1 alpha-2 codes that count as domestic.
+    | Classification, first match wins:
+    |   1. Billing country is domestic → domestic.
+    |   2. domestic_vat_id_makes_domestic and the buyer VAT id has a domestic prefix → domestic.
+    |   3. Billing country is foreign → foreign, unless require_zero_vat and VAT is charged
+    |      (e.g. a supply to the buyer's domestic permanent establishment) → domestic.
+    |   4. No country, net_only_without_country, and neither gross nor VAT amount → foreign.
+    |   5. Otherwise domestic.
     |
     */
 
     'foreign' => [
         'disposition' => env('EBILLING_FOREIGN_DISPOSITION', 'ignore'),
+        'sources' => ['mail'],
+        'domestic_countries' => ['DE'],
+        'require_zero_vat' => false,
+        'net_only_without_country' => true,
+        'domestic_vat_id_makes_domestic' => false,
     ],
 
     /*
