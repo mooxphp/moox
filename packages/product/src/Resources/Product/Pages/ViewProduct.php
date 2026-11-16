@@ -4,10 +4,18 @@ declare(strict_types=1);
 
 namespace Moox\Product\Resources\Product\Pages;
 
-use Moox\Core\Entities\Items\Draft\Pages\BaseViewDraft;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 use Moox\Product\Resources\ProductResource;
 
-class ViewProduct extends BaseViewDraft
+class ViewProduct extends ViewRecord
 {
     protected static string $resource = ProductResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            EditAction::make(),
+        ];
+    }
 }

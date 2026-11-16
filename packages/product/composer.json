@@ -1,6 +1,6 @@
 {
     "name": "moox/product",
-    "description": "Moox sellable product variant with commerce fields and config-driven assignments.",
+    "description": "Moox product entity with a type, translatable content, and config-driven relations.",
     "keywords": [
         "Moox",
         "Laravel",
@@ -19,9 +19,11 @@
         }
     ],
     "require": {
+        "moox/builder": "dev-main",
         "moox/core": "dev-main",
         "moox/localization": "dev-main",
-        "moox/slug": "dev-main"
+        "moox/media": "dev-main",
+        "moox/support": "dev-main"
     },
     "autoload": {
         "psr-4": {
