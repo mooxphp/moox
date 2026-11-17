@@ -573,9 +573,11 @@ final class LocationConstraintOptions
             ->distinct()
             ->orderBy('type')
             ->pluck('type', 'type')
-            ->mapWithKeys(fn (mixed $type): array => [
-                (string) $type => $this->recordTypeLabel((string) $type),
-            ])
+            ->mapWithKeys(function (mixed $type): array {
+                $value = $type instanceof \BackedEnum ? (string) $type->value : (string) $type;
+
+                return [$value => $this->recordTypeLabel($value)];
+            })
             ->all();
     }
 

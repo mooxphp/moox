@@ -83,7 +83,8 @@ readonly class LocationContext
         $params = [];
 
         if ($record->offsetExists('type') && filled($record->getAttribute('type'))) {
-            $params['record_type'] = (string) $record->getAttribute('type');
+            $type = $record->getAttribute('type');
+            $params['record_type'] = $type instanceof \BackedEnum ? (string) $type->value : (string) $type;
         }
 
         $recordStatus = self::resolveRecordStatus($record);

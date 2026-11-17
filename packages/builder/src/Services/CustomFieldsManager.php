@@ -6,6 +6,7 @@ namespace Moox\Builder\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Moox\Builder\Contracts\InheritsCustomFields;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
@@ -110,6 +111,17 @@ class CustomFieldsManager
      */
     public function loadValues(string $entity, Model $record, Collection $fields, ?string $locale = null): array
     {
+        $values = $this->loadOwnValues($entity, $record, $fields, $locale);
+
+        return $this->mergeInheritedCustomFieldValues($record, $fields, $values, $locale);
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @return array<string, mixed>
+     */
+    protected function loadOwnValues(string $entity, Model $record, Collection $fields, ?string $locale = null): array
+    {
         if ($fields->isEmpty()) {
             return [];
         }
@@ -143,6 +155,111 @@ class CustomFieldsManager
         }
 
         return $values;
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @param  array<string, mixed>  $values
+     * @return array<string, mixed>
+     */
+    protected function mergeInheritedCustomFieldValues(Model $record, Collection $fields, array $values, ?string $locale = null): array
+    {
+        if (! $record instanceof InheritsCustomFields || $fields->isEmpty()) {
+            return $values;
+        }
+
+        $parent = $record->customFieldsParent();
+
+        if (! $parent instanceof Model) {
+            return $values;
+        }
+
+        $parentValues = $this->loadOwnValues(
+            $record->customFieldsParentEntity(),
+            $parent,
+            $fields,
+            $locale,
+        );
+
+        foreach ($fields as $field) {
+            $name = $field->name;
+
+            if (! $this->isEmptyCustomFieldValue($values[$name] ?? null)
+                || $this->isEmptyCustomFieldValue($parentValues[$name] ?? null)) {
+                continue;
+            }
+
+            $values[$name] = $parentValues[$name];
+        }
+
+        return $values;
+    }
+
+    /**
+     * @param  class-string  $resourceClass
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @param  array<string, mixed>  $values
+     * @return array<string, mixed>
+     */
+    protected function withoutInheritedCustomFieldValues(
+        string $resourceClass,
+        Model $record,
+        Collection $fields,
+        array $values,
+        string $locale,
+    ): array {
+        if (! $record instanceof InheritsCustomFields || $values === []) {
+            return $values;
+        }
+
+        $parent = $record->customFieldsParent();
+
+        if (! $parent instanceof Model) {
+            return $values;
+        }
+
+        $parentValues = $this->loadOwnValues(
+            $record->customFieldsParentEntity(),
+            $parent,
+            $fields,
+            $locale,
+        );
+        $entity = $this->locationContextForResource($resourceClass)->entity;
+
+        foreach ($parentValues as $name => $parentValue) {
+            if (! array_key_exists($name, $values) || $this->isEmptyCustomFieldValue($parentValue)) {
+                continue;
+            }
+
+            if ($values[$name] != $parentValue) {
+                continue;
+            }
+
+            unset($values[$name]);
+
+            if (! $record->exists) {
+                continue;
+            }
+
+            $recordId = $record->getKey();
+
+            if (! is_int($recordId) && ! is_string($recordId)) {
+                continue;
+            }
+
+            FieldValue::query()
+                ->forRecord($entity, $recordId)
+                ->forLocale($locale)
+                ->where('field_name', $name)
+                ->delete();
+        }
+
+        return $values;
+    }
+
+    protected function isEmptyCustomFieldValue(mixed $value): bool
+    {
+        return $value === null || $value === '' || $value === [];
     }
 
     /**
@@ -208,6 +325,7 @@ class CustomFieldsManager
         $entity = $this->locationContextForResource($resourceClass)->entity;
         $locale = $this->localeResolver->valuesLocaleForResource($resourceClass);
         $values = $this->preparedFormValues($resourceClass, $record, $data);
+        $values = $this->withoutInheritedCustomFieldValues($resourceClass, $record, $fields, $values, $locale);
 
         if ($fields->isEmpty() || $values === []) {
             return;
