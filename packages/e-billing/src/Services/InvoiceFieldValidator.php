@@ -1079,6 +1079,7 @@ class InvoiceFieldValidator
             'surcharge_amount', 'surcharge_description' => $this->validateLineSurchargeField($line, $field, $priority),
             'material_test_certificate_price' => $this->validateLineMaterialTestCertificatePriceField($line, $priority),
             'quantity' => $this->validateLineQuantityField($line, $priority),
+            'weight_kg_net' => $this->validateLineNetWeightField($line, $priority),
             default => $this->validateGenericInvoiceLineField($line, $field, $priority),
         };
 
@@ -1126,6 +1127,20 @@ class InvoiceFieldValidator
         }
 
         return $this->validateGenericInvoiceLineField($line, 'quantity', $priority);
+    }
+
+    /**
+     * A quantity in kilograms is the weight itself, so a line in KGM has no weight per unit to ask for.
+     *
+     * @return array{status: string, source?: string, matched_id?: string}
+     */
+    private function validateLineNetWeightField(InvoiceLine $line, string $priority): array
+    {
+        if ($this->isScalarEmpty($line->weight_kg_net) && strtoupper((string) $line->unit_code) === 'KGM') {
+            return ['status' => 'not_applicable'];
+        }
+
+        return $this->validateGenericInvoiceLineField($line, 'weight_kg_net', $priority);
     }
 
     /**
