@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Moox\Core\Traits\Relations\HasResourceRelations;
-use Moox\Media\Forms\HasMediaForm;
+use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Media\Tables\Columns\CustomImageColumn;
 use Moox\ProductCategory\Models\ProductCategory;
 use Moox\ProductCategory\Resources\ProductCategory\Pages\CreateProductCategory;
@@ -52,7 +52,6 @@ class ProductCategoryResource extends Resource
     use HasDataForm;
     use HasExternalForm;
     use HasIdentityForm;
-    use HasMediaForm;
     use HasPublishForm;
     use HasResourceRelations;
     use HasSoftDeleteForm;
@@ -122,6 +121,19 @@ class ProductCategoryResource extends Resource
                 ->columns(3)
                 ->columnSpanFull(),
         ]);
+    }
+
+    protected static function mediaSection(): Section
+    {
+        $translation = static::featureTranslation();
+
+        return Section::make(__($translation.'.media'))
+            ->schema([
+                MediaPicker::make('image')
+                    ->label(__($translation.'.image'))
+                    ->multiple()
+                    ->columnSpanFull(),
+            ]);
     }
 
     protected static function domainSection(): Section

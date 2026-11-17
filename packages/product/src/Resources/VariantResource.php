@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\HasCustomFields;
 use Moox\Core\Traits\Relations\HasResourceRelations;
-use Moox\Media\Forms\HasMediaForm;
+use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Product\Enums\ProductType;
 use Moox\Product\Models\Product;
 use Moox\Product\Models\Variant;
@@ -54,7 +54,6 @@ class VariantResource extends Resource
     use HasDataForm;
     use HasExternalForm;
     use HasIdentityForm;
-    use HasMediaForm;
     use HasOptionalTitleSlugForm;
     use HasPublishForm;
     use HasResourceRelations;
@@ -144,6 +143,19 @@ class VariantResource extends Resource
             static::publishSection()->columns(1),
             static::softDeleteSection()->columns(1),
         ];
+    }
+
+    protected static function mediaSection(): Section
+    {
+        $translation = static::featureTranslation();
+
+        return Section::make(__($translation.'.media'))
+            ->schema([
+                MediaPicker::make('image')
+                    ->label(__($translation.'.image'))
+                    ->multiple()
+                    ->columnSpanFull(),
+            ]);
     }
 
     protected static function domainSection(): Section
