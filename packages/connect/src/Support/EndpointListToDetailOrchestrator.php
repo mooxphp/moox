@@ -159,7 +159,7 @@ class EndpointListToDetailOrchestrator
                                 }
 
                                 $idValue = $item[$idKey];
-                                if (! is_scalar($idValue)) {
+                                if (! is_scalar($idValue) || ! $this->passesListIdLimit($detailEndpoint, $item, $idValue)) {
                                     continue;
                                 }
 
@@ -215,7 +215,7 @@ class EndpointListToDetailOrchestrator
                     }
 
                     if ($this->isArrayOfArrays($items) && $this->shouldFlattenOneLevel($items, $idKey)) {
-                        $items = array_merge([], ...array_values($items));
+                        $items = $this->flattenItemsForIdKey($items, $idKey);
                     }
 
                     foreach ($items as $item) {
@@ -224,7 +224,7 @@ class EndpointListToDetailOrchestrator
                         }
 
                         $idValue = $item[$idKey];
-                        if (! is_scalar($idValue)) {
+                        if (! is_scalar($idValue) || ! $this->passesListIdLimit($detailEndpoint, $item, $idValue)) {
                             continue;
                         }
 
@@ -393,6 +393,41 @@ class EndpointListToDetailOrchestrator
         return $value !== [];
     }
 
+    /**
+     * Lists of lists stay concatenated. Objects yield every child that carries the id key.
+     *
+     * @param  array<mixed>  $items
+     * @return list<array<mixed>>
+     */
+    private function flattenItemsForIdKey(array $items, string $idKey): array
+    {
+        $flattened = [];
+
+        foreach ($items as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+
+            if (array_is_list($item)) {
+                foreach ($item as $child) {
+                    if (is_array($child)) {
+                        $flattened[] = $child;
+                    }
+                }
+
+                continue;
+            }
+
+            foreach ($item as $child) {
+                if (is_array($child) && array_key_exists($idKey, $child)) {
+                    $flattened[] = $child;
+                }
+            }
+        }
+
+        return $flattened;
+    }
+
     private function shouldFlattenOneLevel(array $items, string $idKey): bool
     {
         // Flatten nur dann, wenn die Top-Level-Elemente selbst Listen sind
@@ -440,6 +475,30 @@ class EndpointListToDetailOrchestrator
         }
 
         return [$parent !== '' ? $parent : '*', $child];
+    }
+
+    /**
+     * Option list_id_below skips items whose id is greater than or equal to the limit.
+     * list_id_below_key selects the item field (default: the request id).
+     */
+    private function passesListIdLimit(ApiEndpoint $detailEndpoint, array $item, mixed $idValue): bool
+    {
+        $limit = $detailEndpoint->option('list_id_below');
+
+        if ($limit === null || $limit === '' || ! is_numeric($limit)) {
+            return true;
+        }
+
+        $key = $detailEndpoint->option('list_id_below_key');
+        $candidate = is_string($key) && $key !== ''
+            ? data_get($item, $key, $idValue)
+            : $idValue;
+
+        if (! is_numeric($candidate)) {
+            return true;
+        }
+
+        return (int) $candidate < (int) $limit;
     }
 
     /**
