@@ -3,8 +3,8 @@
 return [
     'bt160' => [
         'material_designation' => 'Material designation',
-        'net_weight' => 'Net weight',
-        'gross_weight' => 'Gross weight',
+        'net_weight' => 'Weight per unit',
+        'gross_weight' => 'Total weight',
         'material_test_certificate' => 'Material test certificate',
     ],
     // PHP date format for dates inside customer-readable notes (stored dates are Y-m-d).
