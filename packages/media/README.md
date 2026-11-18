@@ -23,6 +23,56 @@ This will:
 - **Media Collections**: Organize media into collections with translation support
 - **Delivery conversions**: AVIF / WebP / JPG at 480 / 960 / 1440 for responsive `<picture>` output
 - **HTTP API**: List, show-by-id, and upload — each item includes a `picture` payload
+- **MediaUploadService**: Single write path for admin, picker, API, and replace/edit uploads
+
+## Upload architecture (`MediaUploadService`)
+
+All library **writes** go through `Moox\Media\Support\MediaUploadService`. Call sites stay thin: they authorize, collect UI/HTTP input, call the service, then map `MediaUploadResult` to notifications or HTTP status codes.
+
+| Call site | Method | Notes |
+|-----------|--------|--------|
+| `ListMedia` upload action | `upload()` | Scoped duplicate check + `applyScopedDefaults` |
+| `MediaPickerModal` | `upload()` | Scoped; may `discardOtherLocales`; picker allowlist |
+| `MediaController::store` | `upload()` | API allowlist; optional name/title/alt |
+| `MediaResource` file replace | `replace()` | Usables move + old delete, or version-edit (`*-v{n}`) |
+
+```php
+use Moox\Media\Support\MediaUploadOptions;
+use Moox\Media\Support\MediaUploadService;
+
+$result = app(MediaUploadService::class)->upload($file, new MediaUploadOptions(
+    mediaCollectionId: $collectionId,
+    locale: 'de_DE',
+    // Optional: narrow duplicate detection (Filament scoped resources)
+    scopeQuery: fn ($query) => MediaResource::scopeQuery($query),
+    applyDefaults: fn ($media) => MediaResource::applyScopedDefaults($media),
+));
+
+if ($result->isDuplicate()) {
+    // 409 / warning notification — $result->existingMedia, $result->fileName
+}
+
+if ($result->wasCreated()) {
+    // $result->media is the new library row (hash stored in custom_properties.file_hash)
+}
+```
+
+**Security guarantees owned by the service**
+
+- MIME/extension allowlist via `MediaUploadValidator` (resource config, or per-call `acceptedFileTypes`; **empty allowlist rejects all**)
+- Readable path check before hashing
+- SHA-256 content hash + duplicate detection (hash **or** translation `name`), with a short cache lock to reduce concurrent duplicate races
+- Replace refuses `write_protected` media and ignores the current row in duplicate checks
+- Uploader / self-attach / `original_model_*` wiring
+- SVG sanitize + dimensions via `MediaPostProcessor`
+
+**Not owned by the service** (keep at the call site)
+
+- Policies / `authorize()` — ListMedia & MediaPicker require `Create:Media`; replace requires `Update:Media`
+- Filament notifications, redirects, Livewire `processedHashes` / FilePond state (never echo raw exception messages)
+- HTTP response shapes (`201` / `409`; `existing_id` only when the user may `view` the duplicate)
+
+Do **not** re-implement `FileAdderFactory` + hash + duplicate logic outside this service. Extend `MediaUploadOptions` / the service instead.
 
 ## Usage
 

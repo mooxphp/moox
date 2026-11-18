@@ -35,10 +35,9 @@ use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
 use Moox\Media\Support\MediaLocaleResolver;
-use Moox\Media\Support\MediaPostProcessor;
-use Moox\Media\Support\MediaUploadValidator;
+use Moox\Media\Support\MediaUploadOptions;
+use Moox\Media\Support\MediaUploadService;
 use Moox\Media\Tables\Columns\CustomImageColumn;
-use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 class MediaResource extends BaseResource
 {
@@ -91,31 +90,65 @@ class MediaResource extends BaseResource
                 ->imageEditor(fn ($record) => ! $record->write_protected)
                 ->downloadable(fn ($record) => ! $record->write_protected)
                 ->deletable(fn ($record) => ! $record->write_protected)
+                ->disabled(fn ($record): bool => (bool) $record?->getOriginal('write_protected')
+                    || ($user = Auth::user()) === null
+                    || ! $user->can('update', $record))
                 ->openable()
                 ->afterStateUpdated(function ($state, $record) {
                     if ($state && $record) {
                         try {
-                            app(MediaUploadValidator::class)->ensureAccepted($state);
+                            /** @var Media|null $oldMedia */
+                            $oldMedia = $record instanceof Media
+                                ? $record
+                                : $record->getFirstMedia();
 
-                            $fileHash = hash_file('sha256', $state->getRealPath());
-                            $fileName = $state->getClientOriginalName();
+                            if (! $oldMedia instanceof Media) {
+                                throw new \RuntimeException('No media record available to replace.');
+                            }
 
-                            $existingMedia = static::scopeQuery(Media::query())
-                                ->where(function (Builder $query) use ($fileName, $fileHash) {
-                                    $query->whereHas('translations', function ($query) use ($fileName) {
-                                        $query->where('name', $fileName);
-                                    })->orWhere(function ($query) use ($fileHash) {
-                                        $query->where('custom_properties->file_hash', $fileHash);
-                                    });
-                                })
-                                ->first();
+                            $user = Auth::user();
+                            if ($user === null || ! $user->can('update', $oldMedia)) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('media::fields.operation_error'))
+                                    ->body(__('media::fields.file_operation_error', ['fileName' => $oldMedia->file_name]))
+                                    ->persistent()
+                                    ->send();
 
-                            if ($existingMedia) {
+                                return;
+                            }
+
+                            if ($oldMedia->getOriginal('write_protected')) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('media::fields.operation_error'))
+                                    ->body(__('media::fields.file_operation_error', ['fileName' => $oldMedia->file_name]))
+                                    ->persistent()
+                                    ->send();
+
+                                return;
+                            }
+
+                            $oldFileNameForNotification = $oldMedia->file_name ?? 'unknown';
+
+                            $result = app(MediaUploadService::class)->replace(
+                                $oldMedia,
+                                $state,
+                                new MediaUploadOptions(
+                                    locale: app()->getLocale(),
+                                    scopeQuery: fn ($query) => static::scopeQuery($query),
+                                    applyDefaults: function (Media $media): void {
+                                        static::applyScopedDefaults($media);
+                                    },
+                                ),
+                            );
+
+                            if ($result->isDuplicate()) {
                                 Notification::make()
                                     ->warning()
                                     ->title(__('media::fields.duplicate_file'))
                                     ->body(__('media::fields.duplicate_file_message', [
-                                        'fileName' => $fileName,
+                                        'fileName' => $result->fileName ?? $state->getClientOriginalName(),
                                     ]))
                                     ->persistent()
                                     ->send();
@@ -123,106 +156,9 @@ class MediaResource extends BaseResource
                                 return;
                             }
 
-                            /** @var Media|null $oldMedia */
-                            $oldMedia = null;
-
-                            if ($record instanceof Media) {
-                                $oldMedia = $record;
-                            } else {
-                                $oldMedia = $record->getFirstMedia();
-                            }
-
-                            $newFileName = pathinfo($state->getClientOriginalName(), PATHINFO_FILENAME);
-                            $isEdit = (bool) preg_match('/-v\d+$/', $newFileName);
-                            $oldFileNameForNotification = $oldMedia?->file_name ?? 'unknown';
-
-                            DB::transaction(function () use ($fileHash, $isEdit, $newFileName, $oldMedia, $record, $state): void {
-                                $model = new Media;
-                                $model->exists = true;
-
-                                $fileAdder = FileAdderFactory::create($model, $state);
-                                $stateSize = method_exists($state, 'getSize') ? $state->getSize() : null;
-                                if (is_int($stateSize) && $stateSize > 0) {
-                                    $fileAdder->setFileSize($stateSize);
-                                }
-
-                                $collection = $oldMedia ? $oldMedia->collection_name : $record->collection_name;
-                                /** @var Media $media */
-                                $media = $fileAdder->preservingOriginal()->toMediaCollection($collection);
-
-                                $title = $newFileName;
-                                $media->setAttribute('uploader_type', Auth::user() !== null ? get_class(Auth::user()) : null);
-                                $media->setAttribute('uploader_id', Auth::id());
-                                $media->setCustomProperty('file_hash', $fileHash);
-
-                                if ($isEdit && $oldMedia) {
-                                    $media->setAttribute('original_model_type', $oldMedia->getAttribute('original_model_type'));
-                                    $media->setAttribute('original_model_id', $oldMedia->getAttribute('original_model_id'));
-                                } else {
-                                    $media->setAttribute('original_model_type', Media::class);
-                                    $media->setAttribute('original_model_id', $media->getKey());
-                                }
-
-                                $media->setAttribute('model_id', $media->getKey());
-                                $media->setAttribute('model_type', Media::class);
-
-                                if ($oldMedia instanceof Media) {
-                                    $media->media_collection_id = $oldMedia->media_collection_id;
-                                }
-
-                                app(MediaPostProcessor::class)->process($media);
-
-                                static::applyScopedDefaults($media);
-                                $media->save();
-
-                                $translation = $media->translateOrNew(app()->getLocale());
-                                $translation->setAttribute('name', $media->file_name);
-                                $translation->setAttribute('title', $title);
-                                $translation->setAttribute('alt', $title);
-
-                                if ($oldMedia instanceof Media) {
-                                    foreach ($oldMedia->translations as $oldTranslation) {
-                                        $clonedTranslation = $media->translateOrNew($oldTranslation->locale);
-                                        $clonedTranslation->setAttribute('name', $media->file_name);
-                                        $clonedTranslation->setAttribute('title', $oldTranslation->title ?: $title);
-                                        $clonedTranslation->setAttribute('alt', $oldTranslation->alt ?: ($oldTranslation->title ?: $title));
-                                        $clonedTranslation->setAttribute('description', $oldTranslation->description);
-                                        $clonedTranslation->setAttribute('internal_note', $oldTranslation->internal_note);
-                                    }
-                                }
-
-                                $media->save();
-
-                                if (! $isEdit && $oldMedia instanceof Media) {
-                                    $oldFileName = $oldMedia->file_name;
-
-                                    $usables = DB::table('media_usables')
-                                        ->where('media_id', $oldMedia->getKey())
-                                        ->get();
-
-                                    foreach ($usables as $usable) {
-                                        DB::table('media_usables')->insert([
-                                            'media_id' => $media->getKey(),
-                                            'media_usable_id' => $usable->media_usable_id,
-                                            'media_usable_type' => $usable->media_usable_type,
-                                            'created_at' => now(),
-                                            'updated_at' => now(),
-                                        ]);
-                                    }
-
-                                    Media::syncMediaMetadata($media->load('translations'), $oldFileName);
-
-                                    DB::table('media_usables')
-                                        ->where('media_id', $oldMedia->getKey())
-                                        ->delete();
-
-                                    $oldMedia->delete();
-                                }
-                            });
-
                             Notification::make()
                                 ->success()
-                                ->title($isEdit
+                                ->title($result->wasEdited()
                                     ? __('media::fields.edit_file_success', ['fileName' => $state->getClientOriginalName()])
                                     : __('media::fields.replace_file_success', [
                                         'oldFileName' => $oldFileNameForNotification,

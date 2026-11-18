@@ -6,6 +6,10 @@ We maintain the current version of `Moox Media` actively.
 
 Do not expect security fixes for older versions.
 
+## Upload path
+
+Library file writes must go through `Moox\Media\Support\MediaUploadService` (allowlist + hash + duplicate detection + post-process). Do not bypass it with raw `FileAdderFactory` calls from new features. Authorization stays at the HTTP / Filament call site.
+
 ## Reporting a Vulnerability
 
 If you find any security-related bug, please report it to security@moox.org.

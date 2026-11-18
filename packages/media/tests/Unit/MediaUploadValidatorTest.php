@@ -57,14 +57,13 @@ it('uses an explicit allowlist when provided instead of resource config', functi
         ->toThrow(ValidationException::class);
 });
 
-it('skips validation when the allowlist is empty', function (): void {
+it('rejects all files when the allowlist is empty', function (): void {
     config(['media.upload.resource.accepted_file_types' => []]);
 
     $file = UploadedFile::fake()->create('anything.bin', 10, 'application/octet-stream');
 
-    app(MediaUploadValidator::class)->ensureAccepted($file);
-
-    expect(true)->toBeTrue();
+    expect(fn () => app(MediaUploadValidator::class)->ensureAccepted($file))
+        ->toThrow(ValidationException::class);
 });
 
 it('treats null api allowlist as resource fallback by passing null', function (): void {

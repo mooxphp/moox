@@ -148,6 +148,8 @@ Single media item (including `picture`) — e.g. selection for static pages / ed
 
 Upload files into the media library.
 
+Persistence is handled exclusively by `Moox\Media\Support\MediaUploadService` (same path as Filament admin / MediaPicker). The controller only authorizes, validates the request, and maps `MediaUploadResult` to HTTP (`201` / `409`).
+
 #### Request (multipart/form-data)
 
 - **`file`**: uploaded file
@@ -163,5 +165,6 @@ Upload files into the media library.
   - `{ message, data, context }`
   - `data` is a single media item in the same schema as GET
 - **409**: duplicate (same file already exists)
-  - `{ message, existing_id, context }`
+  - `{ message, context }`
+  - `existing_id` is included **only** when the authenticated user may `view` that media record (avoids cross-scope ID leaks)
 - **422**: validation error

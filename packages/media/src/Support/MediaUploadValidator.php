@@ -22,8 +22,13 @@ final class MediaUploadValidator
             $acceptedFileTypes ?? config('media.upload.resource.accepted_file_types', []),
         );
 
+        // Fail closed: an empty allowlist must not accept arbitrary uploads.
         if ($acceptedFileTypes === []) {
-            return;
+            throw ValidationException::withMessages([
+                'file' => __('media::fields.file_type_not_allowed', [
+                    'fileName' => $file->getClientOriginalName(),
+                ]),
+            ]);
         }
 
         $mimeType = strtolower((string) $file->getMimeType());

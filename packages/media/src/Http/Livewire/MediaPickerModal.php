@@ -20,11 +20,9 @@ use Moox\Core\Support\Scopes\ScopeValue;
 use Moox\Media\Helpers\MediaIconHelper;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
-use Moox\Media\Models\MediaTranslation;
 use Moox\Media\Support\MediaLocaleResolver;
-use Moox\Media\Support\MediaPostProcessor;
-use Moox\Media\Support\MediaUploadValidator;
-use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
+use Moox\Media\Support\MediaUploadOptions;
+use Moox\Media\Support\MediaUploadService;
 
 /** @property Schema $form */
 class MediaPickerModal extends Component implements HasForms
@@ -280,105 +278,79 @@ class MediaPickerModal extends Component implements HasForms
 
                 $localeResolver = app(MediaLocaleResolver::class);
                 $uploadLocale = $localeResolver->currentLocale($this->lang);
-
                 $collectionId = $get('media_collection_id') ?: $this->getDefaultCollectionId();
                 $collectionName = $this->resolveCollectionName($collectionId ? (int) $collectionId : null, $uploadLocale);
+                $acceptedFileTypes = $this->uploadConfig['accepted_file_types'] ?? null;
+                $uploadService = app(MediaUploadService::class);
 
                 $uploadedCount = 0;
                 $files = is_array($state) ? $state : [$state];
 
                 foreach ($files as $tempFile) {
+                    if (! Auth::user()?->can('create', Media::class)) {
+                        Notification::make()
+                            ->danger()
+                            ->title(__('media::fields.file_upload_error'))
+                            ->send();
+
+                        break;
+                    }
+
                     $realPath = $this->temporaryUploadPath($tempFile);
 
                     if ($realPath === null) {
                         continue;
                     }
 
-                    app(MediaUploadValidator::class)->ensureAccepted(
-                        $tempFile,
-                        $this->uploadConfig['accepted_file_types'] ?? null,
-                    );
-
                     $fileHash = hash_file('sha256', $realPath);
 
-                    if (in_array($fileHash, $this->processedHashes, true)) {
+                    if (is_string($fileHash) && in_array($fileHash, $this->processedHashes, true)) {
                         continue;
                     }
 
                     $fileName = $this->temporaryUploadOriginalName($tempFile);
-
-                    $existingMedia = $this->applyMediaScope(Media::query())
-                        ->where(function ($query) use ($fileName, $fileHash) {
-                            $query->whereHas('translations', function ($query) use ($fileName) {
-                                $query->where('name', $fileName);
-                            })->orWhere(function ($query) use ($fileHash) {
-                                $query->where('custom_properties->file_hash', $fileHash);
-                            });
-                        })
-                        ->first();
-
-                    if ($existingMedia) {
-                        $this->processedHashes[] = $fileHash;
-
-                        Notification::make()
-                            ->warning()
-                            ->title(__('media::fields.duplicate_file'))
-                            ->body(__('media::fields.duplicate_file_message', [
-                                'fileName' => $fileName,
-                            ]))
-                            ->persistent()
-                            ->send();
-
-                        continue;
-                    }
+                    $title = pathinfo($fileName, PATHINFO_FILENAME);
 
                     try {
-                        $title = pathinfo($fileName, PATHINFO_FILENAME);
+                        $result = $uploadService->upload($tempFile, new MediaUploadOptions(
+                            mediaCollectionId: $collectionId ? (int) $collectionId : null,
+                            collectionName: $collectionName,
+                            locale: $uploadLocale,
+                            scope: $this->resolveScopedMediaScope(),
+                            scopeQuery: fn ($query) => $this->applyMediaScope($query),
+                            name: $title,
+                            title: $title,
+                            alt: $title,
+                            acceptedFileTypes: is_array($acceptedFileTypes) ? $acceptedFileTypes : null,
+                            discardOtherLocales: true,
+                        ));
 
-                        $localeResolver->withLocale($uploadLocale, function () use ($collectionId, $collectionName, $fileHash, $tempFile, $title, $uploadLocale): void {
-                            $model = new Media;
-                            $model->exists = true;
+                        if (is_string($result->fileHash)) {
+                            $this->processedHashes[] = $result->fileHash;
+                        }
 
-                            $fileAdder = FileAdderFactory::create($model, $tempFile);
-                            $tempFileSize = method_exists($tempFile, 'getSize') ? $tempFile->getSize() : null;
-                            if (is_int($tempFileSize) && $tempFileSize > 0) {
-                                $fileAdder->setFileSize($tempFileSize);
-                            }
-                            /** @var Media $media */
-                            $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
+                        if ($result->isDuplicate()) {
+                            Notification::make()
+                                ->warning()
+                                ->title(__('media::fields.duplicate_file'))
+                                ->body(__('media::fields.duplicate_file_message', [
+                                    'fileName' => $result->fileName ?? $fileName,
+                                ]))
+                                ->persistent()
+                                ->send();
 
-                            $media->media_collection_id = $collectionId;
-                            $media->scope = $this->resolveScopedMediaScope();
-                            $media->uploader_type = Auth::user() !== null ? get_class(Auth::user()) : null;
-                            $media->uploader_id = Auth::id();
-                            $media->original_model_type = Media::class;
-                            $media->original_model_id = $media->getKey();
-                            $media->model_id = $media->getKey();
-                            $media->model_type = Media::class;
+                            continue;
+                        }
 
-                            $media->setCustomProperty('file_hash', $fileHash);
-                            app(MediaPostProcessor::class)->process($media);
-
-                            $media->save();
-
-                            $translation = $media->translateOrNew($uploadLocale);
-                            $translation->setAttribute('name', $title);
-                            $translation->setAttribute('title', $title);
-                            $translation->setAttribute('alt', $title);
-                            $translation->save();
-
-                            MediaTranslation::query()
-                                ->where('media_id', $media->id)
-                                ->where('locale', '!=', $uploadLocale)
-                                ->delete();
-                        });
-                        $this->processedHashes[] = $fileHash;
-                        $uploadedCount++;
+                        if ($result->wasCreated()) {
+                            $uploadedCount++;
+                        }
                     } catch (Exception $e) {
+                        report($e);
+
                         Notification::make()
                             ->danger()
                             ->title(__('media::fields.file_upload_error'))
-                            ->body($e->getMessage())
                             ->send();
                     }
                 }
