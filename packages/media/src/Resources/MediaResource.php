@@ -216,7 +216,6 @@ class MediaResource extends BaseResource
                                         ->where('media_id', $oldMedia->getKey())
                                         ->delete();
 
-                                    $oldMedia->deletePreservingMedia();
                                     $oldMedia->delete();
                                 }
                             });
@@ -695,9 +694,6 @@ class MediaResource extends BaseResource
                                     continue;
                                 }
 
-                                if (method_exists($media, 'deletePreservingMedia')) {
-                                    $media->deletePreservingMedia();
-                                }
                                 $media->delete();
                                 $successCount++;
                             } catch (\Exception $e) {
@@ -825,9 +821,6 @@ class MediaResource extends BaseResource
                                     continue;
                                 }
 
-                                if (method_exists($media, 'deletePreservingMedia')) {
-                                    $media->deletePreservingMedia();
-                                }
                                 $media->delete();
                                 $successCount++;
                             } catch (\Exception $e) {
@@ -960,7 +953,6 @@ class MediaResource extends BaseResource
                             ->action(function ($record) {
                                 try {
                                     $fileName = $record->file_name;
-                                    $record->deletePreservingMedia();
                                     $record->delete();
 
                                     Notification::make()

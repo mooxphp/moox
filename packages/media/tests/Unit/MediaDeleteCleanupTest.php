@@ -147,6 +147,26 @@ it('throws when deleting write-protected media', function (): void {
         ->toThrow(Exception::class);
 });
 
+it('deletes self-attached library media without cascading into itself', function (): void {
+    $mediaId = insertMediaRow([
+        'model_type' => Media::class,
+        'model_id' => 1,
+        'original_model_type' => Media::class,
+        'original_model_id' => 1,
+    ]);
+
+    DB::table('media')->where('id', $mediaId)->update([
+        'model_id' => $mediaId,
+        'original_model_id' => $mediaId,
+    ]);
+
+    $media = Media::query()->findOrFail($mediaId);
+
+    expect($media->shouldDeletePreservingMedia())->toBeTrue()
+        ->and($media->delete())->not->toBeFalse()
+        ->and(Media::query()->whereKey($mediaId)->exists())->toBeFalse();
+});
+
 it('throws when saving changes to write-protected media', function (): void {
     $mediaId = insertMediaRow([
         'write_protected' => true,

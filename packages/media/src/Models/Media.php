@@ -109,6 +109,16 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
         }
     }
 
+    /**
+     * Library items are self-attached (model_type/model_id point at this Media row) so
+     * InteractsWithMedia can register conversions. Skipping deleteAllMedia() avoids
+     * infinite recursion on delete; MediaObserver still removes files for this row.
+     */
+    public function shouldDeletePreservingMedia(): bool
+    {
+        return true;
+    }
+
     protected static function booted()
     {
         parent::booted();
