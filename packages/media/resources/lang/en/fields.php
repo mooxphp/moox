@@ -10,6 +10,7 @@ return [
     'no_translation_yet' => 'No translation for :locale yet. It is created when you change something.',
 
     // File Information
+    'id' => 'ID',
     'mime_type' => 'File Type',
     'size' => 'File Size',
     'file_name' => 'Original File Name',

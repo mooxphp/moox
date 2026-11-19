@@ -95,7 +95,6 @@ it('skips gif from delivery eligibility', function (): void {
     $gif = new class extends Media
     {
         public $mime_type = 'image/gif';
-
         public $file_name = 'anim.gif';
     };
 

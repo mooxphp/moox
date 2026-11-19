@@ -262,6 +262,12 @@ class MediaResource extends BaseResource
                                     ]);
                                 }),
 
+                            TextEntry::make('id')
+                                ->label(__('media::fields.id'))
+                                ->state(fn ($record) => (string) $record->getKey())
+                                ->copyable()
+                                ->color('gray'),
+
                             Select::make('media_collection_id')
                                 ->label(__('media::fields.collection'))
                                 ->disabled(fn ($record) => $record?->getOriginal('write_protected'))
