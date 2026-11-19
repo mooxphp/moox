@@ -246,7 +246,7 @@ final class MediaDeliveryConversions
             return (bool) $definition['fallback_to_original'];
         }
 
-        return $profile !== self::PROFILE_CUSTOMER_API;
+        return true;
     }
 
     public static function singleConversionName(string $profile): string
@@ -574,9 +574,8 @@ final class MediaDeliveryConversions
         return (int) $quality;
     }
 
-    public static function watermarkPath(?string $profile = null): ?string
+    public static function watermarkPath(string $profile): ?string
     {
-        $profile ??= self::PROFILE_CUSTOMER_API;
         $definition = self::profileConfig($profile);
         $watermark = is_array($definition['watermark'] ?? null) ? $definition['watermark'] : [];
 

@@ -56,7 +56,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | Each key under profiles is a delivery profile apps can extend or replace.
-    | Package ships web / mail / customer_api defaults only — no brand assets.
+    | Package ships only `web`. Add mail / API / watermark profiles in the app.
+    | No brand assets in the package (watermarks live in the app).
     |
     | Per profile:
     | - enabled (bool, default true)
@@ -101,7 +102,7 @@ return [
             'image/avif',
             'image/gif',
         ],
-        // No AVIF/WebP/mail/customer_api pipelines for these (e.g. animated GIF).
+        // No delivery pipelines for these (e.g. animated GIF).
         'skip_mime_types' => [
             'image/gif',
         ],
@@ -116,35 +117,35 @@ return [
                 'fallback_to_original' => true,
                 'svg' => 'original',
             ],
-            'mail' => [
-                'enabled' => true,
-                'mode' => 'single',
-                'formats' => ['jpg', 'png'],
-                'upscale' => false,
-                'default_width' => 600,
-                'fallback_to_original' => true,
-                'svg' => 'png',
-            ],
-            'customer_api' => [
-                // Publish config/media.php and enable + set watermark.path in the app.
-                'enabled' => false,
-                'mode' => 'single',
-                'formats' => ['jpg', 'png'],
-                'upscale' => false,
-                'default_width' => 1024,
-                'fallback_to_original' => false,
-                'svg' => 'skip',
-                'skip_static' => true,
-                'watermark' => [
-                    'enabled' => false,
-                    'path' => null, // app file only (absolute or relative to base_path)
-                    'opacity' => 40,
-                    'width_percent' => 15,
-                    'padding_percent' => 3,
-                    'position' => 'bottom_right', // Spatie AlignPosition name
-                    'fit' => 'contain',
-                ],
-            ],
+            // App examples (add in published config/media.php as needed):
+            // 'mail' => [
+            //     'enabled' => true,
+            //     'mode' => 'single',
+            //     'formats' => ['jpg', 'png'],
+            //     'upscale' => false,
+            //     'default_width' => 600,
+            //     'fallback_to_original' => true,
+            //     'svg' => 'png',
+            // ],
+            // 'customer_api' => [
+            //     'enabled' => true,
+            //     'mode' => 'single',
+            //     'formats' => ['jpg', 'png'],
+            //     'upscale' => false,
+            //     'default_width' => 1024,
+            //     'fallback_to_original' => false,
+            //     'svg' => 'skip',
+            //     'skip_static' => true,
+            //     'watermark' => [
+            //         'enabled' => true,
+            //         'path' => resource_path('watermarks/signet.png'),
+            //         'opacity' => 40,
+            //         'width_percent' => 15,
+            //         'padding_percent' => 3,
+            //         'position' => 'bottom_right',
+            //         'fit' => 'contain',
+            //     ],
+            // ],
         ],
     ],
 

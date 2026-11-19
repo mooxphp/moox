@@ -162,13 +162,13 @@ When editing media in the admin panel or MediaPicker sidebar, fields like `name`
 
 Media owns output formats. Templates must not invent their own AVIF/WebP pipelines. Every key under `media.delivery.profiles` is a profile — apps can add their own (`og`, `feed`, …). The package ships **no brand assets** (watermarks live in the app).
 
-### Default profiles
+### Default profile
+
+The package ships **only `web`**. Further profiles (`mail`, `customer_api`, `og`, …) belong in the app’s published `config/media.php`.
 
 | Profile | Mode | Formats | Notes |
 |---------|------|---------|--------|
 | `web` | `responsive` | AVIF, WebP, original fallback | SVG = original `<img>`; no upscale |
-| `mail` | `single` | JPEG/PNG | SVG → `mail-png`; ~600px |
-| `customer_api` | `single` | JPEG/PNG | **Opt-in**; optional watermark; `fallback_to_original=false`; `svg=skip` |
 
 ### Profile config keys
 
@@ -227,7 +227,7 @@ Normal path: **upload** → queue builds variants. Prefer selecting media in the
 php artisan queue:work
 php artisan media:image-driver
 php artisan media:regenerate-delivery --ids=4 --ids=12
-php artisan media:regenerate-delivery --profile=customer_api --force
+php artisan media:regenerate-delivery --profile=web --force
 php artisan media:regenerate-delivery --profile=web,mail --ids=4
 # library-wide missing only (warns when no --ids):
 php artisan media:regenerate-delivery
@@ -236,12 +236,27 @@ php artisan media:regenerate-delivery --force   # after watermark/config change
 
 Use `--force` after enabling profiles or changing watermark settings.
 
-Publish and edit the app config as usual (`php artisan vendor:publish --tag=media-config`), then enable what you need — e.g. customer API + watermark from **app** storage:
+Publish and edit the app config (`php artisan vendor:publish --tag=media-config`) to add extra profiles. Example app-owned mail + watermarked API profile:
 
 ```php
+'mail' => [
+    'enabled' => true,
+    'mode' => 'single',
+    'formats' => ['jpg', 'png'],
+    'upscale' => false,
+    'default_width' => 600,
+    'fallback_to_original' => true,
+    'svg' => 'png',
+],
 'customer_api' => [
     'enabled' => true,
-    // …
+    'mode' => 'single',
+    'formats' => ['jpg', 'png'],
+    'upscale' => false,
+    'default_width' => 1024,
+    'fallback_to_original' => false,
+    'svg' => 'skip',
+    'skip_static' => true,
     'watermark' => [
         'enabled' => true,
         'path' => resource_path('watermarks/signet.png'),
@@ -258,7 +273,7 @@ Admin lists every variant. API `delivery` includes every **enabled** profile (`r
 
 A queue worker must be running while `media-library.queue_conversions_by_default` is true (admin sizes are `nonQueued`; delivery variants are queued).
 
-Until conversions finish, payloads may fall back to the original when `fallback_to_original` is true (default for `web`/`mail`; false for `customer_api`).
+Until conversions finish, payloads may fall back to the original when `fallback_to_original` is true (default unless a profile sets it to `false`).
 
 ### Security notes
 
@@ -273,8 +288,7 @@ Until conversions finish, payloads may fall back to the original when `fallback_
 {{-- Delivery (default = web) --}}
 {{ $media->img() }}
 {{ $media->img()->sizes('100vw')->alt('Hero') }}
-{{ $media->img()->profile('mail') }}
-{{ $media->img()->profile('customer_api') }}
+{{ $media->img()->profile('mail') }} {{-- if the app defined a mail profile --}}
 <x-media::img :media="$media" sizes="100vw" alt="Hero" lazy />
 <x-media::picture :media="$media" profile="web" sizes="100vw" alt="Hero" />
 

@@ -90,17 +90,17 @@ Standard Laravel pagination (resource collection) with:
 - **`picture`** (object): default web delivery payload for `<picture>` (see below)
 - **`delivery`** (object): one entry per **enabled** profile from `media.delivery.profiles`
   - **responsive** profiles (e.g. `web`): same shape as `picture`
-  - **single** profiles (e.g. `mail`, `customer_api`): `{ "url": "…" }` (`null` while queued / skipped)
+  - **single** profiles (app-defined, e.g. `mail`): `{ "url": "…" }` (`null` while queued / skipped)
 - **`variants`** (array): conversion catalog (admin/debug; may include original)
 - **`collection`** (object|null): `{ id, name }`
 - **`created_at`** (string|null)
 - **`updated_at`** (string|null)
 
-**Protected profiles** (`fallback_to_original=false`, typically `customer_api`): do not use top-level `url` for external consumers. Use only `delivery.{profile}.url`. If missing/`null`, do **not** fall back to `url`.
+**Protected profiles** (`fallback_to_original=false`): do not use top-level `url` for external consumers. Use only `delivery.{profile}.url`. If missing/`null`, do **not** fall back to `url`.
 
 ### Blade rendering (Spatie + Moox)
 
-`$media->img()` returns Moox `HtmlableMedia`. **Without a conversion name it defaults to delivery profile `web`** via `MediaPictureBuilder`. Use `->profile('mail'|'customer_api'|…)` for other profiles; `img('thumbnail')` is admin/preview only (simple `<img>`). If both conversion and profile are set, profile wins. Watermarks apply only when a profile enables `MediaWatermark` with an app-owned file path.
+`$media->img()` returns Moox `HtmlableMedia`. **Without a conversion name it defaults to delivery profile `web`** via `MediaPictureBuilder`. Use `->profile('…')` for app-defined profiles; `img('thumbnail')` is admin/preview only (simple `<img>`). If both conversion and profile are set, profile wins. Watermarks apply only when a profile enables `MediaWatermark` with an app-owned file path.
 
 ##### `picture` / `delivery.web`
 

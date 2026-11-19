@@ -11,7 +11,7 @@ class RegenerateDeliveryCommand extends Command
 {
     protected $signature = 'media:regenerate-delivery
                             {--ids=* : Only regenerate these media ids}
-                            {--profile=* : Only these delivery profiles (e.g. web,customer_api)}
+                            {--profile=* : Only these delivery profiles (e.g. web,mail)}
                             {--only-missing : Only missing delivery conversions (default)}
                             {--force : Regenerate even when conversions already exist}';
 

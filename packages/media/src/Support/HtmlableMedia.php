@@ -22,7 +22,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
  * Examples:
  *   {{ $media->img() }}
  *   {{ $media->img()->sizes('100vw')->alt('Hero') }}
- *   {{ $media->img()->profile('mail') }}
+ *   {{ $media->img()->profile('mail') }} // app-defined profile
  *   {{ $media->img('thumbnail')->lazy() }}
  */
 class HtmlableMedia extends SpatieHtmlableMedia
