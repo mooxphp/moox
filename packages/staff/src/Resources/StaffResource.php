@@ -81,13 +81,7 @@ class StaffResource extends BaseRecordResource
                 ->schema([
                     Section::make(__('staff::fields.identity'))
                         ->schema([
-                            SpatieMediaLibraryFileUpload::make('avatar')
-                                ->label(__('staff::fields.avatar'))
-                                ->collection('avatar')
-                                ->image()
-                                ->avatar()
-                                ->imageEditor()
-                                ->columnSpanFull(),
+                           
                             Select::make('status')
                                 ->label(__('staff::fields.status'))
                                 ->options($statusOptions)
@@ -151,35 +145,35 @@ class StaffResource extends BaseRecordResource
                 ])
                 ->columns(3)
                 ->columnSpanFull(),
-            Section::make(__('staff::fields.contact'))
-                ->schema([
-                    TextInput::make('email')
-                        ->label(__('staff::fields.email'))
-                        ->email()
-                        ->rules(StaffRules::for('email'))
-                        ->maxLength(120),
-                    TextInput::make('phone')
-                        ->label(__('staff::fields.phone'))
-                        ->tel()
-                        ->rules(StaffRules::for('phone'))
-                        ->maxLength(30),
-                    Select::make('language_id')
-                        ->label(__('staff::fields.language_id'))
-                        ->relationship('language', 'common_name')
-                        ->getOptionLabelFromRecordUsing(fn (StaticLanguage $record): string => $record->common_name ?: (string) ($record->alpha2 ?: $record->getKey()))
-                        ->searchable()
-                        ->preload()
-                        ->rules(StaffRules::for('language_id')),
-                    Select::make('contact_id')
-                        ->label(__('staff::fields.linked_contact'))
-                        ->relationship('contact', 'display_name')
-                        ->getOptionLabelFromRecordUsing(fn (Contact $record): string => $record->displayLabel())
-                        ->searchable()
-                        ->preload()
-                        ->rules(StaffRules::for('contact_id')),
-                ])
-                ->columns(2)
-                ->columnSpanFull(),
+            // Section::make(__('staff::fields.contact'))
+            //     ->schema([
+            //         TextInput::make('email')
+            //             ->label(__('staff::fields.email'))
+            //             ->email()
+            //             ->rules(StaffRules::for('email'))
+            //             ->maxLength(120),
+            //         TextInput::make('phone')
+            //             ->label(__('staff::fields.phone'))
+            //             ->tel()
+            //             ->rules(StaffRules::for('phone'))
+            //             ->maxLength(30),
+            //         Select::make('language_id')
+            //             ->label(__('staff::fields.language_id'))
+            //             ->relationship('language', 'common_name')
+            //             ->getOptionLabelFromRecordUsing(fn (StaticLanguage $record): string => $record->common_name ?: (string) ($record->alpha2 ?: $record->getKey()))
+            //             ->searchable()
+            //             ->preload()
+            //             ->rules(StaffRules::for('language_id')),
+            //         Select::make('contact_id')
+            //             ->label(__('staff::fields.linked_contact'))
+            //             ->relationship('contact', 'display_name')
+            //             ->getOptionLabelFromRecordUsing(fn (Contact $record): string => $record->displayLabel())
+            //             ->searchable()
+            //             ->preload()
+            //             ->rules(StaffRules::for('contact_id')),
+            //     ])
+            //     ->columns(2)
+            //     ->columnSpanFull(),
             Section::make(__('staff::fields.work'))
                 ->schema([
                     TextInput::make('job_title')

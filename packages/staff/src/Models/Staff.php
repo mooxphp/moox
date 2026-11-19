@@ -85,13 +85,6 @@ class Staff extends BaseRecordModel implements HasMedia
         return $this->belongsTo(StaticLanguage::class, 'language_id');
     }
 
-    /**
-     * @return BelongsTo<Contact, $this>
-     */
-    public function contact(): BelongsTo
-    {
-        return $this->belongsTo(Contact::class, 'contact_id');
-    }
 
     public function registerMediaCollections(): void
     {
