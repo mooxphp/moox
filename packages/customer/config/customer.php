@@ -5,6 +5,7 @@ return [
         'contact' => [
             'kind' => 'belongs_to',
             'presentation' => 'hidden',
+            'model' => 'Moox\\Contact\\Models\\Contact',
             'foreign_key' => 'contact_id',
         ],
         'language' => [
