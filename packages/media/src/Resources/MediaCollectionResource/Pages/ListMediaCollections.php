@@ -24,7 +24,7 @@ class ListMediaCollections extends BaseListStatic
     public function mount(): void
     {
         parent::mount();
-        $this->lang = request()->get('lang', $this->getDefaultLocale());
+        $this->lang = request()->input('lang', $this->getDefaultLocale());
 
         app(MediaLocaleResolver::class)->syncApplicationLocale();
     }

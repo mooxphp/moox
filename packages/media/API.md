@@ -1,46 +1,46 @@
 ## Media API
 
-Diese API liefert Media-Assets (Bilder/Videos/Dateien) für z.B. `moox/editor`
+This API serves media assets (images/videos/files) for clients such as `moox/editor`.
 
-## Basis, Versionierung, Middleware
+## Base URL, versioning, middleware
 
-- **Default Base URL**: `/api/media`
-- **Konfiguration**: `packages/media/config/media.php` → `api.*`
+- **Default base URL**: `/api/media`
+- **Configuration**: `packages/media/config/media.php` → `api.*`
   - **`api.prefix`** (default: `api/media`)
-  - **`api.version`** (default: leer → kein Versions-Segment)
+  - **`api.version`** (default: empty → no version segment)
   - **`api.middleware`** (default: `['web', 'auth', 'throttle:60,1']`)
 
-### Auth-Hinweis (wichtig)
+### Auth note (important)
 
-Standardmäßig läuft die API mit `web` + `auth` (Session/Auth-Cookie). Das heißt:
+By default the API uses `web` + `auth` (session / auth cookie). That means:
 
-- Im **Browser (eingeloggt)** funktionieren Requests direkt.
-- Von einem **JS-Client** auf derselben Domain funktionieren Requests, wenn Cookies mitgeschickt werden.
-- Für **Server-zu-Server** oder externe Clients bräuchten wir dann ein anderes Auth-Setup (z.B. Token/Bearer) und wir müssen dann die Middleware entsprechend anpassen.
+- In the **browser (logged in)**, requests work directly.
+- From a **JS client** on the same domain, requests work when cookies are sent.
+- For **server-to-server** or external clients you would need a different auth setup (e.g. token/Bearer) and adjust the middleware accordingly.
 
-## Endpunkte
+## Endpoints
 
 ### 1) GET `/api/media`
 
-Listet Media-Items. Die Antwort ist **paginiert** (Default: **25** pro Seite).
+Lists media items. The response is **paginated** (default: **25** per page).
 
-#### Query-Parameter
+#### Query parameters
 
 - **`lang`** (string, optional)
-  - Erzwingt die Sprache für diesen Request (Override).
-  - Wenn `lang` nicht gesetzt ist, versucht die API `lang` aus dem `Referer` zu lesen (z.B. wenn die Admin-URL `?lang=...` enthält); sonst `app()->getLocale()`.
+  - Forces the language for this request (override).
+  - If `lang` is not set, the API tries to read `lang` from the `Referer` (e.g. when the admin URL contains `?lang=...`); otherwise `app()->getLocale()`.
 - **`search`** (string, optional)
-  - Sucht in `file_name` sowie in den übersetzten Feldern `name`, `title`, `alt`.
+  - Searches `file_name` and the translated fields `name`, `title`, `alt`.
 - **`collection`** (int, optional)
-  - Filtert nach **`media_collection_id`** (z.B. `collection=1`)
+  - Filters by **`media_collection_id`** (e.g. `collection=1`)
 - **`type`** (string, optional)
   - `image` → `mime_type LIKE image/%`
   - `video` → `mime_type LIKE video/%`
   - `document` → `mime_type LIKE (application/% OR text/% OR model/%)`
-- **`per_page`** (int, optional) — 1..100, Default 25
+- **`per_page`** (int, optional) — 1..100, default 25
 - **`page`** (int, optional)
 
-#### Beispiele
+#### Examples
 
 ```http
 GET /api/media
@@ -66,56 +66,105 @@ GET /api/media?collection=1
 GET /api/media?lang=de_DE&type=image
 ```
 
-#### Response (Schema)
+#### Response (schema)
 
-Die Antwort ist eine standard Laravel Pagination (Resource Collection) mit:
+Standard Laravel pagination (resource collection) with:
 
-- **`data`**: Array von Media-Items
-- **`links`** / **`meta`**: Pagination-Metadaten
-- **`context.locale`**: die effektiv verwendete Locale für Übersetzungen
+- **`data`**: array of media items
+- **`links`** / **`meta`**: pagination metadata
+- **`context.locale`**: the effective locale used for translations
 
-##### `data[]` Item-Felder
+##### `data[]` item fields
 
-- **`id`** (int): Primary Key
-- **`url`** (string): öffentliche Asset-URL (Spatie `getUrl()`)
-- **`thumbnail_url`** (string|null): Thumbnail-Conversion (falls verfügbar)
-- **`preview_url`** (string|null): Preview-Conversion (falls verfügbar)
-- **`poster_url`** (string|null): für Videos (Fallback: preview → thumbnail)
+- **`id`** (int): primary key
+- **`url`** (string): **original** public asset URL (Spatie `getUrl()`). Intended for admin/editor tooling only.
+- **`thumbnail_url`** (string|null): thumbnail conversion (if available)
+- **`preview_url`** (string|null): preview conversion (if available)
+- **`poster_url`** (string|null): for videos (fallback: preview → thumbnail)
 - **`file_name`** (string)
 - **`mime_type`** (string|null)
-- **`type`** (`image`|`video`|`document`|`other`): abgeleitet aus `mime_type`
-- **`name`** (string|null):
+- **`type`** (`image`|`video`|`document`|`other`): derived from `mime_type`
+- **`name`** (string|null)
 - **`title`** (string|null)
 - **`alt`** (string|null)
+- **`picture`** (object): default web delivery payload for `<picture>` (see below)
+- **`delivery`** (object): one entry per **enabled** profile from `media.delivery.profiles`
+  - **responsive** profiles (e.g. `web`): same shape as `picture`
+  - **single** profiles (e.g. `mail`, `customer_api`): `{ "url": "…" }` (`null` while queued / skipped)
+- **`variants`** (array): conversion catalog (admin/debug; may include original)
 - **`collection`** (object|null): `{ id, name }`
 - **`created_at`** (string|null)
 - **`updated_at`** (string|null)
 
-#### Fehlercodes
+**Protected profiles** (`fallback_to_original=false`, typically `customer_api`): do not use top-level `url` for external consumers. Use only `delivery.{profile}.url`. If missing/`null`, do **not** fall back to `url`.
 
-- **401/302**: nicht eingeloggt (je nach Accept/Request-Kontext Redirect vs JSON)
-- **403**: Policy verweigert Zugriff (aktuell `viewAny` erlaubt, aber Middleware kann blocken)
-- **422**: Validation Fehler (z.B. ungültiges `type`)
+### Blade rendering (Spatie + Moox)
 
-### 2) POST `/api/media`
+`$media->img()` returns Moox `HtmlableMedia`. **Without a conversion name it defaults to delivery profile `web`** via `MediaPictureBuilder`. Use `->profile('mail'|'customer_api'|…)` for other profiles; `img('thumbnail')` is admin/preview only (simple `<img>`). If both conversion and profile are set, profile wins. Watermarks apply only when a profile enables `MediaWatermark` with an app-owned file path.
 
-Upload von Files in die Mediathek
+##### `picture` / `delivery.web`
 
-#### Request (multipart/form-data)
+```json
+{
+  "profile": "web",
+  "mode": "picture",
+  "alt": "...",
+  "sizes": null,
+  "sources": [
+    { "type": "image/avif", "srcset": "…/web-480-avif.avif 480w, … 960w, … 1440w" },
+    { "type": "image/webp", "srcset": "…" }
+  ],
+  "img": {
+    "src": "…/medium_large…",
+    "srcset": null,
+    "loading": "lazy",
+    "decoding": "async"
+  }
+}
+```
 
-- **`file`** : Upload Datei
-- **`media_collection_id`** (int): Ziel-Collection ID
-- **`lang`** (string): z.B. en_US, de_DE
-- **`name`** (string): Übersetztes Anzeigename-Feld (Default: Original-Dateiname)
-- **`title`** (string): Default: Dateiname ohne Extension
-- **`alt`** (string): Default: Dateiname ohne Extension
+Missing conversions are omitted (`sources` may be empty while conversions are still queued). Web srcsets start at `min_responsive_width` (default 480). Sources smaller than that min get same-size modern formats only (no multi-width srcset). MIME types in `delivery.skip_mime_types` (default `image/gif`) have no delivery profiles.
+
+#### Error codes
+
+- **401/302**: not logged in (redirect vs JSON depending on Accept / request context)
+- **403**: policy denies access (`viewAny` may allow, but middleware can still block)
+- **422**: validation error (e.g. invalid `type`)
+
+### 2) GET `/api/media/{id}`
+
+Single media item (including `picture`) — e.g. selection for static pages / editors.
+
+#### Query parameters
+
+- **`lang`** (string, optional) — same as list
 
 #### Response
 
-- **201**: Upload erfolgreich
-  - `{ message, data, context }`
-  - `data` ist ein einzelnes Media-Item im selben Schema wie bei GET
-- **409**: Duplicate (gleiche Datei schon vorhanden)
-  - `{ message, existing_id, context }`
-- **422**: Validation Fehler
+- **200**: `{ data, context }` — `data` uses the same item schema as the list
+- **401/302 / 403 / 404**: auth / policy / not found
 
+### 3) POST `/api/media`
+
+Upload files into the media library.
+
+Persistence is handled exclusively by `Moox\Media\Support\MediaUploadService` (same path as Filament admin / MediaPicker). The controller only authorizes, validates the request, and maps `MediaUploadResult` to HTTP (`201` / `409`).
+
+#### Request (multipart/form-data)
+
+- **`file`**: uploaded file
+- **`media_collection_id`** (int): target collection ID
+- **`lang`** (string): e.g. `en_US`, `de_DE`
+- **`name`** (string): translated display name (default: original file name)
+- **`title`** (string): default: file name without extension
+- **`alt`** (string): default: file name without extension
+
+#### Response
+
+- **201**: upload successful
+  - `{ message, data, context }`
+  - `data` is a single media item in the same schema as GET
+- **409**: duplicate (same file already exists)
+  - `{ message, context }`
+  - `existing_id` is included **only** when the authenticated user may `view` that media record (avoids cross-scope ID leaks)
+- **422**: validation error

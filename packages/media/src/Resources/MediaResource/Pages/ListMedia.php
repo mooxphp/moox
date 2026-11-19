@@ -2,17 +2,19 @@
 
 namespace Moox\Media\Resources\MediaResource\Pages;
 
+use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Resources\MediaResource;
 use Moox\Media\Support\MediaLocaleResolver;
-use Moox\Media\Support\MediaUploadValidator;
-use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
+use Moox\Media\Support\MediaUploadOptions;
+use Moox\Media\Support\MediaUploadService;
 
 class ListMedia extends BaseListDrafts
 {
@@ -70,6 +72,12 @@ class ListMedia extends BaseListDrafts
             Action::make('upload')
                 ->label(__('media::fields.upload_file'))
                 ->icon(config('media.upload.resource.icon'))
+                ->authorize('create', Media::class)
+                // Fresh modal session: otherwise processedHashes silently skips re-uploads
+                // (including DB duplicates) without a notification.
+                ->beforeFormFilled(function (): void {
+                    $this->processedHashes = [];
+                })
                 ->schema([
                     Select::make('media_collection_id')
                         ->label(__('media::fields.collection'))
@@ -77,9 +85,12 @@ class ListMedia extends BaseListDrafts
                             $localeResolver = app(MediaLocaleResolver::class);
                             $currentLang = $this->lang ?? app()->getLocale();
 
-                            return MediaCollection::query()
+                            /** @var EloquentCollection<int, MediaCollection> $collections */
+                            $collections = MediaCollection::query()
                                 ->with('translations')
-                                ->get()
+                                ->get();
+
+                            return $collections
                                 ->mapWithKeys(fn (MediaCollection $collection): array => [
                                     $collection->id => $localeResolver->collectionName($collection, $currentLang),
                                 ])
@@ -101,12 +112,13 @@ class ListMedia extends BaseListDrafts
                         ->maxFiles(config('media.upload.resource.max_files'))
                         ->minFiles(config('media.upload.resource.min_files'))
                         ->acceptedFileTypes(config('media.upload.resource.accepted_file_types'))
-                        ->imageResizeMode(config('media.upload.resource.image_resize_mode'))
-                        ->imageCropAspectRatio(config('media.upload.resource.image_crop_aspect_ratio'))
-                        ->imageResizeTargetWidth(config('media.upload.resource.image_resize_target_width'))
-                        ->imageResizeTargetHeight(config('media.upload.resource.image_resize_target_height'))
+                        ->automaticallyResizeImagesMode(config('media.upload.resource.image_resize_mode'))
+                        ->imageAspectRatio(config('media.upload.resource.image_crop_aspect_ratio'))
+                        ->automaticallyCropImagesToAspectRatio(filled(config('media.upload.resource.image_crop_aspect_ratio')))
+                        ->automaticallyResizeImagesToWidth(config('media.upload.resource.image_resize_target_width'))
+                        ->automaticallyResizeImagesToHeight(config('media.upload.resource.image_resize_target_height'))
                         ->imageEditor(config('media.upload.resource.image_editor.enabled'))
-                        ->imageEditorAspectRatios(config('media.upload.resource.image_editor.aspect_ratios'))
+                        ->imageEditorAspectRatioOptions(config('media.upload.resource.image_editor.aspect_ratios'))
                         ->imageEditorViewportWidth(config('media.upload.resource.image_editor.viewport_width'))
                         ->imageEditorViewportHeight(config('media.upload.resource.image_editor.viewport_height'))
                         ->imageEditorMode(config('media.upload.resource.image_editor.mode'))
@@ -117,104 +129,99 @@ class ListMedia extends BaseListDrafts
                         ->previewable(config('media.upload.resource.show_preview'))
                         ->reorderable(config('media.upload.resource.reorderable'))
                         ->appendFiles(config('media.upload.resource.append_files'))
+                        // Do not clear FileUpload state mid-batch: that cancels sibling
+                        // uploads when multiple files are selected. Deduplicate via hash.
                         ->afterStateUpdated(function ($state, $get) {
                             if (! $state) {
                                 return;
                             }
 
-                            $collectionId = $get('media_collection_id');
-                            $collection = MediaCollection::with('translations')->find($collectionId);
                             $localeResolver = app(MediaLocaleResolver::class);
+                            $uploadLang = $this->lang ?: $localeResolver->adminDefaultLocale();
+                            $collectionId = $get('media_collection_id');
+                            $uploadedCount = 0;
+                            $duplicateNames = [];
+                            $files = is_array($state) ? $state : [$state];
+                            $uploadService = app(MediaUploadService::class);
+                            $scopeQuery = fn ($query) => static::getResource()::scopeQuery($query);
 
-                            $collectionName = __('media::fields.uncategorized');
-                            if ($collection) {
-                                $collectionName = $localeResolver->collectionName($collection, $this->lang ?? app()->getLocale());
+                            foreach ($files as $tempFile) {
+                                try {
+                                    if (! auth()->user()?->can('create', Media::class)) {
+                                        Notification::make()
+                                            ->danger()
+                                            ->title(__('media::fields.file_upload_error'))
+                                            ->send();
+
+                                        break;
+                                    }
+
+                                    $probePath = method_exists($tempFile, 'getRealPath') ? $tempFile->getRealPath() : null;
+                                    $probeHash = is_string($probePath) && is_file($probePath)
+                                        ? hash_file('sha256', $probePath)
+                                        : false;
+
+                                    // Re-entrancy within the same FilePond batch: skip quietly.
+                                    if (is_string($probeHash) && in_array($probeHash, $this->processedHashes, true)) {
+                                        continue;
+                                    }
+
+                                    $result = $uploadService->upload($tempFile, new MediaUploadOptions(
+                                        mediaCollectionId: $collectionId ? (int) $collectionId : null,
+                                        locale: $uploadLang,
+                                        scopeQuery: $scopeQuery,
+                                        applyDefaults: function (Media $media): void {
+                                            static::getResource()::applyScopedDefaults($media);
+                                        },
+                                    ));
+
+                                    if (is_string($result->fileHash)) {
+                                        $this->processedHashes[] = $result->fileHash;
+                                    }
+
+                                    if ($result->isDuplicate()) {
+                                        $duplicateNames[] = $result->fileName ?? (
+                                            method_exists($tempFile, 'getClientOriginalName')
+                                                ? $tempFile->getClientOriginalName()
+                                                : ''
+                                        );
+
+                                        continue;
+                                    }
+
+                                    if ($result->wasCreated()) {
+                                        $uploadedCount++;
+                                    }
+                                } catch (Exception $e) {
+                                    report($e);
+
+                                    Notification::make()
+                                        ->danger()
+                                        ->title(__('media::fields.file_upload_error'))
+                                        ->send();
+                                }
                             }
 
-                            $uploadLang = $this->lang ?: $localeResolver->adminDefaultLocale();
+                            if ($duplicateNames !== []) {
+                                $uniqueNames = array_values(array_unique($duplicateNames));
 
-                            foreach ($state as $tempFile) {
-                                app(MediaUploadValidator::class)->ensureAccepted($tempFile);
+                                Notification::make()
+                                    ->warning()
+                                    ->title(__('media::fields.duplicate_file'))
+                                    ->body(__('media::fields.duplicate_file_message', [
+                                        'fileName' => implode(', ', $uniqueNames),
+                                    ]))
+                                    ->persistent()
+                                    ->send();
+                            }
 
-                                $fileHash = hash_file('sha256', $tempFile->getRealPath());
+                            if ($uploadedCount > 0) {
+                                $this->resetTable();
 
-                                if (in_array($fileHash, $this->processedHashes)) {
-                                    continue;
-                                }
-
-                                $fileName = $tempFile->getClientOriginalName();
-
-                                $existingMedia = static::getResource()::scopeQuery(Media::query())
-                                    ->where(function ($query) use ($fileName, $fileHash) {
-                                        $query->whereHas('translations', function ($query) use ($fileName) {
-                                            $query->where('name', $fileName);
-                                        })->orWhere(function ($query) use ($fileHash) {
-                                            $query->where('custom_properties->file_hash', $fileHash);
-                                        });
-                                    })
-                                    ->first();
-
-                                if ($existingMedia) {
-                                    Notification::make()
-                                        ->warning()
-                                        ->title(__('media::fields.duplicate_file'))
-                                        ->body(__('media::fields.duplicate_file_message', [
-                                            'fileName' => $fileName,
-                                        ]))
-                                        ->persistent()
-                                        ->send();
-
-                                    continue;
-                                }
-
-                                $localeResolver->withLocale($uploadLang, function () use ($collectionId, $collectionName, $fileHash, $fileName, $tempFile, $uploadLang): void {
-                                    $model = new Media;
-                                    $model->exists = true;
-
-                                    $fileAdder = FileAdderFactory::create($model, $tempFile);
-                                    $tempFileSize = method_exists($tempFile, 'getSize') ? $tempFile->getSize() : null;
-                                    if (is_int($tempFileSize) && $tempFileSize > 0) {
-                                        $fileAdder->setFileSize($tempFileSize);
-                                    }
-                                    /** @var Media $media */
-                                    $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
-
-                                    $media->media_collection_id = $collectionId;
-                                    $media->collection_name = $collectionName;
-                                    static::getResource()::applyScopedDefaults($media);
-                                    $media->save();
-
-                                    $title = pathinfo($tempFile->getClientOriginalName(), PATHINFO_FILENAME);
-
-                                    $translation = $media->translateOrNew($uploadLang);
-                                    $translation->setAttribute('name', $fileName);
-                                    $translation->setAttribute('title', $title);
-                                    $translation->setAttribute('alt', $title);
-                                    $translation->save();
-                                    $user = auth()->user();
-                                    $media->uploader_type = $user ? get_class($user) : null;
-                                    $media->uploader_id = auth()->id();
-                                    $media->original_model_type = Media::class;
-                                    $media->original_model_id = $media->getKey();
-                                    $media->model_id = $media->getKey();
-                                    $media->model_type = Media::class;
-
-                                    $media->setCustomProperty('file_hash', $fileHash);
-
-                                    if (str_starts_with((string) $media->mime_type, 'image/')) {
-                                        $size = @getimagesize($media->getPath());
-                                        if ($size !== false) {
-                                            $media->setCustomProperty('dimensions', [
-                                                'width' => (int) $size[0],
-                                                'height' => (int) $size[1],
-                                            ]);
-                                        }
-                                    }
-
-                                    $media->save();
-                                });
-
-                                $this->processedHashes[] = $fileHash;
+                                Notification::make()
+                                    ->success()
+                                    ->title(__('media::fields.file_uploaded_success'))
+                                    ->send();
                             }
                         }),
                 ])

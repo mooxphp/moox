@@ -40,6 +40,116 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Image driver preference
+    |--------------------------------------------------------------------------
+    |
+    | Applied to media-library.image_driver at boot. Use "auto" to pick
+    | vips → imagick → gd. Or set IMAGE_DRIVER / this value explicitly.
+    |
+    */
+
+    'image_driver' => env('IMAGE_DRIVER', 'auto'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Delivery profiles
+    |--------------------------------------------------------------------------
+    |
+    | Each key under profiles is a delivery profile apps can extend or replace.
+    | Package ships web / mail / customer_api defaults only — no brand assets.
+    |
+    | Per profile:
+    | - enabled (bool, default true)
+    | - mode: responsive | single
+    | - formats: e.g. avif, webp, jpg, png, original
+    | - upscale (bool)
+    | - min_responsive_width (responsive)
+    | - widths (responsive, optional) — else global extra_widths
+    | - default_width (single)
+    | - fallback_to_original (bool)
+    | - svg: original | png | skip
+    | - skip_static (bool) — skip media with custom property static_path
+    | - watermark: { enabled, path, opacity, width_percent, padding_percent, position, fit }
+    |   Applied via MediaWatermark (Spatie Image). path = app file only (base_path relative OK).
+    |
+    | Responsive: originals >= min_responsive_width get a width ladder (no upscale).
+    | Smaller rasters get same-size modern formats only (no multi-width srcset).
+    | skip_mime_types (default image/gif) skip delivery profiles (original kept).
+    | Optimizer / queue / driver: config/media-library.php.
+    |
+    */
+
+    'delivery' => [
+        'sizes' => [
+            'thumbnail' => ['width' => 150, 'height' => 150, 'fit' => 'contain'],
+            'medium' => ['width' => 300],
+            'medium_large' => ['width' => 768],
+            'large' => ['width' => 1024],
+        ],
+        // Fallback breakpoints when a profile does not set its own widths.
+        'extra_widths' => [480, 960, 1440],
+        'quality' => [
+            'jpg' => 82,
+            'webp' => 80,
+            'avif' => 55,
+            'png' => 90,
+        ],
+        'raster_mime_types' => [
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'image/avif',
+            'image/gif',
+        ],
+        // No AVIF/WebP/mail/customer_api pipelines for these (e.g. animated GIF).
+        'skip_mime_types' => [
+            'image/gif',
+        ],
+        'profiles' => [
+            'web' => [
+                'enabled' => true,
+                'mode' => 'responsive',
+                'formats' => ['avif', 'webp', 'original'],
+                'upscale' => false,
+                'min_responsive_width' => 480,
+                // 'widths' => [480, 960, 1440], // optional; defaults to extra_widths
+                'fallback_to_original' => true,
+                'svg' => 'original',
+            ],
+            'mail' => [
+                'enabled' => true,
+                'mode' => 'single',
+                'formats' => ['jpg', 'png'],
+                'upscale' => false,
+                'default_width' => 600,
+                'fallback_to_original' => true,
+                'svg' => 'png',
+            ],
+            'customer_api' => [
+                // Publish config/media.php and enable + set watermark.path in the app.
+                'enabled' => false,
+                'mode' => 'single',
+                'formats' => ['jpg', 'png'],
+                'upscale' => false,
+                'default_width' => 1024,
+                'fallback_to_original' => false,
+                'svg' => 'skip',
+                'skip_static' => true,
+                'watermark' => [
+                    'enabled' => false,
+                    'path' => null, // app file only (absolute or relative to base_path)
+                    'opacity' => 40,
+                    'width_percent' => 15,
+                    'padding_percent' => 3,
+                    'position' => 'bottom_right', // Spatie AlignPosition name
+                    'fit' => 'contain',
+                ],
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Title
     |--------------------------------------------------------------------------
     |

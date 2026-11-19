@@ -21,7 +21,8 @@
         "filament/spatie-laravel-media-library-plugin": "^5.0",
         "moox/localization": "dev-main",
         "moox/data": "dev-main",
-        "moox/file-icons": "dev-main"
+        "moox/file-icons": "dev-main",
+        "enshrined/svg-sanitize": "^1.1"
     },
     "autoload": {
         "psr-4": {

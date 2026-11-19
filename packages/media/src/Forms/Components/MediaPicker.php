@@ -160,11 +160,11 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
         return parent::imageEditorViewportHeight($height);
     }
 
-    public function imageEditorAspectRatios(Closure|array $ratios): static
+    public function imageEditorAspectRatioOptions(Closure|array $ratios): static
     {
         $this->uploadConfig['image_editor_aspect_ratios'] = $ratios instanceof Closure ? $ratios() : $ratios;
 
-        return parent::imageEditorAspectRatios($ratios);
+        return parent::imageEditorAspectRatioOptions($ratios);
     }
 
     public function placeholder(Closure|string|null $placeholder): static

@@ -15,7 +15,8 @@ use Moox\Media\Http\Resources\MediaItemResource;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Support\MediaLocaleResolver;
-use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
+use Moox\Media\Support\MediaUploadOptions;
+use Moox\Media\Support\MediaUploadService;
 
 class MediaController extends Controller
 {
@@ -80,6 +81,32 @@ class MediaController extends Controller
         });
     }
 
+    public function show(Request $request, Media $media): MediaItemResource
+    {
+        $this->authorize('view', $media);
+
+        $resolver = app(MediaLocaleResolver::class);
+
+        $lang = $request->query('lang');
+        $lang = is_string($lang) && preg_match('/^[A-Za-z0-9_-]+$/', trim($lang)) === 1
+            ? trim($lang)
+            : null;
+
+        $effectiveLocale = $lang
+            ?? $this->getLangFromReferer($request)
+            ?? $resolver->adminDefaultLocale();
+
+        return $resolver->withLocale($effectiveLocale, function () use ($media): MediaItemResource {
+            $media->load(['translations', 'collection.translations']);
+
+            return (new MediaItemResource($media))->additional([
+                'context' => [
+                    'locale' => app()->getLocale(),
+                ],
+            ]);
+        });
+    }
+
     public function store(MediaStoreRequest $request)
     {
         $this->authorize('create', Media::class);
@@ -92,82 +119,45 @@ class MediaController extends Controller
         return $resolver->withLocale($effectiveLocale, function () use ($request, $resolver, $effectiveLocale) {
             /** @var UploadedFile $file */
             $file = $request->file('file');
-            $originalName = $file->getClientOriginalName();
-            $fileHash = hash_file('sha256', $file->getRealPath());
-
-            $existingMedia = Media::query()
-                ->where('custom_properties->file_hash', $fileHash)
-                ->orWhereHas('translations', function ($q) use ($originalName): void {
-                    $q->where('name', $originalName);
-                })
-                ->first();
-
-            if ($existingMedia) {
-                return response()->json([
-                    'message' => 'Duplicate file.',
-                    'existing_id' => $existingMedia->getKey(),
-                    'context' => [
-                        'locale' => app()->getLocale(),
-                    ],
-                ], 409);
-            }
 
             $collection = MediaCollection::query()->with('translations')->findOrFail($request->mediaCollectionId());
             $collectionName = $resolver->collectionName($collection, $effectiveLocale);
+            $titleFallback = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $apiAcceptedTypes = config('media.upload.api.accepted_file_types');
 
-            $model = new Media;
-            $model->exists = true;
+            $result = app(MediaUploadService::class)->upload($file, new MediaUploadOptions(
+                mediaCollectionId: (int) $collection->getKey(),
+                collectionName: $collectionName,
+                locale: $effectiveLocale,
+                name: $request->name(),
+                title: $request->title() ?? $titleFallback,
+                alt: $request->alt() ?? $titleFallback,
+                acceptedFileTypes: is_array($apiAcceptedTypes) ? $apiAcceptedTypes : null,
+                uploader: $request->user(),
+            ));
 
-            $fileAdder = FileAdderFactory::create($model, $file);
-            $fileSize = method_exists($file, 'getSize') ? $file->getSize() : null;
-            if (is_int($fileSize) && $fileSize > 0) {
-                $fileAdder->setFileSize($fileSize);
-            }
+            if ($result->isDuplicate()) {
+                $payload = [
+                    'message' => 'Duplicate file.',
+                    'context' => [
+                        'locale' => app()->getLocale(),
+                    ],
+                ];
 
-            /** @var Media $media */
-            $media = $fileAdder
-                ->preservingOriginal()
-                ->toMediaCollection($collectionName);
-
-            $media->media_collection_id = $collection->getKey();
-            $media->collection_name = $collectionName;
-
-            $user = $request->user();
-            $media->uploader_type = $user ? $user::class : null;
-            $media->uploader_id = $user?->getAuthIdentifier();
-
-            $media->original_model_type = Media::class;
-            $media->original_model_id = $media->getKey();
-            $media->model_id = $media->getKey();
-            $media->model_type = Media::class;
-
-            $media->setCustomProperty('file_hash', $fileHash);
-            if (str_starts_with((string) $media->mime_type, 'image/')) {
-                try {
-                    $path = $media->getPath();
-                    if ($path !== '') {
-                        $size = @getimagesize($path);
-                        if ($size !== false) {
-                            $media->setCustomProperty('dimensions', [
-                                'width' => (int) $size[0],
-                                'height' => (int) $size[1],
-                            ]);
-                        }
-                    }
-                } catch (\Throwable) {
-                    // ignore
+                // Only reveal existing_id when the caller may view that record.
+                $existing = $result->existingMedia;
+                if ($existing instanceof Media && $request->user()?->can('view', $existing)) {
+                    $payload['existing_id'] = $existing->getKey();
                 }
+
+                return response()->json($payload, 409);
             }
 
-            $media->save();
+            $media = $result->media;
 
-            $titleFallback = pathinfo($originalName, PATHINFO_FILENAME);
-
-            $translation = $media->translateOrNew($effectiveLocale);
-            $translation->setAttribute('name', $request->name() ?? $originalName);
-            $translation->setAttribute('title', $request->title() ?? $titleFallback);
-            $translation->setAttribute('alt', $request->alt() ?? $titleFallback);
-            $translation->save();
+            if (! $media instanceof Media) {
+                abort(500, 'Upload succeeded without a media record.');
+            }
 
             $media->load(['translations', 'collection.translations']);
 

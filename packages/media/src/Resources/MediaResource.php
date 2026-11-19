@@ -9,6 +9,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Callout;
@@ -23,6 +24,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -31,11 +33,12 @@ use Moox\Core\Entities\BaseResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
+use Moox\Media\Models\MediaTranslation;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
 use Moox\Media\Support\MediaLocaleResolver;
-use Moox\Media\Support\MediaUploadValidator;
+use Moox\Media\Support\MediaUploadOptions;
+use Moox\Media\Support\MediaUploadService;
 use Moox\Media\Tables\Columns\CustomImageColumn;
-use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 class MediaResource extends BaseResource
 {
@@ -88,31 +91,63 @@ class MediaResource extends BaseResource
                 ->imageEditor(fn ($record) => ! $record->write_protected)
                 ->downloadable(fn ($record) => ! $record->write_protected)
                 ->deletable(fn ($record) => ! $record->write_protected)
+                ->disabled(fn ($record): bool => (bool) $record?->getOriginal('write_protected')
+                    || ! Auth::user()?->can('update', $record))
                 ->openable()
                 ->afterStateUpdated(function ($state, $record) {
                     if ($state && $record) {
                         try {
-                            app(MediaUploadValidator::class)->ensureAccepted($state);
+                            /** @var Media|null $oldMedia */
+                            $oldMedia = $record instanceof Media
+                                ? $record
+                                : $record->getFirstMedia();
 
-                            $fileHash = hash_file('sha256', $state->getRealPath());
-                            $fileName = $state->getClientOriginalName();
+                            if (! $oldMedia instanceof Media) {
+                                throw new \RuntimeException('No media record available to replace.');
+                            }
 
-                            $existingMedia = static::scopeQuery(Media::query())
-                                ->where(function (Builder $query) use ($fileName, $fileHash) {
-                                    $query->whereHas('translations', function ($query) use ($fileName) {
-                                        $query->where('name', $fileName);
-                                    })->orWhere(function ($query) use ($fileHash) {
-                                        $query->where('custom_properties->file_hash', $fileHash);
-                                    });
-                                })
-                                ->first();
+                            if (! Auth::user()?->can('update', $oldMedia)) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('media::fields.operation_error'))
+                                    ->body(__('media::fields.file_operation_error', ['fileName' => $oldMedia->file_name]))
+                                    ->persistent()
+                                    ->send();
 
-                            if ($existingMedia) {
+                                return;
+                            }
+
+                            if ($oldMedia->getOriginal('write_protected')) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('media::fields.operation_error'))
+                                    ->body(__('media::fields.file_operation_error', ['fileName' => $oldMedia->file_name]))
+                                    ->persistent()
+                                    ->send();
+
+                                return;
+                            }
+
+                            $oldFileNameForNotification = $oldMedia->file_name ?? 'unknown';
+
+                            $result = app(MediaUploadService::class)->replace(
+                                $oldMedia,
+                                $state,
+                                new MediaUploadOptions(
+                                    locale: app()->getLocale(),
+                                    scopeQuery: fn ($query) => static::scopeQuery($query),
+                                    applyDefaults: function (Media $media): void {
+                                        static::applyScopedDefaults($media);
+                                    },
+                                ),
+                            );
+
+                            if ($result->isDuplicate()) {
                                 Notification::make()
                                     ->warning()
                                     ->title(__('media::fields.duplicate_file'))
                                     ->body(__('media::fields.duplicate_file_message', [
-                                        'fileName' => $fileName,
+                                        'fileName' => $result->fileName ?? $state->getClientOriginalName(),
                                     ]))
                                     ->persistent()
                                     ->send();
@@ -120,115 +155,9 @@ class MediaResource extends BaseResource
                                 return;
                             }
 
-                            /** @var Media|null $oldMedia */
-                            $oldMedia = null;
-
-                            if ($record instanceof Media) {
-                                $oldMedia = $record;
-                            } else {
-                                $oldMedia = $record->getFirstMedia();
-                            }
-
-                            $newFileName = pathinfo($state->getClientOriginalName(), PATHINFO_FILENAME);
-                            $isEdit = (bool) preg_match('/-v\d+$/', $newFileName);
-                            $oldFileNameForNotification = $oldMedia?->file_name ?? 'unknown';
-
-                            DB::transaction(function () use ($fileHash, $isEdit, $newFileName, $oldMedia, $record, $state): void {
-                                $model = new Media;
-                                $model->exists = true;
-
-                                $fileAdder = FileAdderFactory::create($model, $state);
-                                $stateSize = method_exists($state, 'getSize') ? $state->getSize() : null;
-                                if (is_int($stateSize) && $stateSize > 0) {
-                                    $fileAdder->setFileSize($stateSize);
-                                }
-
-                                $collection = $oldMedia ? $oldMedia->collection_name : $record->collection_name;
-                                /** @var Media $media */
-                                $media = $fileAdder->preservingOriginal()->toMediaCollection($collection);
-
-                                $title = $newFileName;
-                                $media->setAttribute('uploader_type', Auth::user() !== null ? get_class(Auth::user()) : null);
-                                $media->setAttribute('uploader_id', Auth::id());
-                                $media->setCustomProperty('file_hash', $fileHash);
-
-                                if ($isEdit && $oldMedia) {
-                                    $media->setAttribute('original_model_type', $oldMedia->getAttribute('original_model_type'));
-                                    $media->setAttribute('original_model_id', $oldMedia->getAttribute('original_model_id'));
-                                } else {
-                                    $media->setAttribute('original_model_type', Media::class);
-                                    $media->setAttribute('original_model_id', $media->getKey());
-                                }
-
-                                $media->setAttribute('model_id', $media->getKey());
-                                $media->setAttribute('model_type', Media::class);
-
-                                if ($oldMedia instanceof Media) {
-                                    $media->media_collection_id = $oldMedia->media_collection_id;
-                                }
-
-                                if (str_starts_with((string) $media->mime_type, 'image/')) {
-                                    $size = @getimagesize($media->getPath());
-                                    if ($size !== false) {
-                                        $media->setCustomProperty('dimensions', [
-                                            'width' => (int) $size[0],
-                                            'height' => (int) $size[1],
-                                        ]);
-                                    }
-                                }
-
-                                static::applyScopedDefaults($media);
-                                $media->save();
-
-                                $translation = $media->translateOrNew(app()->getLocale());
-                                $translation->setAttribute('name', $media->file_name);
-                                $translation->setAttribute('title', $title);
-                                $translation->setAttribute('alt', $title);
-
-                                if ($oldMedia instanceof Media) {
-                                    foreach ($oldMedia->translations as $oldTranslation) {
-                                        $clonedTranslation = $media->translateOrNew($oldTranslation->locale);
-                                        $clonedTranslation->setAttribute('name', $media->file_name);
-                                        $clonedTranslation->setAttribute('title', $oldTranslation->title ?: $title);
-                                        $clonedTranslation->setAttribute('alt', $oldTranslation->alt ?: ($oldTranslation->title ?: $title));
-                                        $clonedTranslation->setAttribute('description', $oldTranslation->description);
-                                        $clonedTranslation->setAttribute('internal_note', $oldTranslation->internal_note);
-                                    }
-                                }
-
-                                $media->save();
-
-                                if (! $isEdit && $oldMedia instanceof Media) {
-                                    $oldFileName = $oldMedia->file_name;
-
-                                    $usables = DB::table('media_usables')
-                                        ->where('media_id', $oldMedia->getKey())
-                                        ->get();
-
-                                    foreach ($usables as $usable) {
-                                        DB::table('media_usables')->insert([
-                                            'media_id' => $media->getKey(),
-                                            'media_usable_id' => $usable->media_usable_id,
-                                            'media_usable_type' => $usable->media_usable_type,
-                                            'created_at' => now(),
-                                            'updated_at' => now(),
-                                        ]);
-                                    }
-
-                                    Media::syncMediaMetadata($media->load('translations'), $oldFileName);
-
-                                    DB::table('media_usables')
-                                        ->where('media_id', $oldMedia->getKey())
-                                        ->delete();
-
-                                    $oldMedia->deletePreservingMedia();
-                                    $oldMedia->delete();
-                                }
-                            });
-
                             Notification::make()
                                 ->success()
-                                ->title($isEdit
+                                ->title($result->wasEdited()
                                     ? __('media::fields.edit_file_success', ['fileName' => $state->getClientOriginalName()])
                                     : __('media::fields.replace_file_success', [
                                         'oldFileName' => $oldFileNameForNotification,
@@ -340,9 +269,12 @@ class MediaResource extends BaseResource
                                     $localeResolver = app(MediaLocaleResolver::class);
                                     $currentLang = $livewire->lang ?? app()->getLocale();
 
-                                    return MediaCollection::query()
+                                    /** @var Collection<int, MediaCollection> $collections */
+                                    $collections = MediaCollection::query()
                                         ->with('translations')
-                                        ->get()
+                                        ->get();
+
+                                    return $collections
                                         ->mapWithKeys(fn (MediaCollection $collection): array => [
                                             $collection->id => $localeResolver->collectionName($collection, $currentLang),
                                         ])
@@ -419,6 +351,16 @@ class MediaResource extends BaseResource
                 ->columnSpanFull()
                 ->collapsed(),
 
+            Section::make(__('media::fields.delivery_variants'))
+                ->schema([
+                    View::make('media::components.variants'),
+                ])
+                ->columnSpanFull()
+                ->collapsible()
+                ->collapsed()
+                ->visible(fn ($record): bool => $record !== null
+                    && str_starts_with((string) ($record->mime_type ?? ''), 'image/')),
+
             View::make('media::components.usage-modal'),
         ]);
     }
@@ -431,7 +373,7 @@ class MediaResource extends BaseResource
 
         $table->recordTitle(fn ($record, $livewire): string => static::displayTitleForRecord($record, $livewire));
 
-        if (property_exists($livewire, 'isGridView') && $livewire->isGridView) {
+        if ($livewire instanceof ListMedia && $livewire->isGridView) {
             $columns[] = Stack::make([
                 CustomImageColumn::make('file')
                     ->alignment('center')
@@ -580,7 +522,7 @@ class MediaResource extends BaseResource
                     return $record->name ?: '-';
                 })
                 ->extraAttributes(fn ($record) => [
-                    'style' => $record->translations()->where('locale', request()->get('lang', app()->getLocale()))->whereNotNull('name')->exists()
+                    'style' => $record->translations()->where('locale', request()->input('lang', app()->getLocale()))->whereNotNull('name')->exists()
                         ? ''
                         : 'color: var(--gray-500);',
                 ]);
@@ -677,8 +619,7 @@ class MediaResource extends BaseResource
                                     continue;
                                 }
 
-                                $user = Auth::user();
-                                if ($user === null || ! $user->can('delete', $media)) {
+                                if (! Auth::user()?->can('delete', $media)) {
                                     $protectedCount++;
 
                                     continue;
@@ -690,9 +631,6 @@ class MediaResource extends BaseResource
                                     continue;
                                 }
 
-                                if (method_exists($media, 'deletePreservingMedia')) {
-                                    $media->deletePreservingMedia();
-                                }
                                 $media->delete();
                                 $successCount++;
                             } catch (\Exception $e) {
@@ -735,10 +673,59 @@ class MediaResource extends BaseResource
                             return redirect(static::getUrl('index'));
                         }
                     }),
+
+                Action::make('regenerateDeliverySelected')
+                    ->label(function ($livewire) {
+                        $count = count($livewire->selected);
+
+                        return $count > 0
+                            ? __('media::fields.regenerate_delivery')." ({$count})"
+                            : __('media::fields.regenerate_delivery');
+                    })
+                    ->icon('heroicon-m-arrow-path')
+                    ->color('gray')
+                    ->schema([
+                        Toggle::make('force')
+                            ->label(__('media::fields.regenerate_delivery_force'))
+                            ->helperText(__('media::fields.regenerate_delivery_force_help'))
+                            ->default(false),
+                    ])
+                    ->modalHeading(__('media::fields.regenerate_delivery'))
+                    ->modalSubmitActionLabel(__('media::fields.regenerate_delivery_submit'))
+                    ->modalCancelActionLabel(__('media::fields.cancel'))
+                    ->visible(fn ($livewire) => $livewire->isGridView && $livewire->isSelecting && ! empty($livewire->selected))
+                    ->action(function (array $data, $livewire): void {
+                        static::regenerateDeliveryForIds(
+                            array_map('strval', $livewire->selected),
+                            (bool) ($data['force'] ?? false),
+                        );
+                    }),
             ])
             ->bulkActions([
                 static::getAssignScopeBulkAction()
                     ->visible(fn ($livewire) => ! (property_exists($livewire, 'isGridView') ? $livewire->isGridView : false)),
+                BulkAction::make('regenerateDelivery')
+                    ->label(__('media::fields.regenerate_delivery'))
+                    ->icon('heroicon-m-arrow-path')
+                    ->color('gray')
+                    ->schema([
+                        Toggle::make('force')
+                            ->label(__('media::fields.regenerate_delivery_force'))
+                            ->helperText(__('media::fields.regenerate_delivery_force_help'))
+                            ->default(false),
+                    ])
+                    ->modalHeading(function (Collection $records) {
+                        return __('media::fields.regenerate_delivery').' ('.$records->count().' '.trans_choice('media::fields.file|files', $records->count()).')';
+                    })
+                    ->modalSubmitActionLabel(__('media::fields.regenerate_delivery_submit'))
+                    ->modalCancelActionLabel(__('media::fields.cancel'))
+                    ->visible(fn ($livewire) => ! (property_exists($livewire, 'isGridView') ? $livewire->isGridView : false))
+                    ->action(function (Collection $records, array $data): void {
+                        static::regenerateDeliveryForIds(
+                            $records->modelKeys(),
+                            (bool) ($data['force'] ?? false),
+                        );
+                    }),
                 BulkAction::make('delete')
                     ->label(__('media::fields.delete_selected'))
                     ->icon('heroicon-m-trash')
@@ -758,8 +745,7 @@ class MediaResource extends BaseResource
 
                         foreach ($records as $media) {
                             try {
-                                $user = Auth::user();
-                                if ($user === null || ! $user->can('delete', $media)) {
+                                if (! Auth::user()?->can('delete', $media)) {
                                     $protectedCount++;
 
                                     continue;
@@ -771,9 +757,6 @@ class MediaResource extends BaseResource
                                     continue;
                                 }
 
-                                if (method_exists($media, 'deletePreservingMedia')) {
-                                    $media->deletePreservingMedia();
-                                }
                                 $media->delete();
                                 $successCount++;
                             } catch (\Exception $e) {
@@ -835,7 +818,9 @@ class MediaResource extends BaseResource
                                 $title = $record->getAttribute('title') ?: $record->getAttribute('name');
                                 if ($title === null || $title === '') {
                                     $first = $record->translations()->first();
-                                    $title = $first ? ($first->getAttribute('title') ?: $first->getAttribute('name')) : null;
+                                    $title = $first instanceof MediaTranslation
+                                        ? ($first->getAttribute('title') ?: $first->getAttribute('name'))
+                                        : null;
                                 }
                                 $title = $title ?: $record->file_name;
 
@@ -876,9 +861,8 @@ class MediaResource extends BaseResource
                             ->modalSubmitActionLabel(__('media::fields.yes_delete'))
                             ->modalCancelActionLabel(__('media::fields.cancel'))
                             ->hidden(function (Media $record) {
-                                $user = Auth::user();
-
-                                return $user === null || ! $user->can('delete', $record) || $record->getOriginal('write_protected');
+                                return ! Auth::user()?->can('delete', $record)
+                                    || $record->getOriginal('write_protected');
                             })
                             ->before(function ($record) {
                                 try {
@@ -906,7 +890,6 @@ class MediaResource extends BaseResource
                             ->action(function ($record) {
                                 try {
                                     $fileName = $record->file_name;
-                                    $record->deletePreservingMedia();
                                     $record->delete();
 
                                     Notification::make()
@@ -986,6 +969,8 @@ class MediaResource extends BaseResource
                             $uploaderQuery = static::scopeQuery(Media::query())
                                 ->where('uploader_type', $type)
                                 ->whereNotNull('uploader_id');
+
+                            /** @var Collection<int, Media> $mediaItems */
                             $mediaItems = $uploaderQuery->with('uploader')->get();
 
                             /** @var array<string, string> $uploaders */
@@ -1104,6 +1089,37 @@ class MediaResource extends BaseResource
     public static function getNavigationBadge(): ?string
     {
         return static::resolveScopedNavigationBadge();
+    }
+
+    /**
+     * @param  list<int|string>  $ids
+     */
+    protected static function regenerateDeliveryForIds(array $ids, bool $force = false): void
+    {
+        $filtered = array_values(array_filter(
+            array_map(static fn (int|string $id): string => (string) $id, $ids),
+            static fn (string $id): bool => $id !== '',
+        ));
+
+        if ($filtered === []) {
+            return;
+        }
+
+        $parameters = [
+            '--ids' => $filtered,
+        ];
+
+        if ($force) {
+            $parameters['--force'] = true;
+        }
+
+        Artisan::call('media:regenerate-delivery', $parameters);
+
+        Notification::make()
+            ->success()
+            ->title(__('media::fields.regenerate_delivery_queued'))
+            ->body(trans_choice('media::fields.regenerate_delivery_queued_body', count($filtered), ['count' => count($filtered)]))
+            ->send();
     }
 
     protected static function displayLocaleLabel(mixed $livewire): string

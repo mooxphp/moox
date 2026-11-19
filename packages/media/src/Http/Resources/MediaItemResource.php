@@ -8,7 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
+use Moox\Media\Support\MediaDeliveryConversions;
 use Moox\Media\Support\MediaLocaleResolver;
+use Moox\Media\Support\MediaPictureBuilder;
+use Moox\Media\Support\MediaVariantCatalog;
 
 /**
  * @property Media $resource
@@ -40,6 +43,9 @@ class MediaItemResource extends JsonResource
             'name' => $metadata['name'],
             'title' => $metadata['title'],
             'alt' => $metadata['alt'],
+            'picture' => app(MediaPictureBuilder::class)->toArray($media),
+            'delivery' => $this->deliveryPayload($media),
+            'variants' => app(MediaVariantCatalog::class)->for($media),
             'collection' => $collection ? [
                 'id' => $collection->getKey(),
                 'name' => $resolver->collectionName($collection->loadMissing('translations')),
@@ -47,6 +53,29 @@ class MediaItemResource extends JsonResource
             'created_at' => $media->created_at?->toISOString(),
             'updated_at' => $media->updated_at?->toISOString(),
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function deliveryPayload(Media $media): array
+    {
+        $builder = app(MediaPictureBuilder::class);
+        $delivery = [];
+
+        foreach (MediaDeliveryConversions::enabledProfileNames() as $profile) {
+            if (MediaDeliveryConversions::profileMode($profile) === MediaDeliveryConversions::MODE_RESPONSIVE) {
+                $delivery[$profile] = $builder->toArray($media, profile: $profile);
+
+                continue;
+            }
+
+            $delivery[$profile] = [
+                'url' => $builder->urlForProfile($media, $profile),
+            ];
+        }
+
+        return $delivery;
     }
 
     protected function typeFromMime(string $mimeType): string

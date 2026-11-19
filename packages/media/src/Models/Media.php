@@ -10,9 +10,10 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\DB;
 use Moox\Core\Models\Concerns\HasScopedModel;
 use Moox\Core\Support\Scopes\ScopeValue;
+use Moox\Media\Support\HtmlableMedia;
+use Moox\Media\Support\MediaDeliveryConversions;
 use Moox\Media\Support\MediaLocaleResolver;
 use Moox\Media\Traits\HasMediaUsable;
-use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
@@ -68,34 +69,54 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
         return $this->belongsTo(MediaCollection::class, 'media_collection_id');
     }
 
+    /**
+     * Rendering entrypoint (Spatie-compatible API, Moox delivery by default).
+     *
+     * No conversion → delivery profile `web`. Explicit conversion → admin/preview `<img>`.
+     * Use `->profile(...)` for mail / customer_api / custom profiles (wins over conversion).
+     *
+     * @see https://spatie.be/docs/laravel-medialibrary/v11/advanced-usage/rendering-media
+     *
+     * @param  string|array<string, mixed>  $extraAttributes
+     */
+    public function img(string $conversionName = '', $extraAttributes = []): HtmlableMedia
+    {
+        $htmlableMedia = new HtmlableMedia($this);
+
+        if ($conversionName !== '') {
+            $htmlableMedia->conversion($conversionName);
+        }
+
+        if (is_array($extraAttributes) && $extraAttributes !== []) {
+            $htmlableMedia->attributes($extraAttributes);
+        }
+
+        return $htmlableMedia;
+    }
+
     public function registerMediaConversions(?BaseMedia $media = null): void
     {
-        $this->addMediaConversion('thumbnail')
-            ->nonQueued()
-            ->fit(Fit::Contain, 150, 150);
+        // WP-compatible sizes + config-driven delivery profiles (no upscale by default).
+        // Legacy alias: preview === medium (kept for existing admin/API clients).
+        MediaDeliveryConversions::register($this, $media);
 
-        $this->addMediaConversion('preview')
-            ->nonQueued()
-            ->width(300);
+        if ($media === null || MediaDeliveryConversions::isRaster($media)) {
+            if ($media === null || MediaDeliveryConversions::canProduceWidth($media, 300)) {
+                $this->addMediaConversion('preview')
+                    ->nonQueued()
+                    ->width(300);
+            }
+        }
+    }
 
-        $this->addMediaConversion('medium_large')
-            ->nonQueued()
-            ->width(768);
-
-        $this->addMediaConversion('large')
-            ->nonQueued()
-            ->width(1024)
-            ->quality(80);
-
-        $this->addMediaConversion('1536')
-            ->nonQueued()
-            ->width(1536)
-            ->quality(80);
-
-        $this->addMediaConversion('2048')
-            ->nonQueued()
-            ->width(2048)
-            ->quality(80);
+    /**
+     * Library items are self-attached (model_type/model_id point at this Media row) so
+     * InteractsWithMedia can register conversions. Skipping deleteAllMedia() avoids
+     * infinite recursion on delete; MediaObserver still removes files for this row.
+     */
+    public function shouldDeletePreservingMedia(): bool
+    {
+        return true;
     }
 
     protected static function booted()
