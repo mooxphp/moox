@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Contact\Models\Contact;
 use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Data\Models\StaticLanguage;
@@ -84,7 +83,6 @@ class Staff extends BaseRecordModel implements HasMedia
     {
         return $this->belongsTo(StaticLanguage::class, 'language_id');
     }
-
 
     public function registerMediaCollections(): void
     {

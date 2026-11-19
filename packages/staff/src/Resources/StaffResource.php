@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\Staff\Resources;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -81,7 +80,7 @@ class StaffResource extends BaseRecordResource
                 ->schema([
                     Section::make(__('staff::fields.identity'))
                         ->schema([
-                           
+
                             Select::make('status')
                                 ->label(__('staff::fields.status'))
                                 ->options($statusOptions)
