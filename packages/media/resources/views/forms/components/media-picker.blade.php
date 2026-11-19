@@ -110,9 +110,9 @@
         </div>
 
         <livewire:media-picker-modal id="media-picker-modal" lazy :multiple="$field->isMultiple()"
-            wire:key="media-picker-modal-{{ $field->getStatePath() }}-{{ $getRecord()?->id ?? 'new' }}-{{ $this->lang ?? request()->get('lang') }}"
+            wire:key="media-picker-modal-{{ $field->getStatePath() }}-{{ $getRecord()?->id ?? 'new' }}-{{ $this->lang ?? request()->input('lang') }}"
             :upload-config="$field->getUploadConfig()"
-            :lang="$this->lang ?? request()->get('lang')"
+            :lang="$this->lang ?? request()->input('lang')"
             :model-class="$this->getRecord() ? get_class($this->getRecord()) : $this->getResource()::getModel()"
             :model-id="$this->getRecord()?->id" />
     </div>

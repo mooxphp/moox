@@ -7,6 +7,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
@@ -79,9 +80,12 @@ class ListMedia extends BaseListDrafts
                             $localeResolver = app(MediaLocaleResolver::class);
                             $currentLang = $this->lang ?? app()->getLocale();
 
-                            return MediaCollection::query()
+                            /** @var EloquentCollection<int, MediaCollection> $collections */
+                            $collections = MediaCollection::query()
                                 ->with('translations')
-                                ->get()
+                                ->get();
+
+                            return $collections
                                 ->mapWithKeys(fn (MediaCollection $collection): array => [
                                     $collection->id => $localeResolver->collectionName($collection, $currentLang),
                                 ])
@@ -103,12 +107,13 @@ class ListMedia extends BaseListDrafts
                         ->maxFiles(config('media.upload.resource.max_files'))
                         ->minFiles(config('media.upload.resource.min_files'))
                         ->acceptedFileTypes(config('media.upload.resource.accepted_file_types'))
-                        ->imageResizeMode(config('media.upload.resource.image_resize_mode'))
-                        ->imageCropAspectRatio(config('media.upload.resource.image_crop_aspect_ratio'))
-                        ->imageResizeTargetWidth(config('media.upload.resource.image_resize_target_width'))
-                        ->imageResizeTargetHeight(config('media.upload.resource.image_resize_target_height'))
+                        ->automaticallyResizeImagesMode(config('media.upload.resource.image_resize_mode'))
+                        ->imageAspectRatio(config('media.upload.resource.image_crop_aspect_ratio'))
+                        ->automaticallyCropImagesToAspectRatio(filled(config('media.upload.resource.image_crop_aspect_ratio')))
+                        ->automaticallyResizeImagesToWidth(config('media.upload.resource.image_resize_target_width'))
+                        ->automaticallyResizeImagesToHeight(config('media.upload.resource.image_resize_target_height'))
                         ->imageEditor(config('media.upload.resource.image_editor.enabled'))
-                        ->imageEditorAspectRatios(config('media.upload.resource.image_editor.aspect_ratios'))
+                        ->imageEditorAspectRatioOptions(config('media.upload.resource.image_editor.aspect_ratios'))
                         ->imageEditorViewportWidth(config('media.upload.resource.image_editor.viewport_width'))
                         ->imageEditorViewportHeight(config('media.upload.resource.image_editor.viewport_height'))
                         ->imageEditorMode(config('media.upload.resource.image_editor.mode'))

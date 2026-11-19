@@ -396,7 +396,7 @@ class MediaPickerModal extends Component implements HasForms
             $upload->imageEditorViewportHeight($this->uploadConfig['image_editor_viewport_height']);
         }
         if (isset($this->uploadConfig['image_editor_aspect_ratios'])) {
-            $upload->imageEditorAspectRatios($this->uploadConfig['image_editor_aspect_ratios']);
+            $upload->imageEditorAspectRatioOptions($this->uploadConfig['image_editor_aspect_ratios']);
         }
         if (isset($this->uploadConfig['placeholder'])) {
             $upload->placeholder($this->uploadConfig['placeholder']);

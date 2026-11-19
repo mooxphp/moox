@@ -17,9 +17,8 @@ use Moox\Media\Models\Media;
 final class MediaUploadOptions
 {
     /**
-     * @param  Closure(Builder<Media>): Builder<Media>|null  $scopeQuery
-     *                                                                    Narrows duplicate detection (e.g. MediaResource::scopeQuery).
-     * @param  Closure(Media): void|null  $applyDefaults  Mutates the new Media before final save (e.g. applyScopedDefaults).
+     * @param  (Closure(Builder<Media>): Builder<Media>)|null  $scopeQuery  Narrows duplicate detection (e.g. MediaResource::scopeQuery).
+     * @param  (Closure(Media): void)|null  $applyDefaults  Mutates the new Media before final save (e.g. applyScopedDefaults).
      * @param  array<int, string>|null  $acceptedFileTypes  MIME/extension allowlist; null → resource config.
      * @param  bool  $discardOtherLocales  When true, delete translation rows for locales other than $locale (picker behaviour).
      */
@@ -41,8 +40,8 @@ final class MediaUploadOptions
     }
 
     /**
-     * @param  Closure(Builder<Media>): Builder<Media>|null  $scopeQuery
-     * @param  Closure(Media): void|null  $applyDefaults
+     * @param  (Closure(Builder<Media>): Builder<Media>)|null  $scopeQuery
+     * @param  (Closure(Media): void)|null  $applyDefaults
      * @param  array<int, string>|null  $acceptedFileTypes
      */
     public function with(

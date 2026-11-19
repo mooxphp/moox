@@ -33,6 +33,7 @@ use Moox\Core\Entities\BaseResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
+use Moox\Media\Models\MediaTranslation;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
 use Moox\Media\Support\MediaLocaleResolver;
 use Moox\Media\Support\MediaUploadOptions;
@@ -91,8 +92,7 @@ class MediaResource extends BaseResource
                 ->downloadable(fn ($record) => ! $record->write_protected)
                 ->deletable(fn ($record) => ! $record->write_protected)
                 ->disabled(fn ($record): bool => (bool) $record?->getOriginal('write_protected')
-                    || ($user = Auth::user()) === null
-                    || ! $user->can('update', $record))
+                    || ! Auth::user()?->can('update', $record))
                 ->openable()
                 ->afterStateUpdated(function ($state, $record) {
                     if ($state && $record) {
@@ -106,8 +106,7 @@ class MediaResource extends BaseResource
                                 throw new \RuntimeException('No media record available to replace.');
                             }
 
-                            $user = Auth::user();
-                            if ($user === null || ! $user->can('update', $oldMedia)) {
+                            if (! Auth::user()?->can('update', $oldMedia)) {
                                 Notification::make()
                                     ->danger()
                                     ->title(__('media::fields.operation_error'))
@@ -270,9 +269,12 @@ class MediaResource extends BaseResource
                                     $localeResolver = app(MediaLocaleResolver::class);
                                     $currentLang = $livewire->lang ?? app()->getLocale();
 
-                                    return MediaCollection::query()
+                                    /** @var Collection<int, MediaCollection> $collections */
+                                    $collections = MediaCollection::query()
                                         ->with('translations')
-                                        ->get()
+                                        ->get();
+
+                                    return $collections
                                         ->mapWithKeys(fn (MediaCollection $collection): array => [
                                             $collection->id => $localeResolver->collectionName($collection, $currentLang),
                                         ])
@@ -371,7 +373,7 @@ class MediaResource extends BaseResource
 
         $table->recordTitle(fn ($record, $livewire): string => static::displayTitleForRecord($record, $livewire));
 
-        if (property_exists($livewire, 'isGridView') && $livewire->isGridView) {
+        if ($livewire instanceof ListMedia && $livewire->isGridView) {
             $columns[] = Stack::make([
                 CustomImageColumn::make('file')
                     ->alignment('center')
@@ -520,7 +522,7 @@ class MediaResource extends BaseResource
                     return $record->name ?: '-';
                 })
                 ->extraAttributes(fn ($record) => [
-                    'style' => $record->translations()->where('locale', request()->get('lang', app()->getLocale()))->whereNotNull('name')->exists()
+                    'style' => $record->translations()->where('locale', request()->input('lang', app()->getLocale()))->whereNotNull('name')->exists()
                         ? ''
                         : 'color: var(--gray-500);',
                 ]);
@@ -617,8 +619,7 @@ class MediaResource extends BaseResource
                                     continue;
                                 }
 
-                                $user = Auth::user();
-                                if ($user === null || ! $user->can('delete', $media)) {
+                                if (! Auth::user()?->can('delete', $media)) {
                                     $protectedCount++;
 
                                     continue;
@@ -744,8 +745,7 @@ class MediaResource extends BaseResource
 
                         foreach ($records as $media) {
                             try {
-                                $user = Auth::user();
-                                if ($user === null || ! $user->can('delete', $media)) {
+                                if (! Auth::user()?->can('delete', $media)) {
                                     $protectedCount++;
 
                                     continue;
@@ -818,7 +818,9 @@ class MediaResource extends BaseResource
                                 $title = $record->getAttribute('title') ?: $record->getAttribute('name');
                                 if ($title === null || $title === '') {
                                     $first = $record->translations()->first();
-                                    $title = $first ? ($first->getAttribute('title') ?: $first->getAttribute('name')) : null;
+                                    $title = $first instanceof MediaTranslation
+                                        ? ($first->getAttribute('title') ?: $first->getAttribute('name'))
+                                        : null;
                                 }
                                 $title = $title ?: $record->file_name;
 
@@ -859,9 +861,8 @@ class MediaResource extends BaseResource
                             ->modalSubmitActionLabel(__('media::fields.yes_delete'))
                             ->modalCancelActionLabel(__('media::fields.cancel'))
                             ->hidden(function (Media $record) {
-                                $user = Auth::user();
-
-                                return $user === null || ! $user->can('delete', $record) || $record->getOriginal('write_protected');
+                                return ! Auth::user()?->can('delete', $record)
+                                    || $record->getOriginal('write_protected');
                             })
                             ->before(function ($record) {
                                 try {
@@ -968,6 +969,8 @@ class MediaResource extends BaseResource
                             $uploaderQuery = static::scopeQuery(Media::query())
                                 ->where('uploader_type', $type)
                                 ->whereNotNull('uploader_id');
+
+                            /** @var Collection<int, Media> $mediaItems */
                             $mediaItems = $uploaderQuery->with('uploader')->get();
 
                             /** @var array<string, string> $uploaders */
