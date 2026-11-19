@@ -186,7 +186,7 @@ class ProductCategory extends Model implements HasMedia, TranslatableContract
 
     public function normalizeCanonical(): void
     {
-        if ($this->canonical_product_category_id === 0 || $this->canonical_product_category_id === '') {
+        if ($this->canonical_product_category_id === 0) {
             $this->canonical_product_category_id = null;
         }
 
@@ -234,7 +234,10 @@ class ProductCategory extends Model implements HasMedia, TranslatableContract
 
             $seen[] = $current;
             $next = static::query()->whereKey($current)->value('canonical_product_category_id');
-            $current = is_int($next) ? $next : (is_string($next) && ctype_digit($next) ? (int) $next : null);
+            $current = match (true) {
+                is_int($next) => $next,
+                default => null,
+            };
         }
     }
 
@@ -259,16 +262,18 @@ class ProductCategory extends Model implements HasMedia, TranslatableContract
      */
     public static function rebuildTree(): void
     {
+        /** @var list<array{id: int|string, parent_id: int|string|null, sort_order: int}> $nodes */
         $nodes = static::query()
             ->get(['id', 'parent_id', 'sort_order'])
             ->map(fn (self $category): array => [
-                'id' => (int) $category->getKey(),
+                'id' => $category->getKey(),
                 'parent_id' => $category->parent_id,
                 'sort_order' => $category->sort_order,
             ])
+            ->values()
             ->all();
-
-        foreach (static::bounds($nodes) as $id => $bounds) {
+    
+        foreach (self::bounds($nodes) as $id => $bounds) {
             static::query()->whereKey($id)->update($bounds);
         }
     }

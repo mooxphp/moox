@@ -132,24 +132,23 @@ class Product extends Model implements HasMedia, TranslatableContract
     {
         return 'product';
     }
-
     public function getAttribute($key): mixed
     {
-        if (is_string($key) && $key !== '' && $this->hasCustomFieldDefinition($key)) {
+        if ($key !== '' && $this->hasCustomFieldDefinition($key)) {
             return $this->customField($key);
         }
-
+    
         return $this->getTranslatedAttribute($key);
     }
-
+    
     public function setAttribute($key, $value): mixed
     {
-        if (is_string($key) && $key !== '' && $this->hasCustomFieldDefinition($key)) {
+        if ($key !== '' && $this->hasCustomFieldDefinition($key)) {
             $this->setCustomField($key, $value);
-
+    
             return $this;
         }
-
+    
         return $this->setTranslatedAttribute($key, $value);
     }
 
