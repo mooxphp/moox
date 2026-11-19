@@ -97,6 +97,8 @@ class ProductResource extends Resource
             'translations',
             'canonicalProduct.translations',
             'product_category.translations',
+            'parent.translations',
+            'parent.product_category.translations',
         ]);
     }
 
@@ -139,6 +141,7 @@ class ProductResource extends Resource
     protected static function metaFormSections(): array
     {
         return [
+            ...static::customFieldComponents('sidebar'),
             static::identitySection()->columns(1),
             static::auditSection()->columns(1),
             static::archiveSection()->columns(1),
@@ -179,10 +182,33 @@ class ProductResource extends Resource
                     ->searchable()
                     ->preload()
                     ->nullable()
+                    ->live()
                     ->visible(function (Get $get, string $operation): bool {
                         return $operation === 'create' || filled($get('product_category_id'));
                     })
+                    ->disabled(fn (Get $get): bool => filled($get('parent_id')))
                     ->rules(static::featureRules('product_category_id')),
+                Select::make('parent_id')
+                    ->label(FeatureFields::label($translation, 'parent_id'))
+                    ->relationship(
+                        name: 'parent',
+                        titleAttribute: 'title',
+                        modifyQueryUsing: fn (Builder $query): Builder => $query
+                            ->with('translations')
+                            ->where('type', ProductType::Grouped->value),
+                    )
+                    ->getOptionLabelFromRecordUsing(
+                        fn (Model $record): string => static::formatParentProduct($record)
+                    )
+                    ->searchable()
+                    ->preload()
+                    ->nullable()
+                    ->live()
+                    ->visible(function (Get $get, string $operation): bool {
+                        return $operation === 'create' || filled($get('parent_id'));
+                    })
+                    ->disabled(fn (Get $get): bool => filled($get('product_category_id')))
+                    ->rules(static::featureRules('parent_id')),
                 TextInput::make('manufacturer_id')
                     ->label(FeatureFields::label($translation, 'manufacturer_id'))
                     ->numeric()
@@ -252,6 +278,24 @@ class ProductResource extends Resource
         return $title !== '' ? $title : $reference;
     }
 
+    protected static function formatParentProduct(Model $product): string
+    {
+        $title = $product->getAttribute('title');
+        $reference = $product->getAttribute('external_reference');
+        $sku = $product->getAttribute('sku');
+        $title = is_string($title) ? $title : '';
+        $reference = is_string($reference) ? $reference : '';
+        $sku = is_string($sku) ? $sku : '';
+
+        $label = $title !== '' ? $title : ($sku !== '' ? $sku : $reference);
+
+        if ($label !== '' && $reference !== '' && $label !== $reference) {
+            return $label.' ('.$reference.')';
+        }
+
+        return $label;
+    }
+
     protected static function featureTranslation(): string
     {
         return 'product::fields';
@@ -267,7 +311,7 @@ class ProductResource extends Resource
             'title', 'slug' => ['required', 'string', 'max:255'],
             'sku' => ['string', 'max:255'],
             'description', 'note' => ['nullable', 'string'],
-            'product_category_id' => ['nullable', 'integer', 'min:1'],
+            'product_category_id', 'parent_id' => ['nullable', 'integer', 'min:1'],
             'manufacturer_id', 'canonical_product_id' => ['nullable', 'integer', 'min:1'],
             'type' => ['required', 'string'],
             'is_canonical' => ['nullable', 'boolean'],
@@ -342,12 +386,40 @@ class ProductResource extends Resource
                     ->label(FeatureFields::label($translation, 'sku'))
                     ->searchable()
                     ->toggleable(),
+                ...static::customFieldColumns(),
                 TextColumn::make('product_category.title')
                     ->label(FeatureFields::label($translation, 'product_category_id'))
                     ->placeholder('—')
                     ->toggleable()
+                    ->getStateUsing(function (Model $record): ?string {
+                        if (! $record instanceof Product) {
+                            return null;
+                        }
+
+                        $title = $record->product_category?->title;
+                        if (is_string($title) && $title !== '') {
+                            return $title;
+                        }
+
+                        $parentTitle = $record->parent?->product_category?->title;
+
+                        return is_string($parentTitle) && $parentTitle !== '' ? $parentTitle : null;
+                    })
                     ->searchable(query: function (Builder $query, string $search): Builder {
-                        return $query->whereHas('product_category.translations', function (Builder $translations) use ($search): void {
+                        return $query->where(function (Builder $inner) use ($search): void {
+                            $inner->whereHas('product_category.translations', function (Builder $translations) use ($search): void {
+                                $translations->where('title', 'like', '%'.$search.'%');
+                            })->orWhereHas('parent.product_category.translations', function (Builder $translations) use ($search): void {
+                                $translations->where('title', 'like', '%'.$search.'%');
+                            });
+                        });
+                    }),
+                TextColumn::make('parent.title')
+                    ->label(FeatureFields::label($translation, 'parent_id'))
+                    ->placeholder('—')
+                    ->toggleable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('parent.translations', function (Builder $translations) use ($search): void {
                             $translations->where('title', 'like', '%'.$search.'%');
                         });
                     }),

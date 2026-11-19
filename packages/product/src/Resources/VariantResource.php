@@ -137,6 +137,7 @@ class VariantResource extends Resource
     protected static function metaFormSections(): array
     {
         return [
+            ...static::customFieldComponents('sidebar'),
             static::identitySection()->columns(1),
             static::auditSection()->columns(1),
             static::archiveSection()->columns(1),
