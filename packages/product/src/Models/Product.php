@@ -61,8 +61,8 @@ class Product extends Model implements HasMedia, TranslatableContract
     use HasMediaUsable;
     use HasRelations;
     use InteractsWithCustomFields, Translatable {
-        Translatable::getAttribute insteadof InteractsWithCustomFields;
-        Translatable::setAttribute insteadof InteractsWithCustomFields;
+        Translatable::getAttribute as getTranslatedAttribute;
+        Translatable::setAttribute as setTranslatedAttribute;
     }
     use InteractsWithMedia;
     use SoftDeletes;
@@ -131,6 +131,26 @@ class Product extends Model implements HasMedia, TranslatableContract
     public static function getResourceName(): string
     {
         return 'product';
+    }
+
+    public function getAttribute($key): mixed
+    {
+        if (is_string($key) && $key !== '' && $this->hasCustomFieldDefinition($key)) {
+            return $this->customField($key);
+        }
+
+        return $this->getTranslatedAttribute($key);
+    }
+
+    public function setAttribute($key, $value): mixed
+    {
+        if (is_string($key) && $key !== '' && $this->hasCustomFieldDefinition($key)) {
+            $this->setCustomField($key, $value);
+
+            return $this;
+        }
+
+        return $this->setTranslatedAttribute($key, $value);
     }
 
     protected static function booted(): void
