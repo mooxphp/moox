@@ -94,6 +94,7 @@ class MediaPickerModal extends Component implements HasForms
     public function mount(?int $modelId = null, ?string $modelClass = null): void
     {
         $this->files = [];
+        $this->processedHashes = [];
         $this->form->fill();
 
         $this->modelClass = $modelClass;
@@ -284,6 +285,7 @@ class MediaPickerModal extends Component implements HasForms
                 $uploadService = app(MediaUploadService::class);
 
                 $uploadedCount = 0;
+                $duplicateNames = [];
                 $files = is_array($state) ? $state : [$state];
 
                 foreach ($files as $tempFile) {
@@ -330,14 +332,7 @@ class MediaPickerModal extends Component implements HasForms
                         }
 
                         if ($result->isDuplicate()) {
-                            Notification::make()
-                                ->warning()
-                                ->title(__('media::fields.duplicate_file'))
-                                ->body(__('media::fields.duplicate_file_message', [
-                                    'fileName' => $result->fileName ?? $fileName,
-                                ]))
-                                ->persistent()
-                                ->send();
+                            $duplicateNames[] = $result->fileName ?? $fileName;
 
                             continue;
                         }
@@ -355,6 +350,19 @@ class MediaPickerModal extends Component implements HasForms
                     }
                 }
 
+                if ($duplicateNames !== []) {
+                    $uniqueNames = array_values(array_unique($duplicateNames));
+
+                    Notification::make()
+                        ->warning()
+                        ->title(__('media::fields.duplicate_file'))
+                        ->body(__('media::fields.duplicate_file_message', [
+                            'fileName' => implode(', ', $uniqueNames),
+                        ]))
+                        ->persistent()
+                        ->send();
+                }
+
                 if ($uploadedCount > 0) {
                     $this->refreshMedia();
 
@@ -364,7 +372,6 @@ class MediaPickerModal extends Component implements HasForms
                         ->send();
                 }
             });
-
         if (isset($this->uploadConfig['multiple'])) {
             $upload->multiple($this->uploadConfig['multiple']);
         }

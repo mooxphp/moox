@@ -73,6 +73,11 @@ class ListMedia extends BaseListDrafts
                 ->label(__('media::fields.upload_file'))
                 ->icon(config('media.upload.resource.icon'))
                 ->authorize('create', Media::class)
+                // Fresh modal session: otherwise processedHashes silently skips re-uploads
+                // (including DB duplicates) without a notification.
+                ->beforeFormFilled(function (): void {
+                    $this->processedHashes = [];
+                })
                 ->schema([
                     Select::make('media_collection_id')
                         ->label(__('media::fields.collection'))
@@ -135,8 +140,10 @@ class ListMedia extends BaseListDrafts
                             $uploadLang = $this->lang ?: $localeResolver->adminDefaultLocale();
                             $collectionId = $get('media_collection_id');
                             $uploadedCount = 0;
+                            $duplicateNames = [];
                             $files = is_array($state) ? $state : [$state];
                             $uploadService = app(MediaUploadService::class);
+                            $scopeQuery = fn ($query) => static::getResource()::scopeQuery($query);
 
                             foreach ($files as $tempFile) {
                                 try {
@@ -149,11 +156,12 @@ class ListMedia extends BaseListDrafts
                                         break;
                                     }
 
-                                    $probePath = $tempFile->getRealPath();
+                                    $probePath = method_exists($tempFile, 'getRealPath') ? $tempFile->getRealPath() : null;
                                     $probeHash = is_string($probePath) && is_file($probePath)
                                         ? hash_file('sha256', $probePath)
                                         : false;
 
+                                    // Re-entrancy within the same FilePond batch: skip quietly.
                                     if (is_string($probeHash) && in_array($probeHash, $this->processedHashes, true)) {
                                         continue;
                                     }
@@ -161,7 +169,7 @@ class ListMedia extends BaseListDrafts
                                     $result = $uploadService->upload($tempFile, new MediaUploadOptions(
                                         mediaCollectionId: $collectionId ? (int) $collectionId : null,
                                         locale: $uploadLang,
-                                        scopeQuery: fn ($query) => static::getResource()::scopeQuery($query),
+                                        scopeQuery: $scopeQuery,
                                         applyDefaults: function (Media $media): void {
                                             static::getResource()::applyScopedDefaults($media);
                                         },
@@ -172,14 +180,11 @@ class ListMedia extends BaseListDrafts
                                     }
 
                                     if ($result->isDuplicate()) {
-                                        Notification::make()
-                                            ->warning()
-                                            ->title(__('media::fields.duplicate_file'))
-                                            ->body(__('media::fields.duplicate_file_message', [
-                                                'fileName' => $result->fileName ?? '',
-                                            ]))
-                                            ->persistent()
-                                            ->send();
+                                        $duplicateNames[] = $result->fileName ?? (
+                                            method_exists($tempFile, 'getClientOriginalName')
+                                                ? $tempFile->getClientOriginalName()
+                                                : ''
+                                        );
 
                                         continue;
                                     }
@@ -195,6 +200,19 @@ class ListMedia extends BaseListDrafts
                                         ->title(__('media::fields.file_upload_error'))
                                         ->send();
                                 }
+                            }
+
+                            if ($duplicateNames !== []) {
+                                $uniqueNames = array_values(array_unique($duplicateNames));
+
+                                Notification::make()
+                                    ->warning()
+                                    ->title(__('media::fields.duplicate_file'))
+                                    ->body(__('media::fields.duplicate_file_message', [
+                                        'fileName' => implode(', ', $uniqueNames),
+                                    ]))
+                                    ->persistent()
+                                    ->send();
                             }
 
                             if ($uploadedCount > 0) {
