@@ -7,17 +7,17 @@ namespace Moox\Organization\Models;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Support\Active\Models\HasActive;
 use Moox\Support\Audit\Models\HasAudit;
 use Moox\Support\Identity\Models\HasIdentifier;
+use Moox\Support\SoftDelete\Models\HasSoftDelete;
 
 class OrganizationType extends Model implements TranslatableContract
 {
     use HasActive;
     use HasAudit;
     use HasIdentifier;
-    use SoftDeletes;
+    use HasSoftDelete;
     use Translatable;
 
     protected $table = 'organization_types';
@@ -34,17 +34,6 @@ class OrganizationType extends Model implements TranslatableContract
      * @var list<string>
      */
     protected $fillable = [
-        'is_active',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
-        'deleted_at',
-        'deleted_by_id',
-        'deleted_by_type',
-        'restored_at',
-        'restored_by_id',
-        'restored_by_type',
     ];
 
     /**
@@ -65,12 +54,6 @@ class OrganizationType extends Model implements TranslatableContract
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
-            'deleted_by_id' => 'integer',
-            'restored_by_id' => 'integer',
-            'restored_at' => 'datetime',
         ];
     }
 }

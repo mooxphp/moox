@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Moox\Organization\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Traits\Relations\HasRelations;
 use Moox\Support\Active\Models\HasActive;
 use Moox\Support\Audit\Models\HasAudit;
 use Moox\Support\Identity\Models\HasIdentifier;
+use Moox\Support\SoftDelete\Models\HasSoftDelete;
 
 class LegalForm extends Model
 {
@@ -17,7 +17,7 @@ class LegalForm extends Model
     use HasAudit;
     use HasIdentifier;
     use HasRelations;
-    use SoftDeletes;
+    use HasSoftDelete;
 
     protected $table = 'legal_forms';
 
@@ -25,20 +25,9 @@ class LegalForm extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'is_active',
         'title',
         'slug',
         'country_id',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
-        'deleted_at',
-        'deleted_by_id',
-        'deleted_by_type',
-        'restored_at',
-        'restored_by_id',
-        'restored_by_type',
     ];
 
     /**
@@ -59,13 +48,7 @@ class LegalForm extends Model
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
             'country_id' => 'integer',
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
-            'deleted_by_id' => 'integer',
-            'restored_by_id' => 'integer',
-            'restored_at' => 'datetime',
         ];
     }
 }
