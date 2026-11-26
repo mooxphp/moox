@@ -11,6 +11,15 @@ use Moox\Support\Filament\FeatureFields;
 
 trait HasTitleSlugForm
 {
+    protected static function titleSlugIsRequired(): bool
+    {
+        return ! in_array(
+            HasOptionalTitleSlugForm::class,
+            class_uses_recursive(static::class),
+            true,
+        );
+    }
+
     /**
      * @return list<TextInput>
      */

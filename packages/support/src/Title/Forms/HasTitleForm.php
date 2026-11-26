@@ -52,15 +52,6 @@ trait HasTitleForm
         ]);
     }
 
-    protected static function titleSlugIsRequired(): bool
-    {
-        return ! in_array(
-            HasOptionalTitleSlugForm::class,
-            class_uses_recursive(static::class),
-            true,
-        );
-    }
-
     protected static function titleTranslationsMinItems(): ?int
     {
         return static::usesOptionalTitleSlug() ? null : 1;
