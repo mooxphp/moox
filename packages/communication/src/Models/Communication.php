@@ -6,7 +6,6 @@ namespace Moox\Communication\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Validation\ValidationException;
 use Moox\Communication\Enums\CommunicationValidationType;
 use Moox\Communication\Support\CommunicationValueValidator;
@@ -14,14 +13,19 @@ use Moox\Core\Traits\Relations\HasRelations;
 use Moox\Support\Active\Models\HasActive;
 use Moox\Support\Audit\Models\HasAudit;
 use Moox\Support\Identity\Models\HasIdentifier;
+use Moox\Support\SoftDelete\Models\HasSoftDelete;
+use Moox\Support\External\Models\HasExternal;
+use Moox\Support\Data\Models\HasData;
 
 class Communication extends Model
 {
     use HasActive;
+    use HasData;
+    use HasExternal;
     use HasAudit;
     use HasIdentifier;
     use HasRelations;
-    use SoftDeletes;
+    use HasSoftDelete;
 
     protected $table = 'communications';
 
@@ -29,30 +33,15 @@ class Communication extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'is_active',
         'value',
         'label',
         'is_primary',
         'is_verified',
         'verified_at',
         'note',
-        'external_reference',
-        'external_info',
-        'external_status',
         'owner_id',
         'owner_type',
         'communication_type_id',
-        'data',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
-        'deleted_at',
-        'deleted_by_id',
-        'deleted_by_type',
-        'restored_at',
-        'restored_by_id',
-        'restored_by_type',
     ];
 
     /**
@@ -146,18 +135,11 @@ class Communication extends Model
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
             'is_primary' => 'boolean',
             'is_verified' => 'boolean',
             'verified_at' => 'datetime',
-            'data' => 'array',
             'owner_id' => 'integer',
             'communication_type_id' => 'integer',
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
-            'deleted_by_id' => 'integer',
-            'restored_by_id' => 'integer',
-            'restored_at' => 'datetime',
         ];
     }
 

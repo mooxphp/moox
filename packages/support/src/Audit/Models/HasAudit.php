@@ -17,7 +17,12 @@ trait HasAudit
     public function initializeHasAudit(): void
     {
         $this->mergeColumns(
-            [],
+            [
+                'created_by_id',
+                'created_by_type',
+                'updated_by_id',
+                'updated_by_type',
+            ],
             [
                 'created_by_id' => 'integer',
                 'created_by_type' => 'string',

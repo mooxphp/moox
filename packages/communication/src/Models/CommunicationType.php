@@ -7,13 +7,13 @@ namespace Moox\Communication\Models;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Support\Audit\Models\HasAudit;
+use Moox\Support\SoftDelete\Models\HasSoftDelete;
 
 class CommunicationType extends Model implements TranslatableContract
 {
     use HasAudit;
-    use SoftDeletes;
+    use HasSoftDelete;
     use Translatable;
 
     protected $table = 'communication_types';
@@ -32,16 +32,6 @@ class CommunicationType extends Model implements TranslatableContract
     protected $fillable = [
         'mandatory',
         'validation_type',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
-        'deleted_at',
-        'deleted_by_id',
-        'deleted_by_type',
-        'restored_at',
-        'restored_by_id',
-        'restored_by_type',
     ];
 
     /**
@@ -63,11 +53,6 @@ class CommunicationType extends Model implements TranslatableContract
     {
         return [
             'mandatory' => 'boolean',
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
-            'deleted_by_id' => 'integer',
-            'restored_by_id' => 'integer',
-            'restored_at' => 'datetime',
         ];
     }
 }

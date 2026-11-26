@@ -5,19 +5,25 @@ declare(strict_types=1);
 namespace Moox\Person\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Traits\Relations\HasRelations;
 use Moox\Support\Active\Models\HasActive;
 use Moox\Support\Audit\Models\HasAudit;
 use Moox\Support\Identity\Models\HasIdentifier;
+use Moox\Support\SoftDelete\Models\HasSoftDelete;
+use Moox\Support\External\Models\HasExternal;
+use Moox\Support\Data\Models\HasData;
+use Moox\Support\Archive\Models\HasArchive;
 
 class Person extends Model
 {
     use HasActive;
+    use HasArchive;
+    use HasData;
+    use HasExternal;
     use HasAudit;
     use HasIdentifier;
     use HasRelations;
-    use SoftDeletes;
+    use HasSoftDelete;
 
     protected $table = 'persons';
 
@@ -25,34 +31,16 @@ class Person extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'is_active',
         'first_name',
         'middle_name',
         'last_name',
         'birth_date',
         'note',
-        'external_reference',
-        'external_info',
-        'external_status',
         'contact_id',
         'salutation_id',
         'honorific_title_id',
         'nationality_id',
         'language_id',
-        'data',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
-        'archived_at',
-        'archived_by_id',
-        'archived_by_type',
-        'deleted_at',
-        'deleted_by_id',
-        'deleted_by_type',
-        'restored_at',
-        'restored_by_id',
-        'restored_by_type',
     ];
 
     /**
@@ -73,21 +61,12 @@ class Person extends Model
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
             'birth_date' => 'date',
-            'data' => 'array',
             'contact_id' => 'integer',
             'salutation_id' => 'integer',
             'honorific_title_id' => 'integer',
             'nationality_id' => 'integer',
             'language_id' => 'integer',
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
-            'archived_by_id' => 'integer',
-            'deleted_by_id' => 'integer',
-            'restored_by_id' => 'integer',
-            'archived_at' => 'datetime',
-            'restored_at' => 'datetime',
         ];
     }
 }

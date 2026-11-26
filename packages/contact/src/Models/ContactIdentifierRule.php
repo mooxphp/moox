@@ -23,15 +23,10 @@ class ContactIdentifierRule extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'is_active',
         'contact_identifier_type_id',
         'country_id',
         'organization_type_id',
         'legal_form_id',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
     ];
 
     /**
@@ -52,13 +47,10 @@ class ContactIdentifierRule extends Model
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
             'contact_identifier_type_id' => 'integer',
             'country_id' => 'integer',
             'organization_type_id' => 'integer',
             'legal_form_id' => 'integer',
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
         ];
     }
 }

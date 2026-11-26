@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->string('slug')->nullable();
             $table->text('description')->nullable();
+            $table->boolean('is_active')->default(true);
 
             $table->timestamp('created_at');
             $table->unsignedBigInteger('created_by_id');
@@ -39,6 +40,9 @@ return new class extends Migration
             $table->timestamp('deleted_at')->nullable();
             $table->unsignedBigInteger('deleted_by_id')->nullable();
             $table->string('deleted_by_type')->nullable();
+            $table->timestamp('restored_at')->nullable();
+            $table->unsignedBigInteger('restored_by_id')->nullable();
+            $table->string('restored_by_type')->nullable();
 
             $table->unique(['variant_id', 'locale'], 'variant_locale_unique');
             $table->index('locale');

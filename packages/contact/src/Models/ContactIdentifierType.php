@@ -31,10 +31,6 @@ class ContactIdentifierType extends Model implements TranslatableContract
      */
     protected $fillable = [
         'mandatory',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
     ];
 
     public static function getResourceName(): string
@@ -49,8 +45,6 @@ class ContactIdentifierType extends Model implements TranslatableContract
     {
         return [
             'mandatory' => 'boolean',
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
         ];
     }
 }

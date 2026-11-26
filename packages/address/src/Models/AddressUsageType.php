@@ -7,13 +7,13 @@ namespace Moox\Address\Models;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Support\Audit\Models\HasAudit;
+use Moox\Support\SoftDelete\Models\HasSoftDelete;
 
 class AddressUsageType extends Model implements TranslatableContract
 {
     use HasAudit;
-    use SoftDeletes;
+    use HasSoftDelete;
     use Translatable;
 
     protected $table = 'address_usage_types';
@@ -30,16 +30,6 @@ class AddressUsageType extends Model implements TranslatableContract
      * @var list<string>
      */
     protected $fillable = [
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
-        'deleted_at',
-        'deleted_by_id',
-        'deleted_by_type',
-        'restored_at',
-        'restored_by_id',
-        'restored_by_type',
     ];
 
     public static function getResourceName(): string
@@ -53,11 +43,6 @@ class AddressUsageType extends Model implements TranslatableContract
     protected function casts(): array
     {
         return [
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
-            'deleted_by_id' => 'integer',
-            'restored_by_id' => 'integer',
-            'restored_at' => 'datetime',
         ];
     }
 }

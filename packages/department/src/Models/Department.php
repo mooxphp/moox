@@ -5,19 +5,25 @@ declare(strict_types=1);
 namespace Moox\Department\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Traits\Relations\HasRelations;
 use Moox\Support\Active\Models\HasActive;
 use Moox\Support\Audit\Models\HasAudit;
 use Moox\Support\Identity\Models\HasIdentifier;
+use Moox\Support\SoftDelete\Models\HasSoftDelete;
+use Moox\Support\External\Models\HasExternal;
+use Moox\Support\Data\Models\HasData;
+use Moox\Support\Archive\Models\HasArchive;
 
 class Department extends Model
 {
     use HasActive;
+    use HasArchive;
+    use HasData;
+    use HasExternal;
     use HasAudit;
     use HasIdentifier;
     use HasRelations;
-    use SoftDeletes;
+    use HasSoftDelete;
 
     protected $table = 'departments';
 
@@ -25,28 +31,10 @@ class Department extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'is_active',
         'title',
         'slug',
         'note',
-        'external_reference',
-        'external_info',
-        'external_status',
         'contact_id',
-        'data',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
-        'archived_at',
-        'archived_by_id',
-        'archived_by_type',
-        'deleted_at',
-        'deleted_by_id',
-        'deleted_by_type',
-        'restored_at',
-        'restored_by_id',
-        'restored_by_type',
     ];
 
     /**
@@ -67,16 +55,7 @@ class Department extends Model
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
-            'data' => 'array',
             'contact_id' => 'integer',
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
-            'archived_by_id' => 'integer',
-            'deleted_by_id' => 'integer',
-            'restored_by_id' => 'integer',
-            'archived_at' => 'datetime',
-            'restored_at' => 'datetime',
         ];
     }
 }

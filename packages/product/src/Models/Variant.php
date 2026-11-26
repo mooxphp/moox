@@ -5,28 +5,31 @@ declare(strict_types=1);
 namespace Moox\Product\Models;
 
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
-use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Validation\ValidationException;
 use Moox\Builder\Contracts\InheritsCustomFields;
-use Moox\Core\Traits\InteractsWithCustomFields;
 use Moox\Core\Traits\Relations\HasRelations;
 use Moox\Media\Models\Media;
 use Moox\Media\Traits\HasMediaUsable;
 use Moox\Product\Database\Factories\VariantFactory;
 use Moox\Product\Enums\ProductType;
 use Moox\Support\Active\Models\HasActive;
+use Moox\Builder\Concerns\InteractsWithTranslatedCustomFields;
 use Moox\Support\Audit\Models\HasAudit;
 use Moox\Support\Identity\Models\HasIdentifier;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as SpatieMedia;
+use Moox\Support\SoftDelete\Models\HasSoftDelete;
+use Moox\Support\Publish\Models\HasPublish;
+use Moox\Support\External\Models\HasExternal;
+use Moox\Support\Data\Models\HasData;
+use Moox\Support\Archive\Models\HasArchive;
 
 /**
  * @property int $product_id
@@ -51,7 +54,11 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media as SpatieMedia;
 class Variant extends Model implements HasMedia, InheritsCustomFields, TranslatableContract
 {
     use HasActive;
+    use HasArchive;
+    use HasData;
+    use HasExternal;
     use HasAudit;
+    use HasPublish;
 
     /** @use HasFactory<VariantFactory> */
     use HasFactory;
@@ -59,13 +66,9 @@ class Variant extends Model implements HasMedia, InheritsCustomFields, Translata
     use HasIdentifier;
     use HasMediaUsable;
     use HasRelations;
-    use InteractsWithCustomFields, Translatable {
-        Translatable::getAttribute insteadof InteractsWithCustomFields;
-        Translatable::setAttribute insteadof InteractsWithCustomFields;
-        Translatable::getAttribute as getTranslatableAttribute;
-    }
+    use InteractsWithTranslatedCustomFields;
     use InteractsWithMedia;
-    use SoftDeletes;
+    use HasSoftDelete;
 
     protected $table = 'variants';
 
@@ -85,43 +88,19 @@ class Variant extends Model implements HasMedia, InheritsCustomFields, Translata
         'product_id',
         'sku',
         'is_orderable',
-        'is_active',
         'sort_order',
         'manufacturer_id',
         'manufacturer_name',
-        'external_reference',
-        'external_info',
-        'external_status',
         'note',
         'image',
-        'data',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
-        'archived_at',
-        'archived_by_id',
-        'archived_by_type',
-        'deleted_at',
-        'deleted_by_id',
-        'deleted_by_type',
-        'restored_at',
-        'restored_by_id',
-        'restored_by_type',
-        'published_at',
-        'published_by_id',
-        'published_by_type',
-        'unpublished_at',
-        'unpublished_by_id',
-        'unpublished_by_type',
     ];
 
     /**
      * @var array<string, mixed>
      */
     protected $attributes = [
-        'is_orderable' => false,
         'is_active' => true,
+        'is_orderable' => false,
         'sort_order' => 0,
     ];
 
@@ -159,7 +138,11 @@ class Variant extends Model implements HasMedia, InheritsCustomFields, Translata
             }
         }
 
-        return $this->getTranslatableAttribute($key);
+        if (is_string($key) && $key !== '' && $this->shouldDelegateToCustomField($key)) {
+            return $this->customField($key);
+        }
+
+        return $this->getTranslatedAttribute($key);
     }
 
     /**
@@ -211,22 +194,9 @@ class Variant extends Model implements HasMedia, InheritsCustomFields, Translata
         return [
             'product_id' => 'integer',
             'is_orderable' => 'boolean',
-            'is_active' => 'boolean',
             'sort_order' => 'integer',
             'manufacturer_id' => 'integer',
             'image' => 'array',
-            'data' => 'array',
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
-            'archived_by_id' => 'integer',
-            'deleted_by_id' => 'integer',
-            'restored_by_id' => 'integer',
-            'published_by_id' => 'integer',
-            'unpublished_by_id' => 'integer',
-            'archived_at' => 'datetime',
-            'restored_at' => 'datetime',
-            'published_at' => 'datetime',
-            'unpublished_at' => 'datetime',
         ];
     }
 

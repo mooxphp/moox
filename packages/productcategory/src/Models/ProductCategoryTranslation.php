@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Validation\ValidationException;
+use Moox\Support\Active\Models\HasActive;
+use Moox\Support\Audit\Models\HasAudit;
+use Moox\Support\Publish\Models\HasPublish;
+use Moox\Support\SoftDelete\Models\HasSoftDelete;
 
 /**
  * @property int $product_category_id
@@ -18,13 +22,20 @@ use Illuminate\Validation\ValidationException;
  */
 class ProductCategoryTranslation extends Model
 {
-    public $timestamps = false;
+    use HasActive;
+    use HasAudit;
+    use HasPublish;
+    use HasSoftDelete;
 
     protected $table = 'product_category_translations';
 
     /**
      * @var list<string>
      */
+    protected $attributes = [
+        'is_active' => true,
+    ];
+
     protected $fillable = [
         'locale',
         'title',

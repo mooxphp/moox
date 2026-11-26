@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Validation\ValidationException;
 use Moox\Core\Traits\Relations\HasRelations;
 use Moox\Media\Models\Media;
@@ -25,6 +24,11 @@ use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as SpatieMedia;
+use Moox\Support\SoftDelete\Models\HasSoftDelete;
+use Moox\Support\Publish\Models\HasPublish;
+use Moox\Support\External\Models\HasExternal;
+use Moox\Support\Data\Models\HasData;
+use Moox\Support\Archive\Models\HasArchive;
 
 /**
  * @property int|null $parent_id
@@ -50,7 +54,11 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media as SpatieMedia;
 class ProductCategory extends Model implements HasMedia, TranslatableContract
 {
     use HasActive;
+    use HasArchive;
+    use HasData;
+    use HasExternal;
     use HasAudit;
+    use HasPublish;
 
     /** @use HasFactory<ProductCategoryFactory> */
     use HasFactory;
@@ -59,7 +67,7 @@ class ProductCategory extends Model implements HasMedia, TranslatableContract
     use HasMediaUsable;
     use HasRelations;
     use InteractsWithMedia;
-    use SoftDeletes;
+    use HasSoftDelete;
     use Translatable;
 
     protected $table = 'product_categories';
@@ -82,33 +90,9 @@ class ProductCategory extends Model implements HasMedia, TranslatableContract
         'canonical_product_category_id',
         'lft',
         'rgt',
-        'is_active',
         'sort_order',
-        'external_reference',
-        'external_info',
-        'external_status',
         'note',
         'image',
-        'data',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
-        'archived_at',
-        'archived_by_id',
-        'archived_by_type',
-        'deleted_at',
-        'deleted_by_id',
-        'deleted_by_type',
-        'restored_at',
-        'restored_by_id',
-        'restored_by_type',
-        'published_at',
-        'published_by_id',
-        'published_by_type',
-        'unpublished_at',
-        'unpublished_by_id',
-        'unpublished_by_type',
     ];
 
     /**
@@ -150,23 +134,10 @@ class ProductCategory extends Model implements HasMedia, TranslatableContract
             'parent_id' => 'integer',
             'lft' => 'integer',
             'rgt' => 'integer',
-            'is_active' => 'boolean',
             'is_canonical' => 'boolean',
             'canonical_product_category_id' => 'integer',
             'sort_order' => 'integer',
             'image' => 'array',
-            'data' => 'array',
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
-            'archived_by_id' => 'integer',
-            'deleted_by_id' => 'integer',
-            'restored_by_id' => 'integer',
-            'published_by_id' => 'integer',
-            'unpublished_by_id' => 'integer',
-            'archived_at' => 'datetime',
-            'restored_at' => 'datetime',
-            'published_at' => 'datetime',
-            'unpublished_at' => 'datetime',
         ];
     }
 

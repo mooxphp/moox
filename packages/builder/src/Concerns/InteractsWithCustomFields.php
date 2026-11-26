@@ -304,6 +304,10 @@ trait InteractsWithCustomFields
             return $this->customField($key);
         }
 
+        if (method_exists($this, 'getTranslatedAttribute')) {
+            return $this->getTranslatedAttribute($key);
+        }
+
         return parent::getAttribute($key);
     }
 
@@ -313,6 +317,10 @@ trait InteractsWithCustomFields
             $this->setCustomField($key, $value);
 
             return $this;
+        }
+
+        if (method_exists($this, 'setTranslatedAttribute')) {
+            return $this->setTranslatedAttribute($key, $value);
         }
 
         return parent::setAttribute($key, $value);

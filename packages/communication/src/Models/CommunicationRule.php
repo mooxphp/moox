@@ -23,13 +23,8 @@ class CommunicationRule extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'is_active',
         'owner_type',
         'communication_type_id',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
     ];
 
     /**
@@ -50,10 +45,7 @@ class CommunicationRule extends Model
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
             'communication_type_id' => 'integer',
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
         ];
     }
 }

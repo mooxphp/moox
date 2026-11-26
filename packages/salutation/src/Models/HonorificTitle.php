@@ -7,19 +7,23 @@ namespace Moox\Salutation\Models;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Traits\Relations\HasRelations;
 use Moox\Support\Active\Models\HasActive;
 use Moox\Support\Audit\Models\HasAudit;
 use Moox\Support\Identity\Models\HasIdentifier;
+use Moox\Support\SoftDelete\Models\HasSoftDelete;
+use Moox\Support\Data\Models\HasData;
+use Moox\Support\Archive\Models\HasArchive;
 
 class HonorificTitle extends Model implements TranslatableContract
 {
     use HasActive;
+    use HasArchive;
+    use HasData;
     use HasAudit;
     use HasIdentifier;
     use HasRelations;
-    use SoftDeletes;
+    use HasSoftDelete;
     use Translatable;
 
     protected $table = 'honorific_titles';
@@ -36,23 +40,8 @@ class HonorificTitle extends Model implements TranslatableContract
      * @var list<string>
      */
     protected $fillable = [
-        'is_active',
         'salutation_id',
-        'data',
         'sort_order',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
-        'archived_at',
-        'archived_by_id',
-        'archived_by_type',
-        'deleted_at',
-        'deleted_by_id',
-        'deleted_by_type',
-        'restored_at',
-        'restored_by_id',
-        'restored_by_type',
     ];
 
     /**
@@ -75,17 +64,8 @@ class HonorificTitle extends Model implements TranslatableContract
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
             'salutation_id' => 'integer',
-            'data' => 'array',
             'sort_order' => 'integer',
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
-            'archived_by_id' => 'integer',
-            'deleted_by_id' => 'integer',
-            'restored_by_id' => 'integer',
-            'archived_at' => 'datetime',
-            'restored_at' => 'datetime',
         ];
     }
 }

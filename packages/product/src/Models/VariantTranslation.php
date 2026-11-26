@@ -7,6 +7,9 @@ namespace Moox\Product\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Moox\Support\Audit\Models\HasAudit;
+use Moox\Support\Publish\Models\HasPublish;
+use Moox\Support\Active\Models\HasActive;
+use Moox\Support\SoftDelete\Models\HasSoftDelete;
 
 /**
  * @property int $variant_id
@@ -22,8 +25,15 @@ use Moox\Support\Audit\Models\HasAudit;
 class VariantTranslation extends Model
 {
     use HasAudit;
+    use HasPublish;
+    use HasActive;
+    use HasSoftDelete;
 
     protected $table = 'variant_translations';
+
+    protected $attributes = [
+        'is_active' => true,
+    ];
 
     /**
      * @var list<string>
@@ -33,19 +43,6 @@ class VariantTranslation extends Model
         'title',
         'slug',
         'description',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
-        'published_at',
-        'published_by_id',
-        'published_by_type',
-        'unpublished_at',
-        'unpublished_by_id',
-        'unpublished_by_type',
-        'deleted_at',
-        'deleted_by_id',
-        'deleted_by_type',
     ];
 
     protected static function booted(): void
@@ -80,14 +77,6 @@ class VariantTranslation extends Model
     protected function casts(): array
     {
         return [
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
-            'published_by_id' => 'integer',
-            'unpublished_by_id' => 'integer',
-            'deleted_by_id' => 'integer',
-            'published_at' => 'datetime',
-            'unpublished_at' => 'datetime',
-            'deleted_at' => 'datetime',
         ];
     }
 

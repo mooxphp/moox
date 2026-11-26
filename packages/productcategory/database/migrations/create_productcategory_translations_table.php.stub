@@ -21,6 +21,28 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug');
             $table->text('description')->nullable();
+            $table->boolean('is_active')->default(true);
+
+            $table->timestamp('created_at')->nullable();
+            $table->unsignedBigInteger('created_by_id')->nullable();
+            $table->string('created_by_type')->nullable();
+            $table->timestamp('updated_at')->nullable();
+            $table->unsignedBigInteger('updated_by_id')->nullable();
+            $table->string('updated_by_type')->nullable();
+
+            $table->timestamp('published_at')->nullable();
+            $table->unsignedBigInteger('published_by_id')->nullable();
+            $table->string('published_by_type')->nullable();
+            $table->timestamp('unpublished_at')->nullable();
+            $table->unsignedBigInteger('unpublished_by_id')->nullable();
+            $table->string('unpublished_by_type')->nullable();
+
+            $table->timestamp('deleted_at')->nullable();
+            $table->unsignedBigInteger('deleted_by_id')->nullable();
+            $table->string('deleted_by_type')->nullable();
+            $table->timestamp('restored_at')->nullable();
+            $table->unsignedBigInteger('restored_by_id')->nullable();
+            $table->string('restored_by_type')->nullable();
 
             $table->unique(['product_category_id', 'locale'], 'product_category_locale_unique');
             $table->index('locale');

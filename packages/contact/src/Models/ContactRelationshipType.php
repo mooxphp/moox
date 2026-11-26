@@ -30,10 +30,6 @@ class ContactRelationshipType extends Model implements TranslatableContract
      * @var list<string>
      */
     protected $fillable = [
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
     ];
 
     public static function getResourceName(): string
@@ -47,8 +43,6 @@ class ContactRelationshipType extends Model implements TranslatableContract
     protected function casts(): array
     {
         return [
-            'created_by_id' => 'integer',
-            'updated_by_id' => 'integer',
         ];
     }
 }

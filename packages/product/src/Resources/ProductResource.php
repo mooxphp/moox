@@ -45,6 +45,7 @@ use Moox\Support\Filament\FeatureFields;
 use Moox\Support\Identity\Forms\HasIdentityForm;
 use Moox\Support\Publish\Forms\HasPublishForm;
 use Moox\Support\SoftDelete\Forms\HasSoftDeleteForm;
+use Moox\Support\Title\Columns\HasTitleColumns;
 use Moox\Support\Title\Forms\HasOptionalTitleSlugForm;
 use Moox\Support\Title\Forms\HasTitleDescriptionForm;
 use Moox\Support\Title\Forms\HasTitleForm;
@@ -60,12 +61,13 @@ class ProductResource extends Resource
     use HasExternalColumns;
     use HasExternalForm;
     use HasIdentityForm;
+    use HasOptionalTitleSlugForm;
     use HasPublishForm;
     use HasResourceRelations;
     use HasSoftDeleteForm;
-    use HasTitleForm;
+    use HasTitleColumns;
     use HasTitleDescriptionForm;
-    use HasOptionalTitleSlugForm;
+    use HasTitleForm;
 
     protected static ?string $model = Product::class;
 
