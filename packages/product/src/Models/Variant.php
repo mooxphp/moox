@@ -20,8 +20,9 @@ use Moox\Media\Models\Media;
 use Moox\Media\Traits\HasMediaUsable;
 use Moox\Product\Database\Factories\VariantFactory;
 use Moox\Product\Enums\ProductType;
-use Moox\Support\Audit\HasAudit;
-use Moox\Support\Identity\HasIdentifier;
+use Moox\Support\Active\Models\HasActive;
+use Moox\Support\Audit\Models\HasAudit;
+use Moox\Support\Identity\Models\HasIdentifier;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -49,6 +50,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media as SpatieMedia;
  */
 class Variant extends Model implements HasMedia, InheritsCustomFields, TranslatableContract
 {
+    use HasActive;
     use HasAudit;
 
     /** @use HasFactory<VariantFactory> */

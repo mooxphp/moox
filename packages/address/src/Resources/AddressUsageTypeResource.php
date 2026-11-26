@@ -18,9 +18,9 @@ use Moox\Address\Resources\AddressUsageType\Pages\CreateAddressUsageType;
 use Moox\Address\Resources\AddressUsageType\Pages\EditAddressUsageType;
 use Moox\Address\Resources\AddressUsageType\Pages\ListAddressUsageTypes;
 use Moox\Address\Resources\AddressUsageType\Pages\ViewAddressUsageType;
-use Moox\Support\Audit\HasAuditForm;
-use Moox\Support\SoftDelete\HasSoftDeleteForm;
-use Moox\Support\Title\HasTitleForm;
+use Moox\Support\Audit\Forms\HasAuditForm;
+use Moox\Support\SoftDelete\Forms\HasSoftDeleteForm;
+use Moox\Support\Title\Forms\HasTitleForm;
 
 class AddressUsageTypeResource extends Resource
 {

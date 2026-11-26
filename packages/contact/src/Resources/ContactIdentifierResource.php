@@ -21,7 +21,7 @@ use Moox\Contact\Resources\ContactIdentifier\Pages\EditContactIdentifier;
 use Moox\Contact\Resources\ContactIdentifier\Pages\ListContactIdentifiers;
 use Moox\Contact\Resources\ContactIdentifier\Pages\ViewContactIdentifier;
 use Moox\Support\Filament\FeatureFields;
-use Moox\Support\Relation\HasRelationForm;
+use Moox\Support\Relation\Forms\HasRelationForm;
 
 class ContactIdentifierResource extends Resource
 {

@@ -6,7 +6,7 @@ namespace Moox\Product\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Moox\Support\Audit\HasAudit;
+use Moox\Support\Audit\Models\HasAudit;
 
 /**
  * @property int $variant_id

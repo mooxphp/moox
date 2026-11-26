@@ -11,11 +11,13 @@ use Illuminate\Validation\ValidationException;
 use Moox\Communication\Enums\CommunicationValidationType;
 use Moox\Communication\Support\CommunicationValueValidator;
 use Moox\Core\Traits\Relations\HasRelations;
-use Moox\Support\Audit\HasAudit;
-use Moox\Support\Identity\HasIdentifier;
+use Moox\Support\Active\Models\HasActive;
+use Moox\Support\Audit\Models\HasAudit;
+use Moox\Support\Identity\Models\HasIdentifier;
 
 class Communication extends Model
 {
+    use HasActive;
     use HasAudit;
     use HasIdentifier;
     use HasRelations;

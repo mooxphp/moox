@@ -18,8 +18,9 @@ use Moox\Core\Traits\Relations\HasRelations;
 use Moox\Media\Models\Media;
 use Moox\Media\Traits\HasMediaUsable;
 use Moox\ProductCategory\Database\Factories\ProductCategoryFactory;
-use Moox\Support\Audit\HasAudit;
-use Moox\Support\Identity\HasIdentifier;
+use Moox\Support\Active\Models\HasActive;
+use Moox\Support\Audit\Models\HasAudit;
+use Moox\Support\Identity\Models\HasIdentifier;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -48,6 +49,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media as SpatieMedia;
  */
 class ProductCategory extends Model implements HasMedia, TranslatableContract
 {
+    use HasActive;
     use HasAudit;
 
     /** @use HasFactory<ProductCategoryFactory> */

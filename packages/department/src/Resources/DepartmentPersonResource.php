@@ -21,7 +21,7 @@ use Moox\Department\Resources\DepartmentPerson\Pages\EditDepartmentPerson;
 use Moox\Department\Resources\DepartmentPerson\Pages\ListDepartmentPersons;
 use Moox\Department\Resources\DepartmentPerson\Pages\ViewDepartmentPerson;
 use Moox\Support\Filament\FeatureFields;
-use Moox\Support\Relation\HasRelationForm;
+use Moox\Support\Relation\Forms\HasRelationForm;
 
 class DepartmentPersonResource extends Resource
 {

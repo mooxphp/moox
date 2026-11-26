@@ -22,10 +22,10 @@ use Moox\Contact\Resources\ContactIdentifierType\Pages\CreateContactIdentifierTy
 use Moox\Contact\Resources\ContactIdentifierType\Pages\EditContactIdentifierType;
 use Moox\Contact\Resources\ContactIdentifierType\Pages\ListContactIdentifierTypes;
 use Moox\Contact\Resources\ContactIdentifierType\Pages\ViewContactIdentifierType;
-use Moox\Support\Audit\HasAuditForm;
+use Moox\Support\Audit\Forms\HasAuditForm;
 use Moox\Support\Filament\FeatureFields;
-use Moox\Support\Identity\HasIdentityForm;
-use Moox\Support\Title\HasTitleForm;
+use Moox\Support\Identity\Forms\HasIdentityForm;
+use Moox\Support\Title\Forms\HasTitleForm;
 
 class ContactIdentifierTypeResource extends Resource
 {

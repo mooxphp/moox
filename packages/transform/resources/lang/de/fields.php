@@ -91,7 +91,6 @@ return [
     'bulk_write_strategy' => 'Schreibstrategie',
     'bulk_write_strategy_row' => 'Zeile fuer Zeile',
     'bulk_write_strategy_batch' => 'Batch-Upsert',
-    'is_active' => 'Aktiv',
     'schedule' => 'Zeitplan',
     'schedule_help' => 'Cron-Ausdruck, zum Beispiel 0 2 * * * für täglich 02:00. Leer lassen, wenn der Lauf nur manuell starten soll.',
     'schedule_invalid' => 'Der Zeitplan muss ein gültiger Cron-Ausdruck sein.',

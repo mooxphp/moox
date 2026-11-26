@@ -19,8 +19,8 @@ class OrganizationPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel->resources([
-            OrganizationTypeResource::class,
-            LegalFormResource::class,
+            // OrganizationTypeResource::class,
+            // LegalFormResource::class,
         ]);
     }
 

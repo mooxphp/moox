@@ -12,7 +12,6 @@ return [
     'parent_id' => 'Übergeordnete ID',
     'created_at' => 'Erstellt am',
     'updated_at' => 'Aktualisiert am',
-    'deleted_at' => 'Gelöscht am',
     'parent' => 'Übergeordnet',
     'children' => 'Untergeordnet',
     'ancestors' => 'Vorfahren',

@@ -18,10 +18,10 @@ use Moox\Address\Resources\AddressUsage\Pages\CreateAddressUsage;
 use Moox\Address\Resources\AddressUsage\Pages\EditAddressUsage;
 use Moox\Address\Resources\AddressUsage\Pages\ListAddressUsages;
 use Moox\Address\Resources\AddressUsage\Pages\ViewAddressUsage;
-use Moox\Support\Audit\HasAuditForm;
+use Moox\Support\Audit\Forms\HasAuditForm;
 use Moox\Support\Filament\FeatureFields;
-use Moox\Support\Relation\HasRelationForm;
-use Moox\Support\SoftDelete\HasSoftDeleteForm;
+use Moox\Support\Relation\Forms\HasRelationForm;
+use Moox\Support\SoftDelete\Forms\HasSoftDeleteForm;
 
 class AddressUsageResource extends Resource
 {

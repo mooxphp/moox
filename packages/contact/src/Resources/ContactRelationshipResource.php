@@ -20,14 +20,14 @@ use Moox\Contact\Resources\ContactRelationship\Pages\CreateContactRelationship;
 use Moox\Contact\Resources\ContactRelationship\Pages\EditContactRelationship;
 use Moox\Contact\Resources\ContactRelationship\Pages\ListContactRelationships;
 use Moox\Contact\Resources\ContactRelationship\Pages\ViewContactRelationship;
-use Moox\Support\Archive\HasArchiveForm;
-use Moox\Support\Audit\HasAuditForm;
-use Moox\Support\Data\HasDataForm;
-use Moox\Support\External\HasExternalForm;
+use Moox\Support\Archive\Forms\HasArchiveForm;
+use Moox\Support\Audit\Forms\HasAuditForm;
+use Moox\Support\Data\Forms\HasDataForm;
+use Moox\Support\External\Forms\HasExternalForm;
 use Moox\Support\Filament\FeatureFields;
-use Moox\Support\Identity\HasIdentityForm;
-use Moox\Support\Relation\HasRelationForm;
-use Moox\Support\SoftDelete\HasSoftDeleteForm;
+use Moox\Support\Identity\Forms\HasIdentityForm;
+use Moox\Support\Relation\Forms\HasRelationForm;
+use Moox\Support\SoftDelete\Forms\HasSoftDeleteForm;
 
 class ContactRelationshipResource extends Resource
 {

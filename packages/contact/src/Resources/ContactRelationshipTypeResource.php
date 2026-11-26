@@ -18,9 +18,9 @@ use Moox\Contact\Resources\ContactRelationshipType\Pages\CreateContactRelationsh
 use Moox\Contact\Resources\ContactRelationshipType\Pages\EditContactRelationshipType;
 use Moox\Contact\Resources\ContactRelationshipType\Pages\ListContactRelationshipTypes;
 use Moox\Contact\Resources\ContactRelationshipType\Pages\ViewContactRelationshipType;
-use Moox\Support\Audit\HasAuditForm;
-use Moox\Support\Identity\HasIdentityForm;
-use Moox\Support\Title\HasTitleForm;
+use Moox\Support\Audit\Forms\HasAuditForm;
+use Moox\Support\Identity\Forms\HasIdentityForm;
+use Moox\Support\Title\Forms\HasTitleForm;
 
 class ContactRelationshipTypeResource extends Resource
 {

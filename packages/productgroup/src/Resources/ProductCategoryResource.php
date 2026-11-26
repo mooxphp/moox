@@ -32,33 +32,35 @@ use Moox\ProductCategory\Resources\ProductCategory\Pages\CreateProductCategory;
 use Moox\ProductCategory\Resources\ProductCategory\Pages\EditProductCategory;
 use Moox\ProductCategory\Resources\ProductCategory\Pages\ListProductCategories;
 use Moox\ProductCategory\Resources\ProductCategory\Pages\ViewProductCategory;
-use Moox\Support\Active\HasActiveForm;
-use Moox\Support\Archive\HasArchiveForm;
-use Moox\Support\Audit\HasAuditForm;
-use Moox\Support\Data\HasDataForm;
-use Moox\Support\External\HasExternalForm;
+use Moox\Support\Active\Columns\HasActiveColumns;
+use Moox\Support\Active\Forms\HasActiveForm;
+use Moox\Support\Archive\Forms\HasArchiveForm;
+use Moox\Support\Audit\Forms\HasAuditForm;
+use Moox\Support\Data\Forms\HasDataForm;
+use Moox\Support\External\Columns\HasExternalColumns;
+use Moox\Support\External\Forms\HasExternalForm;
 use Moox\Support\Filament\FeatureFields;
-use Moox\Support\Identity\HasIdentityForm;
-use Moox\Support\Publish\HasPublishForm;
-use Moox\Support\SoftDelete\HasSoftDeleteForm;
-use Moox\Support\Title\HasTitleDescriptionForm;
-use Moox\Support\Title\HasTitleForm;
+use Moox\Support\Identity\Forms\HasIdentityForm;
+use Moox\Support\Publish\Forms\HasPublishForm;
+use Moox\Support\SoftDelete\Forms\HasSoftDeleteForm;
+use Moox\Support\Title\Forms\HasTitleDescriptionForm;
+use Moox\Support\Title\Forms\HasTitleForm;
 
 class ProductCategoryResource extends Resource
 {
+    use HasActiveColumns;
     use HasActiveForm;
     use HasArchiveForm;
     use HasAuditForm;
     use HasDataForm;
+    use HasExternalColumns;
     use HasExternalForm;
     use HasIdentityForm;
     use HasPublishForm;
     use HasResourceRelations;
     use HasSoftDeleteForm;
+    use HasTitleForm;
     use HasTitleDescriptionForm;
-    use HasTitleForm {
-        HasTitleDescriptionForm::titleTranslationExtraFields insteadof HasTitleForm;
-    }
 
     protected static ?string $model = ProductCategory::class;
 
@@ -353,17 +355,12 @@ class ProductCategoryResource extends Resource
                 TextColumn::make('sort_order')
                     ->label(FeatureFields::label($translation, 'sort_order'))
                     ->sortable(),
-                IconColumn::make('is_active')
-                    ->label(FeatureFields::label($translation, 'is_active'))
-                    ->boolean(),
-                TextColumn::make('external_reference')
-                    ->label(FeatureFields::label($translation, 'external_reference'))
-                    ->toggleable(isToggledHiddenByDefault: true),
+                static::activeColumn(),
+                static::externalReferenceColumn(),
             ])
             ->defaultSort('sort_order')
             ->filters([
-                TernaryFilter::make('is_active')
-                    ->label(FeatureFields::label($translation, 'is_active')),
+                static::activeFilter(),
             ])
             ->recordActions([
                 ViewAction::make(),

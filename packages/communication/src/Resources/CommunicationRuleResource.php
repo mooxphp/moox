@@ -14,7 +14,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,14 +22,16 @@ use Moox\Communication\Resources\CommunicationRule\Pages\CreateCommunicationRule
 use Moox\Communication\Resources\CommunicationRule\Pages\EditCommunicationRule;
 use Moox\Communication\Resources\CommunicationRule\Pages\ListCommunicationRules;
 use Moox\Communication\Resources\CommunicationRule\Pages\ViewCommunicationRule;
-use Moox\Support\Active\HasActiveForm;
-use Moox\Support\Audit\HasAuditForm;
+use Moox\Support\Active\Columns\HasActiveColumns;
+use Moox\Support\Active\Forms\HasActiveForm;
+use Moox\Support\Audit\Forms\HasAuditForm;
 use Moox\Support\Filament\FeatureFields;
-use Moox\Support\Identity\HasIdentityForm;
-use Moox\Support\Relation\HasRelationForm;
+use Moox\Support\Identity\Forms\HasIdentityForm;
+use Moox\Support\Relation\Forms\HasRelationForm;
 
 class CommunicationRuleResource extends Resource
 {
+    use HasActiveColumns;
     use HasActiveForm;
     use HasAuditForm;
     use HasIdentityForm;
@@ -157,9 +158,7 @@ class CommunicationRuleResource extends Resource
                 TextColumn::make('communicationType.title')
                     ->label(FeatureFields::label($translation, 'communication_type_id'))
                     ->sortable(),
-                IconColumn::make('is_active')
-                    ->label(FeatureFields::label($translation, 'is_active'))
-                    ->boolean(),
+                static::activeColumn(),
                 TextColumn::make('updated_at')
                     ->label(FeatureFields::label($translation, 'updated_at'))
                     ->dateTime()
@@ -168,8 +167,7 @@ class CommunicationRuleResource extends Resource
             ])
             ->defaultSort('owner_type')
             ->filters([
-                TernaryFilter::make('is_active')
-                    ->label(FeatureFields::label($translation, 'is_active')),
+                static::activeFilter(),
             ])
             ->recordActions([
                 ViewAction::make(),

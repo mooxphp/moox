@@ -7,8 +7,8 @@ namespace Moox\Contact\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Traits\Relations\HasRelations;
-use Moox\Support\Audit\HasAudit;
-use Moox\Support\Identity\HasIdentifier;
+use Moox\Support\Audit\Models\HasAudit;
+use Moox\Support\Identity\Models\HasIdentifier;
 
 class ContactRelationship extends Model
 {

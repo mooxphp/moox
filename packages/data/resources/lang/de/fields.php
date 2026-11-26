@@ -9,19 +9,16 @@ return [
     'common_name' => 'Gebräuchlicher Name',
     'native_name' => 'Eigenname',
     'exonyms' => 'Exonyme',
-
     // Static Countries Static Currencies
     'is_primary' => 'Primäre Währung',
     'country_alpha3_t' => 'Land Alpha3 T',
     'currency_symbol' => 'Währungssymbol',
     'currency_id' => 'Währungs ID',
     'country_name' => 'Landname',
-
     // Static Countries Static Timezones
     'country' => 'Land',
     'timezone' => 'Zeitzone',
     'timezone_name' => 'Zeitzonenname',
-
     // Static Country
     'calling_code' => 'Rufcode',
     'capital' => 'Hauptstadt',
@@ -41,19 +38,16 @@ return [
     'subregion' => 'Subregion',
     'embargo' => 'Embargo',
     'people' => 'Einwohner',
-
     // Static Currency
     'code' => 'Code',
     'symbol' => 'Symbol',
     'currency_name' => 'Währungsname',
-
     // EN 16931 codelists
     'description' => 'Beschreibung',
     'is_normative' => 'Normativ',
     'en16931_interpretation' => 'EN-16931-Interpretation',
     'vat_category_code' => 'Umsatzsteuerkategorie-Code',
     'version' => 'Version',
-
     // Static Locale
     'locale' => 'Sprache',
     'name' => 'Name',
@@ -69,7 +63,6 @@ return [
     'dst_end' => 'DST Ende',
     'language_id' => 'Sprache ID',
     'country_id' => 'Land ID',
-
     // View
     'grid_view' => 'Grid Ansicht',
     'table_view' => 'List Ansicht',

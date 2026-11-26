@@ -3,7 +3,6 @@
 return [
     'status' => 'Status',
     'legacy_id' => 'Legacy-ID',
-    'external_reference' => 'Externe Referenz',
     'short_code' => 'Kürzel',
     'display_name' => 'Anzeigename',
     'first_name' => 'Vorname',
@@ -21,8 +20,6 @@ return [
     'is_primary' => 'Primär',
     'role' => 'Rolle',
     'is_internal' => 'Intern',
-    'is_active' => 'Aktiv',
-    'active' => 'Aktiv',
     'internal' => 'Intern',
     'identity' => 'Stammdaten',
     'settings' => 'Einstellungen',
