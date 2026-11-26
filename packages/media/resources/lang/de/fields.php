@@ -8,7 +8,6 @@ return [
     'no_title' => 'Kein Titel',
     'upload' => 'Datei hochladen',
     'no_translation_yet' => 'Für :locale fehlt noch eine Übersetzung. Sie wird angelegt, sobald du etwas änderst.',
-
     // File Information
     'id' => 'ID',
     'mime_type' => 'Dateityp',
@@ -23,7 +22,6 @@ return [
     'uploaded_at' => 'Hochgeladen am',
     'collection' => 'Sammlung',
     'default_collection' => 'Allgemein',
-
     // Actions
     'select_multiple' => 'Mehrere auswählen',
     'end_selection' => 'Auswahl beenden',
@@ -46,7 +44,6 @@ return [
     'regenerate_delivery_force_help' => 'Standard: nur fehlende Varianten. Force nach Config-/Watermark-Änderung.',
     'regenerate_delivery_queued' => 'Delivery-Regenerate gestartet',
     'regenerate_delivery_queued_body' => 'Für :count Datei|Für :count Dateien — Queue muss laufen.',
-
     // Notifications
     'delete_error' => 'Fehler beim Löschen',
     'delete_success' => 'Datei erfolgreich gelöscht',
@@ -65,14 +62,12 @@ return [
     'replace_file_error' => 'Die Datei ":fileName" konnte nicht ersetzt werden.',
     'replace_error' => 'Fehler beim Ersetzen der Datei',
     'validation_error' => 'Fehler',
-
     // Linked Files
     'file_has_links' => 'Diese Datei wird in :count :links verwendet.',
     'delete_linked_file_heading' => 'Datei ":title" löschen',
     'warning_file_has_links' => 'Diese Datei wird in :count :links verwendet.',
     'delete_linked_warning' => 'Wenn Sie diese Datei löschen, werden die Verknüpfungen zu dieser Datei ebenfalls gelöscht.',
     'replace_file' => 'Datei ersetzen',
-
     // Upload
     'upload_file' => 'Datei hochladen',
     'select_file' => 'Datei auswählen',
@@ -82,7 +77,6 @@ return [
     'edit_file_success' => 'Die Datei ":fileName" wurde erfolgreich aktualisiert.',
     'operation_error' => 'Fehler beim Vorgang',
     'file_operation_error' => 'Die Datei ":fileName" konnte nicht verarbeitet werden.',
-
     // Metadata
     'metadata' => 'Metadaten',
     'alt_text' => 'Alternativer Text',
@@ -90,13 +84,11 @@ return [
     'name' => 'Name',
     'title' => 'Titel',
     'description' => 'Beschreibung',
-
     // Date Filters
     'today' => 'Heute',
     'week' => 'Diese Woche',
     'month' => 'Diesen Monat',
     'year' => 'Dieses Jahr',
-
     // Collections
     'all_collections' => 'Alle Sammlungen',
     'collection_name' => 'Sammlungsname',
@@ -111,17 +103,14 @@ return [
     'uncategorized_description' => 'Nicht zugeordnete Medien',
     'extend_existing_collection' => 'Vorhandene Sammlung übersetzen',
     'create_new_collection' => 'Neue Sammlung',
-
     // Media Types
     'images' => 'Bilder',
     'videos' => 'Videos',
     'audios' => 'Audios',
     'documents' => 'Dokumente',
-
     // Errors
     'class_not_found' => 'Die Klasse ":class" existiert nicht.',
     'collection_name_already_exists' => 'Eine Sammlung mit diesem Namen existiert bereits.',
-
     // Media Picker
     'upload_and_select_media' => 'Hochladen und Medien auswählen',
     'no_media_selected' => 'Keine Medien ausgewählt.',
@@ -133,11 +122,9 @@ return [
     'file_type' => 'Dateityp',
     'apply_selection' => 'Auswahl übernehmen',
     'close' => 'Schließen',
-
     // Duplicate Files
     'duplicate_file' => 'Doppelte Datei',
     'duplicate_file_message' => 'Die Datei ":fileName" existiert bereits in der Mediathek.',
-
     // View
     'grid_view' => 'Gitteransicht',
     'table_view' => 'Listenansicht',

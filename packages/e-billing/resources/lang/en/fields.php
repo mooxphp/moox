@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     // Invoice fields
     'invoice_number' => 'Invoice number',
     'invoice_number_short' => 'Invoice no.',
@@ -97,16 +96,13 @@ return [
     'status' => 'Status',
     'created_at' => 'Created',
     'kosit_status' => 'KOSIT status',
-
     // Invoice status
     'status_parser_created' => 'Created by parser',
     'status_db_validated' => 'Automatically pre-reviewed',
     'status_db_validated_short' => 'Reviewed',
     'status_human_confirmed' => 'Manually confirmed',
     'status_validated' => 'Validated',
-
     'review_status' => 'Review status',
-
     // Gateway status
     'gateway_status' => 'Processing status',
     'gateway_status_generating' => 'Generating',
@@ -118,7 +114,6 @@ return [
     'gateway_status_ignored_foreign' => 'Ignored (foreign)',
     'gateway_status_ignored_before_cutoff' => 'Ignored (before cutoff)',
     'gateway_status_ignored_identical_duplicate' => 'Ignored (identical file)',
-
     // Validation badges
     'validation_badge_validated' => 'Confirmed',
     'validation_badge_db_validated' => 'Automatically reviewed',
@@ -127,7 +122,6 @@ return [
     'validation_badge_missing' => 'Missing',
     'validation_badge_not_applicable' => 'Not applicable',
     'validation_badge_unknown' => 'Unknown',
-
     // Validation status labels
     'validation_status_valid' => 'Valid',
     'validation_status_db_validated' => 'Matched with database',
@@ -137,7 +131,6 @@ return [
     'validation_status_invalid' => 'Invalid',
     'validation_status_missing' => 'Missing',
     'validation_status_unmatched' => 'Not in master data',
-
     // Validation messages
     'validation_message_ok' => 'OK',
     'validation_message_required_missing' => 'Required field missing',
@@ -150,7 +143,6 @@ return [
     'validation_message_required_invalid' => 'Required: invalid value',
     'validation_message_invalid_value' => 'Invalid value',
     'validation_message_please_review' => 'Please review',
-
     // Sections
     'section_document_data' => 'Document data',
     'section_seller_supplier' => 'Seller / Supplier',
@@ -160,7 +152,6 @@ return [
     'section_line_items' => 'Line items',
     'section_notes' => 'Notes',
     'group_must_issues' => ':count must issue|:count must issues',
-
     // Status banners
     'banner_incomplete' => '⚠ Incomplete — required fields missing',
     'banner_db_validated' => 'Automatically pre-reviewed — manual confirmation needed',
@@ -169,7 +160,6 @@ return [
     'banner_held_for_approval' => 'Held – waits for a manual approval (after re-processing)',
     'banner_held_format_preference_unavailable' => 'Held – the recipient\'s preferred format could not be looked up, '
         .'the default format was generated. Please check before approving.',
-
     // Tabs
     'tab_all' => 'All',
     'tab_document' => 'Document',
@@ -183,7 +173,6 @@ return [
     'tab_deleted' => 'Deleted',
     'tab_credit_notes' => 'Credit notes',
     'tab_corrected_invoices' => 'Corrected invoices',
-
     // Document classification (ADR 0011): label, "when to choose" hint, upload instruction (rule + examples).
     // Hosts override via lang/vendor/e-billing; example lists merge by index, so keep the same length.
     'document_classification' => [
@@ -200,7 +189,6 @@ return [
                 'Subsequent discount, price reduction or cash discount',
                 'Return of goods that were delivered and invoiced correctly',
             ],
-        ],
         '384' => [
             'label' => 'Corrected invoice (384)',
             'hint' => 'Choose when an invoice already issued was wrong or is cancelled – for example a '
@@ -209,20 +197,14 @@ return [
                 .'the difference, the amounts are negative.',
             'rule' => 'The original invoice was wrong or is cancelled. '
                 .'The original invoice must be referenced by number and date.',
-            'examples' => [
                 'A wrong quantity or price was invoiced',
                 'A mandatory invoice detail was wrong or missing',
                 'Cancellation invoice: full cancellation of an invoice already sent',
-            ],
-        ],
-    ],
     'document_classification_help' => [
         'title' => 'Which document type do I choose?',
         'placeholder' => 'Choose a document type',
         'helper' => 'Required. What matters is whether the original invoice was wrong – '
             .'not whether the document is called a credit note.',
-    ],
-
     // Filters
     'filter_needs_review' => 'Review needed',
     'filter_from' => 'From',
@@ -231,7 +213,6 @@ return [
     'filter_no' => 'No',
     'filter_kosit_passed' => 'Passed',
     'filter_kosit_failed' => 'Failed',
-
     // Tooltips
     'tooltip_kosit_passed' => 'KOSIT validation passed',
     'tooltip_kosit_failed' => 'KOSIT validation failed',
@@ -243,7 +224,6 @@ return [
     'tooltip_auto_validated' => 'Automatically validated',
     'tooltip_validation_errors_present' => 'Validation errors present',
     'tooltip_reviewed_database' => 'Reviewed (database)',
-
     // Approval gate
     'approval_status' => 'Approval',
     'approval_status_pending' => 'Awaiting approval',
@@ -295,9 +275,7 @@ return [
         'unclear_foreign_vat_charged' => 'billed to :country with VAT charged (:vat) but no domestic VAT id (:vat_id)',
         'unclear_domestic_vat_id_without_vat' => 'billed to :country with a domestic VAT id (:vat_id) but no VAT',
         'unclear_net_only' => 'no country recognised and net amounts only',
-    ],
     'foreign_unclear_no_vat_id' => 'none',
-
     // Actions
     'action_details' => 'Details',
     'action_kosit_report' => 'KOSIT report',
@@ -311,7 +289,6 @@ return [
     'document_version_label' => 'v:version',
     'document_version_current' => 'Current',
     'field_customer' => 'Customer',
-
     // Review workspace (ADR 0004)
     'action_start_review_edit' => 'Edit',
     'action_finish_review_edit' => 'Finish editing',
@@ -352,7 +329,6 @@ return [
         'percentage' => 'Percentage',
         'reason_text' => 'Reason',
         'reason_code' => 'Reason code',
-    ],
     'approval_blocked_prefix' => 'Approval not possible yet:',
     'approval_blocked' => [
         'pipeline_running' => 'The e-invoice is being regenerated and validated.',
@@ -361,7 +337,6 @@ return [
         'human_review_required' => 'Correct these fields or confirm the document:',
         'credit_note_negative_total' => 'The credit note has a negative total.',
         'must_field_missing' => 'These required fields are missing:',
-    ],
     'review_fields_to_check' => 'Fields to review:',
     'review_not_editable' => [
         'not_configured' => 'Not editable: this field is not in the configured correctable set.',
@@ -372,8 +347,6 @@ return [
         'several_charges' => 'Sum of several charges: correct the single charges below.',
         'document_level' => 'Not editable here: this is a document-level value — correct it under Amounts.',
         'not_classifiable' => 'Not editable: only the configured credit note and corrected invoice types can be switched.',
-    ],
-
     // Notifications
     'notification_confirmed_title' => 'Invoice confirmed',
     'notification_confirmed_body' => 'The invoice was marked as manually reviewed.',
@@ -413,20 +386,17 @@ return [
     'notification_identical_duplicate_body' => 'An identical file for document :number already exists. No new version was created.',
     'notification_foreign_upload_title' => 'Foreign document: no e-invoice',
     'notification_foreign_upload_body' => 'Document :number (:country) is a foreign document. No e-invoice is created. Send the original PDF the usual way.',
-
     // Downloads & preview
     'download_zugferd_pdf' => 'ZUGFeRD PDF',
     'download_copy_pdf' => 'PDF copy',
     'download_xml' => 'XML',
     'preview_pdf_title' => 'PDF preview',
     'preview_no_original_pdf' => 'No original PDF available',
-
     // Empty states
     'empty_no_field_data' => 'No field data available.',
     'empty_no_line_items' => 'No line items.',
     'line_item_position' => 'Line item :position',
     'non_goods_line' => 'Non-goods line',
-
     // Field hints — missing
     'hint_satisfied_by_lines' => 'Not on the header but on every line; shown here are the lines\' values.',
     'hint_satisfied_by_alternative' => 'Not needed: an equivalent field is present.',
@@ -445,7 +415,6 @@ return [
     'hint_missing_description' => 'Line description missing.',
     'hint_missing_buyer_email' => 'No delivery recipient email (set one in review, or inbox To when mail-sourced).',
     'hint_missing_default' => 'This required field is missing in the document.',
-
     // Field hints — needs review
     'hint_review_customer_number' => 'Customer number not found in master data.',
     'hint_review_customer_number_matched' => 'Customer number matched, but the attribution still needs review '
@@ -477,7 +446,6 @@ return [
     'hint_review_unrecognized' => 'Printed as “:printed”, which was not recognised as a value — please check.',
     'hint_review_printed_differs_from_config' => 'Printed as “:printed”, which differs from the configured seller data — please check.',
     'hint_review_default' => 'This field should be reviewed manually.',
-
     // Field hints — informational (no validation status)
     'hint_info_buyer_email' => 'Delivery recipient — not checked against master data.',
     'hint_info_consignee_not_in_master_data' => 'Consignee not found in the buyer\'s master data '
@@ -488,10 +456,8 @@ return [
     'hint_info_address_differs_no_additional_lines' => 'no additional address lines',
     'hint_info_address_differs_separator' => ', ',
     'hint_warning_preceding_invoice_not_found' => 'Preceding invoice not found in the system — please check '
-        .'(does not block).',
     'hint_warning_preceding_invoice_date_mismatch' => 'Date differs from the stored preceding invoice — '
         .'please check (does not block).',
-
     'section_kosit_validations' => 'KoSIT validations',
     'kosit_validations_empty' => 'No KoSIT validations yet.',
     'section_verapdf_validations' => 'veraPDF validations',
@@ -509,15 +475,12 @@ return [
     'attribution_role' => [
         'buyer' => 'Customer',
         'buyer_contact' => 'Contact',
-    ],
     'attribution_source' => [
         'auto' => 'Automatic',
         'manual' => 'Manual',
-    ],
     'section_delivery_attempts' => 'Delivery attempts',
     'delivery_attempts_empty' => 'No delivery attempts yet.',
     'channel' => 'Channel',
-    'recipient' => 'Recipient',
     'success_label' => 'Success',
     'failure_reason_label' => 'Failure reason',
     'correlation_id' => 'Correlation id',
@@ -540,7 +503,6 @@ return [
         'mail_send_log_missing' => 'Mail send log missing',
         'send_failed' => 'Send failed',
         'no_customer' => 'No customer assigned',
-    ],
     'activity_reasons' => 'Reasons',
     'activity_waited_seconds' => 'Waited (seconds)',
     'activity_escalation_level' => 'Escalation level',

@@ -16,7 +16,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,17 +24,19 @@ use Moox\Salutation\Resources\Salutation\Pages\CreateSalutation;
 use Moox\Salutation\Resources\Salutation\Pages\EditSalutation;
 use Moox\Salutation\Resources\Salutation\Pages\ListSalutations;
 use Moox\Salutation\Resources\Salutation\Pages\ViewSalutation;
-use Moox\Support\Active\HasActiveForm;
-use Moox\Support\Archive\HasArchiveForm;
-use Moox\Support\Audit\HasAuditForm;
-use Moox\Support\Data\HasDataForm;
+use Moox\Support\Active\Columns\HasActiveColumns;
+use Moox\Support\Active\Forms\HasActiveForm;
+use Moox\Support\Archive\Forms\HasArchiveForm;
+use Moox\Support\Audit\Forms\HasAuditForm;
+use Moox\Support\Data\Forms\HasDataForm;
 use Moox\Support\Filament\FeatureFields;
-use Moox\Support\Identity\HasIdentityForm;
-use Moox\Support\SoftDelete\HasSoftDeleteForm;
-use Moox\Support\Title\HasTitleForm;
+use Moox\Support\Identity\Forms\HasIdentityForm;
+use Moox\Support\SoftDelete\Forms\HasSoftDeleteForm;
+use Moox\Support\Title\Forms\HasTitleForm;
 
 class SalutationResource extends Resource
 {
+    use HasActiveColumns;
     use HasActiveForm;
     use HasArchiveForm;
     use HasAuditForm;
@@ -169,14 +170,11 @@ class SalutationResource extends Resource
                 TextColumn::make('sort_order')
                     ->label(FeatureFields::label($translation, 'sort_order'))
                     ->sortable(),
-                IconColumn::make('is_active')
-                    ->label(FeatureFields::label($translation, 'is_active'))
-                    ->boolean(),
+                static::activeColumn(),
             ])
             ->defaultSort('sort_order')
             ->filters([
-                TernaryFilter::make('is_active')
-                    ->label(FeatureFields::label($translation, 'is_active')),
+                static::activeFilter(),
             ])
             ->recordActions([
                 ViewAction::make(),

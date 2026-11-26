@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\Connect\Filament\Resources;
 
 use BackedEnum;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -71,15 +70,16 @@ class ApiLogResource extends BaseItemResource
                                     TextInput::make('endpoint_id')
                                         ->label(__('connect::fields.api_endpoint_name'))
                                         ->numeric(),
-                                    KeyValue::make('request_data')
-                                        ->label(__('connect::fields.request_data'))->required(),
-                                    // Textarea::make('response_data')
-                                    //     ->label(__('connect::fields.response_data'))
-                                    //     ->rows(10)
-                                    //     ->maxLength(1000)
-                                    //     ->formatStateUsing(fn ($state) => $state === null ? null : json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))
-                                    //     ->dehydrated(false)
-                                    //     ->visible(fn ($record) => !empty($record?->response_data)),
+                                    Textarea::make('request_data')
+                                        ->label(__('connect::fields.request_data'))
+                                        ->rows(8)
+                                        ->formatStateUsing(fn (mixed $state): string => self::jsonColumn($state, true))
+                                        ->dehydrated(false),
+                                    Textarea::make('response_data')
+                                        ->label(__('connect::fields.response_data'))
+                                        ->rows(8)
+                                        ->formatStateUsing(fn (mixed $state): string => self::jsonColumn($state, true))
+                                        ->dehydrated(false),
                                     TextInput::make('status_code')
                                         ->label(__('connect::fields.status_code'))
                                         ->maxLength(255)->required(),
@@ -123,8 +123,16 @@ class ApiLogResource extends BaseItemResource
                 TextColumn::make('endpoint.name')
                     ->numeric(0)->label(__('connect::fields.endpoint_id')),
                 TextColumn::make('trigger')->sortable()->searchable()->toggleable()->label(__('connect::fields.trigger')),
-                TextColumn::make('request_data')->label(__('connect::fields.request_data')),
-                TextColumn::make('response_data')->label(__('connect::fields.response_data')),
+                TextColumn::make('request_data')
+                    ->label(__('connect::fields.request_data'))
+                    ->state(fn (ApiLog $record): string => self::jsonColumn($record->request_data))
+                    ->limit(120)
+                    ->tooltip(fn (ApiLog $record): ?string => ($json = self::jsonColumn($record->request_data, true)) !== '' ? $json : null),
+                TextColumn::make('response_data')
+                    ->label(__('connect::fields.response_data'))
+                    ->state(fn (ApiLog $record): string => self::jsonColumn($record->response_data))
+                    ->limit(120)
+                    ->tooltip(fn (ApiLog $record): ?string => ($json = self::jsonColumn($record->response_data, true)) !== '' ? $json : null),
             ])
             ->defaultSort('id', 'desc')
             ->actions([...static::getTableActions()])
@@ -179,6 +187,23 @@ class ApiLogResource extends BaseItemResource
                         return 'Error Message: '.$data['error_message'];
                     }),
             ]);
+    }
+
+    private static function jsonColumn(mixed $state, bool $pretty = false): string
+    {
+        if ($state === null || $state === '') {
+            return '';
+        }
+
+        $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE;
+
+        if ($pretty) {
+            $flags |= JSON_PRETTY_PRINT;
+        }
+
+        $json = json_encode($state, $flags);
+
+        return is_string($json) ? $json : '';
     }
 
     public static function getPages(): array

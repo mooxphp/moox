@@ -12,7 +12,6 @@ return [
     'parent_id' => 'Parent ID',
     'created_at' => 'Created at',
     'updated_at' => 'Updated at',
-    'deleted_at' => 'Deleted at',
     'parent' => 'Parent',
     'children' => 'Children',
     'ancestors' => 'Ancestors',

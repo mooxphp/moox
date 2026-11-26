@@ -7,7 +7,7 @@ namespace Moox\Address\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Traits\Relations\HasRelations;
-use Moox\Support\Audit\HasAudit;
+use Moox\Support\Audit\Models\HasAudit;
 
 class AddressUsage extends Model
 {

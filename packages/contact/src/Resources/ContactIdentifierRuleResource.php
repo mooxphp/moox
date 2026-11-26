@@ -12,7 +12,6 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Moox\Contact\Models\ContactIdentifierRule;
@@ -20,14 +19,16 @@ use Moox\Contact\Resources\ContactIdentifierRule\Pages\CreateContactIdentifierRu
 use Moox\Contact\Resources\ContactIdentifierRule\Pages\EditContactIdentifierRule;
 use Moox\Contact\Resources\ContactIdentifierRule\Pages\ListContactIdentifierRules;
 use Moox\Contact\Resources\ContactIdentifierRule\Pages\ViewContactIdentifierRule;
-use Moox\Support\Active\HasActiveForm;
-use Moox\Support\Audit\HasAuditForm;
+use Moox\Support\Active\Columns\HasActiveColumns;
+use Moox\Support\Active\Forms\HasActiveForm;
+use Moox\Support\Audit\Forms\HasAuditForm;
 use Moox\Support\Filament\FeatureFields;
-use Moox\Support\Identity\HasIdentityForm;
-use Moox\Support\Relation\HasRelationForm;
+use Moox\Support\Identity\Forms\HasIdentityForm;
+use Moox\Support\Relation\Forms\HasRelationForm;
 
 class ContactIdentifierRuleResource extends Resource
 {
+    use HasActiveColumns;
     use HasActiveForm;
     use HasAuditForm;
     use HasIdentityForm;
@@ -110,13 +111,10 @@ class ContactIdentifierRuleResource extends Resource
                 TextColumn::make('legal_form_id')
                     ->label(FeatureFields::label($translation, 'legal_form_id'))
                     ->sortable(),
-                IconColumn::make('is_active')
-                    ->label(FeatureFields::label($translation, 'is_active'))
-                    ->boolean(),
+                static::activeColumn(),
             ])
             ->filters([
-                TernaryFilter::make('is_active')
-                    ->label(FeatureFields::label($translation, 'is_active')),
+                static::activeFilter(),
             ])
             ->recordActions([
                 ViewAction::make(),

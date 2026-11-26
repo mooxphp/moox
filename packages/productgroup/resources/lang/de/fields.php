@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'id' => 'ID',
+    'domain' => 'Produktkategorie',
+    'parent_id' => 'Übergeordnet',
+    'is_canonical' => 'Canonical',
+    'canonical_product_category_id' => 'Canonical-Kategorie',
+    'canonical_category_required' => 'Ein Verweis braucht eine Canonical-Kategorie.',
+    'canonical_category_missing' => 'Die Canonical-Kategorie existiert nicht.',
+    'canonical_category_loop' => 'Dieser Canonical-Verweis führt auf sich selbst zurück.',
+    'sort_order' => 'Sortierung',
+    'lft' => 'Links',
+    'rgt' => 'Rechts',
+    'note' => 'Notiz',
+    'media' => 'Medien',
+    'image' => 'Medien',
+    'locale' => 'Locale',
+    'title' => 'Titel',
+    'slug' => 'Slug',
+    'description' => 'Beschreibung',
+    'slug_sibling_taken' => 'Dieser Slug ist unter derselben übergeordneten Kategorie schon vergeben.',
+    'data' => 'Daten',
+    'created_at' => 'Erstellt am',
+    'updated_at' => 'Aktualisiert am',
+];

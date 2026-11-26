@@ -20,5 +20,4 @@ return [
     'updated_by' => 'Aktualisiert von',
     'packagist' => 'Packagist',
     'update_status' => 'Updatestatus',
-
 ];

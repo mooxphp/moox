@@ -20,5 +20,4 @@ return [
     'updated_by' => 'Update By',
     'packagist' => 'Packagist',
     'update_status' => 'Update Status',
-
 ];

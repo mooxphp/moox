@@ -3,7 +3,6 @@
 return [
     'status' => 'Status',
     'legacy_id' => 'Legacy ID',
-    'external_reference' => 'External reference',
     'short_code' => 'Short code',
     'display_name' => 'Display name',
     'first_name' => 'First name',
@@ -21,10 +20,7 @@ return [
     'is_primary' => 'Primary',
     'role' => 'Role',
     'is_internal' => 'Internal',
-    'is_active' => 'Active',
-    'active' => 'Active',
     'internal' => 'Internal',
-    'identity' => 'Identity',
     'settings' => 'Settings',
     'contact' => 'Contact',
     'work' => 'Work',

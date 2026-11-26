@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'id' => 'ID',
+    'domain' => 'Product category',
+    'parent_id' => 'Parent',
+    'is_canonical' => 'Canonical',
+    'canonical_product_category_id' => 'Canonical category',
+    'canonical_category_required' => 'A reference needs a canonical category.',
+    'canonical_category_missing' => 'The canonical category does not exist.',
+    'canonical_category_loop' => 'This canonical reference loops back to itself.',
+    'sort_order' => 'Sort order',
+    'lft' => 'Left',
+    'rgt' => 'Right',
+    'note' => 'Note',
+    'media' => 'Media',
+    'image' => 'Media',
+    'locale' => 'Locale',
+    'title' => 'Title',
+    'slug' => 'Slug',
+    'description' => 'Description',
+    'slug_sibling_taken' => 'This slug is already used under the same parent.',
+    'data' => 'Data',
+    'created_at' => 'Created at',
+    'updated_at' => 'Updated at',
+];

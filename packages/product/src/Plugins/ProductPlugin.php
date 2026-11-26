@@ -6,7 +6,9 @@ namespace Moox\Product\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use LogicException;
 use Moox\Product\Resources\ProductResource;
+use Moox\Product\Resources\VariantResource;
 
 class ProductPlugin implements Plugin
 {
@@ -20,6 +22,7 @@ class ProductPlugin implements Plugin
         $panel
             ->resources([
                 ProductResource::class,
+                VariantResource::class,
             ]);
     }
 
@@ -30,6 +33,12 @@ class ProductPlugin implements Plugin
 
     public static function make(): static
     {
-        return app(static::class);
+        $plugin = app(static::class);
+
+        if (! $plugin instanceof static) {
+            throw new LogicException('Product plugin could not be resolved.');
+        }
+
+        return $plugin;
     }
 }

@@ -14,9 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Moox\Core\Traits\Relations\HasResourceRelations;
@@ -25,18 +23,20 @@ use Moox\Person\Resources\Person\Pages\CreatePerson;
 use Moox\Person\Resources\Person\Pages\EditPerson;
 use Moox\Person\Resources\Person\Pages\ListPersons;
 use Moox\Person\Resources\Person\Pages\ViewPerson;
-use Moox\Support\Active\HasActiveForm;
-use Moox\Support\Archive\HasArchiveForm;
-use Moox\Support\Audit\HasAuditForm;
-use Moox\Support\Data\HasDataForm;
-use Moox\Support\External\HasExternalForm;
+use Moox\Support\Active\Columns\HasActiveColumns;
+use Moox\Support\Active\Forms\HasActiveForm;
+use Moox\Support\Archive\Forms\HasArchiveForm;
+use Moox\Support\Audit\Forms\HasAuditForm;
+use Moox\Support\Data\Forms\HasDataForm;
+use Moox\Support\External\Forms\HasExternalForm;
 use Moox\Support\Filament\FeatureFields;
-use Moox\Support\Identity\HasIdentityForm;
-use Moox\Support\Relation\HasRelationForm;
-use Moox\Support\SoftDelete\HasSoftDeleteForm;
+use Moox\Support\Identity\Forms\HasIdentityForm;
+use Moox\Support\Relation\Forms\HasRelationForm;
+use Moox\Support\SoftDelete\Forms\HasSoftDeleteForm;
 
 class PersonResource extends Resource
 {
+    use HasActiveColumns;
     use HasActiveForm;
     use HasArchiveForm;
     use HasAuditForm;
@@ -166,9 +166,7 @@ class PersonResource extends Resource
                     ->searchable()
                     ->sortable(),
                 ...static::configuredRelationColumns(),
-                IconColumn::make('is_active')
-                    ->label(FeatureFields::label($translation, 'is_active'))
-                    ->boolean(),
+                static::activeColumn(),
                 TextColumn::make('updated_at')
                     ->label(FeatureFields::label($translation, 'updated_at'))
                     ->dateTime()
@@ -178,8 +176,7 @@ class PersonResource extends Resource
             ->defaultSort('last_name')
             ->filters([
                 ...static::configuredRelationFilters(),
-                TernaryFilter::make('is_active')
-                    ->label(FeatureFields::label($translation, 'is_active')),
+                static::activeFilter(),
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -205,3 +202,4 @@ class PersonResource extends Resource
         return config('person.navigationgroup.label');
     }
 }
+

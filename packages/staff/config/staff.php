@@ -194,7 +194,7 @@ return [
     'taxonomies' => [
     ],
 
-    'navigation_group' => 'Portal',
+    'navigation_group' => 'CRM',
 
     /*
     |--------------------------------------------------------------------------

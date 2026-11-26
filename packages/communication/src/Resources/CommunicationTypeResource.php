@@ -25,10 +25,10 @@ use Moox\Communication\Resources\CommunicationType\Pages\CreateCommunicationType
 use Moox\Communication\Resources\CommunicationType\Pages\EditCommunicationType;
 use Moox\Communication\Resources\CommunicationType\Pages\ListCommunicationTypes;
 use Moox\Communication\Resources\CommunicationType\Pages\ViewCommunicationType;
-use Moox\Support\Audit\HasAuditForm;
+use Moox\Support\Audit\Forms\HasAuditForm;
 use Moox\Support\Filament\FeatureFields;
-use Moox\Support\SoftDelete\HasSoftDeleteForm;
-use Moox\Support\Title\HasTitleForm;
+use Moox\Support\SoftDelete\Forms\HasSoftDeleteForm;
+use Moox\Support\Title\Forms\HasTitleForm;
 
 class CommunicationTypeResource extends Resource
 {

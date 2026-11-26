@@ -8,7 +8,7 @@ use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Support\Audit\HasAudit;
+use Moox\Support\Audit\Models\HasAudit;
 
 class AddressUsageType extends Model implements TranslatableContract
 {

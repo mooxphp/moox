@@ -109,7 +109,8 @@ final class CustomFieldTransformSupport
             return;
         }
 
-        $values = self::filterMergeableValues($destination, $values);
+        $keepEmptyArrays = self::inheritsCustomFields($destination);
+        $values = self::filterMergeableValues($values, $keepEmptyArrays);
 
         if ($values === []) {
             return;
@@ -128,12 +129,12 @@ final class CustomFieldTransformSupport
      * @param  array<string, mixed>  $values
      * @return array<string, mixed>
      */
-    private static function filterMergeableValues(Model $destination, array $values): array
+    private static function filterMergeableValues(array $values, bool $keepEmptyArrays = false): array
     {
         $filtered = [];
 
         foreach ($values as $field => $value) {
-            if (self::shouldSkipMergeValue($destination, $value)) {
+            if (self::shouldSkipMergeValue($value, $keepEmptyArrays)) {
                 continue;
             }
 
@@ -143,7 +144,7 @@ final class CustomFieldTransformSupport
         return $filtered;
     }
 
-    private static function shouldSkipMergeValue(Model $destination, mixed $value): bool
+    private static function shouldSkipMergeValue(mixed $value, bool $keepEmptyArrays = false): bool
     {
         if ($value === null) {
             return true;
@@ -154,7 +155,7 @@ final class CustomFieldTransformSupport
         }
 
         if (is_array($value) && $value === []) {
-            return true;
+            return ! $keepEmptyArrays;
         }
 
         return false;
@@ -163,6 +164,13 @@ final class CustomFieldTransformSupport
     private static function canUseBuilderManager(): bool
     {
         return class_exists(CustomFieldsManager::class);
+    }
+
+    private static function inheritsCustomFields(Model $destination): bool
+    {
+        $contract = 'Moox\\Builder\\Contracts\\InheritsCustomFields';
+
+        return interface_exists($contract) && $destination instanceof $contract;
     }
 
     /**
@@ -175,7 +183,21 @@ final class CustomFieldTransformSupport
         $fields = $manager->fieldsForEntity($entity)->keyBy('name');
         $payload = array_intersect_key($values, $fields->all());
 
+        if (self::inheritsCustomFields($destination)) {
+            $payload = $manager->stripInheritedValues(
+                $entity,
+                $destination,
+                $fields->values(),
+                $payload,
+                $locale,
+            );
+        }
+
         if ($payload === []) {
+            if (method_exists($destination, 'flushCustomFieldsCache')) {
+                $destination->flushCustomFieldsCache();
+            }
+
             return;
         }
 

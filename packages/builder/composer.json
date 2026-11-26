@@ -70,7 +70,7 @@
     },
     "scripts": {
         "test": [
-            "@php ../../vendor/bin/pest"
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml"
         ],
         "format": [
             "@php ../../vendor/bin/pint"

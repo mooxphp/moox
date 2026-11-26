@@ -6,6 +6,7 @@ namespace Moox\Product\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use Moox\Product\Enums\ProductType;
 use Moox\Product\Models\Product;
 
 /**
@@ -18,7 +19,7 @@ class ProductFactory extends Factory
     public function configure(): static
     {
         return $this->afterCreating(function (Product $product): void {
-            $locale = (string) config('app.locale', 'en');
+            $locale = app()->getLocale();
 
             $product->translateOrNew($locale)
                 ->fill($this->defaultTranslatedAttributes())
@@ -29,23 +30,28 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
+            'product_category_id' => 1,
+            'type' => ProductType::Simple,
             'sku' => 'SKU-'.strtoupper($this->faker->unique()->bothify('??####')),
-            'type' => $this->faker->randomElement(array_keys(config('product.types', ['simple' => 'simple']))),
-            'status' => $this->faker->randomElement(array_keys(config('product.statuses', []))),
-            'price' => $this->faker->randomFloat(2, 5, 500),
-            'sale_price' => $this->faker->optional(0.3)->randomFloat(2, 3, 400),
-            'cost_price' => $this->faker->optional(0.5)->randomFloat(2, 2, 300),
-            'stock' => $this->faker->numberBetween(0, 250),
-            'stock_min' => $this->faker->numberBetween(0, 10),
-            'weight' => $this->faker->optional(0.8)->randomFloat(3, 0.05, 25),
-            'weight_unit' => $this->faker->optional(0.8)->randomElement(['kg', 'g']),
-            'unit_of_measure' => $this->faker->optional(0.7)->randomElement(['piece', 'm', 'kg']),
-            'is_purchasable' => true,
-            'is_sellable' => true,
-            'custom_properties' => [
-                'source' => 'factory',
-            ],
+            'is_orderable' => false,
+            'is_active' => true,
+            'sort_order' => 0,
+            'created_by_id' => 1,
+            'created_by_type' => 'user',
+            'updated_by_id' => 1,
+            'updated_by_type' => 'user',
         ];
+    }
+
+    public function grouped(): static
+    {
+        return $this->state([
+            'type' => ProductType::Grouped,
+            'sku' => null,
+            'is_orderable' => false,
+            'is_canonical' => false,
+            'canonical_product_id' => null,
+        ]);
     }
 
     public function withoutTranslations(): static
@@ -72,16 +78,12 @@ class ProductFactory extends Factory
      */
     protected function defaultTranslatedAttributes(): array
     {
-        $name = $this->faker->words(3, true);
-        $slug = Str::slug($name).'-'.Str::lower(Str::random(4));
+        $title = rtrim($this->faker->sentence(3), '.');
+        $slug = Str::slug($title).'-'.Str::lower(Str::random(4));
 
         return [
-            'name' => $name,
+            'title' => $title,
             'slug' => $slug,
-            'short_description' => $this->faker->optional(0.8)->sentence(12) ?? '',
-            'description' => $this->faker->paragraph(),
-            'meta_title' => $this->faker->optional(0.6)->sentence(6) ?? '',
-            'meta_description' => $this->faker->optional(0.6)->text(140) ?? '',
         ];
     }
 }

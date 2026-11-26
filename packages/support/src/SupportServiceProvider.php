@@ -11,7 +11,9 @@ class SupportServiceProvider extends MooxServiceProvider
 {
     public function configureMoox(Package $package): void
     {
-        $package->name('support');
+        $package
+            ->name('support')
+            ->hasTranslations();
 
         $this->getMooxPackage()
             ->title('Moox Support')

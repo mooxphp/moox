@@ -6,6 +6,7 @@ namespace Moox\Builder\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Moox\Builder\Contracts\InheritsCustomFields;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
@@ -35,8 +36,7 @@ class CustomFieldsManager
         protected BuilderLocaleResolver $localeResolver,
         protected EntityRegistry $entityRegistry,
         protected ClonedFieldGroupResolver $clonedFieldGroupResolver,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  class-string  $resourceClass
@@ -110,6 +110,17 @@ class CustomFieldsManager
      */
     public function loadValues(string $entity, Model $record, Collection $fields, ?string $locale = null): array
     {
+        $values = $this->loadOwnValues($entity, $record, $fields, $locale);
+
+        return $this->mergeInheritedCustomFieldValues($record, $fields, $values, $locale);
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @return array<string, mixed>
+     */
+    protected function loadOwnValues(string $entity, Model $record, Collection $fields, ?string $locale = null): array
+    {
         if ($fields->isEmpty()) {
             return [];
         }
@@ -143,6 +154,291 @@ class CustomFieldsManager
         }
 
         return $values;
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @param  array<string, mixed>  $values
+     * @return array<string, mixed>
+     */
+    protected function mergeInheritedCustomFieldValues(Model $record, Collection $fields, array $values, ?string $locale = null): array
+    {
+        if (! $record instanceof InheritsCustomFields || $fields->isEmpty()) {
+            return $values;
+        }
+
+        $parent = $record->customFieldsParent();
+
+        if (! $parent instanceof Model) {
+            return $values;
+        }
+
+        $parentValues = $this->loadOwnValues(
+            $record->customFieldsParentEntity(),
+            $parent,
+            $fields,
+            $locale,
+        );
+
+        foreach ($fields as $field) {
+            $name = $field->name;
+            $mergeKey = $this->inheritMergeKey($field);
+            $parentValue = $parentValues[$name] ?? null;
+            $ownValue = $values[$name] ?? null;
+
+            if ($mergeKey !== null) {
+                $merged = $this->mergeKeyedRepeater(
+                    is_array($parentValue) ? $parentValue : [],
+                    is_array($ownValue) ? $ownValue : [],
+                    $mergeKey,
+                );
+
+                if ($merged === []) {
+                    unset($values[$name]);
+
+                    continue;
+                }
+
+                $values[$name] = $merged;
+
+                continue;
+            }
+
+            if (! $this->isEmptyCustomFieldValue($ownValue)
+                || $this->isEmptyCustomFieldValue($parentValue)) {
+                continue;
+            }
+
+            $values[$name] = $parentValue;
+        }
+
+        return $values;
+    }
+
+    /**
+     * @param  class-string  $resourceClass
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @param  array<string, mixed>  $values
+     * @return array<string, mixed>
+     */
+    protected function withoutInheritedCustomFieldValues(
+        string $resourceClass,
+        Model $record,
+        Collection $fields,
+        array $values,
+        string $locale,
+    ): array {
+        $entity = $this->locationContextForResource($resourceClass)->entity;
+
+        return $this->stripInheritedValues($entity, $record, $fields, $values, $locale);
+    }
+
+    /**
+     * Drop values that still match the parent so only overrides are stored.
+     * Used by Filament form saves and by transform persist for InheritsCustomFields.
+     *
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @param  array<string, mixed>  $values
+     * @return array<string, mixed>
+     */
+    public function stripInheritedValues(
+        string $entity,
+        Model $record,
+        Collection $fields,
+        array $values,
+        string $locale,
+    ): array {
+        if (! $record instanceof InheritsCustomFields || $values === []) {
+            return $values;
+        }
+
+        $parent = $record->customFieldsParent();
+
+        if (! $parent instanceof Model) {
+            return $values;
+        }
+
+        $parentValues = $this->loadOwnValues(
+            $record->customFieldsParentEntity(),
+            $parent,
+            $fields,
+            $locale,
+        );
+        $fieldsByName = $fields->keyBy('name');
+
+        foreach ($parentValues as $name => $parentValue) {
+            if (! array_key_exists($name, $values) || $this->isEmptyCustomFieldValue($parentValue)) {
+                continue;
+            }
+
+            $field = $fieldsByName->get($name);
+            $mergeKey = $field instanceof FieldDefinition ? $this->inheritMergeKey($field) : null;
+
+            if ($mergeKey !== null && is_array($values[$name])) {
+                $overrides = $this->keyedRepeaterOverrides($parentValue, $values[$name], $mergeKey);
+
+                if ($overrides === []) {
+                    unset($values[$name]);
+                    $this->deleteInheritedFieldValue($entity, $record, $name, $locale);
+
+                    continue;
+                }
+
+                $values[$name] = $overrides;
+
+                continue;
+            }
+
+            if ($values[$name] != $parentValue) {
+                continue;
+            }
+
+            unset($values[$name]);
+            $this->deleteInheritedFieldValue($entity, $record, $name, $locale);
+        }
+
+        foreach ($values as $name => $value) {
+            if (! $this->isEmptyCustomFieldValue($value)) {
+                continue;
+            }
+
+            unset($values[$name]);
+            $this->deleteInheritedFieldValue($entity, $record, $name, $locale);
+        }
+
+        return $values;
+    }
+
+    protected function deleteInheritedFieldValue(string $entity, Model $record, string $fieldName, string $locale): void
+    {
+        if (! $record->exists) {
+            return;
+        }
+
+        $recordId = $record->getKey();
+
+        if (! is_int($recordId) && ! is_string($recordId)) {
+            return;
+        }
+
+        FieldValue::query()
+            ->forRecord($entity, $recordId)
+            ->forLocale($locale)
+            ->where('field_name', $fieldName)
+            ->delete();
+    }
+
+    protected function isEmptyCustomFieldValue(mixed $value): bool
+    {
+        return $value === null || $value === '' || $value === [];
+    }
+
+    /**
+     * Key used to merge/strip repeater rows against the parent (e.g. measures.measure).
+     */
+    protected function inheritMergeKey(?FieldDefinition $field): ?string
+    {
+        if ($field === null || $field->type !== 'repeater') {
+            return null;
+        }
+
+        $key = $field->config['inherit_merge_key'] ?? null;
+
+        if (is_string($key) && $key !== '') {
+            return $key;
+        }
+
+        if ($field->name === 'measures') {
+            return 'measure';
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $parent
+     * @param  list<array<string, mixed>>  $child
+     * @return list<array<string, mixed>>
+     */
+    protected function mergeKeyedRepeater(array $parent, array $child, string $key): array
+    {
+        $merged = [];
+
+        foreach ($parent as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            $rowKey = $row[$key] ?? null;
+
+            if (! is_string($rowKey) && ! is_int($rowKey)) {
+                continue;
+            }
+
+            $merged[(string) $rowKey] = $row;
+        }
+
+        foreach ($child as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            $rowKey = $row[$key] ?? null;
+
+            if (! is_string($rowKey) && ! is_int($rowKey)) {
+                continue;
+            }
+
+            $merged[(string) $rowKey] = $row;
+        }
+
+        return array_values($merged);
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $parent
+     * @param  list<array<string, mixed>>  $child
+     * @return list<array<string, mixed>>
+     */
+    protected function keyedRepeaterOverrides(array $parent, array $child, string $key): array
+    {
+        $parentByKey = [];
+
+        foreach ($parent as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            $rowKey = $row[$key] ?? null;
+
+            if (! is_string($rowKey) && ! is_int($rowKey)) {
+                continue;
+            }
+
+            $parentByKey[(string) $rowKey] = $row;
+        }
+
+        $overrides = [];
+
+        foreach ($child as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            $rowKey = $row[$key] ?? null;
+
+            if (! is_string($rowKey) && ! is_int($rowKey)) {
+                continue;
+            }
+
+            $lookup = (string) $rowKey;
+
+            if (! array_key_exists($lookup, $parentByKey) || $parentByKey[$lookup] != $row) {
+                $overrides[] = $row;
+            }
+        }
+
+        return $overrides;
     }
 
     /**
@@ -208,6 +504,7 @@ class CustomFieldsManager
         $entity = $this->locationContextForResource($resourceClass)->entity;
         $locale = $this->localeResolver->valuesLocaleForResource($resourceClass);
         $values = $this->preparedFormValues($resourceClass, $record, $data);
+        $values = $this->withoutInheritedCustomFieldValues($resourceClass, $record, $fields, $values, $locale);
 
         if ($fields->isEmpty() || $values === []) {
             return;

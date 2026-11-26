@@ -7,8 +7,8 @@ namespace Moox\Contact\Models;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
-use Moox\Support\Audit\HasAudit;
-use Moox\Support\Identity\HasIdentifier;
+use Moox\Support\Audit\Models\HasAudit;
+use Moox\Support\Identity\Models\HasIdentifier;
 
 class ContactRelationshipType extends Model implements TranslatableContract
 {

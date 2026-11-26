@@ -29,17 +29,19 @@ use Moox\Communication\Resources\Communication\Pages\CreateCommunication;
 use Moox\Communication\Resources\Communication\Pages\EditCommunication;
 use Moox\Communication\Resources\Communication\Pages\ListCommunications;
 use Moox\Communication\Resources\Communication\Pages\ViewCommunication;
-use Moox\Support\Active\HasActiveForm;
-use Moox\Support\Audit\HasAuditForm;
-use Moox\Support\Data\HasDataForm;
-use Moox\Support\External\HasExternalForm;
+use Moox\Support\Active\Columns\HasActiveColumns;
+use Moox\Support\Active\Forms\HasActiveForm;
+use Moox\Support\Audit\Forms\HasAuditForm;
+use Moox\Support\Data\Forms\HasDataForm;
+use Moox\Support\External\Forms\HasExternalForm;
 use Moox\Support\Filament\FeatureFields;
-use Moox\Support\Identity\HasIdentityForm;
-use Moox\Support\Relation\HasRelationForm;
-use Moox\Support\SoftDelete\HasSoftDeleteForm;
+use Moox\Support\Identity\Forms\HasIdentityForm;
+use Moox\Support\Relation\Forms\HasRelationForm;
+use Moox\Support\SoftDelete\Forms\HasSoftDeleteForm;
 
 class CommunicationResource extends Resource
 {
+    use HasActiveColumns;
     use HasActiveForm;
     use HasAuditForm;
     use HasDataForm;
@@ -221,9 +223,7 @@ class CommunicationResource extends Resource
                 IconColumn::make('is_verified')
                     ->label(FeatureFields::label($translation, 'is_verified'))
                     ->boolean(),
-                IconColumn::make('is_active')
-                    ->label(FeatureFields::label($translation, 'is_active'))
-                    ->boolean(),
+                static::activeColumn(),
                 TextColumn::make('owner_label')
                     ->label(FeatureFields::label($translation, 'owner'))
                     ->state(function (Model $record): string {
@@ -251,8 +251,7 @@ class CommunicationResource extends Resource
             ->defaultSort('value')
             ->filters([
                 ...static::configuredRelationFilters(),
-                TernaryFilter::make('is_active')
-                    ->label(FeatureFields::label($translation, 'is_active')),
+                static::activeFilter(),
                 TernaryFilter::make('is_primary')
                     ->label(FeatureFields::label($translation, 'is_primary')),
                 TernaryFilter::make('is_verified')

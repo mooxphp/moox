@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Product\Resources\Product\Pages;
 
-use Moox\Core\Entities\Items\Draft\Pages\BaseCreateDraft;
+use Filament\Resources\Pages\CreateRecord;
 use Moox\Product\Resources\ProductResource;
 
-class CreateProduct extends BaseCreateDraft
+class CreateProduct extends CreateRecord
 {
     protected static string $resource = ProductResource::class;
 }

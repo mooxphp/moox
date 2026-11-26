@@ -89,6 +89,7 @@ abstract class TestCase extends Orchestra
 
         Schema::create('items', function (Blueprint $table): void {
             $table->id();
+            $table->unsignedBigInteger('parent_id')->nullable();
             $table->string('title')->nullable();
             $table->timestamps();
         });

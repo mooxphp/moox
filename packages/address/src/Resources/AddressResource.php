@@ -27,18 +27,20 @@ use Moox\Address\Resources\Address\Pages\CreateAddress;
 use Moox\Address\Resources\Address\Pages\EditAddress;
 use Moox\Address\Resources\Address\Pages\ListAddresses;
 use Moox\Address\Resources\Address\Pages\ViewAddress;
-use Moox\Support\Active\HasActiveForm;
-use Moox\Support\Archive\HasArchiveForm;
-use Moox\Support\Audit\HasAuditForm;
-use Moox\Support\Data\HasDataForm;
-use Moox\Support\External\HasExternalForm;
+use Moox\Support\Active\Columns\HasActiveColumns;
+use Moox\Support\Active\Forms\HasActiveForm;
+use Moox\Support\Archive\Forms\HasArchiveForm;
+use Moox\Support\Audit\Forms\HasAuditForm;
+use Moox\Support\Data\Forms\HasDataForm;
+use Moox\Support\External\Forms\HasExternalForm;
 use Moox\Support\Filament\FeatureFields;
-use Moox\Support\Identity\HasIdentityForm;
-use Moox\Support\Relation\HasRelationForm;
-use Moox\Support\SoftDelete\HasSoftDeleteForm;
+use Moox\Support\Identity\Forms\HasIdentityForm;
+use Moox\Support\Relation\Forms\HasRelationForm;
+use Moox\Support\SoftDelete\Forms\HasSoftDeleteForm;
 
 class AddressResource extends Resource
 {
+    use HasActiveColumns;
     use HasActiveForm;
     use HasArchiveForm;
     use HasAuditForm;
@@ -241,9 +243,7 @@ class AddressResource extends Resource
                     ->label(FeatureFields::label($translation, 'city'))
                     ->searchable()
                     ->sortable(),
-                IconColumn::make('is_active')
-                    ->label(FeatureFields::label($translation, 'is_active'))
-                    ->boolean(),
+                static::activeColumn(),
                 TextColumn::make('owner_label')
                     ->label(FeatureFields::label($translation, 'owner'))
                     ->state(function (Model $record): string {
@@ -270,8 +270,7 @@ class AddressResource extends Resource
             ])
             ->defaultSort('city')
             ->filters([
-                TernaryFilter::make('is_active')
-                    ->label(FeatureFields::label($translation, 'is_active')),
+                static::activeFilter(),
             ])
             ->recordActions([
                 ViewAction::make(),

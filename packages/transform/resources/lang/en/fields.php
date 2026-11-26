@@ -91,7 +91,6 @@ return [
     'bulk_write_strategy' => 'Write strategy',
     'bulk_write_strategy_row' => 'Row by row',
     'bulk_write_strategy_batch' => 'Batch upsert',
-    'is_active' => 'Active',
     'schedule' => 'Schedule',
     'schedule_help' => 'Cron expression, for example 0 2 * * * for every day at 02:00. Leave empty to run only manually.',
     'schedule_invalid' => 'The schedule must be a valid cron expression.',
