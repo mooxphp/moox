@@ -15,12 +15,22 @@
         "filament/tables": "^5.0",
         "illuminate/database": "^13.0",
         "illuminate/support": "^13.0",
-        "moox/core": "dev-main"
+        "moox/core": "dev-main",
+        "astrotomic/laravel-translatable": "^11.17"
     },
     "autoload": {
         "psr-4": {
             "Moox\\Support\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Support\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "test:coverage": "pest --coverage"
     },
     "extra": {
         "laravel": {
@@ -33,5 +43,14 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "require-dev": {
+        "orchestra/testbench": "^11.3",
+        "pestphp/pest": "^5.3"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
 }
