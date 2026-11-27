@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\User;
+use Moox\User\Models\User;
 
 return [
     /*
